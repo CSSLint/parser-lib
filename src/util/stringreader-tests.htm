@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>String Reader Tests</title>
+<!-- Combo-handled YUI CSS files: -->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="stringreader.js"></script>
+
+
+</head>
+<body>
+<h1>String Reader Tests</h1>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.StringReader = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("StringReader");
+    
+    //-------------------------------------------------------------------------
+    // Test Case for adding
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "read() Tests",
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that reading a string with no new lines works.
+         */
+        testLinearReadWithOneLine: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString),
+                i = 0,
+                c;
+                
+            assert.areEqual(1, reader.getCol(), "Column should be 1.");
+            c = reader.read();
+            
+            while(c){
+                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
+                assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
+                c = reader.read();
+                i++;
+            }
+            
+            assert.areEqual(testString.length, i, "All characters should be read.");
+            assert.isNull(c, "Last character read should be null.");                 
+        },
+        
+        /*
+         * Tests that reading a multi-line string works.
+         */
+        testLinearReadWithTwoLines: function(){
+            var testString = "Hello world!\nNice day, isn't it?",
+                reader = new StringReader(testString),
+                i = 0,
+                c = reader.read();
+                
+            while(c){
+                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect."); 
+                if (c == "\n"){
+                    assert.areEqual(2, reader.getRow(), "Should now be on second row.");
+                    assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
+                } 
+                c = reader.read();
+                i++;
+            }
+            
+            assert.isNull(c, "Last character read should be null.");                 
+        },
+
+        
+        /*
+         * Tests that reading a multi-line string properly tracks rows and cols.
+         */
+        testLinearReadWithTwoLinesTrackCols: function(){
+            var testString = "Hello world!\nNice day, isn't it?",
+                reader = new StringReader(testString);
+                
+            reader.readTo("!");
+            reader.read();
+            
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(2, reader.getRow());
+            
+        },
+        
+        /*
+         * Tests that reading a multi-line string works when the last character is a new-line.
+         */
+        testLinearReadWithTwoLinesAndDanglingNewLine: function(){
+            var testString = "Hello world!\nNice day, isn't it?\n",
+                reader = new StringReader(testString),
+                i = 0,
+                c = reader.read();
+                
+            while(c){
+                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
+                c = reader.read();
+                i++;
+            }
+            
+            assert.isNull(c, "Last character read should be null.");                 
+        }        
+        
+        
+        
+        
+    }));
+
+    //-------------------------------------------------------------------------
+    // Test Case for readTo
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "readTo() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that reading a string with no new lines works.
+         */
+        testLinearReadToWithOneLine: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+                
+            assert.areEqual("Hello ", reader.readTo(" "));    
+            assert.areEqual("w", reader.read());
+        },
+        
+        /*
+         * Tests that reading a multi-line string works.
+         */
+        testLinearReadToWithTwoLines: function(){
+            var testString = "Hello world!\nNice day, isn't it?",
+                reader = new StringReader(testString);
+                
+                
+            assert.areEqual("Hello world!\nN", reader.readTo("N"));  
+            assert.areEqual(2, reader.getRow());
+            assert.areEqual(2, reader.getCol());
+        }
+                
+    }));    
+    
+    //-------------------------------------------------------------------------
+    // Test Case for unread
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "unread() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that calling unread at the beginning of the string does nothing.
+         */
+        testUnreadBeginning: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            reader.unread();
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(1, reader.getRow());
+            assert.areEqual("H", reader.read());
+        },
+        
+        /*
+         * Tests that calling unread() moves back one space on same line.
+         */
+        testUnreadSimple: function(){
+            var testString = "Hello world!\nNice day, isn't it?",
+                reader = new StringReader(testString);
+                
+            reader.read();
+            reader.unread();
+                
+            assert.areEqual("H", reader.read(), "First character read should be 'H'.");   
+            assert.areEqual(2, reader.getCol());
+            assert.areEqual(1, reader.getRow());
+        },
+        
+         /*
+         * Tests that calling unread() moves back across lines.
+         */
+        testUnreadMultiLine: function(){
+            var testString = "Hello world!\nNice day, isn't it?",
+                reader = new StringReader(testString);
+                
+            reader.readTo("\n");
+            reader.unread();
+                
+            assert.areEqual(13, reader.getCol());
+            assert.areEqual(1, reader.getRow());                
+            assert.areEqual("\n", reader.read(), "First character read should be '\\n'.");   
+
+        },
+
+         /*
+         * Tests that calling unread() moves back across lines.
+         */
+        testUnreadMultiLine2: function(){
+            var testString = "A\nB\nC",
+                reader = new StringReader(testString);
+                
+            reader.readTo("C");
+            reader.unread();
+                
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(3, reader.getRow());                
+
+            reader.unread();
+            
+            assert.areEqual(2, reader.getCol());
+            assert.areEqual(2, reader.getRow());   
+
+            reader.unread();
+            
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(2, reader.getRow());   
+
+            reader.unread();
+            
+            assert.areEqual(2, reader.getCol());
+            assert.areEqual(1, reader.getRow());   
+
+            reader.unread();
+            
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(1, reader.getRow());   
+
+            assert.areEqual("A", reader.read(), "First character read should be 'A'.");
+           
+        }       
+                
+    }));      
+
+    //-------------------------------------------------------------------------
+    // Test Case for readWhile()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "readWhile() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that the entire string can be read..
+         */
+        testReadWhileSimple: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            var result = reader.readWhile(function(){
+                return true;
+            });
+
+            assert.areEqual(testString, result);
+            assert.areEqual(1, reader.getRow());
+            assert.areEqual(13, reader.getCol());
+        }
+    }));      
+    
+    //-------------------------------------------------------------------------
+    // Test Case for readCount()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "readCount() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that a set number of characters are read correctly.
+         */
+        testReadCountSimple: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            var result = reader.readCount(6);
+
+            assert.areEqual("Hello ", result);
+            
+            result = reader.readCount(2);
+            assert.areEqual("wo", result);
+        }
+    }));      
+    
+    //-------------------------------------------------------------------------
+    // Test Case for readMatch()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "readMatch() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that a text pattern is read correctly.
+         */
+        testReadMatchSimple: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            var result = reader.readMatch("Hello");
+
+            assert.areEqual("Hello", result);
+        },
+        
+        /*
+         * Tests that a regex pattern is read correctly.
+         */
+        testReadMatchRegEx: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            var result = reader.readMatch(/^Hello/);
+
+            assert.areEqual("Hello", result);
+        }
+        
+        
+    }));      
+    
+    //-------------------------------------------------------------------------
+    // Test Case for unreadCount()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "unreadCount() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that unreading in the middle of a string works.
+         */
+        testUnreadCountMiddle: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            reader.readTo("w");
+            reader.unreadCount(3);
+            
+            assert.areEqual(5, reader.getCol());
+            assert.areEqual(1, reader.getRow());
+            assert.areEqual("o", reader.read());
+        },
+        
+        /*
+         * Tests that unreading to the start of a string works.
+         */
+        testUnreadCountBeginning: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            reader.readTo(" ");
+            reader.unreadCount(12);
+            
+            assert.areEqual(1, reader.getCol());
+            assert.areEqual(1, reader.getRow());
+            assert.areEqual("H", reader.read());
+        }        
+        
+        
+    }));          
+    
+    //-------------------------------------------------------------------------
+    // Test Case for eof()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "eof() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that eof() works after reading to end of string.
+         */
+        testTestEofSimple: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            reader.readTo("!");
+            assert.isTrue(reader.eof());
+        }     
+        
+        
+    }));         
+    
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.StringReader);
+    YAHOO.tool.TestRunner.run();
+
+})();
+
+
+</script>
+</body>
+</html>

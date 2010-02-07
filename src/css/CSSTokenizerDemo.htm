@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CSS TokenStream Demo</title>
+<script type="text/javascript" src="../util/stringreader.js"></script>
+<script type="text/javascript" src="../util/tokenstream.js"></script>
+<script type="text/javascript" src="css-tokens.js"></script>
+
+</head>
+<body>
+<h1>CSS TokenStream Demo</h1>
+<textarea rows="10" cols="40" id="input"></textarea>
+<input type="button" onclick="tokenize()" value="Tokenize">
+<p>(You may want to keep the CSS kinda small, this could take a while.)</p>
+<div id="output">
+
+</div>
+<script type="text/javascript">
+
+function tokenize(){
+    var stream = new TokenStream(document.getElementById("input").value, CSSTokens);
+    document.getElementById("output").innerHTML = "";
+    setTimeout(function(){
+        var tt = stream.get();
+        var output = document.getElementById("output");
+        
+        output.innerHTML += tt + " - " + stream.tokenName(tt) + " - (" + stream.token().value + ")<br>";
+        
+        if (tt > 0){
+            setTimeout(arguments.callee, 15);
+        }
+    
+    
+    }, 15);
+}
+
+
+
+
+</script>
+</body>
+</html>

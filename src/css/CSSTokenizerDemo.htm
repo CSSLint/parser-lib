@@ -18,7 +18,7 @@
 <script type="text/javascript">
 
 function tokenize(){
-    var stream = new TokenStream(document.getElementById("input").value, CSSTokens);
+    stream = new TokenStream(document.getElementById("input").value, CSSTokens);
     document.getElementById("output").innerHTML = "";
     setTimeout(function(){
         var tt = stream.get();

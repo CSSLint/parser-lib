@@ -14,7 +14,7 @@ function TokenStream(input, tokenInfo){
      * @property _reader
      * @private
      */
-    this._reader = (typeof input == "string" ? new StringReader(input) : input;
+    this._reader = (typeof input == "string") ? new StringReader(input) : input;
     
     /**
      * Token object for the last consumed token.
@@ -31,6 +31,22 @@ function TokenStream(input, tokenInfo){
      * @private
      */
     this._tokenInfo = tokenInfo;
+    
+    /**
+     * Lookahead token buffer.
+     * @type Array
+     * @property _lt
+     * @private
+     */
+    this._lt = [];
+    
+    /**
+     * Lookahead token buffer index.
+     * @type int
+     * @property _ltIndex
+     * @private
+     */
+    this._ltIndex = -1;
     
     //do a little magic on the token info
     this._processTokenInfo();
@@ -138,6 +154,12 @@ TokenStream.prototype = {
             len         = tokenInfo.length,
             found       = false,
             token       = { startCol: reader.getCol(), startRow: reader.getRow() };
+            
+        //check the lookahead buffer first
+        if (this._lt.length && this._ltIndex < this._lt.length - 1){            
+            this._token = this._lt[this._ltIndex++];            
+            return this._token.type;
+        }
         
         //test each token pattern from top to bottom
         while (i < len && !found){    
@@ -168,11 +190,24 @@ TokenStream.prototype = {
             token.value = reader.read();
         }
         
-        //save for later
-        this._token = token;
+        //if the token should be hidden, call get() again
+        if (tokenInfo[token.type] && tokenInfo[token.type].hide){
+            return this.get();
+        } else {
         
-        //if the token should be hidden, call get() again, otherwise return just the type
-        return (tokenInfo[token.type] && tokenInfo[token.type].hide) ? this.get() : token.type;
+            //save for later
+            this._token = token;
+            this._lt.push(token);
+            
+            //keep the buffer under 5 items
+            if (this._lt.length > 5){
+                this._lt.shift();
+            }
+            this._ltIndex = 4;
+            
+            //return just the type
+            return token.type;
+        }
     },
     
     /**
@@ -198,6 +233,7 @@ TokenStream.prototype = {
     
     /**
      * Returns the name of the token for the given token type.
+     * @param {int} tokenType The type of token to get the name of.
      * @return {String} The name of the token or "UNKNOWN_TOKEN" for any
      *      invalid token type.
      * @method tokenName
@@ -211,14 +247,27 @@ TokenStream.prototype = {
     },
     
     /**
+     * Returns the token type value for the given token name.
+     * @param {String} tokenName The name of the token whose value should be returned.
+     * @return {int} The token type value for the given token name or -1
+     *      for an unknown token.
+     * @method tokenName
+     */    
+    tokenType: function(tokenName){
+        return tokenInfo[tokenName] || -1;
+    },
+    
+    /**
      * Returns the last consumed token to the token stream.
      * @method unget
      */      
     unget: function(){
-        throw new Error("Unget not yet implemented.");
+        if (this._ltIndex > -1){
+            this._ltIndex--;
+        } else {
+            throw new Error("Too much lookahead.");
+        }
     }
 
 };
-
-
 

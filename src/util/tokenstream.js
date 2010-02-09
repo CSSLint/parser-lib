@@ -1,34 +1,12 @@
-/*
- * TokenStream implementation.
- * Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
- 
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStream
  * @constructor
- * @param {String} text The text to tokenize.
+ * @param {String|StringReader} input The text to tokenize or a reader from 
+ *      which to read the input.
  * @param {Array} tokenInfo An array of token information.
  */
-function TokenStream(text, tokenInfo){
+function TokenStream(input, tokenInfo){
 
     /**
      * The string reader for easy access to the text.
@@ -36,7 +14,7 @@ function TokenStream(text, tokenInfo){
      * @property _reader
      * @private
      */
-    this._reader = new StringReader(text);
+    this._reader = (typeof input == "string" ? new StringReader(input) : input;
     
     /**
      * Token object for the last consumed token.
@@ -89,15 +67,20 @@ TokenStream.prototype = {
                     }
         });
             
-        //create match functions for each tokenInfo object
+        
         while (i < len){
+        
+            //store token type values by name for easy reference
+            tokenInfo[tokenInfo[i].name] = i;
+            
+            //create match functions for each tokenInfo object
             if (typeof tokenInfo[i].text == "string"){
                 tokenInfo[i].match = function(reader){
                     return reader.readMatch(this.text);
                 };
             } else if (typeof tokenInfo[i].pattern == "string"){
                 tokenInfo[i].match = function(reader){
-                    return reader.readMatch(new RegExp("^" + this.pattern, this.patternOpt));
+                    return reader.readMatch(new RegExp("^(?:" + this.pattern + ")", this.patternOpt));
                 };            
             }
             i++;
@@ -188,8 +171,8 @@ TokenStream.prototype = {
         //save for later
         this._token = token;
         
-        //just return the type
-        return token.type;
+        //if the token should be hidden, call get() again, otherwise return just the type
+        return (tokenInfo[token.type] && tokenInfo[token.type].hide) ? this.get() : token.type;
     },
     
     /**

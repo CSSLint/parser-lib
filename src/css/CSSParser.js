@@ -92,7 +92,7 @@ CSSParser.prototype = {
         }
         
         //grab the URI
-        uri = tokenStream.token().value;
+        uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");
         
         //check for media information
         if (tokenStream.peek() == CSSTokens.IDENT){

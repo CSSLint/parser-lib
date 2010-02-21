@@ -11,6 +11,7 @@ CSSTokens = function(){
         escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
         nmstart     = "(?:[_a-zA-Z\\*]|" + nonascii + "|" + escape + ")",  //includes leading * and _ for IE
         nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
+        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
         string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
         string2     = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\')",
         invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
@@ -20,18 +21,17 @@ CSSTokens = function(){
         ident       = "(?:\\-?" + nmstart + nmchar + "*)",    
         name        = nmchar + "+",
         num         = "(?:[0-9]+|[0-9]*\\.[0-9]+)",
-        string      = string1 + "|" + string2,
-        invalid     = invalid1 + "|" + invalid2,
+        string      = "(?:" + string1 + "|" + string2 + ")",
+        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
         url         = "(?:[!#$%&\\*\\-~]|" + nonascii + "|" + escape + ")*",
         s           = "[ \\t\\r\\n\\f]+",
         w           = "(?:" + s + ")?",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
 
         //return the token information
         symbols = [
             {
                 name: "S",
-                pattern: "[ \t\r\n\f]+",
+                pattern: s,
                 hide: true   //don't generate token
             },
             {
@@ -57,11 +57,7 @@ CSSTokens = function(){
                 pattern: invalid1 + "|" + invalid2,
             },  
         
-        
-            {
-                name: "IDENT",
-                pattern: ident
-            },
+
             {
                 name: "HASH",
                 pattern: "#" + name
@@ -134,17 +130,18 @@ CSSTokens = function(){
             },
             {
                 name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)"
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + url + w + "\\)"
+                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
             },
             {
                 name: "FUNCTION",
                 pattern: ident + "\\("
             },    
         
+        
+            {
+                name: "IDENT",
+                pattern: ident
+            },        
             //Not defined as tokens, but might as well be
             {
                 name: "SLASH",

@@ -20,11 +20,11 @@
 
 function parse(){
     var parser = new CSSParser({
-        startStylesheet: function(){
+        startDocument: function(){
             log("Starting style sheet");
         },
         
-        endStylesheet: function(){
+        endDocument: function(){
             log("Ending style sheet");
         },
         
@@ -32,8 +32,8 @@ function parse(){
             log("Charset is " + charset);
         },
         
-        "import": function(uri){
-            log("Importing " + uri);
+        importStyle: function(uri, mediaList){
+            log("Importing " + uri + " for media types [" + mediaList + "]");
         }
     
     });

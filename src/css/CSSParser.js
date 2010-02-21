@@ -26,7 +26,7 @@ CSSParser.prototype = {
             charset     = null,
             tt;
             
-        this._callHandler("startStylesheet");
+        this._callHandler("startDocument");
     
         //try to read character set
         if (tokenStream.match(CSSTokens.CHARSET_SYM)){
@@ -68,7 +68,7 @@ CSSParser.prototype = {
             throw new Error("Unexpected token '" + this._tokenStream.token().value + "'");
         }
     
-        this._callHandler("endStylesheet");
+        this._callHandler("endDocument");
     },
     
     _import: function(){
@@ -80,7 +80,8 @@ CSSParser.prototype = {
     
         var tokenStream = this._tokenStream,
             tt,
-            uri;
+            uri,
+            mediaList   = [];
         
         //read import symbol
         tokenStream.mustMatch(CSSTokens.IMPORT_SYM);
@@ -95,22 +96,71 @@ CSSParser.prototype = {
         
         //check for media information
         if (tokenStream.peek() == CSSTokens.IDENT){
-            //this._medialist();
+            mediaList = this._media_list();
         }
         
         //must end with a semicolon
         tokenStream.mustMatch(CSSTokens.SEMICOLON);
         
-        this._callHandler("import", [uri]);
+        this._callHandler("importStyle", [uri, mediaList]);
 
     },
     
     _media: function(){
-        var tokenStream     = this._tokenStream;
+        /*
+         * media
+         *   : MEDIA_SYM S* media_list LBRACE S* ruleset* '}' S*
+         *   ;
+         */
+        var tokenStream     = this._tokenStream,
+            mediaList       = [];
         
+        //look for @media
+        tokenStream.mustMatch(CSSTokens.MEDIA_SYM);
+
+        //read the medialist
+        mediaList = this._media_list();
+ 
+        tokenStream.mustMatch(CSSTokens.LBRACE);
         
+        //TODO: Lookahead for ruleset
+        
+        tokenStream.mustMatch(CSSTokens.RBRACE);
+
+    },    
+
+    _media_list: function(){
+        /*         
+         * media_list
+         *   : medium [ COMMA S* medium]*
+         *   ;
+         */    
+    
+        var tokenStream     = this._tokenStream,
+            mediaList       = [];
+   
+        //must be at least one
+        mediaList.push(this._medium());
+   
+        //check for more
+        while (tokenStream.match(CSSTokens.COMMA)){
+            mediaList.push(this._medium());
+        }
+
+        return mediaList;
+    
     },
     
+    _medium: function(){
+        /*
+         * medium
+         *   : IDENT S*
+         */        
+        var tokenStream = this._tokenStream;
+        tokenStream.mustMatch(CSSTokens.IDENT);
+        return tokenStream.token().value;
+    },
+
     _ruleset: function(){
     
     

@@ -17,22 +17,27 @@
 @import "whatup.css" screen;
 @import "wicked.css";
 
-@page :first {
-    li.inline {
-      background: url("something.png");
-      display: inline;
-      padding-left: 3px;
-      padding-right: 7px;
-      border-right: 1px dotted #066;
-    }
-    
-    li.last {
-      display: inline;
-      padding-left: 3px;
-      padding-right: 3px;
-      border-right: 0px;
-    } 
+li.inline {
+  background: url("something.png");
+  display: inline;
+  padding-left: 3px;
+  padding-right: 7px;
+  border-right: 1px dotted #066;
 }
+
+li.last {
+  display: inline;
+  padding-left: 3px !important;
+  padding-right: 3px;
+  border-right: 0px;
+} 
+
+@media print {
+    li.inline {
+      color: black;
+    }
+}
+
 </textarea>
 <input type="button" onclick="parse()" value="parse">
 <p>(You may want to keep the CSS kinda small, this could take a while.)</p>
@@ -65,7 +70,29 @@ function parse(){
         
         importStyle: function(uri, mediaList){
             log("Importing " + uri + " for media types [" + mediaList + "]");
-        }
+        },
+        
+        startSelector: function(selector){
+            log("Starting selector [" + selector + "]");
+        },
+        
+        endSelector: function(selector){
+            log("Ending selector [" + selector + "]");
+        },
+        
+        property: function(name, value, important){
+            log("Property '" + name + "' has a value of '" + value + "' and " + (important ? "is" : "isn't") + " important.");
+        },
+        
+        startMedia: function(mediaList){
+            log("Starting media [" + mediaList + "]");
+        },
+        
+        endMedia: function(mediaList){
+            log("Ending media [" + mediaList + "]");
+        },
+        
+        
     
     });
     try {

@@ -123,13 +123,27 @@ TokenStream.prototype = {
     /**
      * Determines if the next token matches the given token type.
      * If so, that token is consumed; if not, the token is placed
-     * back onto the token stream.
+     * back onto the token stream. You can pass in any number of
+     * token types and this will return true if any of the token
+     * types is found.
      * @param {int} tokenType The code for the token type to check.
      * @return {Boolean} True if the token type matches, false if not.
      * @method match
      */
-    match: function(tokenType){
-        return this.get() == tokenType || !!this.unget();
+    match: function(){
+        var tt  = this.get(),
+            i   = 0,
+            len = arguments.length;
+            
+        while(i < len){
+            if (tt == arguments[i++]){
+                return true;
+            }
+        }
+        
+        //no match found, put the token back
+        this.unget();
+        return false;
     },    
     
     /**
@@ -144,7 +158,7 @@ TokenStream.prototype = {
             len     = arguments.length,
             matched = false;
 
-        if (!this.match(tokenType)){
+        if (!this.match.apply(this, arguments)){
             throw new Error("Expected " + this._tokenData[tokenType].name + 
                 " at line " + this._reader.getRow() + ", character " + this._reader.getCol() + ".");
         }

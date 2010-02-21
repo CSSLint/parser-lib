@@ -58,6 +58,8 @@ CSSParser.prototype = {
                     break;                   
                 default:
                     tokenStream.unget();
+                    throw new Error("Unexpected token '" + this._tokenStream.token().value + "'");
+                    //TODO
                     this._ruleset();
             }
             

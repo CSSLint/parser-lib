@@ -74,6 +74,7 @@ TokenStream.createTokenData = function(tokens){
                 }
     });
         
+    tokenData.EOF = 0;
     
     while (i < len){
     

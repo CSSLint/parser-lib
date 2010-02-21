@@ -4,9 +4,9 @@
  * @constructor
  * @param {String|StringReader} input The text to tokenize or a reader from 
  *      which to read the input.
- * @param {Array} tokenInfo An array of token information.
+ * @param {Array} tokens An array of token information.
  */
-function TokenStream(input, tokenInfo){
+function TokenStream(input, tokens){
 
     /**
      * The string reader for easy access to the text.
@@ -27,10 +27,10 @@ function TokenStream(input, tokenInfo){
     /**
      * The array of token information.
      * @type Array
-     * @property _tokenInfo
+     * @property _tokenData
      * @private
      */
-    this._tokenInfo = tokenInfo;
+    this._tokenData = TokenStream.createTokenData(tokens);
     
     /**
      * Lookahead token buffer.
@@ -47,62 +47,71 @@ function TokenStream(input, tokenInfo){
      * @private
      */
     this._ltIndex = -1;
-    
-    //do a little magic on the token info
-    this._processTokenInfo();
 }
 
+/**
+ * Accepts an array of token information and outputs
+ * an array of token data containing key-value mappings
+ * and matching functions that the TokenStream needs.
+ * @param {Array} tokens An array of token descriptors.
+ * @return {Array} An array of processed token data.
+ * @method createTokenData
+ * @static
+ */
+TokenStream.createTokenData = function(tokens){
+
+    var tokenData   = [],
+        tokenDatum,
+        i           = 0,
+        len         = tokens.length;
+        
+    //push EOF token to the front
+    tokenData.push({ 
+        name:   "EOF", 
+        match:  function(reader){ 
+                    return reader.eof() ? " " : null;
+                }
+    });
+        
+    
+    while (i < len){
+    
+        //create a copy of the token info
+        tokenDatum = {
+            name:       tokens[i].name,
+            hide:       tokens[i].hide,
+            text:       tokens[i].text,
+            pattern:    tokens[i].pattern,
+            match:      tokens[i].match
+        };
+        
+        //store token type values by name for easy reference
+        tokenData[tokenDatum.name] = i+1;
+        
+        //create match functions for each tokenInfo object
+        if (typeof tokenDatum.text == "string"){
+            tokenDatum.match = function(reader){
+                return reader.readMatch(this.text);
+            };
+        } else if (typeof tokenDatum.pattern == "string"){
+            tokenDatum.match = function(reader){
+                return reader.readMatch(new RegExp("^(?:" + this.pattern + ")", this.patternOpt));
+            };            
+        }
+        
+        i++;
+
+        tokenData.push(tokenDatum);
+    }        
+
+    return tokenData;
+};
 
 
 TokenStream.prototype = {
 
     //restore constructor
     constructor: TokenStream,    
-    
-    /**
-     * Pre-process token information for the token stream. The first thing it
-     * does is push an EOF token to the front of token info. This means that
-     * EOF is always equivalent to token type 0. Next, it processes each token
-     * pattern, either text or regex, into a function called "match" that is
-     * attached to the tokenInfo object. This allows for faster lexing later
-     * on.
-     * @return {void}
-     * @method _processTokenInfo
-     * @private
-     */
-    _processTokenInfo: function(){
-        var tokenInfo   = this._tokenInfo,
-            i           = 0,
-            len         = tokenInfo.length + 1;
-            
-        //push EOF token to the front
-        tokenInfo.unshift({ 
-            name:   "EOF", 
-            match:  function(reader){ 
-                        return reader.eof() ? " " : null;
-                    }
-        });
-            
-        
-        while (i < len){
-        
-            //store token type values by name for easy reference
-            tokenInfo[tokenInfo[i].name] = i;
-            
-            //create match functions for each tokenInfo object
-            if (typeof tokenInfo[i].text == "string"){
-                tokenInfo[i].match = function(reader){
-                    return reader.readMatch(this.text);
-                };
-            } else if (typeof tokenInfo[i].pattern == "string"){
-                tokenInfo[i].match = function(reader){
-                    return reader.readMatch(new RegExp("^(?:" + this.pattern + ")", this.patternOpt));
-                };            
-            }
-            i++;
-        }    
-    
-    },
     
     //-------------------------------------------------------------------------
     // Matching methods
@@ -128,6 +137,17 @@ TokenStream.prototype = {
      * @method mustMatch
      */    
     mustMatch: function(tokenType){
+        var i       = 0,
+            len     = arguments.length,
+            matched = false;
+    
+        while (i < len && !matched){
+            
+        }
+        
+        for (var i=0, len=arguments.length; i < len; i++){
+        
+        }
         if (!this.match(tokenType)){
             throw new Error("Expected " + this._tokenNames[tokenType] + 
                 " at line " + this._reader.getRow() + ", character " + this._reader.getCol() + ".");
@@ -145,7 +165,7 @@ TokenStream.prototype = {
      */      
     get: function(){
     
-        var tokenInfo   = this._tokenInfo,
+        var tokenInfo   = this._tokenData,
             reader      = this._reader,
             startCol    = reader.getCol(),
             startRow    = reader.getRow(),
@@ -239,10 +259,10 @@ TokenStream.prototype = {
      * @method tokenName
      */
     tokenName: function(tokenType){
-        if (tokenType < 0 || tokenType > this._tokenInfo.length){
+        if (tokenType < 0 || tokenType > this._tokenData.length){
             return "UNKNOWN_TOKEN";
         } else {
-            return this._tokenInfo[tokenType].name;
+            return this._tokenData[tokenType].name;
         }
     },
     

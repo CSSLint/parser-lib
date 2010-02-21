@@ -4,9 +4,10 @@
  * @constructor
  * @param {String|StringReader} input The text to tokenize or a reader from 
  *      which to read the input.
- * @param {Array} tokens An array of token information.
+ * @param {Array} tokenData An array of token data information created by
+ *      TokenStream.createTokenData();
  */
-function TokenStream(input, tokens){
+function TokenStream(input, tokenData){
 
     /**
      * The string reader for easy access to the text.
@@ -30,7 +31,7 @@ function TokenStream(input, tokens){
      * @property _tokenData
      * @private
      */
-    this._tokenData = TokenStream.createTokenData(tokens);
+    this._tokenData = tokenData;
     
     /**
      * Lookahead token buffer.
@@ -82,6 +83,7 @@ TokenStream.createTokenData = function(tokens){
             hide:       tokens[i].hide,
             text:       tokens[i].text,
             pattern:    tokens[i].pattern,
+            patternOpt: tokens[i].patternOpt,
             match:      tokens[i].match
         };
         
@@ -126,7 +128,7 @@ TokenStream.prototype = {
      * @method match
      */
     match: function(tokenType){
-        return this.get() == tokenType || this.unget();
+        return this.get() == tokenType || !!this.unget();
     },    
     
     /**
@@ -140,16 +142,9 @@ TokenStream.prototype = {
         var i       = 0,
             len     = arguments.length,
             matched = false;
-    
-        while (i < len && !matched){
-            
-        }
-        
-        for (var i=0, len=arguments.length; i < len; i++){
-        
-        }
+
         if (!this.match(tokenType)){
-            throw new Error("Expected " + this._tokenNames[tokenType] + 
+            throw new Error("Expected " + this._tokenData[tokenType].name + 
                 " at line " + this._reader.getRow() + ", character " + this._reader.getCol() + ".");
         }
     },
@@ -176,7 +171,7 @@ TokenStream.prototype = {
             token       = { startCol: reader.getCol(), startRow: reader.getRow() };
             
         //check the lookahead buffer first
-        if (this._lt.length && this._ltIndex < this._lt.length - 1){            
+        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
             this._token = this._lt[this._ltIndex++];            
             return this._token.type;
         }
@@ -223,7 +218,9 @@ TokenStream.prototype = {
             if (this._lt.length > 5){
                 this._lt.shift();
             }
-            this._ltIndex = 4;
+
+            //update lookahead index
+            this._ltIndex = this._lt.length;
             
             //return just the type
             return token.type;
@@ -284,6 +281,7 @@ TokenStream.prototype = {
     unget: function(){
         if (this._ltIndex > -1){
             this._ltIndex--;
+            this._token = this._lt[this._ltIndex - 1];
         } else {
             throw new Error("Too much lookahead.");
         }

@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CSS Parser Demo</title>
+<script type="text/javascript" src="../util/StringReader.js"></script>
+<script type="text/javascript" src="../util/TokenStream.js"></script>
+<script type="text/javascript" src="CSSTokens.js"></script>
+<script type="text/javascript" src="CSSParser.js"></script>
+
+</head>
+<body>
+<h1>CSS Parser Demo</h1>
+<textarea rows="10" cols="40" id="input"></textarea>
+<input type="button" onclick="parse()" value="parse">
+<p>(You may want to keep the CSS kinda small, this could take a while.)</p>
+<div id="output">
+
+</div>
+<script type="text/javascript">
+
+function parse(){
+    var parser = new CSSParser({
+        startStylesheet: function(){
+            log("Starting style sheet");
+        },
+        
+        endStylesheet: function(){
+            log("Ending style sheet");
+        },
+        
+        charset: function(charset){
+            log("Charset is " + charset);
+        },
+        
+        "import": function(uri){
+            log("Importing " + uri);
+        }
+    
+    });
+    try {
+        parser.parse(document.getElementById("input").value)
+    } catch (ex){
+        log("Parse error: " + ex.message);
+    }
+}
+
+
+function log(value){
+var output = document.getElementById("output");
+        
+        output.innerHTML += value + "<br>";
+}
+
+</script>
+</body>
+</html>

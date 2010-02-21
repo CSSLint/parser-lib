@@ -2,9 +2,9 @@
 <html>
 <head>
 <title>CSS TokenStream Demo</title>
-<script type="text/javascript" src="../util/stringreader.js"></script>
-<script type="text/javascript" src="../util/tokenstream.js"></script>
-<script type="text/javascript" src="css-tokens.js"></script>
+<script type="text/javascript" src="../util/StringReader.js"></script>
+<script type="text/javascript" src="../util/TokenStream.js"></script>
+<script type="text/javascript" src="CSSTokens.js"></script>
 
 </head>
 <body>
@@ -18,7 +18,7 @@
 <script type="text/javascript">
 
 function tokenize(){
-    stream = new TokenStream(document.getElementById("input").value, CSSTokens);
+    stream = new TokenStream(document.getElementById("input").value, TokenStream.createTokenData(CSSTokens));
     document.getElementById("output").innerHTML = "";
     setTimeout(function(){
         var tt = stream.get();

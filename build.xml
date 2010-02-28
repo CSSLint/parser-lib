@@ -10,21 +10,34 @@
     <property name="core.build.file" value="parser-lib.js"/>
     <property name="css.build.file" value="parser-lib-css.js"/>
     
+    <loadfile property="license.text" srcfile="LICENSE" />
     
     <!-- build the core library -->
     <target name="build.core">
-        <concat destfile="${build.dir}/${core.build.file}">
-            <filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/>
+    
+        <!-- create temp file -->
+        <concat destfile="${build.dir}/${core.build.file}"  fixlastline="true">
+            <header trimleading="yes">/* 
+            ${license.text}
+            */
+            </header>
+            <filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> 
             <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
         </concat>
+        
     </target>
     
     <!-- build the CSS library -->
     <target name="build.css">
         <concat destfile="${build.dir}/${css.build.file}">
+            <header trimleading="yes">/* 
+            ${license.text}
+            */
+            </header>        
             <filelist dir="${src.dir}/css" files="CSSTokens.js, CSSParser.js"/>
             <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
         </concat>
+           
     </target>
     
     

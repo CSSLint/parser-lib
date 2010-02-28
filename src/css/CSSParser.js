@@ -393,7 +393,7 @@ CSSParser.prototype = function(){
                     
                     nextSelector = this._selector();
                     if (nextSelector !== null){
-                        selector.push(nextSelector);
+                        selector = selector.concat(nextSelector);
                     }
                  
                     //if both are null, we're done
@@ -405,6 +405,12 @@ CSSParser.prototype = function(){
                 return selector;
             },
             
+            
+            /**
+             * Parses a simple selector. A simple selector has the form
+             * elementName#elementId.className:pseudo.
+             * @method _simple_selector
+             */
             _simple_selector: function(){
                 /*
                  * simple_selector
@@ -414,7 +420,14 @@ CSSParser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    selector    = null,
+                
+                    //parts of a simple selector
+                    elementName = null,
+                    modifiers   = [],
+                    
+                    //complete selector text
+                    selectorText= null,
+
                     components  = [
                         //HASH
                         function(){
@@ -430,17 +443,19 @@ CSSParser.prototype = function(){
                     len         = components.length,
                     component   = null;
                     
-                selector = this._element_name();
-                if (selector == null){
+                selectorText = elementName = this._element_name();
+                if (selectorText == null){
                 
-                    while(i < len && selector == null){
-                        selector = components[i++].call(this);
+                    while(i < len && selectorText == null){
+                        selectorText = components[i++].call(this);
                     }
         
                     //if it's still null, then we don't have a selector
-                    if (selector === null){
+                    if (selectorText === null){
                         return null;
                     }
+                    
+                    modifiers.push(selectorText);
                 } 
                         
                 i = 0;
@@ -450,11 +465,14 @@ CSSParser.prototype = function(){
                     //if it's not null, then reset i to keep looping
                     if (component !== null){
                         i = 0;
-                        selector += component;
+                        modifiers.push(component);
+                        selectorText += component;
                     }
                 }        
                  
-                return selector;
+                return selectorText !== null ?
+                        new CSSSelectorUnit(elementName, modifiers, selectorText) :
+                        null;
             },
             
             _class: function(){

@@ -2,11 +2,8 @@
 <html>
 <head>
 <title>CSS Parser Demo</title>
-<script type="text/javascript" src="../util/StringReader.js"></script>
-<script type="text/javascript" src="../util/TokenStream.js"></script>
-<script type="text/javascript" src="../util/EventTarget.js"></script>
-<script type="text/javascript" src="CSSTokens.js"></script>
-<script type="text/javascript" src="CSSParser.js"></script>
+<script type="text/javascript" src="../../build/parser-lib.js"></script>
+<script type="text/javascript" src="../../build/parser-lib-css.js"></script>
 
 </head>
 <body>
@@ -75,7 +72,32 @@ function parse(){
     });
     
     parser.addListener("startrule", function(event){
-        log("Starting rule with selectors [" + event.selectors + "]");
+        log("Starting rule with " + event.selectors.length + " selector(s)");
+        
+        for (var i=0,len=event.selectors.length; i < len; i++){
+            var selector = event.selectors[i];
+            
+            log("  Selector #1");
+            
+            for (var j=0,count=selector.length; j < count; j++){
+                log("    Unit #" + (j+1));
+                
+                if (selector[j] instanceof CSSSelectorUnit){
+                    log("      Element name: " + selector[j].elementName);
+                    
+                    for (var k=0; k < selector[j].modifiers.length; k++){
+                        log("        Modifier: " + selector[j].modifiers[k]);
+                    }
+                } else{
+                    log("      Combiner: " + selector[j]);
+                }
+                
+                
+            }
+            
+            
+        }
+
     });
     
     parser.addListener("endrule", function(event){
@@ -105,7 +127,7 @@ function parse(){
 function log(value){
 var output = document.getElementById("output");
         
-        output.innerHTML += value + "<br>";
+        output.innerHTML += value.replace(/ /g, "&nbsp;") + "<br>";
 }
 
 </script>

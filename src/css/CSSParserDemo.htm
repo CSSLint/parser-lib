@@ -4,6 +4,7 @@
 <title>CSS Parser Demo</title>
 <script type="text/javascript" src="../util/StringReader.js"></script>
 <script type="text/javascript" src="../util/TokenStream.js"></script>
+<script type="text/javascript" src="../util/EventTarget.js"></script>
 <script type="text/javascript" src="CSSTokens.js"></script>
 <script type="text/javascript" src="CSSParser.js"></script>
 
@@ -47,54 +48,52 @@ li.last {
 <script type="text/javascript">
 
 function parse(){
-    var parser = new CSSParser({
-        startDocument: function(){
-            log("Starting style sheet");
-        },
-        
-        endDocument: function(){
-            log("Ending style sheet");
-        },
-        
-        charset: function(charset){
-            log("Charset is " + charset);
-        },
-        
-        startPage: function(name, pseudoPage){
-            log("Starting page '" + name + "', '" + pseudoPage + "'");
-        },
-        
-        endPage: function(name, pseudoPage){
-            log("Ending page '" + name + "', '" + pseudoPage + "'");
-        },
-        
-        importStyle: function(uri, mediaList){
-            log("Importing " + uri + " for media types [" + mediaList + "]");
-        },
-        
-        startSelector: function(selector){
-            log("Starting selector [" + selector + "]");
-        },
-        
-        endSelector: function(selector){
-            log("Ending selector [" + selector + "]");
-        },
-        
-        property: function(name, value, important){
-            log("Property '" + name + "' has a value of '" + value + "' and " + (important ? "is" : "isn't") + " important.");
-        },
-        
-        startMedia: function(mediaList){
-            log("Starting media [" + mediaList + "]");
-        },
-        
-        endMedia: function(mediaList){
-            log("Ending media [" + mediaList + "]");
-        },
-        
-        
-    
+    var parser = new CSSParser();
+    parser.addListener("startstylesheet", function(){
+        log("Starting style sheet");
     });
+    
+    parser.addListener("endstylesheet", function(){
+        log("Ending style sheet");
+    });
+    
+    parser.addListener("charset", function(event){
+        log("Charset is " + event.charset);
+    });
+    
+    parser.addListener("startpage", function(event){
+        log("Starting page '" + event.pseudo + "'");
+    });
+    
+    
+    parser.addListener("endpage", function(event){
+        log("Ending page '" + event.pseudo + "'");
+    });
+    
+    parser.addListener("import", function(event){
+        log("Importing " + event.uri + " for media types [" + event.media + "]");
+    });
+    
+    parser.addListener("startrule", function(event){
+        log("Starting rule with selectors [" + event.selectors + "]");
+    });
+    
+    parser.addListener("endrule", function(event){
+        log("Ending rule with selectors [" + event.selectors + "]");
+    });
+    
+    parser.addListener("property", function(event){
+        log("Property '" + event.property + "' has a value of '" + event.value + "' and " + (event.important ? "is" : "isn't") + " important.");
+    });
+    
+    parser.addListener("startmedia", function(event){
+        log("Starting media [" + event.media + "]");
+    });
+    
+    parser.addListener("endmedia", function(event){
+        log("Ending media [" + event.media + "]");
+    });    
+
     try {
         parser.parse(document.getElementById("input").value)
     } catch (ex){

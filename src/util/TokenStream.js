@@ -156,11 +156,13 @@ TokenStream.prototype = {
     mustMatch: function(tokenType){
         var i       = 0,
             len     = arguments.length,
-            matched = false;
+            matched = false,
+            token;
 
-        if (!this.match.apply(this, arguments)){
+        if (!this.match.apply(this, arguments)){    
+            token = this.LT(1);
             throw new Error("Expected " + this._tokenData[tokenType].name + 
-                " at line " + this._reader.getRow() + ", character " + this._reader.getCol() + ".");
+                " at line " + token.startRow + ", character " + token.startCol + ".");
         }
     },
     
@@ -230,7 +232,7 @@ TokenStream.prototype = {
             this._lt.push(token);
             
             //keep the buffer under 5 items
-            if (this._lt.length > 5){
+            if (this._lt.length > 15){
                 this._lt.shift();
             }
 
@@ -243,15 +245,78 @@ TokenStream.prototype = {
     },
     
     /**
+     * Looks ahead a certain number of tokens and returns the token type at
+     * that position. This will throw an error if you lookahead past the
+     * end of input, past the size of the lookahead buffer, or back past
+     * the first token in the lookahead buffer.
+     * @param {int} The index of the token type to retrieve. 0 for the
+     *      current token, 1 for the next, -1 for the previous, etc.
+     * @return {int} The token type of the token in the given position.
+     * @method LA
+     */
+    LA: function(index){
+        var total = index,
+            tt;
+        if (index > 0){
+            //TODO: Store 15 somewhere
+            if (index > 15){
+                throw new Error("Too much lookahead.");
+            }
+        
+            //get all those tokens
+            while(total){
+                tt = this.get();   
+                total--;                            
+            }
+            
+            //unget all those tokens
+            while(total < index){
+                this.unget();
+                total++;
+            }
+        } else if (index < 0){
+        
+            if(this._lt[this._ltIndex+index]){
+                tt = this._lt[this._ltIndex+index].type;
+            } else {
+                throw new Error("Too much lookbehind.");
+            }
+        
+        } else {
+            tt = this._token.type;
+        }
+        
+        return tt;
+    
+    },
+    
+    /**
+     * Looks ahead a certain number of tokens and returns the token at
+     * that position. This will throw an error if you lookahead past the
+     * end of input, past the size of the lookahead buffer, or back past
+     * the first token in the lookahead buffer.
+     * @param {int} The index of the token type to retrieve. 0 for the
+     *      current token, 1 for the next, -1 for the previous, etc.
+     * @return {Object} The token of the token in the given position.
+     * @method LA
+     */    
+    LT: function(index){
+    
+        //lookahead first to prime the token buffer
+        this.LA(index);
+        
+        //now find the token
+        return this._lt[this._ltIndex+index];    
+    },
+    
+    /**
      * Returns the token type for the next token in the stream without 
      * consuming it.
      * @return {int} The token type of the next token in the stream.
      * @method peek
      */
     peek: function(){
-        var tokenType = this.get();
-        this.unget();
-        return tokenType;
+        return this.LA(1);
     },
     
     /**

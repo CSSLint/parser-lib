@@ -2,7 +2,7 @@
  * CSS token information based on Flex lexical scanner grammar:
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
-CSSTokens = function(){
+var CSSTokens = function(){
 
     //token fragments
     var h           = "[0-9a-fA-F]",

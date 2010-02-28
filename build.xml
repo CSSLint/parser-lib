@@ -1,0 +1,34 @@
+<project name="Parser Lib" default="js.concat">
+
+    <!-- the directories containing the source files -->
+    <property name="src.dir" value="./src" />
+    
+    <!-- the directories and files to output to -->
+    <property name="build.dir" value="./build" />
+    
+    <!-- output filenames -->
+    <property name="core.build.file" value="parser-lib.js"/>
+    <property name="css.build.file" value="parser-lib-css.js"/>
+    
+    
+    <!-- build the core library -->
+    <target name="build.core">
+        <concat destfile="${build.dir}/${core.build.file}">
+            <filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/>
+            <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
+        </concat>
+    </target>
+    
+    <!-- build the CSS library -->
+    <target name="build.css">
+        <concat destfile="${build.dir}/${css.build.file}">
+            <filelist dir="${src.dir}/css" files="CSSTokens.js, CSSParser.js"/>
+            <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
+        </concat>
+    </target>
+    
+    
+    <!-- Build all files -->
+    <target name="all" depends="build.core,build.css"/>
+
+</project>

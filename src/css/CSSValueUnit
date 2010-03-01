@@ -1,23 +1,22 @@
 /**
- * Represents a single part of a selector string, meaning a single set of
- * element name and modifiers. This does not include combinators such as
- * spaces, +, >, etc.
+ * Represents a single part of a CSS property value, meaning that it represents
+ * just one part of the data between ":" and ";".
  * @param {String} elementName The element name in the selector or null
  *      if there is no element name.
  * @param {Array} modifiers Array of individual modifiers for the element.
  *      May be empty if there are none.
  * @param {String} text The text representation of the unit.
- * @class CSSSelectorUnit
+ * @class CSSValueUnit
  * @constructor
  */
-function CSSSelectorUnit(elementName, modifiers, text){
+function CSSValueUnit(token, details){
     
     /**
      * The text representation of the unit.
      * @type String
      * @property text
      */
-    this.text = text;
+    this.text = token.value;
 
     /**
      * The tag name of the element to which this part
@@ -34,13 +33,17 @@ function CSSSelectorUnit(elementName, modifiers, text){
      * @property modifiers
      */
     this.modifiers = modifiers;
+    
+    for (var prop in details){
+        this[prop] = details[prop];
+    }
 
 }
 
-CSSSelectorUnit.prototype = {
+CSSValueUnit.prototype = {
 
     //restore constructor
-    constructor: CSSSelectorUnit,
+    constructor: CSSValueUnit,
     
     /**
      * Returns the text representation of the unit.

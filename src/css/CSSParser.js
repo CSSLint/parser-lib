@@ -591,7 +591,13 @@ CSSParser.prototype = function(){
                     
                     tokenStream.mustMatch(CSSTokens.COLON);
                     
-                    expr = this._expr();        
+                    expr = this._expr();
+                    
+                    //if there's no parts for the value, it's an error
+                    if (expr.length === 0){
+                        this._unexpectedToken(tokenStream.LT(1));
+                    }
+                    
                     prio = this._prio();
                     
                     this.fire({

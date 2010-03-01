@@ -26,11 +26,11 @@ function CSSValueUnit(text){
     var temp;
     
     //it is a measurement?
-    if (/([+\-]?\d+)([a-z]+)/i.test(text)){    
+    if (/^([+\-]?\d+)([a-z]+|%)?/i.test(text)){  //measurement
         this.type = "measurement";
         this.value = +RegExp.$1;
-        this.units = RegExp.$2;
-    } else if (/#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
+        this.units = RegExp.$2 || null;
+    } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
         if (temp.length == 3){
@@ -42,17 +42,28 @@ function CSSValueUnit(text){
             this.green  = parseInt(temp.substring(2,4),16);
             this.blue   = parseInt(temp.substring(4,6),16);            
         }
-    } else if (/rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color
+    } else if (/^rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color with absolute numbers
         this.type   = "color";
         this.red    = +RegExp.$1;
         this.green  = +RegExp.$2;
         this.blue   = +RegExp.$3;
-    } else if (/url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URL
+    } else if (/^rgb\((\d+)%,(\d+)%,(\d+)%\)/i.test(text)){ //rgb() color with percentages
+        this.type   = "color";
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+    } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URL
         this.type   = "url";
         this.url    = RegExp.$1;
-    } else if (/["'][^"']*["']/.test(text)){    //string
+    } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
         this.string = eval(text);
+    } else if (CSSColors[text.toLowerCase()]){  //named color
+        this.type   = "color";
+        temp        = CSSColors[text.toLowerCase()].substring(1);
+        this.red    = parseInt(temp.substring(0,2),16);
+        this.green  = parseInt(temp.substring(2,4),16);
+        this.blue   = parseInt(temp.substring(4,6),16);         
     }
 
 

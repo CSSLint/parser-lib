@@ -34,7 +34,7 @@
             ${license.text}
             */
             </header>        
-            <filelist dir="${src.dir}/css" files="CSSTokens.js, CSSSelectorUnit.js, CSSParser.js"/>
+            <filelist dir="${src.dir}/css" files="CSSTokens.js, CSSSelectorUnit.js, CSSValueUnit.js, CSSParser.js"/>
             <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
         </concat>
            

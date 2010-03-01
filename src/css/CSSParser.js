@@ -644,10 +644,10 @@ CSSParser.prototype = function(){
                         operator = this._operator();
         
                         if (operator){
-                            value = operator + this._term();
-                        } else {
-                            value = this._term();
+                            values.push(operator);
                         }
+                        
+                        value = this._term();
                         
                         if (value === null){
                             break;
@@ -657,7 +657,7 @@ CSSParser.prototype = function(){
                     } while(true);
                 }
         
-                return values.length == 1 ? values[0] : values;
+                return /*values.length == 1 ? values[0] :*/ values;
             },
             
             _term: function(){
@@ -703,7 +703,9 @@ CSSParser.prototype = function(){
                 
                 }
                 
-                return (unary !== null ? unary + value : value);
+                return value !== null ?
+                        new CSSValueUnit(unary !== null ? unary + value : value) :
+                        null;
         
             },
             
@@ -716,11 +718,16 @@ CSSParser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    functionText = null;
+                    functionText = null,
+                    expr        = null;
                     
                 if (tokenStream.match(CSSTokens.FUNCTION)){
                     functionText = tokenStream.token().value;
-                }
+                    expr = this._expr();
+                    
+                    tokenStream.match(CSSTokens.RPAREN);    
+                    functionText += expr.join("") + ")"
+                }                
                 
                 return functionText;
             }, 

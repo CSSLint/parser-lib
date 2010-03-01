@@ -672,8 +672,8 @@ TokenStream.prototype = {
         //lookahead first to prime the token buffer
         this.LA(index);
         
-        //now find the token
-        return this._lt[this._ltIndex+index];    
+        //now find the token, subtract one because _ltIndex is already at the next index
+        return this._lt[this._ltIndex+index-1];    
     },
     
     /**

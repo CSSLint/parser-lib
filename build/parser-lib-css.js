@@ -307,6 +307,7 @@ CSSSelectorUnit.prototype = {
  */    
 function CSSParser(handler){
 
+    //inherit event functionality
     EventTarget.call(this);
 
     this._handler = handler || {};
@@ -377,7 +378,7 @@ CSSParser.prototype = function(){
                             
                             if(!this._ruleset()){
                                 tokenStream.get();  //re-get the last token
-                                this._parserError(tokenStream.token());
+                                this._unexpectedToken(tokenStream.token());
                             }
                     }
                     
@@ -385,7 +386,7 @@ CSSParser.prototype = function(){
                 }
                 
                 if (tt != CSSTokens.EOF){
-                    this._parserError(tokenStream.token());
+                    this._unexpectedToken(tokenStream.token());
                 }
             
                 this.fire("endstylesheet");
@@ -1053,7 +1054,7 @@ CSSParser.prototype = function(){
             
           
             
-            _parserError: function(token){
+            _unexpectedToken: function(token){
                 throw new Error("Unexpected token '" + token.value + "' at line " + token.startRow + ", char " + token.startCol + ".");
             },
             
@@ -1063,6 +1064,7 @@ CSSParser.prototype = function(){
                 this._tokenStream = new TokenStream(input, CSSTokens);
                 this._stylesheet();
             }
+            
         };
         
     for (prop in additions){

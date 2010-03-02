@@ -394,6 +394,12 @@ CSSParser.prototype = function(){
                     
                     nextSelector = this._selector();
                     if (nextSelector !== null){
+                        
+                        //only add blank space combinator if there's a next selector
+                        if (combinator === null){
+                            selector.push(" ");
+                        }
+                        
                         selector = selector.concat(nextSelector);
                     }
                  

@@ -7,7 +7,6 @@ function CSSParser(handler){
     //inherit event functionality
     EventTarget.call(this);
 
-    this._handler = handler || {};
     this._tokenStream = null;
 }
 
@@ -30,8 +29,7 @@ CSSParser.prototype = function(){
                  *     [ [ ruleset | media | page ] ]*
                  */ 
                
-                var handler     = this._handler,
-                    tokenStream = this._tokenStream,
+                var tokenStream = this._tokenStream,
                     charset     = null,
                     token,
                     tt;

@@ -463,17 +463,27 @@ function CSSValueUnit(text){
      * @type String
      * @property type
      */
-    this.type = "text";
+    this.type = "unknown";
 
     //figure out what type of data it is
     
     var temp;
     
     //it is a measurement?
-    if (/^([+\-]?\d+)([a-z]+|%)?/i.test(text)){  //measurement
-        this.type = "measurement";
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
+        this.type = "length";
         this.value = +RegExp.$1;
         this.units = RegExp.$2 || null;
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+        this.type = "percentage";
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?\d+)$/i.test(text)){  //integer
+        this.type = "integer";
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?[\d\.]+)$/i.test(text)){  //number
+        this.type = "number";
+        this.value = +RegExp.$1;
+    
     } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
@@ -496,12 +506,12 @@ function CSSValueUnit(text){
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
-    } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URL
-        this.type   = "url";
-        this.url    = RegExp.$1;
+    } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
+        this.type   = "uri";
+        this.uri    = RegExp.$1;
     } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
-        this.string = eval(text);
+        this.value  = eval(text);
     } else if (CSSColors[text.toLowerCase()]){  //named color
         this.type   = "color";
         temp        = CSSColors[text.toLowerCase()].substring(1);
@@ -547,7 +557,6 @@ function CSSParser(handler){
     //inherit event functionality
     EventTarget.call(this);
 
-    this._handler = handler || {};
     this._tokenStream = null;
 }
 
@@ -570,8 +579,7 @@ CSSParser.prototype = function(){
                  *     [ [ ruleset | media | page ] ]*
                  */ 
                
-                var handler     = this._handler,
-                    tokenStream = this._tokenStream,
+                var tokenStream = this._tokenStream,
                     charset     = null,
                     token,
                     tt;

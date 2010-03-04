@@ -215,32 +215,6 @@ StringReader.prototype = {
         
         return c;
     },
-    
-    /**
-     * Reverses the current position by one character, going back up through
-     * the string. Adjusts column and row position.
-     * @method unread
-     */    
-    unread: function(){
-        
-        //if we're not at the beginning of the input...
-        if (this._cursor > 0){
-        
-            //decrement cursor
-            this._cursor--;        
-        
-            //if the previous character was a newline, decrement row count
-            //and reset column count
-            if (this._input.charAt(this._cursor) == "\n"){
-                this._row--;
-                this._col=this._cursor-this._input.lastIndexOf("\n", this._cursor-1);
-            } else {
-                this._col--;
-            }
-
-        }
-        
-    },
        
     //-------------------------------------------------------------------------
     // Advanced reading
@@ -348,20 +322,6 @@ StringReader.prototype = {
         }
         
         return buffer;
-    },
-    
-    
-    /**
-     * Unreads a set number of characters. If the beginning of the input is
-     * reached, it stops at that point and does not throw an error.
-     * @param {int} count The number of characters to unread.
-     * @return {void}
-     * @method unreadCount
-     */                   
-    unreadCount: function(count){
-        while(count--){
-            this.unread();
-        }
     }
 
 };

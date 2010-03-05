@@ -45,7 +45,7 @@ var CSSTokens = function(){
         num         = "(?:[0-9]+|[0-9]*\\.[0-9]+)",
         string      = "(?:" + string1 + "|" + string2 + ")",
         invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*\\-~]|" + nonascii + "|" + escape + ")*",
+        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
         s           = "[ \\t\\r\\n\\f]+",
         w           = "(?:" + s + ")?",
 

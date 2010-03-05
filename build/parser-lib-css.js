@@ -964,6 +964,8 @@ CSSParser.prototype = function(){
                     
                     //if there's not whitespace, we're done
                     if (!tokenStream.match(CSSTokens.S)){
+                        //stop scanning whitespace
+                        tokenStream.whitespace = false;                    
                         return selector;
                     }           
 

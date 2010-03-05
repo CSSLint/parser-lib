@@ -48,6 +48,8 @@ function TokenStream(input, tokenData){
      * @private
      */
     this._ltIndex = -1;
+    
+    this.whitespace = false;
 }
 
 /**
@@ -82,6 +84,7 @@ TokenStream.createTokenData = function(tokens){
         tokenDatum = {
             name:       tokens[i].name,
             hide:       tokens[i].hide,
+            whitespace: tokens[i].whitespace,
             text:       tokens[i].text,
             pattern:    tokens[i].pattern,
             patternOpt: tokens[i].patternOpt,
@@ -189,8 +192,18 @@ TokenStream.prototype = {
             
         //check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
-            this._token = this._lt[this._ltIndex++];            
-            return this._token.type;
+            this._token = this._lt[this._ltIndex++];
+            
+            //obey whitespace and hiding
+            while((tokenInfo[this._token.type] && (tokenInfo[this._token.type].hide || 
+                    (!this.whitespace && tokenInfo[this._token.type].whitespace ))) &&
+                    this._ltIndex < this._lt.length ){
+                this._token = this._lt[this._ltIndex++];
+            }
+            
+            if (this._ltIndex <= this._lt.length){
+                return this._token.type;
+            }
         }
         
         //test each token pattern from top to bottom
@@ -221,23 +234,23 @@ TokenStream.prototype = {
             token.type = -1;
             token.value = reader.read();
         }
+                
+        //save for later
+        this._token = token;
+        this._lt.push(token);
         
+        //keep the buffer under 5 items
+        if (this._lt.length > 15){
+            this._lt.shift();
+        }
+
+        //update lookahead index
+        this._ltIndex = this._lt.length;
+            
         //if the token should be hidden, call get() again
-        if (tokenInfo[token.type] && tokenInfo[token.type].hide){
+        if (tokenInfo[token.type] && (tokenInfo[token.type].hide || (!this.whitespace && tokenInfo[token.type].whitespace ))){
             return this.get();
         } else {
-        
-            //save for later
-            this._token = token;
-            this._lt.push(token);
-            
-            //keep the buffer under 5 items
-            if (this._lt.length > 15){
-                this._lt.shift();
-            }
-
-            //update lookahead index
-            this._ltIndex = this._lt.length;
             
             //return just the type
             return token.type;

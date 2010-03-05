@@ -5,7 +5,10 @@
  * @class CSSValueUnit
  * @constructor
  */
-function CSSValueUnit(text){
+function CSSValueUnit(text, line, col){
+
+    this.col = col;
+    this.line = line;
     
     /**
      * The text representation of the unit.

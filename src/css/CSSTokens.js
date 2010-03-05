@@ -32,7 +32,7 @@ var CSSTokens = function(){
             {
                 name: "S",
                 pattern: s,
-                hide: true   //don't generate token
+                whitespace: true
             },
             {
                 name: "COMMENT",

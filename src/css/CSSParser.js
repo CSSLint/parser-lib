@@ -108,8 +108,8 @@ CSSParser.prototype = function(){
                 }
                 
                 //grab the URI
-                uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");
-                
+                uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
+
                 //check for media information
                 if (tokenStream.peek() == CSSTokens.IDENT){
                     mediaList = this._media_list();
@@ -172,7 +172,7 @@ CSSParser.prototype = function(){
                 mediaList.push(this._medium());
            
                 //check for more
-                while (tokenStream.match(CSSTokens.COMMA)){
+                while (tokenStream.match(CSSTokens.COMMA)){                
                     mediaList.push(this._medium());
                 }
         
@@ -185,7 +185,7 @@ CSSParser.prototype = function(){
                  *   : IDENT S*
                  */        
                 var tokenStream = this._tokenStream;
-                tokenStream.mustMatch(CSSTokens.IDENT);
+                tokenStream.mustMatch(CSSTokens.IDENT);                
                 return tokenStream.token().value;
             },
         
@@ -217,10 +217,11 @@ CSSParser.prototype = function(){
                 while(this._declaration()){
                     if (!tokenStream.match(CSSTokens.SEMICOLON)){
                         break;
-                    }
+                    }                    
                 }
                 
                 tokenStream.mustMatch(CSSTokens.RBRACE);
+                tokenStream.match(CSSTokens.S);
                 
                 this.fire({
                     type:   "startpage",
@@ -252,13 +253,14 @@ CSSParser.prototype = function(){
                  *  ;
                  */    
                  
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    value       = null;
                 
                 if (tokenStream.match(CSSTokens.SLASH, CSSTokens.COMMA)){
-                    return tokenStream.token().value;
-                } else {
-                    return null;
-                }
+                    value =  tokenStream.token().value;
+                } 
+                return value;
+                
             },
             
             _combinator: function(){
@@ -270,11 +272,14 @@ CSSParser.prototype = function(){
                  *  ;
                  */    
                  
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    value       = null;
                 
-                return tokenStream.match(CSSTokens.PLUS, CSSTokens.GREATER) ?
-                        tokenStream.token().value :
-                        null;
+                if(tokenStream.match(CSSTokens.PLUS, CSSTokens.GREATER)){                
+                    value = tokenStream.token().value;
+                }
+                
+                return value;
             },
             
             _unary_operator: function(){
@@ -302,11 +307,14 @@ CSSParser.prototype = function(){
                  *   ;        
                  */
                  
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    value       = null;
                 
-                return tokenStream.match(CSSTokens.IDENT) ?
-                        tokenStream.token().value :
-                        null;
+                if(tokenStream.match(CSSTokens.IDENT)){
+                    value = tokenStream.token().value;
+                }
+                
+                return value;
             },
         
         
@@ -372,7 +380,8 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     selector    = [],
                     nextSelector = null,
-                    combinator  = null;
+                    combinator  = null,
+                    ws          = null;
                 
                 //if there's no simple selector, then there's no selector
                 nextSelector = this._simple_selector();
@@ -382,30 +391,56 @@ CSSParser.prototype = function(){
                 
                 selector.push(nextSelector);
                 
-                //TODO: Need to figure out whitespace issues
+                //TODO: Cleanup this next section
+                
                 //look for a combinator
-                while(true){
-                    combinator = this._combinator();
-                    if (combinator !== null){
-                        selector.push(combinator);
-                    }
-                    
+                combinator = this._combinator();
+                if (combinator !== null){
+                    selector.push(combinator);
                     nextSelector = this._selector();
-                    if (nextSelector !== null){
+                    
+                    //there must be a next selector
+                    if (nextSelector === null){
+                        this._unexpectedToken(this.LT(1));
+                    } else {
+                        selector.concat(nextSelector);
+                    }
+                } else {
+                    //scan for whitespace
+                    tokenStream.whitespace = true;
+                    
+                    //if there's not whitespace, we're done
+                    if (!tokenStream.match(CSSTokens.S)){
+                        return selector;
+                    }           
+
+                    //add whitespace separator
+                    ws = tokenStream.token().value;
+
+                    //stop scanning whitespace
+                    tokenStream.whitespace = false;
+                    
+                    //combinator is not required
+                    combinator = this._combinator();
+                    
+                    //selector is required if there's a combinator
+                    nextSelector = this._selector();
+                    if (nextSelector === null){                        
+                        if (combinator !== null){
+                            this._unexpectedToken(tokenStream.LT(1));
+                        }
+                    } else {
                         
-                        //only add blank space combinator if there's a next selector
-                        if (combinator === null){
-                            selector.push(" ");
+                        if (combinator !== null){
+                            selector.push(combinator);
+                        } else {
+                            selector.push(ws);
                         }
                         
                         selector = selector.concat(nextSelector);
-                    }
-                 
-                    //if both are null, we're done
-                    if (nextSelector === null && combinator === null){
-                        break;
-                    }
-                }
+                    }                    
+                
+                }                
                 
                 return selector;
             },
@@ -446,7 +481,8 @@ CSSParser.prototype = function(){
                     ],
                     i           = 0,
                     len         = components.length,
-                    component   = null;
+                    component   = null,
+                    found       = false;
                     
                 selectorText = elementName = this._element_name();
                 if (selectorText == null){
@@ -465,6 +501,17 @@ CSSParser.prototype = function(){
                         
                 i = 0;
                 while(i < len){
+                
+                    //whitespace means we're done
+                    tokenStream.whitespace = true;
+                    found = tokenStream.match(CSSTokens.S);
+                    tokenStream.whitespace = false;
+                    
+                    if (found){
+                        tokenStream.unget();
+                        break;
+                    }
+                
                     component = components[i++].call(this);
                     
                     //if it's not null, then reset i to keep looping
@@ -473,7 +520,7 @@ CSSParser.prototype = function(){
                         modifiers.push(component);
                         selectorText += component;
                     }
-                }        
+                }
                  
                 return selectorText !== null ?
                         new CSSSelectorUnit(elementName, modifiers, selectorText) :
@@ -525,18 +572,18 @@ CSSParser.prototype = function(){
                 
                 if (tokenStream.match(CSSTokens.LBRACKET)){
                     value = tokenStream.token().value;
-                    
+
                     tokenStream.mustMatch(CSSTokens.IDENT);
                     value += tokenStream.token().value;
                     
                     //may or may not be more to this expression
-                    if(tokenStream.match(CSSTokens.EQUALS, CSSTokens.INCLUDES, CSSTokens.DASHMATCH)){
+                    if(tokenStream.match(CSSTokens.EQUALS, CSSTokens.INCLUDES, CSSTokens.DASHMATCH)){               
                         
                         value += tokenStream.token().value;
                         
                         tokenStream.mustMatch(CSSTokens.IDENT, CSSTokens.STRING);
                         
-                        value += tokenStream.token().value;
+                        value += tokenStream.token().value;                    
                     }
                     
                     tokenStream.mustMatch(CSSTokens.RBRACKET);
@@ -624,7 +671,7 @@ CSSParser.prototype = function(){
                  *   ;    
                  */
                  
-                return this._tokenStream.match(CSSTokens.IMPORTANT_SYM);
+                return this._tokenStream.match(CSSTokens.IMPORTANT_SYM);  
             },
             
             _expr: function(){
@@ -677,10 +724,16 @@ CSSParser.prototype = function(){
         
                 var tokenStream = this._tokenStream,
                     unary       = null,
-                    value       = null;
+                    value       = null,
+                    line,
+                    col;
                     
                 //returns the operator or null
                 unary = this._unary_operator();
+                if (unary !== null){
+                    line = tokenStream.token().startRow;
+                    col = tokenStream.token().startCol;
+                }
                 
                 //see if there's a simple match
                 if (tokenStream.match(CSSTokens.NUMBER, CSSTokens.PERCENTAGE, CSSTokens.LENGTH,
@@ -688,12 +741,21 @@ CSSParser.prototype = function(){
                         CSSTokens.FREQ, CSSTokens.STRING, CSSTokens.IDENT, CSSTokens.URI)){
                  
                     value = tokenStream.token().value;
-                        
+                    if (unary === null){
+                        line = tokenStream.token().startRow;
+                        col = tokenStream.token().startCol;
+                    }
                 } else {
                 
                     //see if it's a color
                     value = this._hexcolor();
                     if (value === null){
+                    
+                        //if there's no unary, get the start of the next token for line/col info
+                        if (unary === null){
+                            line = tokenStream.LT(1).startRow;
+                            col = tokenStream.LT(1).startCol;
+                        }
                     
                         //has to be a function
                         value = this._function();
@@ -703,12 +765,17 @@ CSSParser.prototype = function(){
                             //throw new Error("Expected identifier at line " + tokenStream.token().startLine + ", character " +  tokenStream.token().startCol + ".");
                         }*/
                     
+                    } else {
+                        if (unary === null){
+                            line = tokenStream.token().startRow;
+                            col = tokenStream.token().startCol;
+                        }                    
                     }
                 
-                }
+                }                
                 
                 return value !== null ?
-                        new CSSValueUnit(unary !== null ? unary + value : value) :
+                        new CSSValueUnit(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -757,7 +824,6 @@ CSSParser.prototype = function(){
                     
                     token = tokenStream.token();
                     color = token.value;
-                    
                     if (!/#[a-f0-9]{3,6}/i.test(color)){
                         throw new Error("Expected a hex color but found '" + color + "' at line " + token.startRow + ", character " + token.startCol + ".");
                     }

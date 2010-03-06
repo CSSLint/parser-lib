@@ -169,9 +169,9 @@ StringReader.prototype = {
     /**
      * Returns the row of the character to be read next.
      * @return {int} The row of the character to be read next.
-     * @method getRow
+     * @method getLine
      */    
-    getRow: function(){
+    getLine: function(){
         return this._row ;
     },
     
@@ -375,8 +375,6 @@ function TokenStream(input, tokenData){
      * @private
      */
     this._ltIndex = -1;
-    
-    this.whitespace = false;
 }
 
 /**
@@ -411,7 +409,7 @@ TokenStream.createTokenData = function(tokens){
         tokenDatum = {
             name:       tokens[i].name,
             hide:       tokens[i].hide,
-            whitespace: tokens[i].whitespace,
+            channel:    tokens[i].channel,
             text:       tokens[i].text,
             pattern:    tokens[i].pattern,
             patternOpt: tokens[i].patternOpt,
@@ -456,17 +454,27 @@ TokenStream.prototype = {
      * back onto the token stream. You can pass in any number of
      * token types and this will return true if any of the token
      * types is found.
-     * @param {int} tokenType The code for the token type to check.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token might be. If an array is passed,
+     *      it's assumed that the token can be any of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
      * @return {Boolean} True if the token type matches, false if not.
      * @method match
      */
-    match: function(){
-        var tt  = this.get(),
+    match: function(tokenTypes, channel){
+    
+        //always convert to an array, makes things easier
+        if (!(tokenTypes instanceof Array)){
+            tokenTypes = [tokenTypes];
+        }
+                
+        var tt  = this.get(channel),
             i   = 0,
-            len = arguments.length;
+            len = tokenTypes.length;
             
         while(i < len){
-            if (tt == arguments[i++]){
+            if (tt == tokenTypes[i++]){
                 return true;
             }
         }
@@ -479,20 +487,25 @@ TokenStream.prototype = {
     /**
      * Determines if the next token matches the given token type.
      * If so, that token is consumed; if not, an error is thrown.
-     * @param {int} tokenType The code for the token type to check.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token should be. If an array is passed,
+     *      it's assumed that the token must be one of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
      * @return {void}
      * @method mustMatch
      */    
-    mustMatch: function(tokenType){
-        var i       = 0,
-            len     = arguments.length,
-            matched = false,
-            token;
+    mustMatch: function(tokenTypes, channel){
+
+        //always convert to an array, makes things easier
+        if (!(tokenTypes instanceof Array)){
+            tokenTypes = [tokenTypes];
+        }
 
         if (!this.match.apply(this, arguments)){    
             token = this.LT(1);
-            throw new Error("Expected " + this._tokenData[tokenType].name + 
-                " at line " + token.startRow + ", character " + token.startCol + ".");
+            throw new Error("Expected " + this._tokenData[tokenTypes[0]].name + 
+                " at line " + token.startLine + ", character " + token.startCol + ".");
         }
     },
     
@@ -505,17 +518,18 @@ TokenStream.prototype = {
      * @return {int} The token type of the token that was just consumed.
      * @method get
      */      
-    get: function(){
+    get: function(channel){
     
         var tokenInfo   = this._tokenData,
             reader      = this._reader,
             startCol    = reader.getCol(),
-            startRow    = reader.getRow(),
+            startLine    = reader.getLine(),
             value,
             i           =0,
             len         = tokenInfo.length,
             found       = false,
-            token       = { startCol: reader.getCol(), startRow: reader.getRow() };
+            token       = { startCol: startCol, startLine: startLine },
+            info;
             
         //check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
@@ -552,7 +566,7 @@ TokenStream.prototype = {
         }
         
         token.endCol = reader.getCol();
-        token.endRow = reader.getRow();
+        token.endLine = reader.getLine();
         
         if (found){
             token.type = i;
@@ -561,22 +575,33 @@ TokenStream.prototype = {
             token.type = -1;
             token.value = reader.read();
         }
-                
-        //save for later
-        this._token = token;
-        this._lt.push(token);
         
-        //keep the buffer under 5 items
-        if (this._lt.length > 15){
-            this._lt.shift();
-        }
-
-        //update lookahead index
-        this._ltIndex = this._lt.length;
+        //if it should be hidden, don't save a token
+        if (!tokenInfo[token.type].hide){
+         
+            //save for later
+            this._token = token;
+            this._lt.push(token);
             
-        //if the token should be hidden, call get() again
-        if (tokenInfo[token.type] && (tokenInfo[token.type].hide || (!this.whitespace && tokenInfo[token.type].whitespace ))){
-            return this.get();
+            //keep the buffer under 5 items
+            if (this._lt.length > 15){
+                this._lt.shift();
+            }
+    
+            //update lookahead index
+            this._ltIndex = this._lt.length;
+        }
+            
+        /*
+         * Skip to the next token if:
+         * 1. The token type is marked as hidden.
+         * 2. The token type has a channel specified and it isn't the current channel.
+         */
+        info = tokenInfo[token.type];
+        if (info && 
+                (info.hide || 
+                (info.channel !== undefined && channel !== info.channel))){
+            return this.get(channel);
         } else {
             
             //return just the type

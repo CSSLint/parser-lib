@@ -32,7 +32,7 @@ var CSSTokens = function(){
             {
                 name: "S",
                 pattern: s,
-                whitespace: true
+                channel: "ws"   //put onto another channel so I can get it later              
             },
             {
                 name: "COMMENT",

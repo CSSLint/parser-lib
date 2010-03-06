@@ -62,9 +62,9 @@ StringReader.prototype = {
     /**
      * Returns the row of the character to be read next.
      * @return {int} The row of the character to be read next.
-     * @method getRow
+     * @method getLine
      */    
-    getRow: function(){
+    getLine: function(){
         return this._row ;
     },
     

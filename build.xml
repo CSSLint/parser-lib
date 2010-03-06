@@ -21,8 +21,8 @@
             ${license.text}
             */
             </header>
-            <filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> 
-            <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
+            <!--<filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> -->
+            <fileset dir="${src.dir}/util" includes="*.js" />
         </concat>
         
     </target>

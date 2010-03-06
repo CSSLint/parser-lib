@@ -523,7 +523,7 @@ TokenStream.prototype = {
         var tokenInfo   = this._tokenData,
             reader      = this._reader,
             startCol    = reader.getCol(),
-            startLine    = reader.getLine(),
+            startLine   = reader.getLine(),
             value,
             i           =0,
             len         = tokenInfo.length,
@@ -534,12 +534,13 @@ TokenStream.prototype = {
         //check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
             this._token = this._lt[this._ltIndex++];
+            info = tokenInfo[this._token.type];
             
-            //obey whitespace and hiding
-            while((tokenInfo[this._token.type] && (tokenInfo[this._token.type].hide || 
-                    (!this.whitespace && tokenInfo[this._token.type].whitespace ))) &&
-                    this._ltIndex < this._lt.length ){
+            //obey channels logic
+            while((info.channel !== undefined && channel !== info.channel) &&
+                    this._ltIndex < this._lt.length){
                 this._token = this._lt[this._ltIndex++];
+                info = tokenInfo[this._token.type];
             }
             
             if (this._ltIndex <= this._lt.length){

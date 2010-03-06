@@ -31,7 +31,7 @@ var CSSTokens = function(){
         nonascii    = "[\\u0080-\\uFFFF]",
         unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
         escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z\\*]|" + nonascii + "|" + escape + ")",  //includes leading * and _ for IE
+        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
         nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
         nl          = "(?:\\n|\\r\\n|\\r|\\f)",
         string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
@@ -40,7 +40,7 @@ var CSSTokens = function(){
         invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
         
         comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",    
+        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
         name        = nmchar + "+",
         num         = "(?:[0-9]+|[0-9]*\\.[0-9]+)",
         string      = "(?:" + string1 + "|" + string2 + ")",
@@ -154,12 +154,19 @@ var CSSTokens = function(){
                 name: "URI",
                 pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
             },
+
+            //exception for IE filters - yuck
+            {
+                name: "IE_FILTER",
+                pattern: "[a-z:\\.]+\\([^\\)]*\\)",
+                patternOpt: "i"
+            },    
+
             {
                 name: "FUNCTION",
                 pattern: ident + "\\("
             },    
-        
-        
+                
             {
                 name: "IDENT",
                 pattern: ident
@@ -555,10 +562,26 @@ CSSValueUnit.prototype = {
  * CSS token information based on Flex lexical scanner grammar:
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
-function CSSParser(handler){
+ 
+ 
+/**
+ * A CSS 2.1 parsers.
+ * @class CSSParser
+ * @constructor
+ * @param {Object} options (Optional) Various options for the parser:
+ *      starHack (true|false) to allow IE6 star hack as valid,
+ *      underscoreHack (true|false) to interpret leading underscores
+ *      as IE6-7 targeting for known properties, ieFilters (true|false)
+ *      to indicate that IE < 8 filters should be accepted and not throw
+ *      syntax errors.
+ */
+function CSSParser(options){
 
     //inherit event functionality
     EventTarget.call(this);
+
+
+    this.options = options || {};
 
     this._tokenStream = null;
 }
@@ -862,6 +885,10 @@ CSSParser.prototype = function(){
                  
                 var tokenStream = this._tokenStream,
                     value       = null;
+                    
+                if (tokenStream.peek() == CSSTokens.STAR && this.options.starHack){
+                    tokenStream.get();  //TODO: ignore? do something?
+                }
                 
                 if(tokenStream.match(CSSTokens.IDENT)){
                     value = tokenStream.token().value;
@@ -1279,10 +1306,19 @@ CSSParser.prototype = function(){
                 if (unary !== null){
                     line = tokenStream.token().startLine;
                     col = tokenStream.token().startCol;
-                }
+                }                
+               
+                //exception for IE filters
+                if (tokenStream.peek() == CSSTokens.IE_FILTER && this.options.ieFilters){
+                    tokenStream.get();
+                    value = tokenStream.token().value;
+                    if (unary === null){
+                        line = tokenStream.token().startLine;
+                        col = tokenStream.token().startCol;
+                    }
                 
                 //see if there's a simple match
-                if (tokenStream.match([CSSTokens.NUMBER, CSSTokens.PERCENTAGE, CSSTokens.LENGTH,
+                } else if (tokenStream.match([CSSTokens.NUMBER, CSSTokens.PERCENTAGE, CSSTokens.LENGTH,
                         CSSTokens.EMS, CSSTokens.EXS, CSSTokens.ANGLE, CSSTokens.TIME,
                         CSSTokens.FREQ, CSSTokens.STRING, CSSTokens.IDENT, CSSTokens.URI])){
                  
@@ -1305,7 +1341,7 @@ CSSParser.prototype = function(){
                     
                         //has to be a function
                         value = this._function();
-                        
+
                         /*if (value === null){
                             return null;
                             //throw new Error("Expected identifier at line " + tokenStream.token().startLine + ", character " +  tokenStream.token().startCol + ".");

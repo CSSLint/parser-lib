@@ -37,6 +37,7 @@ li.last {
 }
 
 </textarea>
+<p><input type="checkbox" id="starHack" /><label for="starHack">Accept star hack</label>&nbsp;&nbsp;<input type="checkbox" id="ieFilters" /><label for="ieFilters">Accept IE filters</label></p>
 <input type="button" onclick="parse()" value="parse">
 <p>(You may want to keep the CSS kinda small, this could take a while.)</p>
 <div id="output">
@@ -45,7 +46,9 @@ li.last {
 <script type="text/javascript">
 
 function parse(){
-    var parser = new CSSParser();
+    document.getElementById("output").innerHTML = "";
+    var parser = new CSSParser({ starHack: document.getElementById("starHack").checked,
+                                 ieFilters: document.getElementById("ieFilters").checked});
     parser.addListener("startstylesheet", function(){
         log("Starting style sheet");
     });
@@ -125,8 +128,7 @@ function parse(){
 
 
 function log(value){
-var output = document.getElementById("output");
-        
+        var output = document.getElementById("output");        
         output.innerHTML += value.replace(/ /g, "&nbsp;") + "<br>";
 }
 

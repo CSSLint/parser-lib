@@ -578,7 +578,7 @@ TokenStream.prototype = {
         }
         
         //if it should be hidden, don't save a token
-        if (!tokenInfo[token.type].hide){
+        if (token.type > -1 && !tokenInfo[token.type].hide){
          
             //save for later
             this._token = token;

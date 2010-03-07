@@ -158,7 +158,7 @@ var CSSTokens = function(){
             //exception for IE filters - yuck
             {
                 name: "IE_FILTER",
-                pattern: "[a-z:\\.]+\\([^\\)]*\\)",
+                pattern: "progid:[a-z\\.]+\\([^\\)]*\\)",
                 patternOpt: "i"
             },    
 

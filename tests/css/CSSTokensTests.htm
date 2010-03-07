@@ -44,12 +44,15 @@ YAHOO.test.CSSTokens = (function(){
         var tt;
     
         for (var i=0, len=outputs.length; i < len; i++){
-            tt = tokenStream.get(CSSTokens[outputs[i]].channel);
-            assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens[outputs[i]].name + " but was " + CSSTokens[tt].name + " (" + tokenStream.token().value + ").");           
+            tt = tokenStream.get((outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined));
+            assert.areEqual(outputs[i], tt, "Token type should be " + tokenStream.tokenName(outputs[i]) + " but was " + tokenStream.tokenName(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");           
         }
 
-        tt = tokenStream.get();
-        assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens[tt].name + " (" + tokenStream.token().value + ").");
+        //if there was an invalid token, stop here
+        if (tt > -1){
+            tt = tokenStream.get();
+            assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + tokenStream.tokenName(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+        }
     };
     
     //-------------------------------------------------------------------------
@@ -59,16 +62,6 @@ YAHOO.test.CSSTokens = (function(){
     var suite = new YAHOO.tool.TestSuite("CSS Tokens");
     
 /*
-            {
-                name: "S",
-                pattern: s,
-                channel: "ws"   //put onto another channel so I can get it later              
-            },
-            {
-                name: "COMMENT",
-                pattern: comment,
-                hide: true   //don't generate token
-            },
             //CDO and CDC intentionally omitted
             {
                 name: "INCLUDES",
@@ -77,16 +70,7 @@ YAHOO.test.CSSTokens = (function(){
             {
                 name: "DASHMATCH",
                 text: "|="
-            },
-            {
-                name: "STRING",
-                pattern: string1 + "|" + string2,
-            },
-            {
-                name: "INVALID",
-                pattern: invalid1 + "|" + invalid2,
-            },  
-        
+            },       
 
             {
                 name: "HASH",
@@ -303,6 +287,37 @@ YAHOO.test.CSSTokens = (function(){
             "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
             "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
             "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI]
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for @ rules",
+        
+        examples: {
+            "@charset"      : [-1],
+            "@charset "     : [CSSTokens.CHARSET_SYM],
+            "@CHARSET"      : [-1],
+            "@CHARSET "     : [-1]
+            
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Functions",
+        
+        examples: {
+        
+            //regular CSS functions
+            "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "counter(par-num, upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
+
+            //old-style IE filters - interpreted as bunch of tokens
+            "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+
+            //IE filters
+            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"  : [CSSTokens.IE_FILTER],
         }        
     }));
 

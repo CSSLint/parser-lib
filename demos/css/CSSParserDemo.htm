@@ -47,7 +47,7 @@ li.last {
 
 function parse(){
     document.getElementById("output").innerHTML = "";
-    var parser = new CSSParser({ starHack: document.getElementById("starHack").checked,
+    var parser = new parserlib.css.Parser({ starHack: document.getElementById("starHack").checked,
                                  ieFilters: document.getElementById("ieFilters").checked});
     parser.addListener("startstylesheet", function(){
         log("Starting style sheet");
@@ -85,7 +85,7 @@ function parse(){
             for (var j=0,count=selector.length; j < count; j++){
                 log("    Unit #" + (j+1));
                 
-                if (selector[j] instanceof CSSSelectorUnit){
+                if (selector[j] instanceof parserlib.css.SelectorUnit){
                     log("      Element name: " + selector[j].elementName);
                     
                     for (var k=0; k < selector[j].modifiers.length; k++){

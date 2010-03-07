@@ -6,7 +6,8 @@
  
 /**
  * A CSS 2.1 parsers.
- * @class CSSParser
+ * @namespace parserlib.css
+ * @class Parser
  * @constructor
  * @param {Object} options (Optional) Various options for the parser:
  *      starHack (true|false) to allow IE6 star hack as valid,
@@ -15,7 +16,7 @@
  *      to indicate that IE < 8 filters should be accepted and not throw
  *      syntax errors.
  */
-function CSSParser(options){
+function Parser(options){
 
     //inherit event functionality
     EventTarget.call(this);
@@ -26,14 +27,14 @@ function CSSParser(options){
     this._tokenStream = null;
 }
 
-CSSParser.prototype = function(){
+Parser.prototype = function(){
 
     var proto = new EventTarget(),  //new prototype
         prop,
         additions =  {
         
             //restore constructor
-            constructor: CSSParser,
+            constructor: Parser,
         
         
             _stylesheet: function(){
@@ -53,11 +54,11 @@ CSSParser.prototype = function(){
                 this.fire("startstylesheet");
             
                 //try to read character set
-                if (tokenStream.match(CSSTokens.CHARSET_SYM)){
-                    tokenStream.mustMatch(CSSTokens.STRING);
+                if (tokenStream.match(Tokens.CHARSET_SYM)){
+                    tokenStream.mustMatch(Tokens.STRING);
                     token = tokenStream.token();
                     charset = token.value;
-                    tokenStream.mustMatch(CSSTokens.SEMICOLON);
+                    tokenStream.mustMatch(Tokens.SEMICOLON);
                     this.fire({ 
                         type:       "charset",
                         charset:    charset
@@ -65,7 +66,7 @@ CSSParser.prototype = function(){
                 }
                 
                 //try to read imports - may be more than one
-                while (tokenStream.peek() == CSSTokens.IMPORT_SYM){
+                while (tokenStream.peek() == Tokens.IMPORT_SYM){
                     this._import();
                 }
                 
@@ -73,14 +74,14 @@ CSSParser.prototype = function(){
                 tt = tokenStream.get();
                 
                 //try to read the rest
-                while(tt > CSSTokens.EOF){
+                while(tt > Tokens.EOF){
                 
                     switch(tt){
-                        case CSSTokens.MEDIA_SYM:
+                        case Tokens.MEDIA_SYM:
                             tokenStream.unget();
                             this._media();
                             break;
-                        case CSSTokens.PAGE_SYM:
+                        case Tokens.PAGE_SYM:
                             tokenStream.unget();
                             this._page(); 
                             break;                   
@@ -96,7 +97,7 @@ CSSParser.prototype = function(){
                     tt = tokenStream.get();
                 }
                 
-                if (tt != CSSTokens.EOF){
+                if (tt != Tokens.EOF){
                     this._unexpectedToken(tokenStream.token());
                 }
             
@@ -116,23 +117,23 @@ CSSParser.prototype = function(){
                     mediaList   = [];
                 
                 //read import symbol
-                tokenStream.mustMatch(CSSTokens.IMPORT_SYM);
+                tokenStream.mustMatch(Tokens.IMPORT_SYM);
                 
                 //next must be either a string or URI
-                if (!tokenStream.match(CSSTokens.STRING)){
-                    tokenStream.mustMatch(CSSTokens.URI);
+                if (!tokenStream.match(Tokens.STRING)){
+                    tokenStream.mustMatch(Tokens.URI);
                 }
                 
                 //grab the URI
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
 
                 //check for media information
-                if (tokenStream.peek() == CSSTokens.IDENT){
+                if (tokenStream.peek() == Tokens.IDENT){
                     mediaList = this._media_list();
                 }
                 
                 //must end with a semicolon
-                tokenStream.mustMatch(CSSTokens.SEMICOLON);
+                tokenStream.mustMatch(Tokens.SEMICOLON);
                 
                 this.fire({
                     type:   "import",
@@ -152,12 +153,12 @@ CSSParser.prototype = function(){
                     mediaList       = [];
                 
                 //look for @media
-                tokenStream.mustMatch(CSSTokens.MEDIA_SYM);
+                tokenStream.mustMatch(Tokens.MEDIA_SYM);
         
                 //read the medialist
                 mediaList = this._media_list();
          
-                tokenStream.mustMatch(CSSTokens.LBRACE);
+                tokenStream.mustMatch(Tokens.LBRACE);
                 
                 this.fire({
                     type:   "startmedia",
@@ -166,7 +167,7 @@ CSSParser.prototype = function(){
                 
                 while(this._ruleset()){}
                 
-                tokenStream.mustMatch(CSSTokens.RBRACE);
+                tokenStream.mustMatch(Tokens.RBRACE);
         
                 this.fire({
                     type:   "endmedia",
@@ -188,7 +189,7 @@ CSSParser.prototype = function(){
                 mediaList.push(this._medium());
            
                 //check for more
-                while (tokenStream.match(CSSTokens.COMMA)){                
+                while (tokenStream.match(Tokens.COMMA)){                
                     mediaList.push(this._medium());
                 }
         
@@ -201,7 +202,7 @@ CSSParser.prototype = function(){
                  *   : IDENT S*
                  */        
                 var tokenStream = this._tokenStream;
-                tokenStream.mustMatch(CSSTokens.IDENT);                
+                tokenStream.mustMatch(Tokens.IDENT);                
                 return tokenStream.token().value;
             },
         
@@ -216,14 +217,14 @@ CSSParser.prototype = function(){
                     pseudoPage  = null;
                 
                 //look for @page
-                tokenStream.mustMatch(CSSTokens.PAGE_SYM);
+                tokenStream.mustMatch(Tokens.PAGE_SYM);
                 
                 //see if there's a colon upcoming
-                if (tokenStream.peek() == CSSTokens.COLON){
+                if (tokenStream.peek() == Tokens.COLON){
                     pseudoPage = this._pseudo_page();
                 }
             
-                tokenStream.mustMatch(CSSTokens.LBRACE);
+                tokenStream.mustMatch(Tokens.LBRACE);
             
                 this.fire({
                     type:   "startpage",
@@ -231,13 +232,13 @@ CSSParser.prototype = function(){
                 });            
         
                 while(this._declaration()){
-                    if (!tokenStream.match(CSSTokens.SEMICOLON)){
+                    if (!tokenStream.match(Tokens.SEMICOLON)){
                         break;
                     }                    
                 }
                 
-                tokenStream.mustMatch(CSSTokens.RBRACE);
-                tokenStream.match(CSSTokens.S);
+                tokenStream.mustMatch(Tokens.RBRACE);
+                tokenStream.match(Tokens.S);
                 
                 this.fire({
                     type:   "startpage",
@@ -255,8 +256,8 @@ CSSParser.prototype = function(){
         
                 var tokenStream = this._tokenStream;
                 
-                tokenStream.mustMatch(CSSTokens.COLON);
-                tokenStream.mustMatch(CSSTokens.IDENT);
+                tokenStream.mustMatch(Tokens.COLON);
+                tokenStream.mustMatch(Tokens.IDENT);
                 
                 return tokenStream.token().value;
             },
@@ -272,7 +273,7 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null;
                 
-                if (tokenStream.match([CSSTokens.SLASH, CSSTokens.COMMA])){
+                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
                     value =  tokenStream.token().value;
                 } 
                 return value;
@@ -291,7 +292,7 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null;
                 
-                if(tokenStream.match([CSSTokens.PLUS, CSSTokens.GREATER])){                
+                if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
                     value = tokenStream.token().value;
                 }
                 
@@ -308,7 +309,7 @@ CSSParser.prototype = function(){
                  
                 var tokenStream = this._tokenStream;
                 
-                if (tokenStream.match([CSSTokens.MINUS, CSSTokens.PLUS])){
+                if (tokenStream.match([Tokens.MINUS, Tokens.PLUS])){
                     return tokenStream.token().value;
                 } else {
                     return null;
@@ -326,11 +327,11 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null;
                     
-                if (tokenStream.peek() == CSSTokens.STAR && this.options.starHack){
+                if (tokenStream.peek() == Tokens.STAR && this.options.starHack){
                     tokenStream.get();  //TODO: ignore? do something?
                 }
                 
-                if(tokenStream.match(CSSTokens.IDENT)){
+                if(tokenStream.match(Tokens.IDENT)){
                     value = tokenStream.token().value;
                 }
                 
@@ -354,7 +355,7 @@ CSSParser.prototype = function(){
                 if (selector !== null){
                 
                     selectors.push(selector);
-                    while(tokenStream.match(CSSTokens.COMMA)){
+                    while(tokenStream.match(Tokens.COMMA)){
                         selector = this._selector();
                         if (selector !== null){
                             selectors.push(selector);
@@ -364,7 +365,7 @@ CSSParser.prototype = function(){
                     return null;
                 }        
                 
-                tokenStream.mustMatch(CSSTokens.LBRACE);
+                tokenStream.mustMatch(Tokens.LBRACE);
                 
                 this.fire({
                     type:       "startrule",
@@ -374,12 +375,12 @@ CSSParser.prototype = function(){
                 if (this._declaration()){
                     
                     //if there's a semicolon, there may be another declaration
-                    while(tokenStream.match(CSSTokens.SEMICOLON)){
+                    while(tokenStream.match(Tokens.SEMICOLON)){
                         this._declaration();
                     }
                 }
                 
-                tokenStream.mustMatch(CSSTokens.RBRACE);
+                tokenStream.mustMatch(Tokens.RBRACE);
                 
                 this.fire({
                     type:       "endrule",
@@ -428,7 +429,7 @@ CSSParser.prototype = function(){
                 } else {
                     
                     //if there's not whitespace, we're done
-                    if (!tokenStream.match(CSSTokens.S, "ws")){               
+                    if (!tokenStream.match(Tokens.S, "ws")){               
                         return selector;
                     }           
 
@@ -486,7 +487,7 @@ CSSParser.prototype = function(){
                     components  = [
                         //HASH
                         function(){
-                            return tokenStream.match(CSSTokens.HASH) ?
+                            return tokenStream.match(Tokens.HASH) ?
                                     tokenStream.token().value :
                                     null;
                         },
@@ -518,7 +519,7 @@ CSSParser.prototype = function(){
                 while(i < len){
                 
                     //whitespace means we're done
-                    found = tokenStream.match(CSSTokens.S, "ws");
+                    found = tokenStream.match(Tokens.S, "ws");
                     
                     if (found){
                         tokenStream.unget();
@@ -536,7 +537,7 @@ CSSParser.prototype = function(){
                 }
                  
                 return selectorText !== null ?
-                        new CSSSelectorUnit(elementName, modifiers, selectorText) :
+                        new SelectorUnit(elementName, modifiers, selectorText) :
                         null;
             },
             
@@ -549,8 +550,8 @@ CSSParser.prototype = function(){
                  
                 var tokenStream = this._tokenStream;
                 
-                if (tokenStream.match(CSSTokens.DOT)){
-                    tokenStream.mustMatch(CSSTokens.IDENT);            
+                if (tokenStream.match(Tokens.DOT)){
+                    tokenStream.mustMatch(Tokens.IDENT);            
                     return "." + tokenStream.token().value;        
                 } else {
                     return null;
@@ -567,7 +568,7 @@ CSSParser.prototype = function(){
                 
                 var tokenStream = this._tokenStream;
                 
-                return tokenStream.match([CSSTokens.IDENT, CSSTokens.STAR]) ?
+                return tokenStream.match([Tokens.IDENT, Tokens.STAR]) ?
                         tokenStream.token().value :
                         null;
             },
@@ -583,23 +584,23 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null;
                 
-                if (tokenStream.match(CSSTokens.LBRACKET)){
+                if (tokenStream.match(Tokens.LBRACKET)){
                     value = tokenStream.token().value;
 
-                    tokenStream.mustMatch(CSSTokens.IDENT);
+                    tokenStream.mustMatch(Tokens.IDENT);
                     value += tokenStream.token().value;
                     
                     //may or may not be more to this expression
-                    if(tokenStream.match([CSSTokens.EQUALS, CSSTokens.INCLUDES, CSSTokens.DASHMATCH])){               
+                    if(tokenStream.match([Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])){               
                         
                         value += tokenStream.token().value;
                         
-                        tokenStream.mustMatch(CSSTokens.IDENT, CSSTokens.STRING);
+                        tokenStream.mustMatch(Tokens.IDENT, Tokens.STRING);
                         
                         value += tokenStream.token().value;                    
                     }
                     
-                    tokenStream.mustMatch(CSSTokens.RBRACKET);
+                    tokenStream.mustMatch(Tokens.RBRACKET);
                     
                     return value + tokenStream.token().value;
                 } else {
@@ -618,18 +619,18 @@ CSSParser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     pseudo      = null;
                 
-                if (tokenStream.match(CSSTokens.COLON)){
+                if (tokenStream.match(Tokens.COLON)){
                 
-                    if (tokenStream.match(CSSTokens.IDENT)){
+                    if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
-                    } else if (tokenStream.mustMatch(CSSTokens.FUNCTION)){
+                    } else if (tokenStream.mustMatch(Tokens.FUNCTION)){
                         pseudo = tokenStream.token().value;
                         
-                        if (tokenStream.match(CSSTokens.IDENT)){
+                        if (tokenStream.match(Tokens.IDENT)){
                             pseudo += tokenStream.token().value;
                         }
                         
-                        tokenStream.mustMatch(CSSTokens.RPAREN);
+                        tokenStream.mustMatch(Tokens.RPAREN);
                         pseudo += tokenStream.token().value;
                     }
                 }
@@ -653,7 +654,7 @@ CSSParser.prototype = function(){
                 property = this._property();
                 if (property !== null){
                     
-                    tokenStream.mustMatch(CSSTokens.COLON);
+                    tokenStream.mustMatch(Tokens.COLON);
                     
                     expr = this._expr();
                     
@@ -684,7 +685,7 @@ CSSParser.prototype = function(){
                  *   ;    
                  */
                  
-                return this._tokenStream.match(CSSTokens.IMPORTANT_SYM);  
+                return this._tokenStream.match(Tokens.IMPORTANT_SYM);  
             },
             
             _expr: function(){
@@ -749,7 +750,7 @@ CSSParser.prototype = function(){
                 }                
                
                 //exception for IE filters
-                if (tokenStream.peek() == CSSTokens.IE_FILTER && this.options.ieFilters){
+                if (tokenStream.peek() == Tokens.IE_FILTER && this.options.ieFilters){
                     tokenStream.get();
                     value = tokenStream.token().value;
                     if (unary === null){
@@ -758,9 +759,9 @@ CSSParser.prototype = function(){
                     }
                 
                 //see if there's a simple match
-                } else if (tokenStream.match([CSSTokens.NUMBER, CSSTokens.PERCENTAGE, CSSTokens.LENGTH,
-                        CSSTokens.EMS, CSSTokens.EXS, CSSTokens.ANGLE, CSSTokens.TIME,
-                        CSSTokens.FREQ, CSSTokens.STRING, CSSTokens.IDENT, CSSTokens.URI])){
+                } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
+                        Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI])){
                  
                     value = tokenStream.token().value;
                     if (unary === null){
@@ -797,7 +798,7 @@ CSSParser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new CSSValueUnit(unary !== null ? unary + value : value, line, col) :
+                        new ValueUnit(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -814,11 +815,11 @@ CSSParser.prototype = function(){
                     functionText = null,
                     expr        = null;
                     
-                if (tokenStream.match(CSSTokens.FUNCTION)){
+                if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
                     expr = this._expr();
                     
-                    tokenStream.match(CSSTokens.RPAREN);    
+                    tokenStream.match(Tokens.RPAREN);    
                     functionText += expr.join("") + ")"
                 }                
                 
@@ -840,7 +841,7 @@ CSSParser.prototype = function(){
                     token,
                     color = null;
                 
-                if(tokenStream.match(CSSTokens.HASH)){
+                if(tokenStream.match(Tokens.HASH)){
                 
                     //need to do some validation here
                     
@@ -863,7 +864,7 @@ CSSParser.prototype = function(){
             
             
             parse: function(input){    
-                this._tokenStream = new TokenStream(input, CSSTokens);
+                this._tokenStream = new TokenStream(input, Tokens);
                 this._stylesheet();
             }
             

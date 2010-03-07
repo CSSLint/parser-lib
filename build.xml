@@ -20,22 +20,48 @@
             <header trimleading="yes">/* 
             ${license.text}
             */
+            var parserlib = {};
+            (function(){
             </header>
             <!--<filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> -->
             <fileset dir="${src.dir}/util" includes="*.js" />
+            <footer trimleading="yes">
+            parserlib.util = {
+                StringReader: StringReader,
+                SyntaxUnit  : SyntaxUnit,
+                EventTarget : EventTarget,
+                TokenStream : TokenStream
+            };
+            })();
+            </footer>
         </concat>
         
     </target>
     
     <!-- build the CSS library -->
     <target name="build.css">
-        <concat destfile="${build.dir}/${css.build.file}">
+        <concat destfile="${build.dir}/${css.build.file}"  fixlastline="true">
             <header trimleading="yes">/* 
             ${license.text}
             */
+            (function(){
+            var TokenStream = parserlib.util.TokenStream,
+                EventTarget = parserlib.util.EventTarget,
+                SyntaxUnit  = parserlib.util.SyntaxUnit;
             </header>        
-            <filelist dir="${src.dir}/css" files="CSSTokens.js, CSSSelectorUnit.js, CSSColors.js, CSSValueUnit.js, CSSParser.js"/>
-            <!--<fileset dir="${js.src.dir}" includes="*.js" excludes="Assert.js, TestCase.js, TestSuite.js" />-->
+            <!--<filelist dir="${src.dir}/css" files="CSSTokens.js, CSSSelectorUnit.js, CSSColors.js, CSSValueUnit.js, CSSParser.js"/>-->
+            <fileset dir="${src.dir}/css" includes="*.js" />
+            <footer trimleading="yes">
+            parserlib.css = {
+                Parser:         Parser,
+                Tokens:         Tokens,
+                SelectorUnit:   SelectorUnit,
+                ValueUnit:      ValueUnit,
+                Colors:         Colors            
+            };
+            })();
+            </footer>
+
         </concat>
            
     </target>

@@ -2,20 +2,14 @@
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".
  * @param {String} text The text representation of the unit.
- * @class CSSValueUnit
+ * @namespace parserlib.css
+ * @class ValueUnit
+ * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function CSSValueUnit(text, line, col){
+function ValueUnit(text, line, col){
 
-    this.col = col;
-    this.line = line;
-    
-    /**
-     * The text representation of the unit.
-     * @type String
-     * @property text
-     */
-    this.text = text;
+    SyntaxUnit.apply(this,arguments);
     
     /**
      * Indicates the type of value unit.
@@ -71,9 +65,9 @@ function CSSValueUnit(text, line, col){
     } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
         this.value  = eval(text);
-    } else if (CSSColors[text.toLowerCase()]){  //named color
+    } else if (Colors[text.toLowerCase()]){  //named color
         this.type   = "color";
-        temp        = CSSColors[text.toLowerCase()].substring(1);
+        temp        = Colors[text.toLowerCase()].substring(1);
         this.red    = parseInt(temp.substring(0,2),16);
         this.green  = parseInt(temp.substring(2,4),16);
         this.blue   = parseInt(temp.substring(4,6),16);         
@@ -82,28 +76,6 @@ function CSSValueUnit(text, line, col){
 
 }
 
-CSSValueUnit.prototype = {
-
-    //restore constructor
-    constructor: CSSValueUnit,
-    
-    /**
-     * Returns the text representation of the unit.
-     * @return {String} The text representation of the unit.
-     * @method valueOf
-     */
-    valueOf: function(){
-        return this.toString();
-    },
-    
-    /**
-     * Returns the text representation of the unit.
-     * @return {String} The text representation of the unit.
-     * @method toString
-     */
-    toString: function(){
-        return this.text;
-    }
-
-};
+ValueUnit.prototype = new SyntaxUnit();
+ValueUnit.prototype.constructor = ValueUnit;
 

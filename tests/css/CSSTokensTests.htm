@@ -19,7 +19,9 @@ YAHOO.namespace("test");
 
 YAHOO.test.CSSTokens = (function(){
     
-    var assert = YAHOO.util.Assert;
+    var assert = YAHOO.util.Assert,
+        TokenStream = parserlib.util.TokenStream,
+        CSSTokens = parserlib.css.Tokens;
     
     function CSSTokenTestCase(info){    
     

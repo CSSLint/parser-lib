@@ -75,11 +75,12 @@ EventTarget.prototype = {
             var listeners = this._listeners[type];
             for (var i=0, len=listeners.length; i < len; i++){
                 if (listeners[i] === listener){
+                    listeners.splice(i, 1);
                     break;
                 }
             }
             
-            listeners.splice(i, 1);
+            
         }            
     }
 };

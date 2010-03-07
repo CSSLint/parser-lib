@@ -53,11 +53,14 @@
             <fileset dir="${src.dir}/css" includes="*.js" />
             <footer trimleading="yes">
             parserlib.css = {
-                Parser:         Parser,
-                Tokens:         Tokens,
-                SelectorUnit:   SelectorUnit,
-                ValueUnit:      ValueUnit,
-                Colors:         Colors            
+                Colors              :Colors,    
+                CombinatorUnit      :CombinatorUnit,                
+                Parser              :Parser,
+                PropertyUnit        :PropertyUnit,
+                SelectorUnit        :SelectorUnit,
+                SelectorUnitPart    :SelectorUnitPart,
+                Tokens              :Tokens,
+                ValueUnit           :ValueUnit
             };
             })();
             </footer>

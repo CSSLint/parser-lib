@@ -80,7 +80,7 @@ function parse(){
         for (var i=0,len=event.selectors.length; i < len; i++){
             var selector = event.selectors[i];
             
-            log("  Selector #1");
+            log("  Selector #1 (" + selector[0].line + "," + selector[0].col + ")");
             
             for (var j=0,count=selector.length; j < count; j++){
                 log("    Unit #" + (j+1));
@@ -108,7 +108,7 @@ function parse(){
     });
     
     parser.addListener("property", function(event){
-        log("Property '" + event.property + "' has a value of '" + event.value + "' and " + (event.important ? "is" : "isn't") + " important.");
+        log("Property '" + event.property + "' has a value of '" + event.value + "' and " + (event.important ? "is" : "isn't") + " important. (" + event.property.line + "," + event.property.col + ")");
     });
     
     parser.addListener("startmedia", function(event){

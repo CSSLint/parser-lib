@@ -167,6 +167,42 @@ var Colors = {
     yellow          :"#ffff00",
     yellowgreen     :"#9acd32"
 };
+/**
+ * Represents a selector combinator (whitespace, +, >).
+ * @namespace parserlib.css
+ * @class CombinatorUnit
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {String} text The text representation of the unit. 
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function CombinatorUnit(text, line, col){
+    
+    SyntaxUnit.call(this, text, line, col);
+
+    /**
+     * The type of modifier.
+     * @type String
+     * @property type
+     */
+    this.type = "unknown";
+    
+    //pretty simple
+    if (/^\s$/.test(text)){
+        this.type = "descendant";
+    } else if (text == ">"){
+        this.type = "child";
+    } else if (text == "+"){
+        this.type = "adjacentSibling";
+    }
+
+}
+
+CombinatorUnit.prototype = new SyntaxUnit();
+CombinatorUnit.prototype.constructor = CombinatorUnit;
+
+
 /*
  * CSS token information based on Flex lexical scanner grammar:
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
@@ -459,10 +495,12 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    value       = null;
+                    value       = null,
+                    token;
                 
                 if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
-                    value = tokenStream.token().value;
+                    token = tokenStream.token();
+                    value = new CombinatorUnit(token.value, token.startLine, token.startCol);
                 }
                 
                 return value;
@@ -494,14 +532,24 @@ Parser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    value       = null;
+                    value       = null,
+                    hack        = null,
+                    token,
+                    line,
+                    col;
                     
-                if (tokenStream.peek() == Tokens.STAR && this.options.starHack){
-                    tokenStream.get();  //TODO: ignore? do something?
+                if (tokenStream.peek() == Tokens.STAR && this.options.starHack ||
+                        tokenStream.peek() == Tokens.UNDERSCORE && this.options.underscoreHack){
+                    tokenStream.get();
+                    token = tokenStream.token();
+                    hack = token.value;
+                    line = token.startLine;
+                    col = token.startCol;
                 }
                 
                 if(tokenStream.match(Tokens.IDENT)){
-                    value = tokenStream.token().value;
+                    token = tokenStream.token();
+                    value = new PropertyUnit(token.value, hack, (line||token.startLine), (col||token.startCol));
                 }
                 
                 return value;
@@ -657,7 +705,7 @@ Parser.prototype = function(){
                         //HASH
                         function(){
                             return tokenStream.match(Tokens.HASH) ?
-                                    tokenStream.token().value :
+                                    new SelectorUnitPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
                                     null;
                         },
                         this._class,
@@ -667,29 +715,37 @@ Parser.prototype = function(){
                     i           = 0,
                     len         = components.length,
                     component   = null,
-                    found       = false;
+                    found       = false,
+                    line,
+                    col;
                     
-                selectorText = elementName = this._element_name();
-                if (selectorText == null){
+                elementName = this._element_name();
+                if (elementName == null){
                 
-                    while(i < len && selectorText == null){
-                        selectorText = components[i++].call(this);
+                    while(i < len && component == null){
+                        component = components[i++].call(this);
                     }
         
                     //if it's still null, then we don't have a selector
-                    if (selectorText === null){
+                    if (component === null){
                         return null;
                     }
                     
-                    modifiers.push(selectorText);
-                } 
+                    modifiers.push(component);
+                    selectorText = component.toString();
+                } else {
+                    selectorText = elementName.toString();
+                }
+
+                //get starting line and column for the selector
+                line = tokenStream.token().startLine;
+                col = tokenStream.token().startCol;
                         
                 i = 0;
                 while(i < len){
                 
                     //whitespace means we're done
-                    found = tokenStream.match(Tokens.S, "ws");
-                    
+                    found = tokenStream.match(Tokens.S, "ws");                    
                     if (found){
                         tokenStream.unget();
                         break;
@@ -706,7 +762,7 @@ Parser.prototype = function(){
                 }
                  
                 return selectorText !== null ?
-                        new SelectorUnit(elementName, modifiers, selectorText) :
+                        new SelectorUnit(elementName, modifiers, selectorText, line, col) :
                         null;
             },
             
@@ -717,11 +773,13 @@ Parser.prototype = function(){
                  *   ;
                  */    
                  
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    token;
                 
                 if (tokenStream.match(Tokens.DOT)){
-                    tokenStream.mustMatch(Tokens.IDENT);            
-                    return "." + tokenStream.token().value;        
+                    tokenStream.mustMatch(Tokens.IDENT);    
+                    token = tokenStream.token();
+                    return new SelectorUnitPart("." + token.value, "class", token.startLine, token.startCol);        
                 } else {
                     return null;
                 }
@@ -735,11 +793,16 @@ Parser.prototype = function(){
                  *   ;
                  */    
                 
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    token;
                 
-                return tokenStream.match([Tokens.IDENT, Tokens.STAR]) ?
-                        tokenStream.token().value :
-                        null;
+                if (tokenStream.match([Tokens.IDENT, Tokens.STAR])){
+                    token = tokenStream.token();
+                    return new SelectorUnitPart(token.value, "elementName", token.startLine, token.startCol);        
+                
+                } else {
+                    return null;
+                }
             },
             
             _attrib: function(){
@@ -751,7 +814,8 @@ Parser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    value       = null;
+                    value       = null,
+                    token;
                 
                 if (tokenStream.match(Tokens.LBRACKET)){
                     value = tokenStream.token().value;
@@ -770,8 +834,9 @@ Parser.prototype = function(){
                     }
                     
                     tokenStream.mustMatch(Tokens.RBRACKET);
-                    
-                    return value + tokenStream.token().value;
+                    token = tokenStream.token();
+                                        
+                    return new SelectorUnitPart(value + token.value, "attribute", token.startLine, token.startCol);
                 } else {
                     return null;
                 }
@@ -786,7 +851,8 @@ Parser.prototype = function(){
                  */   
             
                 var tokenStream = this._tokenStream,
-                    pseudo      = null;
+                    pseudo      = null,
+                    token;
                 
                 if (tokenStream.match(Tokens.COLON)){
                 
@@ -802,6 +868,9 @@ Parser.prototype = function(){
                         tokenStream.mustMatch(Tokens.RPAREN);
                         pseudo += tokenStream.token().value;
                     }
+                    
+                    token = tokenStream.token();
+                    pseudo = new SelectorUnitPart(pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;
@@ -1046,6 +1115,34 @@ Parser.prototype = function(){
     return proto;
 }();
 /**
+ * Represents a selector combinator (whitespace, +, >).
+ * @namespace parserlib.css
+ * @class PropertyUnit
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {String} text The text representation of the unit. 
+ * @param {String} hack The type of IE hack applied ("*", "_", or null).
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function PropertyUnit(text, hack, line, col){
+    
+    SyntaxUnit.call(this, (hack||"") + text, line, col);
+
+    /**
+     * The type of IE hack applied ("*", "_", or null).
+     * @type String
+     * @property hack
+     */
+    this.hack = hack;
+
+}
+
+PropertyUnit.prototype = new SyntaxUnit();
+PropertyUnit.prototype.constructor = PropertyUnit;
+
+
+/**
  * Represents a single part of a selector string, meaning a single set of
  * element name and modifiers. This does not include combinators such as
  * spaces, +, >, etc.
@@ -1085,6 +1182,35 @@ function SelectorUnit(elementName, modifiers, text, line, col){
 
 SelectorUnit.prototype = new SyntaxUnit();
 SelectorUnit.prototype.constructor = SelectorUnit;
+
+
+/**
+ * Represents a selector modifier string, meaning a class name, element name,
+ * element ID, pseudo rule, etc.
+ * @namespace parserlib.css
+ * @class SelectorUnitPart
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {String} text The text representation of the unit. 
+ * @param {String} type The type of selector modifier.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function SelectorUnitPart(text, type, line, col){
+    
+    SyntaxUnit.call(this, text, line, col);
+
+    /**
+     * The type of modifier.
+     * @type String
+     * @property type
+     */
+    this.type = type;
+
+}
+
+SelectorUnitPart.prototype = new SyntaxUnit();
+SelectorUnitPart.prototype.constructor = SelectorUnitPart;
 
 
 /*
@@ -1395,10 +1521,13 @@ ValueUnit.prototype.constructor = ValueUnit;
 
 
 parserlib.css = {
-Parser:         Parser,
-Tokens:         Tokens,
-SelectorUnit:   SelectorUnit,
-ValueUnit:      ValueUnit,
-Colors:         Colors            
+Colors              :Colors,    
+CombinatorUnit      :CombinatorUnit,                
+Parser              :Parser,
+PropertyUnit        :PropertyUnit,
+SelectorUnit        :SelectorUnit,
+SelectorUnitPart    :SelectorUnitPart,
+Tokens              :Tokens,
+ValueUnit           :ValueUnit
 };
 })();

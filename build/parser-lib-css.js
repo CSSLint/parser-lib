@@ -35,7 +35,7 @@ var CSSTokens = function(){
         nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
         nl          = "(?:\\n|\\r\\n|\\r|\\f)",
         string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\')",
+        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
         invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
         invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
         

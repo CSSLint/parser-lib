@@ -1,34 +1,64 @@
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
-var CSSTokens = function(){
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CSS Tokens Tests</title>
+<!-- Combo-handled YUI CSS files: -->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../build/parser-lib.js"></script>
+<script type="text/javascript" src="../../build/parser-lib-css.js"></script>
 
-    //token fragments
-    var h           = "[0-9a-fA-F]",
-        nonascii    = "[\\u0080-\\uFFFF]",
-        unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
-        escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
-        nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
-        string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
-        invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
+
+</head>
+<body>
+<h1>CSS Tokens Tests</h1>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.CSSTokens = (function(){
+    
+    var assert = YAHOO.util.Assert;
+    
+    function CSSTokenTestCase(info){    
+    
+        YAHOO.tool.TestCase.call(this, info);
+        this.examples = info.examples;    
         
-        comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
-        name        = nmchar + "+",
-        num         = "(?:[0-9]+|[0-9]*\\.[0-9]+)",
-        string      = "(?:" + string1 + "|" + string2 + ")",
-        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
-        s           = "[ \\t\\r\\n\\f]+",
-        w           = "(?:" + s + ")?",
+        for (var prop in this.examples){
+            if (this.examples.hasOwnProperty(prop)){
+                this["testExample: " + prop] = function(prop){
+                    return function(){
+                        this._testExample(prop, this.examples[prop]);
+                    };
+                }(prop);
+            }
+        }
+    }
+    
+    CSSTokenTestCase.prototype = new YAHOO.tool.TestCase();
+    
+    CSSTokenTestCase.prototype._testExample = function(example, outputs){
+        var tokenStream = new TokenStream(example, CSSTokens);
+        var tt;
+    
+        for (var i=0, len=outputs.length; i < len; i++){
+            tt = tokenStream.get(CSSTokens[outputs[i]].channel);
+            assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens[outputs[i]].name + " but was " + CSSTokens[tt].name + " (" + tokenStream.token().value + ").");           
+        }
 
-        //return the token information
-        symbols = [
+        tt = tokenStream.get();
+        assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens[tt].name + " (" + tokenStream.token().value + ").");
+    };
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("CSS Tokens");
+    
+/*
             {
                 name: "S",
                 pattern: s,
@@ -217,7 +247,83 @@ var CSSTokens = function(){
                 text: ","
             }
         ];
-        
-        return TokenStream.createTokenData(symbols);
 
-}();
+*/    
+    
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Whitespace",
+        
+        examples: {
+            " "     : [CSSTokens.S],
+            "\n"    : [CSSTokens.S],
+            "\n \t" : [CSSTokens.S],
+            "\f \n" : [CSSTokens.S]        
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for comments",
+        
+        examples: {
+            "/* booya */"     : [],
+            "/*\n booya */"   : [],
+            "/*\n booya \n*/" : []     
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for strings",
+        
+        examples: {
+            "'hello'"       : [CSSTokens.STRING],
+            "\"hello\""     : [CSSTokens.STRING],
+            "''"            : [CSSTokens.STRING],
+            "\"\""          : [CSSTokens.STRING],
+            "'hello\""      : [CSSTokens.INVALID, CSSTokens.INVALID],
+            "\"hello'"      : [CSSTokens.INVALID],
+            "'hel\\\'lo'"   : [CSSTokens.STRING],
+            "\"hel\\\"lo\"" : [CSSTokens.STRING]
+        }        
+    }));
+
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for URLs",
+        
+        examples: {
+            "url(foo.jpg)"      : [CSSTokens.URI],
+            "url('foo.jpg')"    : [CSSTokens.URI],
+            "url(\"foo.jpg\")"  : [CSSTokens.URI],
+
+            "url(http://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
+            "url('http://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
+            "url(\"http://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
+            
+            "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
+            "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
+            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI]
+        }        
+    }));
+
+   
+    
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.CSSTokens);
+    YAHOO.tool.TestRunner.run();
+
+})();
+
+
+</script>
+</body>
+</html>

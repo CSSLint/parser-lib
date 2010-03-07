@@ -60,180 +60,7 @@ YAHOO.test.CSSTokens = (function(){
     //-------------------------------------------------------------------------
     
     var suite = new YAHOO.tool.TestSuite("CSS Tokens");
-    
-/*
-            //CDO and CDC intentionally omitted
-            {
-                name: "INCLUDES",
-                text: "~="
-            },
-            {
-                name: "DASHMATCH",
-                text: "|="
-            },       
-
-            {
-                name: "HASH",
-                pattern: "#" + name
-            },
-            {
-                name: "IMPORT_SYM",
-                pattern: "@IMPORT",
-                patternOpt: "i"
-            },
-            {
-                name: "PAGE_SYM",
-                pattern: "@PAGE",
-                patternOpt: "i"
-            },
-            {
-                name: "MEDIA_SYM",
-                pattern: "@MEDIA",
-                patternOpt: "i"
-            },
-            {
-                name: "CHARSET_SYM",
-                text: "@charset "
-            },
-            {
-                name: "IMPORTANT_SYM",
-                pattern: "!(?:" + w + "|" + comment + ")*IMPORTANT",
-                patternOpt: "i"
-            },
-            {
-                name: "EMS",
-                pattern: num + "em",
-                patternOpt: "i"
-            },
-            {
-                name: "EXS",
-                pattern: num + "ex",
-                patternOpt: "i"
-            },
-            {
-                name: "LENGTH",
-                pattern: num + "px|" + num + "cm|" + num + "mm|" + num + "in|" + num + "pt|" + num + "pc",
-                patternOpt: "i"
-            },
-            {
-                name: "ANGLE",
-                pattern: num + "deg|" + num + "rad|" + num + "grad",
-                patternOpt: "i"
-            },
-            {
-                name: "TIME",
-                pattern: num + "ms|" + num + "s",
-                patternOpt: "i"
-            },
-            {
-                name: "FREQ",
-                pattern: num + "hz|" + num + "khz",
-                patternOpt: "i"
-            },
-            {
-                name: "DIMENSION",
-                pattern: num + ident
-            },   
-            {
-                name: "PERCENTAGE",
-                pattern: num + "%"
-            },
-            {
-                name: "NUMBER",
-                pattern: num 
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
-            },
-
-            //exception for IE filters - yuck
-            {
-                name: "IE_FILTER",
-                pattern: "[a-z:\\.]+\\([^\\)]*\\)",
-                patternOpt: "i"
-            },    
-
-            {
-                name: "FUNCTION",
-                pattern: ident + "\\("
-            },    
-                
-            {
-                name: "IDENT",
-                pattern: ident
-            },        
-            //Not defined as tokens, but might as well be
-            {
-                name: "SLASH",
-                text: "/"
-            },
-            {
-                name: "MINUS",
-                text: "-"
-            },
-            {
-                name: "PLUS",
-                text: "+"
-            },
-            {
-                name: "STAR",
-                text: "*"
-            },
-            {
-                name: "GREATER",
-                text: ">"
-            },
-            {
-                name: "LBRACE",
-                text: "{"
-            },   
-            {
-                name: "RBRACE",
-                text: "}"
-            },      
-            {
-                name: "LBRACKET",
-                text: "["
-            },   
-            {
-                name: "RBRACKET",
-                text: "]"
-            },    
-            {
-                name: "EQUALS",
-                text: "="
-            },
-            {
-                name: "COLON",
-                text: ":"
-            },    
-            {
-                name: "SEMICOLON",
-                text: ";"
-            },    
-         
-            {
-                name: "LPAREN",
-                text: "("
-            },   
-            {
-                name: "RPAREN",
-                text: ")"
-            },   
-          
-            {
-                name: "DOT",
-                text: "."
-            },    
-            {
-                name: "COMMA",
-                text: ","
-            }
-        ];
-
-*/    
-    
+   
    
     suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
@@ -301,6 +128,60 @@ YAHOO.test.CSSTokens = (function(){
             
         }        
     }));
+    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Numbers",
+        
+        examples: {
+        
+            //regular numbers
+            "1"         : [CSSTokens.NUMBER],
+            "20.0"      : [CSSTokens.NUMBER],
+            ".3"        : [CSSTokens.NUMBER],
+            
+            "4px"       : [CSSTokens.LENGTH],
+            "50.0PX"    : [CSSTokens.LENGTH],
+            ".6Px"      : [CSSTokens.LENGTH],
+            
+            "7cm"       : [CSSTokens.LENGTH],
+            "7CM"       : [CSSTokens.LENGTH],
+            "7cM"       : [CSSTokens.LENGTH],
+            "8.0mm"     : [CSSTokens.LENGTH],
+            ".9in"      : [CSSTokens.LENGTH],
+            "7pc"       : [CSSTokens.LENGTH],
+            "8.0pt"     : [CSSTokens.LENGTH],
+            
+            "3%"        : [CSSTokens.PERCENTAGE],
+            "45.05%"    : [CSSTokens.PERCENTAGE],
+            ".9%"       : [CSSTokens.PERCENTAGE],
+
+            "5em"       : [CSSTokens.EMS],
+            "50.0EM"    : [CSSTokens.EMS],
+            ".5eM"      : [CSSTokens.EMS],
+            
+            "5ex"       : [CSSTokens.EXS],
+            "50.0EX"    : [CSSTokens.EXS],
+            ".5eX"      : [CSSTokens.EXS]  
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Properties",
+        
+        examples: {
+        
+            //regular CSS functions
+            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            
+            "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FILTER, CSSTokens.SEMICOLON]
+ 
+        }        
+    }));
+
+    
+    
 
     suite.add(new CSSTokenTestCase({
         name : "Tests for Functions",
@@ -317,7 +198,7 @@ YAHOO.test.CSSTokens = (function(){
             //IE filters
             "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
             "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"  : [CSSTokens.IE_FILTER],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"   : [CSSTokens.IE_FILTER]
         }        
     }));
 

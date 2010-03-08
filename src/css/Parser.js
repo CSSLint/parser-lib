@@ -446,7 +446,7 @@ Parser.prototype = function(){
                     }           
 
                     //add whitespace separator
-                    ws = tokenStream.token().value;
+                    ws = new CombinatorUnit(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                     
                     //combinator is not required
                     combinator = this._combinator();
@@ -665,7 +665,7 @@ Parser.prototype = function(){
                     }
                     
                     token = tokenStream.token();
-                    pseudo = new SelectorUnitPart(pseudo, "pseudo", token.startLine, token.startCol);
+                    pseudo = new SelectorUnitPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;

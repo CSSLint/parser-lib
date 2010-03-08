@@ -20,7 +20,7 @@ function CombinatorUnit(text, line, col){
     this.type = "unknown";
     
     //pretty simple
-    if (/^\s$/.test(text)){
+    if (/^\s+$/.test(text)){
         this.type = "descendant";
     } else if (text == ">"){
         this.type = "child";

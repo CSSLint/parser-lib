@@ -189,7 +189,7 @@ function CombinatorUnit(text, line, col){
     this.type = "unknown";
     
     //pretty simple
-    if (/^\s$/.test(text)){
+    if (/^\s+$/.test(text)){
         this.type = "descendant";
     } else if (text == ">"){
         this.type = "child";
@@ -651,7 +651,7 @@ Parser.prototype = function(){
                     }           
 
                     //add whitespace separator
-                    ws = tokenStream.token().value;
+                    ws = new CombinatorUnit(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                     
                     //combinator is not required
                     combinator = this._combinator();
@@ -870,7 +870,7 @@ Parser.prototype = function(){
                     }
                     
                     token = tokenStream.token();
-                    pseudo = new SelectorUnitPart(pseudo, "pseudo", token.startLine, token.startCol);
+                    pseudo = new SelectorUnitPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;

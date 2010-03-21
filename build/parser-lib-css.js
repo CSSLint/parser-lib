@@ -203,6 +203,182 @@ CombinatorUnit.prototype = new SyntaxUnit();
 CombinatorUnit.prototype.constructor = CombinatorUnit;
 
 
+
+var Level1Properties = {
+
+    "background": 1,
+    "background-attachment": 1,
+    "background-color": 1,
+    "background-image": 1,
+    "background-position": 1,
+    "background-repeat": 1,
+ 
+    "border": 1,
+    "border-bottom": 1,
+    "border-bottom-width": 1,
+    "border-color": 1,
+    "border-left": 1,
+    "border-left-width": 1,
+    "border-right": 1,
+    "border-right-width": 1,
+    "border-style": 1,
+    "border-top": 1,
+    "border-top-width": 1,
+    "border-width": 1,
+ 
+    "clear": 1,
+    "color": 1,
+    "display": 1,
+    "float": 1,
+ 
+    "font": 1,
+    "font-family": 1,
+    "font-size": 1,
+    "font-style": 1,
+    "font-variant": 1,
+    "font-weight": 1,
+ 
+    "height": 1,
+    "letter-spacing": 1,
+    "line-height": 1,
+ 
+    "list-style": 1,
+    "list-style-image": 1,
+    "list-style-position": 1,
+    "list-style-type": 1,
+ 
+    "margin": 1,
+    "margin-bottom": 1,
+    "margin-left": 1,
+    "margin-right": 1,
+    "margin-top": 1,
+ 
+    "padding": 1,
+    "padding-bottom": 1,
+    "padding-left": 1,
+    "padding-right": 1,
+    "padding-top": 1,
+ 
+    "text-align": 1,
+    "text-decoration": 1,
+    "text-indent": 1,
+    "text-transform": 1,
+ 
+    "vertical-align": 1,
+    "white-space": 1,
+    "width": 1,
+    "word-spacing": 1
+    
+};
+
+var Level2Properties = {
+
+    //Aural
+    "azimuth": 1,
+    "cue-after": 1,
+    "cue-before": 1,
+    "cue": 1,
+    "elevation": 1,
+    "pause-after": 1,
+    "pause-before": 1,
+    "pause": 1,
+    "pitch-range": 1,
+    "pitch": 1,
+    "play-during": 1,
+    "richness": 1,
+    "speak-header": 1,
+    "speak-numeral": 1,
+    "speak-punctuation": 1,
+    "speak": 1,
+    "speech-rate": 1,
+    "stress": 1,
+    "voice-family": 1,
+    "volume": 1,
+    
+    //Paged
+    "orphans": 1,
+    "page-break-after": 1,
+    "page-break-before": 1,
+    "page-break-inside": 1,
+    "widows": 1,
+
+    //Interactive
+    "cursor": 1,
+    "outline-color": 1,
+    "outline-style": 1,
+    "outline-width": 1,
+    "outline": 1,    
+    
+    //Visual
+    "background-attachment": 1,
+    "background-color": 1,
+    "background-image": 1,
+    "background-position": 1,
+    "background-repeat": 1,
+    "background": 1,    
+    "border-collapse": 1,
+    "border-color": 1,
+    "border-spacing": 1,
+    "border-style": 1,
+    "border-top": 1,
+    "border-top-color": 1,
+    "border-top-style": 1,
+    "border-top-width": 1,
+    "border-width": 1,
+    "border": 1,
+    "bottom": 1,    
+    "caption-side": 1,
+    "clear": 1,
+    "clip": 1,
+    "color": 1,
+    "content": 1,
+    "counter-increment": 1,
+    "counter-reset": 1,
+    "direction": 1,
+    "display": 1,
+    "empty-cells": 1,
+    "float": 1,
+    "font-family": 1,
+    "font-size": 1,
+    "font-style": 1,
+    "font-variant": 1,
+    "font-weight": 1,
+    "font": 1,
+    "height": 1,
+    "left": 1,
+    "letter-spacing": 1,
+    "line-height": 1,
+    "list-style-image": 1,
+    "list-style-position": 1,
+    "list-style-type": 1,
+    "list-style": 1,
+    "margin-right": 1,
+    "margin-top": 1,
+    "margin": 1,
+    "max-height": 1,
+    "max-width": 1,
+    "min-height": 1,
+    "min-width": 1,
+    "overflow": 1,
+    "padding-top": 1,
+    "padding": 1,
+    "position": 1,
+    "quotes": 1,
+    "right": 1,
+    "table-layout": 1,
+    "text-align": 1,
+    "text-decoration": 1,
+    "text-indent": 1,
+    "text-transform": 1,
+    "top": 1,
+    "unicode-bidi": 1,
+    "vertical-align": 1,
+    "visibility": 1,
+    "white-space": 1,
+    "width": 1,
+    "word-spacing": 1,
+    "z-index": 1
+};
 /*
  * CSS token information based on Flex lexical scanner grammar:
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
@@ -534,12 +710,13 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null,
                     hack        = null,
+                    tokenValue,
                     token,
                     line,
                     col;
                     
-                if (tokenStream.peek() == Tokens.STAR && this.options.starHack ||
-                        tokenStream.peek() == Tokens.UNDERSCORE && this.options.underscoreHack){
+                //check for star hack - throws error if not allowed
+                if (tokenStream.peek() == Tokens.STAR && this.options.starHack){
                     tokenStream.get();
                     token = tokenStream.token();
                     hack = token.value;
@@ -549,7 +726,15 @@ Parser.prototype = function(){
                 
                 if(tokenStream.match(Tokens.IDENT)){
                     token = tokenStream.token();
-                    value = new PropertyUnit(token.value, hack, (line||token.startLine), (col||token.startCol));
+                    tokenValue = token.value;
+                    
+                    //check for underscore hack - no error if not allowed because it's valid CSS syntax
+                    if (tokenValue.charAt(0) == "_" && this.options.underscoreHack){
+                        hack = "_";
+                        tokenValue = tokenValue.substring(1);
+                    }
+                    
+                    value = new PropertyUnit(tokenValue, hack, (line||token.startLine), (col||token.startCol));
                 }
                 
                 return value;
@@ -1437,6 +1622,51 @@ var Tokens = function(){
 
 }();
 
+
+
+
+var ValueTokens = (function(){
+
+
+    var symbols = {
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    return TokenStream.createTokenData(symbols);
+
+});
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".

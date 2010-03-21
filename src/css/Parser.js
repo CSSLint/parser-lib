@@ -329,12 +329,13 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = null,
                     hack        = null,
+                    tokenValue,
                     token,
                     line,
                     col;
                     
-                if (tokenStream.peek() == Tokens.STAR && this.options.starHack ||
-                        tokenStream.peek() == Tokens.UNDERSCORE && this.options.underscoreHack){
+                //check for star hack - throws error if not allowed
+                if (tokenStream.peek() == Tokens.STAR && this.options.starHack){
                     tokenStream.get();
                     token = tokenStream.token();
                     hack = token.value;
@@ -344,7 +345,15 @@ Parser.prototype = function(){
                 
                 if(tokenStream.match(Tokens.IDENT)){
                     token = tokenStream.token();
-                    value = new PropertyUnit(token.value, hack, (line||token.startLine), (col||token.startCol));
+                    tokenValue = token.value;
+                    
+                    //check for underscore hack - no error if not allowed because it's valid CSS syntax
+                    if (tokenValue.charAt(0) == "_" && this.options.underscoreHack){
+                        hack = "_";
+                        tokenValue = tokenValue.substring(1);
+                    }
+                    
+                    value = new PropertyUnit(tokenValue, hack, (line||token.startLine), (col||token.startCol));
                 }
                 
                 return value;

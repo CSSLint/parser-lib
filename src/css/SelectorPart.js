@@ -3,7 +3,7 @@
  * element name and modifiers. This does not include combinators such as
  * spaces, +, >, etc.
  * @namespace parserlib.css
- * @class SelectorUnit
+ * @class SelectorPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} elementName The element name in the selector or null
@@ -14,7 +14,7 @@
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorUnit(elementName, modifiers, text, line, col){
+function SelectorPart(elementName, modifiers, text, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -36,6 +36,6 @@ function SelectorUnit(elementName, modifiers, text, line, col){
 
 }
 
-SelectorUnit.prototype = new SyntaxUnit();
-SelectorUnit.prototype.constructor = SelectorUnit;
+SelectorPart.prototype = new SyntaxUnit();
+SelectorPart.prototype.constructor = SelectorPart;
 

@@ -604,7 +604,9 @@ TokenStream.prototype = {
                 info = tokenInfo[this._token.type];
             }
             
-            if (this._ltIndex <= this._lt.length){
+            //here be dragons
+            if ((info.channel === undefined || channel === info.channel) &&
+                    this._ltIndex <= this._lt.length){
                 return this._token.type;
             }
         }

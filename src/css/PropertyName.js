@@ -1,7 +1,7 @@
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
- * @class PropertyUnit
+ * @class PropertyName
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
@@ -9,7 +9,7 @@
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function PropertyUnit(text, hack, line, col){
+function PropertyName(text, hack, line, col){
     
     SyntaxUnit.call(this, (hack||"") + text, line, col);
 
@@ -22,6 +22,6 @@ function PropertyUnit(text, hack, line, col){
 
 }
 
-PropertyUnit.prototype = new SyntaxUnit();
-PropertyUnit.prototype.constructor = PropertyUnit;
+PropertyName.prototype = new SyntaxUnit();
+PropertyName.prototype.constructor = PropertyName;
 

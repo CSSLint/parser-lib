@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CSS Tokens Tests</title>
+<!-- Combo-handled YUI CSS files: -->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../build/parserlib.js"></script>
+
+
+</head>
+<body>
+<h1>CSS Parser Tests</h1>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.CSSParser = (function(){
+    
+    var assert = YAHOO.util.Assert,
+        Selector = parserlib.css.Selector,
+        Combinator = parserlib.css.Combinator,
+        SelectorPart = parserlib.css.SelectorPart,
+        Parser = parserlib.css.Parser;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YAHOO.tool.TestSuite("Selector Parsing");
+   
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Selectors",
+        
+        
+        testWithCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover > p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
+            
+        }
+    
+    
+    }));
+    
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.CSSParser);
+    YAHOO.tool.TestRunner.run();
+
+})();
+
+
+</script>
+</body>
+</html>

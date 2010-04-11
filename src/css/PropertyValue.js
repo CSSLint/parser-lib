@@ -2,12 +2,14 @@
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".
  * @param {String} text The text representation of the unit.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
  * @namespace parserlib.css
- * @class ValueUnit
+ * @class PropertyValue
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function ValueUnit(text, line, col){
+function PropertyValue(text, line, col){
 
     SyntaxUnit.apply(this,arguments);
     
@@ -76,6 +78,6 @@ function ValueUnit(text, line, col){
 
 }
 
-ValueUnit.prototype = new SyntaxUnit();
-ValueUnit.prototype.constructor = ValueUnit;
+PropertyValue.prototype = new SyntaxUnit();
+PropertyValue.prototype.constructor = PropertyValue;
 

@@ -2,7 +2,7 @@
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.
  * @namespace parserlib.css
- * @class SelectorUnitPart
+ * @class SelectorSubPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
@@ -10,7 +10,7 @@
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorUnitPart(text, type, line, col){
+function SelectorSubPart(text, type, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -23,6 +23,6 @@ function SelectorUnitPart(text, type, line, col){
 
 }
 
-SelectorUnitPart.prototype = new SyntaxUnit();
-SelectorUnitPart.prototype.constructor = SelectorUnitPart;
+SelectorSubPart.prototype = new SyntaxUnit();
+SelectorSubPart.prototype.constructor = SelectorSubPart;
 

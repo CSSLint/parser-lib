@@ -1,4 +1,4 @@
-<project name="Parser Lib" default="js.concat">
+<project name="Parser Lib" default="all">
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
@@ -7,15 +7,22 @@
     <property name="build.dir" value="./build" />
     
     <!-- output filenames -->
-    <property name="core.build.file" value="parser-lib.js"/>
-    <property name="css.build.file" value="parser-lib-css.js"/>
+    <property name="full.build.file" value="parserlib.js"/>
+    <property name="core.build.file" value="parserlib-core.js"/>
+    <property name="css.build.file" value="parserlib-css.js"/>
     
     <loadfile property="license.text" srcfile="LICENSE" />
+    
+    <!-- build the full library -->
+    <target name="build.full" depends="build.core,build.css">
+        <concat destfile="${build.dir}/${full.build.file}"  fixlastline="true">
+            <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
+        </concat>    
+    </target>
     
     <!-- build the core library -->
     <target name="build.core">
     
-        <!-- create temp file -->
         <concat destfile="${build.dir}/${core.build.file}"  fixlastline="true">
             <header trimleading="yes">/* 
             ${license.text}
@@ -54,13 +61,14 @@
             <footer trimleading="yes">
             parserlib.css = {
                 Colors              :Colors,    
-                CombinatorUnit      :CombinatorUnit,                
+                Combinator          :Combinator,                
                 Parser              :Parser,
-                PropertyUnit        :PropertyUnit,
-                SelectorUnit        :SelectorUnit,
-                SelectorUnitPart    :SelectorUnitPart,
-                Tokens              :Tokens,
-                ValueUnit           :ValueUnit
+                PropertyName        :PropertyName,
+                PropertyValue       :PropertyValue,
+                Selector            :Selector,
+                SelectorPart        :SelectorPart,
+                SelectorSubPart     :SelectorSubPart,
+                Tokens              :Tokens
             };
             })();
             </footer>
@@ -71,6 +79,6 @@
     
     
     <!-- Build all files -->
-    <target name="all" depends="build.core,build.css"/>
+    <target name="all" depends="build.full"/>
 
 </project>

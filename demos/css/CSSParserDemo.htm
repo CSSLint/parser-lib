@@ -2,8 +2,7 @@
 <html>
 <head>
 <title>CSS Parser Demo</title>
-<script type="text/javascript" src="../../build/parser-lib.js"></script>
-<script type="text/javascript" src="../../build/parser-lib-css.js"></script>
+<script type="text/javascript" src="../../build/parserlib.js"></script>
 
 </head>
 <body>
@@ -80,19 +79,19 @@ function parse(){
         for (var i=0,len=event.selectors.length; i < len; i++){
             var selector = event.selectors[i];
             
-            log("  Selector #1 (" + selector[0].line + "," + selector[0].col + ")");
+            log("  Selector #1 (" + selector.line + "," + selector.col + ")");
             
-            for (var j=0,count=selector.length; j < count; j++){
+            for (var j=0,count=selector.parts.length; j < count; j++){
                 log("    Unit #" + (j+1));
                 
-                if (selector[j] instanceof parserlib.css.SelectorUnit){
-                    log("      Element name: " + selector[j].elementName);
+                if (selector.parts[j] instanceof parserlib.css.SelectorPart){
+                    log("      Element name: " + selector.parts[j].elementName);
                     
-                    for (var k=0; k < selector[j].modifiers.length; k++){
-                        log("        Modifier: " + selector[j].modifiers[k]);
+                    for (var k=0; k < selector.parts[j].modifiers.length; k++){
+                        log("        Modifier: " + selector.parts[j].modifiers[k]);
                     }
                 } else{
-                    log("      Combiner: " + selector[j]);
+                    log("      Combinator: " + selector.parts[j]);
                 }
                 
                 

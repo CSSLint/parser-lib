@@ -170,14 +170,14 @@ var Colors = {
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
- * @class CombinatorUnit
+ * @class Combinator
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function CombinatorUnit(text, line, col){
+function Combinator(text, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -194,13 +194,13 @@ function CombinatorUnit(text, line, col){
     } else if (text == ">"){
         this.type = "child";
     } else if (text == "+"){
-        this.type = "adjacentSibling";
+        this.type = "adjacent-sibling";
     }
 
 }
 
-CombinatorUnit.prototype = new SyntaxUnit();
-CombinatorUnit.prototype.constructor = CombinatorUnit;
+Combinator.prototype = new SyntaxUnit();
+Combinator.prototype.constructor = Combinator;
 
 
 
@@ -676,7 +676,7 @@ Parser.prototype = function(){
                 
                 if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
                     token = tokenStream.token();
-                    value = new CombinatorUnit(token.value, token.startLine, token.startCol);
+                    value = new Combinator(token.value, token.startLine, token.startCol);
                 }
                 
                 return value;
@@ -734,7 +734,7 @@ Parser.prototype = function(){
                         tokenValue = tokenValue.substring(1);
                     }
                     
-                    value = new PropertyUnit(tokenValue, hack, (line||token.startLine), (col||token.startCol));
+                    value = new PropertyName(tokenValue, hack, (line||token.startLine), (col||token.startCol));
                 }
                 
                 return value;
@@ -826,41 +826,42 @@ Parser.prototype = function(){
                     if (nextSelector === null){
                         this._unexpectedToken(this.LT(1));
                     } else {
-                        selector.concat(nextSelector);
+                    
+                        //nextSelector is an instance of Selector, but we really just want the parts
+                        selector = selector.concat(nextSelector.parts);
                     }
                 } else {
                     
                     //if there's not whitespace, we're done
-                    if (!tokenStream.match(Tokens.S, "ws")){               
-                        return selector;
-                    }           
-
-                    //add whitespace separator
-                    ws = new CombinatorUnit(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
-                    
-                    //combinator is not required
-                    combinator = this._combinator();
-                    
-                    //selector is required if there's a combinator
-                    nextSelector = this._selector();
-                    if (nextSelector === null){                        
-                        if (combinator !== null){
-                            this._unexpectedToken(tokenStream.LT(1));
-                        }
-                    } else {
+                    if (tokenStream.match(Tokens.S, "ws")){           
+    
+                        //add whitespace separator
+                        ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                         
-                        if (combinator !== null){
-                            selector.push(combinator);
+                        //combinator is not required
+                        combinator = this._combinator();
+                        
+                        //selector is required if there's a combinator
+                        nextSelector = this._selector();
+                        if (nextSelector === null){                        
+                            if (combinator !== null){
+                                this._unexpectedToken(tokenStream.LT(1));
+                            }
                         } else {
-                            selector.push(ws);
-                        }
-                        
-                        selector = selector.concat(nextSelector);
-                    }                    
+                            
+                            if (combinator !== null){
+                                selector.push(combinator);
+                            } else {
+                                selector.push(ws);
+                            }
+                            
+                            selector = selector.concat(nextSelector.parts);
+                        }     
+                    }                
                 
                 }                
                 
-                return selector;
+                return new Selector(selector, selector[0].line, selector[0].col);
             },
             
             
@@ -890,7 +891,7 @@ Parser.prototype = function(){
                         //HASH
                         function(){
                             return tokenStream.match(Tokens.HASH) ?
-                                    new SelectorUnitPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
+                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
                                     null;
                         },
                         this._class,
@@ -947,7 +948,7 @@ Parser.prototype = function(){
                 }
                  
                 return selectorText !== null ?
-                        new SelectorUnit(elementName, modifiers, selectorText, line, col) :
+                        new SelectorPart(elementName, modifiers, selectorText, line, col) :
                         null;
             },
             
@@ -964,7 +965,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.DOT)){
                     tokenStream.mustMatch(Tokens.IDENT);    
                     token = tokenStream.token();
-                    return new SelectorUnitPart("." + token.value, "class", token.startLine, token.startCol);        
+                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol);        
                 } else {
                     return null;
                 }
@@ -983,7 +984,7 @@ Parser.prototype = function(){
                 
                 if (tokenStream.match([Tokens.IDENT, Tokens.STAR])){
                     token = tokenStream.token();
-                    return new SelectorUnitPart(token.value, "elementName", token.startLine, token.startCol);        
+                    return new SelectorSubPart(token.value, "elementName", token.startLine, token.startCol);        
                 
                 } else {
                     return null;
@@ -1021,7 +1022,7 @@ Parser.prototype = function(){
                     tokenStream.mustMatch(Tokens.RBRACKET);
                     token = tokenStream.token();
                                         
-                    return new SelectorUnitPart(value + token.value, "attribute", token.startLine, token.startCol);
+                    return new SelectorSubPart(value + token.value, "attribute", token.startLine, token.startCol);
                 } else {
                     return null;
                 }
@@ -1055,7 +1056,7 @@ Parser.prototype = function(){
                     }
                     
                     token = tokenStream.token();
-                    pseudo = new SelectorUnitPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
+                    pseudo = new SelectorSubPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;
@@ -1221,7 +1222,7 @@ Parser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new ValueUnit(unary !== null ? unary + value : value, line, col) :
+                        new PropertyValue(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -1289,10 +1290,16 @@ Parser.prototype = function(){
             parse: function(input){    
                 this._tokenStream = new TokenStream(input, Tokens);
                 this._stylesheet();
+            },
+            
+            parseSelector: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                return this._selector();
             }
             
         };
         
+    //copy over onto prototype
     for (prop in additions){
         proto[prop] = additions[prop];
     }   
@@ -1302,7 +1309,7 @@ Parser.prototype = function(){
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
- * @class PropertyUnit
+ * @class PropertyName
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
@@ -1310,7 +1317,7 @@ Parser.prototype = function(){
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function PropertyUnit(text, hack, line, col){
+function PropertyName(text, hack, line, col){
     
     SyntaxUnit.call(this, (hack||"") + text, line, col);
 
@@ -1323,8 +1330,120 @@ function PropertyUnit(text, hack, line, col){
 
 }
 
-PropertyUnit.prototype = new SyntaxUnit();
-PropertyUnit.prototype.constructor = PropertyUnit;
+PropertyName.prototype = new SyntaxUnit();
+PropertyName.prototype.constructor = PropertyName;
+
+
+/**
+ * Represents a single part of a CSS property value, meaning that it represents
+ * just one part of the data between ":" and ";".
+ * @param {String} text The text representation of the unit.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ * @namespace parserlib.css
+ * @class PropertyValue
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ */
+function PropertyValue(text, line, col){
+
+    SyntaxUnit.apply(this,arguments);
+    
+    /**
+     * Indicates the type of value unit.
+     * @type String
+     * @property type
+     */
+    this.type = "unknown";
+
+    //figure out what type of data it is
+    
+    var temp;
+    
+    //it is a measurement?
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
+        this.type = "length";
+        this.value = +RegExp.$1;
+        this.units = RegExp.$2 || null;
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+        this.type = "percentage";
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?\d+)$/i.test(text)){  //integer
+        this.type = "integer";
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?[\d\.]+)$/i.test(text)){  //number
+        this.type = "number";
+        this.value = +RegExp.$1;
+    
+    } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
+        this.type = "color";
+        temp = RegExp.$1;
+        if (temp.length == 3){
+            this.red    = parseInt(temp.charAt(0)+temp.charAt(0),16);
+            this.green  = parseInt(temp.charAt(1)+temp.charAt(1),16);
+            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);            
+        } else {
+            this.red    = parseInt(temp.substring(0,2),16);
+            this.green  = parseInt(temp.substring(2,4),16);
+            this.blue   = parseInt(temp.substring(4,6),16);            
+        }
+    } else if (/^rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color with absolute numbers
+        this.type   = "color";
+        this.red    = +RegExp.$1;
+        this.green  = +RegExp.$2;
+        this.blue   = +RegExp.$3;
+    } else if (/^rgb\((\d+)%,(\d+)%,(\d+)%\)/i.test(text)){ //rgb() color with percentages
+        this.type   = "color";
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+    } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
+        this.type   = "uri";
+        this.uri    = RegExp.$1;
+    } else if (/^["'][^"']*["']/.test(text)){    //string
+        this.type   = "string";
+        this.value  = eval(text);
+    } else if (Colors[text.toLowerCase()]){  //named color
+        this.type   = "color";
+        temp        = Colors[text.toLowerCase()].substring(1);
+        this.red    = parseInt(temp.substring(0,2),16);
+        this.green  = parseInt(temp.substring(2,4),16);
+        this.blue   = parseInt(temp.substring(4,6),16);         
+    }
+
+
+}
+
+PropertyValue.prototype = new SyntaxUnit();
+PropertyValue.prototype.constructor = PropertyValue;
+
+
+/**
+ * Represents an entire single selector, including all parts but not
+ * including multiple selectors (those separated by commas).
+ * @namespace parserlib.css
+ * @class Selector
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {Array} parts Array of selectors parts making up this selector.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function Selector(parts, line, col){
+    
+    SyntaxUnit.call(this, parts.join(" "), line, col);
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
+    this.parts = parts;
+
+}
+
+Selector.prototype = new SyntaxUnit();
+Selector.prototype.constructor = Selector;
 
 
 /**
@@ -1332,7 +1451,7 @@ PropertyUnit.prototype.constructor = PropertyUnit;
  * element name and modifiers. This does not include combinators such as
  * spaces, +, >, etc.
  * @namespace parserlib.css
- * @class SelectorUnit
+ * @class SelectorPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} elementName The element name in the selector or null
@@ -1343,7 +1462,7 @@ PropertyUnit.prototype.constructor = PropertyUnit;
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorUnit(elementName, modifiers, text, line, col){
+function SelectorPart(elementName, modifiers, text, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -1365,15 +1484,15 @@ function SelectorUnit(elementName, modifiers, text, line, col){
 
 }
 
-SelectorUnit.prototype = new SyntaxUnit();
-SelectorUnit.prototype.constructor = SelectorUnit;
+SelectorPart.prototype = new SyntaxUnit();
+SelectorPart.prototype.constructor = SelectorPart;
 
 
 /**
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.
  * @namespace parserlib.css
- * @class SelectorUnitPart
+ * @class SelectorSubPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
@@ -1381,7 +1500,7 @@ SelectorUnit.prototype.constructor = SelectorUnit;
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorUnitPart(text, type, line, col){
+function SelectorSubPart(text, type, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -1394,8 +1513,8 @@ function SelectorUnitPart(text, type, line, col){
 
 }
 
-SelectorUnitPart.prototype = new SyntaxUnit();
-SelectorUnitPart.prototype.constructor = SelectorUnitPart;
+SelectorSubPart.prototype = new SyntaxUnit();
+SelectorSubPart.prototype.constructor = SelectorSubPart;
 
 
 /*
@@ -1667,97 +1786,16 @@ var ValueTokens = (function(){
     return TokenStream.createTokenData(symbols);
 
 });
-/**
- * Represents a single part of a CSS property value, meaning that it represents
- * just one part of the data between ":" and ";".
- * @param {String} text The text representation of the unit.
- * @namespace parserlib.css
- * @class ValueUnit
- * @extends parserlib.util.SyntaxUnit
- * @constructor
- */
-function ValueUnit(text, line, col){
-
-    SyntaxUnit.apply(this,arguments);
-    
-    /**
-     * Indicates the type of value unit.
-     * @type String
-     * @property type
-     */
-    this.type = "unknown";
-
-    //figure out what type of data it is
-    
-    var temp;
-    
-    //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
-        this.type = "length";
-        this.value = +RegExp.$1;
-        this.units = RegExp.$2 || null;
-    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
-        this.type = "percentage";
-        this.value = +RegExp.$1;
-    } else if (/^([+\-]?\d+)$/i.test(text)){  //integer
-        this.type = "integer";
-        this.value = +RegExp.$1;
-    } else if (/^([+\-]?[\d\.]+)$/i.test(text)){  //number
-        this.type = "number";
-        this.value = +RegExp.$1;
-    
-    } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
-        this.type = "color";
-        temp = RegExp.$1;
-        if (temp.length == 3){
-            this.red    = parseInt(temp.charAt(0)+temp.charAt(0),16);
-            this.green  = parseInt(temp.charAt(1)+temp.charAt(1),16);
-            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);            
-        } else {
-            this.red    = parseInt(temp.substring(0,2),16);
-            this.green  = parseInt(temp.substring(2,4),16);
-            this.blue   = parseInt(temp.substring(4,6),16);            
-        }
-    } else if (/^rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color with absolute numbers
-        this.type   = "color";
-        this.red    = +RegExp.$1;
-        this.green  = +RegExp.$2;
-        this.blue   = +RegExp.$3;
-    } else if (/^rgb\((\d+)%,(\d+)%,(\d+)%\)/i.test(text)){ //rgb() color with percentages
-        this.type   = "color";
-        this.red    = +RegExp.$1 * 255 / 100;
-        this.green  = +RegExp.$2 * 255 / 100;
-        this.blue   = +RegExp.$3 * 255 / 100;
-    } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
-        this.type   = "uri";
-        this.uri    = RegExp.$1;
-    } else if (/^["'][^"']*["']/.test(text)){    //string
-        this.type   = "string";
-        this.value  = eval(text);
-    } else if (Colors[text.toLowerCase()]){  //named color
-        this.type   = "color";
-        temp        = Colors[text.toLowerCase()].substring(1);
-        this.red    = parseInt(temp.substring(0,2),16);
-        this.green  = parseInt(temp.substring(2,4),16);
-        this.blue   = parseInt(temp.substring(4,6),16);         
-    }
-
-
-}
-
-ValueUnit.prototype = new SyntaxUnit();
-ValueUnit.prototype.constructor = ValueUnit;
-
-
 
 parserlib.css = {
 Colors              :Colors,    
-CombinatorUnit      :CombinatorUnit,                
+Combinator          :Combinator,                
 Parser              :Parser,
-PropertyUnit        :PropertyUnit,
-SelectorUnit        :SelectorUnit,
-SelectorUnitPart    :SelectorUnitPart,
-Tokens              :Tokens,
-ValueUnit           :ValueUnit
+PropertyName        :PropertyName,
+PropertyValue       :PropertyValue,
+Selector            :Selector,
+SelectorPart        :SelectorPart,
+SelectorSubPart     :SelectorSubPart,
+Tokens              :Tokens
 };
 })();

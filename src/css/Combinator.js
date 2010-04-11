@@ -1,14 +1,14 @@
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
- * @class CombinatorUnit
+ * @class Combinator
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  * @param {String} text The text representation of the unit. 
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function CombinatorUnit(text, line, col){
+function Combinator(text, line, col){
     
     SyntaxUnit.call(this, text, line, col);
 
@@ -25,11 +25,11 @@ function CombinatorUnit(text, line, col){
     } else if (text == ">"){
         this.type = "child";
     } else if (text == "+"){
-        this.type = "adjacentSibling";
+        this.type = "adjacent-sibling";
     }
 
 }
 
-CombinatorUnit.prototype = new SyntaxUnit();
-CombinatorUnit.prototype.constructor = CombinatorUnit;
+Combinator.prototype = new SyntaxUnit();
+Combinator.prototype.constructor = Combinator;
 

@@ -295,7 +295,7 @@ Parser.prototype = function(){
                 
                 if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
                     token = tokenStream.token();
-                    value = new CombinatorUnit(token.value, token.startLine, token.startCol);
+                    value = new Combinator(token.value, token.startLine, token.startCol);
                 }
                 
                 return value;
@@ -353,7 +353,7 @@ Parser.prototype = function(){
                         tokenValue = tokenValue.substring(1);
                     }
                     
-                    value = new PropertyUnit(tokenValue, hack, (line||token.startLine), (col||token.startCol));
+                    value = new PropertyName(tokenValue, hack, (line||token.startLine), (col||token.startCol));
                 }
                 
                 return value;
@@ -445,41 +445,42 @@ Parser.prototype = function(){
                     if (nextSelector === null){
                         this._unexpectedToken(this.LT(1));
                     } else {
-                        selector.concat(nextSelector);
+                    
+                        //nextSelector is an instance of Selector, but we really just want the parts
+                        selector = selector.concat(nextSelector.parts);
                     }
                 } else {
                     
                     //if there's not whitespace, we're done
-                    if (!tokenStream.match(Tokens.S, "ws")){               
-                        return selector;
-                    }           
-
-                    //add whitespace separator
-                    ws = new CombinatorUnit(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
-                    
-                    //combinator is not required
-                    combinator = this._combinator();
-                    
-                    //selector is required if there's a combinator
-                    nextSelector = this._selector();
-                    if (nextSelector === null){                        
-                        if (combinator !== null){
-                            this._unexpectedToken(tokenStream.LT(1));
-                        }
-                    } else {
+                    if (tokenStream.match(Tokens.S, "ws")){           
+    
+                        //add whitespace separator
+                        ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                         
-                        if (combinator !== null){
-                            selector.push(combinator);
+                        //combinator is not required
+                        combinator = this._combinator();
+                        
+                        //selector is required if there's a combinator
+                        nextSelector = this._selector();
+                        if (nextSelector === null){                        
+                            if (combinator !== null){
+                                this._unexpectedToken(tokenStream.LT(1));
+                            }
                         } else {
-                            selector.push(ws);
-                        }
-                        
-                        selector = selector.concat(nextSelector);
-                    }                    
+                            
+                            if (combinator !== null){
+                                selector.push(combinator);
+                            } else {
+                                selector.push(ws);
+                            }
+                            
+                            selector = selector.concat(nextSelector.parts);
+                        }     
+                    }                
                 
                 }                
                 
-                return selector;
+                return new Selector(selector, selector[0].line, selector[0].col);
             },
             
             
@@ -509,7 +510,7 @@ Parser.prototype = function(){
                         //HASH
                         function(){
                             return tokenStream.match(Tokens.HASH) ?
-                                    new SelectorUnitPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
+                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
                                     null;
                         },
                         this._class,
@@ -566,7 +567,7 @@ Parser.prototype = function(){
                 }
                  
                 return selectorText !== null ?
-                        new SelectorUnit(elementName, modifiers, selectorText, line, col) :
+                        new SelectorPart(elementName, modifiers, selectorText, line, col) :
                         null;
             },
             
@@ -583,7 +584,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.DOT)){
                     tokenStream.mustMatch(Tokens.IDENT);    
                     token = tokenStream.token();
-                    return new SelectorUnitPart("." + token.value, "class", token.startLine, token.startCol);        
+                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol);        
                 } else {
                     return null;
                 }
@@ -602,7 +603,7 @@ Parser.prototype = function(){
                 
                 if (tokenStream.match([Tokens.IDENT, Tokens.STAR])){
                     token = tokenStream.token();
-                    return new SelectorUnitPart(token.value, "elementName", token.startLine, token.startCol);        
+                    return new SelectorSubPart(token.value, "elementName", token.startLine, token.startCol);        
                 
                 } else {
                     return null;
@@ -640,7 +641,7 @@ Parser.prototype = function(){
                     tokenStream.mustMatch(Tokens.RBRACKET);
                     token = tokenStream.token();
                                         
-                    return new SelectorUnitPart(value + token.value, "attribute", token.startLine, token.startCol);
+                    return new SelectorSubPart(value + token.value, "attribute", token.startLine, token.startCol);
                 } else {
                     return null;
                 }
@@ -674,7 +675,7 @@ Parser.prototype = function(){
                     }
                     
                     token = tokenStream.token();
-                    pseudo = new SelectorUnitPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
+                    pseudo = new SelectorSubPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;
@@ -840,7 +841,7 @@ Parser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new ValueUnit(unary !== null ? unary + value : value, line, col) :
+                        new PropertyValue(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -908,10 +909,16 @@ Parser.prototype = function(){
             parse: function(input){    
                 this._tokenStream = new TokenStream(input, Tokens);
                 this._stylesheet();
+            },
+            
+            parseSelector: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                return this._selector();
             }
             
         };
         
+    //copy over onto prototype
     for (prop in additions){
         proto[prop] = additions[prop];
     }   

@@ -110,6 +110,7 @@ EventTarget.prototype = {
 };
 /**
  * Convenient way to read through strings.
+ * @namespace parserlib.util
  * @class StringReader
  * @constructor
  * @param {String} text The text to read.
@@ -329,8 +330,45 @@ StringReader.prototype = {
 
 };
 /**
+ * Type to use when a syntax error occurs.
+ * @class SyntaxError
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String} message The error message.
+ * @param {int} line The line at which the error occurred.
+ * @param {int} col The column at which the error occurred.
+ */
+function SyntaxError(message, line, col){
+
+    /**
+     * The column at which the error occurred.
+     * @type int
+     * @property col
+     */
+    this.col = col;
+
+    /**
+     * The line at which the error occurred.
+     * @type int
+     * @property line
+     */
+    this.line = line;
+
+    /**
+     * The text representation of the unit.
+     * @type String
+     * @property text
+     */
+    this.message = message;
+
+}
+
+//inherit from Error
+SyntaxError.prototype = new Error();
+/**
  * Base type to represent a single syntactic unit.
  * @class SyntaxUnit
+ * @namespace parserlib.util
  * @constructor
  * @param {String} text The text of the unit.
  * @param {int} line The line of text on which the unit resides.
@@ -389,6 +427,7 @@ SyntaxUnit.prototype = {
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStream
+ * @namespace parserlib.util
  * @constructor
  * @param {String|StringReader} input The text to tokenize or a reader from 
  *      which to read the input.
@@ -565,14 +604,34 @@ TokenStream.prototype = {
 
         if (!this.match.apply(this, arguments)){    
             token = this.LT(1);
-            throw new Error("Expected " + this._tokenData[tokenTypes[0]].name + 
-                " at line " + token.startLine + ", character " + token.startCol + ".");
+            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
+                " at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
     
     //-------------------------------------------------------------------------
     // Consuming methods
     //-------------------------------------------------------------------------
+    
+    /**
+     * Keeps reading from the token stream until either one of the specified
+     * token types is found or until the end of the input is reached.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token should be. If an array is passed,
+     *      it's assumed that the token must be one of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
+     * @return {void}
+     * @method advance
+     */
+    advance: function(tokenTypes, channel){
+        
+        while(this.LA(0) != 0 && !this.match(tokenTypes, channel)){
+            this.get();
+        }
+
+        return this.LA(0);    
+    },
     
     /**
      * Consumes the next token from the token stream. 
@@ -802,6 +861,7 @@ TokenStream.prototype = {
 
 parserlib.util = {
 StringReader: StringReader,
+SyntaxError : SyntaxError,
 SyntaxUnit  : SyntaxUnit,
 EventTarget : EventTarget,
 TokenStream : TokenStream

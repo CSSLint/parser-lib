@@ -1,6 +1,7 @@
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStream
+ * @namespace parserlib.util
  * @constructor
  * @param {String|StringReader} input The text to tokenize or a reader from 
  *      which to read the input.
@@ -177,14 +178,34 @@ TokenStream.prototype = {
 
         if (!this.match.apply(this, arguments)){    
             token = this.LT(1);
-            throw new Error("Expected " + this._tokenData[tokenTypes[0]].name + 
-                " at line " + token.startLine + ", character " + token.startCol + ".");
+            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
+                " at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
     
     //-------------------------------------------------------------------------
     // Consuming methods
     //-------------------------------------------------------------------------
+    
+    /**
+     * Keeps reading from the token stream until either one of the specified
+     * token types is found or until the end of the input is reached.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token should be. If an array is passed,
+     *      it's assumed that the token must be one of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
+     * @return {void}
+     * @method advance
+     */
+    advance: function(tokenTypes, channel){
+        
+        while(this.LA(0) != 0 && !this.match(tokenTypes, channel)){
+            this.get();
+        }
+
+        return this.LA(0);    
+    },
     
     /**
      * Consumes the next token from the token stream. 

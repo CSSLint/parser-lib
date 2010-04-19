@@ -35,6 +35,7 @@
             <footer trimleading="yes">
             parserlib.util = {
                 StringReader: StringReader,
+                SyntaxError : SyntaxError,
                 SyntaxUnit  : SyntaxUnit,
                 EventTarget : EventTarget,
                 TokenStream : TokenStream
@@ -54,6 +55,7 @@
             (function(){
             var TokenStream = parserlib.util.TokenStream,
                 EventTarget = parserlib.util.EventTarget,
+                SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;
             </header>        
             <!--<filelist dir="${src.dir}/css" files="CSSTokens.js, CSSSelectorUnit.js, CSSColors.js, CSSValueUnit.js, CSSParser.js"/>-->

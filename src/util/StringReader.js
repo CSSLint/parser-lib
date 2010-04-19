@@ -1,5 +1,6 @@
 /**
  * Convenient way to read through strings.
+ * @namespace parserlib.util
  * @class StringReader
  * @constructor
  * @param {String} text The text to read.

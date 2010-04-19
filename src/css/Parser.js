@@ -370,7 +370,8 @@ Parser.prototype = function(){
                  
                 var tokenStream = this._tokenStream,
                     selectors   = [],
-                    selector    = null;
+                    selector    = null,
+                    tt;
                 
                 selector = this._selector();
                 if (selector !== null){
@@ -393,15 +394,7 @@ Parser.prototype = function(){
                     selectors:  selectors
                 });                
                 
-                if (this._declaration()){
-                    
-                    //if there's a semicolon, there may be another declaration
-                    while(tokenStream.match(Tokens.SEMICOLON)){
-                        this._declaration();
-                    }
-                }
-                
-                tokenStream.mustMatch(Tokens.RBRACE);
+                this._rulesetEnd();                
                 
                 this.fire({
                     type:       "endrule",
@@ -411,6 +404,53 @@ Parser.prototype = function(){
                 return selectors;
                 
             },
+            
+            //abstracted for _ruleset for error correction
+            _rulesetEnd: function(){
+            
+                /* Partial:
+                 * declaration? [ ';' S* declaration? ]* '}'
+                 */            
+            
+                var tokenStream = this._tokenStream,
+                    tt;
+                    
+                try {
+                    if (this._declaration()){
+                        
+                        //if there's a semicolon, there may be another declaration
+                        while(this._tokenStream.match(Tokens.SEMICOLON)){
+                            this._declaration();
+                        }
+                    }
+                    tokenStream.mustMatch(Tokens.RBRACE);
+                } catch (ex) {
+                    if (ex instanceof SyntaxError && !this.options.strict){
+                    
+                        //fire error event
+                        this.fire({
+                            type:       "error",
+                            error:      ex,
+                            message:    ex.message,
+                            line:       ex.line,
+                            col:        ex.col
+                        });                          
+                        
+                        //see if there's another declaration
+                        tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
+                        if (tt == Tokens.SEMICOLON){
+                            this._rulesetEnd();
+                        } else if (tt == Tokens.RBRACE){
+                            //do nothing
+                        } else {
+                            throw ex;
+                        }                        
+                        
+                    } else {
+                        throw ex;
+                    }
+                }
+            },            
             
             _selector: function(){
                 /*
@@ -891,7 +931,7 @@ Parser.prototype = function(){
                     token = tokenStream.token();
                     color = token.value;
                     if (!/#[a-f0-9]{3,6}/i.test(color)){
-                        throw new Error("Expected a hex color but found '" + color + "' at line " + token.startLine + ", character " + token.startCol + ".");
+                        throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
                     }
                 }
                 
@@ -901,7 +941,7 @@ Parser.prototype = function(){
           
             
             _unexpectedToken: function(token){
-                throw new Error("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".");
+                throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
             },
             
             
@@ -913,7 +953,15 @@ Parser.prototype = function(){
             
             parseSelector: function(input){
                 this._tokenStream = new TokenStream(input, Tokens);
-                return this._selector();
+                var result = this._selector();
+                
+                //if there's anything more, then it's an invalid selector
+                if (this._tokenStream.LA(1) != CSSTokens.EOF){
+                    this._unexpectedToken(this._tokenStream.LT(1));
+                }
+                
+                //otherwise return result
+                return result;
             }
             
         };

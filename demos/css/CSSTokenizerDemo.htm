@@ -48,7 +48,7 @@ function tokenize(){
         
         output.innerHTML += tt + " - " + stream.tokenName(tt) + " - (" + stream.token().value + ")<br>";
         
-        if (tt > 0){
+        if (tt != 0){
             setTimeout(arguments.callee, 15);
         }
     

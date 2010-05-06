@@ -377,6 +377,7 @@ var Tokens  = [
     var nameMap = ["EOF"],
         typeMap = {};
     
+    Tokens.UNKNOWN = -1;
     Tokens.EOF = 0;
     for (var i=0, len = Tokens.length; i < len; i++){
         nameMap.push(Tokens[i].name);

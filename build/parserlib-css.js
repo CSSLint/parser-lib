@@ -1608,10 +1608,6 @@ function isDigit(c){
     return c != null && /\d/.test(c);
 }
 
-function isNumberStart(c){
-    return c != null && /[\d\.\-]/.test(c);
-}
-
 function isWhitespace(c){
     return c != null && /\s/.test(c);
 }
@@ -1668,6 +1664,7 @@ CSSTokenStream.prototype = {
                  * Potential tokens:
                  * - COMMENT
                  * - SLASH
+                 * - UNKNOWN
                  */
                 case "/":
 
@@ -1676,7 +1673,22 @@ CSSTokenStream.prototype = {
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
-                    break;
+                    break;                    
+                
+                /*
+                 * Potential tokens:
+                 * - DASHMATCH
+                 * - INCLUDES
+                 * - UNKNOWN
+                 */
+                case "|":
+                case "~":
+                    if(reader.peek() == "="){
+                        token = this.comparisonToken(c, startLine, startCol);
+                    } else {
+                        token = this.charToken(c, startLine, startCol);
+                    }
+                    break;                    
                 
                 /*
                  * Potential tokens:
@@ -1693,12 +1705,57 @@ CSSTokenStream.prototype = {
                  * - HASH
                  */
                 case "#":
-                
+                    if (isNameChar(reader.peek())){
+                        token = this.hashToken(c, startLine, startCol);                        
+                    } else {
+                        token = this.charToken(c, startLine, startCol);
+                    }                
                     break;
                     
                 /*
                  * Potential tokens:
+                 * - DOT
+                 * - NUMBER
+                 * - DIMENSION
+                 * - LENGTH
+                 * - FREQ
+                 * - TIME
+                 * - EMS
+                 * - EXS
+                 * - ANGLE
+                 */
+                case ".":
+                    if (isDigit(reader.peek())){
+                        token = this.numberToken(c, startLine, startCol);                        
+                    } else {
+                        token = this.charToken(c, startLine, startCol);
+                    }
+                    break;                    
+                    
+                /*
+                 * Potential tokens:
+                 * - MINUS
+                 * - NUMBER
+                 * - DIMENSION
+                 * - LENGTH
+                 * - FREQ
+                 * - TIME
+                 * - EMS
+                 * - EXS
+                 * - ANGLE
+                 */
+                case "-":
+                    if (isNameStart(reader.peek())){
+                        token = this.identOrFunctionToken(c, startLine, startCol);
+                    } else {
+                        token = this.charToken(c, startLine, startCol);
+                    }
+                    break;
+                
+                /*
+                 * Potential tokens:
                  * - IMPORTANT_SYM
+                 * - UNKNOWN
                  */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
@@ -1729,7 +1786,7 @@ CSSTokenStream.prototype = {
                      * - EXS
                      * - ANGLE
                      */
-                    if (isNumberStart(c)){
+                    if (isDigit(c)){
                         token = this.numberToken(c, startLine, startCol);
                     } else 
                 
@@ -1746,7 +1803,16 @@ CSSTokenStream.prototype = {
                      * - IDENT
                      */                    
                     if (isIdentStart(c)){
-                        token = this.identToken(c, startLine, startCol);
+                        token = this.identOrFunctionToken(c, startLine, startCol);
+                    } else 
+                    
+                    /*
+                     * Potential tokens:
+                     * - UNKNOWN
+                     * - PLUS
+                     */
+                    {
+                        token = this.charToken(c, startLine, startCol);                    
                     }
         
         
@@ -1777,6 +1843,13 @@ CSSTokenStream.prototype = {
             
         return this.createToken(tt, c, startLine, startCol);
     },
+    comparisonToken: function(c, startLine, startCol){
+        var reader  = this.input,
+            comparison  = c + reader.read(),
+            tt      = Tokens.type(comparison) || -1;
+            
+        return this.createToken(tt, comparison, startLine, startCol);
+    },
     whitespaceToken: function(first, startLine, startCol){
         var reader  = this.input,
             value   = first + this.readWhitespace();
@@ -1791,7 +1864,7 @@ CSSTokenStream.prototype = {
             c       = reader.peek();
             
         if (isIdentStart(c)){
-            ident = this.readIdent(reader.read());
+            ident = this.readName(reader.read());
             value += ident;
             
             if (/em/i.test(ident)){
@@ -1825,11 +1898,30 @@ CSSTokenStream.prototype = {
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
     },
     
-    identToken: function(first, startLine, startCol){
+    hashToken: function(first, startLine, startCol){
         var reader  = this.input,
-            ident   = this.readIdent(first);
+            name    = this.readName(first);
 
-        return this.createToken(Tokens.IDENT, ident, startLine, startCol);    
+        return this.createToken(Tokens.HASH, name, startLine, startCol);    
+    },
+    
+    identOrFunctionToken: function(first, startLine, startCol){
+        var reader  = this.input,
+            ident   = this.readName(first),
+            tt      = Tokens.IDENT;
+
+        //if there's a left paren immediately after, it's a URI or function
+        if (reader.peek() == "("){
+            ident += reader.read();
+            if (ident.toLowerCase() == "url("){
+                tt = Tokens.URI;
+                ident = readURI(ident);
+            } else {
+                tt = Tokens.FUNCTION;
+            }
+        }
+
+        return this.createToken(tt, ident, startLine, startCol);    
     },
     
     importantToken: function(first, startLine, startCol){
@@ -2029,7 +2121,12 @@ CSSTokenStream.prototype = {
         
         return number;
     },
-    readIdent: function(first){
+    readString: function(first){
+        return first;
+        //TODO
+    
+    },
+    readName: function(first){
         var reader  = this.input,
             ident   = first,
             c       = reader.peek();
@@ -2466,6 +2563,7 @@ var Tokens  = [
     var nameMap = ["EOF"],
         typeMap = {};
     
+    Tokens.UNKNOWN = -1;
     Tokens.EOF = 0;
     for (var i=0, len = Tokens.length; i < len; i++){
         nameMap.push(Tokens[i].name);

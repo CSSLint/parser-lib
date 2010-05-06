@@ -271,7 +271,12 @@ YAHOO.test.CSSTokens = (function(){
             "1"         : [CSSTokens.NUMBER],
             "20.0"      : [CSSTokens.NUMBER],
             ".3"        : [CSSTokens.NUMBER],  
-            "-.3"        : [CSSTokens.NUMBER]  
+            
+            //invalid numbers
+            "-.3"       : [CSSTokens.MINUS, CSSTokens.NUMBER],
+            "+0"        : [CSSTokens.PLUS, CSSTokens.NUMBER],
+            "-name"     : [CSSTokens.IDENT],
+            "+name"     : [CSSTokens.PLUS, CSSTokens.IDENT]
   
         }        
     }));   
@@ -328,6 +333,18 @@ YAHOO.test.CSSTokens = (function(){
             
             "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FILTER, CSSTokens.SEMICOLON]
  
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for odd cases",
+        
+        examples: {
+        
+            //regular CSS functions
+            ".name"       : [CSSTokens.DOT, CSSTokens.IDENT],
+            "-name"       : [CSSTokens.IDENT]
+            
         }        
     }));
 

@@ -25,13 +25,13 @@ YAHOO.test.CSSTokens = (function(){
     function CSSTokenTestCase(info){    
     
         YAHOO.tool.TestCase.call(this, info);
-        this.examples = info.examples;    
+        this.patterns = info.patterns;    
         
-        for (var prop in this.examples){
-            if (this.examples.hasOwnProperty(prop)){
+        for (var prop in this.patterns){
+            if (this.patterns.hasOwnProperty(prop)){
                 this["testExample: " + prop] = function(prop){
                     return function(){
-                        this._testExample(prop, this.examples[prop]);
+                        this._testExample(prop, this.patterns[prop]);
                     };
                 }(prop);
             }
@@ -66,7 +66,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
         
-        examples: {
+        patterns: {
             " "     : [CSSTokens.S],
             "\n"    : [CSSTokens.S],
             "\n \t" : [CSSTokens.S],
@@ -77,7 +77,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for comments",
         
-        examples: {
+        patterns: {
             "/* booya */"     : [],
             "/*\n booya */"   : [],
             "/*\n booya \n*/" : []     
@@ -87,7 +87,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name: "Test for comparison operators",        
         
-        examples: {
+        patterns: {
             "~=":   [ CSSTokens.INCLUDES],
             "|=":   [ CSSTokens.DASHMATCH]        
         }
@@ -96,7 +96,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name: "Test for identifiers",        
         
-        examples: {
+        patterns: {
             "a":        [ CSSTokens.IDENT],
             "ab":       [ CSSTokens.IDENT],
             "a1":       [ CSSTokens.IDENT],
@@ -114,7 +114,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for strings",
         
-        examples: {
+        patterns: {
             "'hello'"       : [CSSTokens.STRING],
             "\"hello\""     : [CSSTokens.STRING],
             "''"            : [CSSTokens.STRING],
@@ -130,7 +130,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for hashes",
         
-        examples: {
+        patterns: {
             "#identifier"       : [CSSTokens.HASH],
             "#_identifer"       : [CSSTokens.HASH],
             "#0-9_"             : [CSSTokens.HASH],
@@ -142,7 +142,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for @charset",
         
-        examples: {
+        patterns: {
             "@charset"      : [-1],
             "@charset "     : [CSSTokens.CHARSET_SYM],
             "@CHARSET"      : [-1],
@@ -153,7 +153,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for @import",
         
-        examples: {
+        patterns: {
             "@import"      : [CSSTokens.IMPORT_SYM],
             "@import "     : [CSSTokens.IMPORT_SYM, CSSTokens.S],
             "@IMPORT"      : [CSSTokens.IMPORT_SYM],
@@ -164,7 +164,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for @media",
         
-        examples: {
+        patterns: {
             "@media"      : [CSSTokens.MEDIA_SYM],
             "@media "     : [CSSTokens.MEDIA_SYM, CSSTokens.S],
             "@MEDIA"      : [CSSTokens.MEDIA_SYM],
@@ -175,7 +175,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for @page",
         
-        examples: {
+        patterns: {
             "@page"      : [CSSTokens.PAGE_SYM],
             "@page "     : [CSSTokens.PAGE_SYM, CSSTokens.S],
             "@PAGE"      : [CSSTokens.PAGE_SYM],
@@ -186,7 +186,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for !important",
         
-        examples: {
+        patterns: {
             "!important"        : [CSSTokens.IMPORTANT_SYM],
             "!IMPORTANT"        : [CSSTokens.IMPORTANT_SYM],
             "!  important"      : [CSSTokens.IMPORTANT_SYM],
@@ -207,7 +207,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for Numbers",
         
-        examples: {
+        patterns: {
         
             
             //pixels
@@ -284,7 +284,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for URLs",
         
-        examples: {
+        patterns: {
             "url(foo.jpg)"      : [CSSTokens.URI],
             "url('foo.jpg')"    : [CSSTokens.URI],
             "url(\"foo.jpg\")"  : [CSSTokens.URI],
@@ -295,7 +295,11 @@ YAHOO.test.CSSTokens = (function(){
             
             "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
             "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI]
+            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
+            
+            //invalid URLs
+            "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],
+            "url('booya'"       : [CSSTokens.FUNCTION, CSSTokens.STRING]
         }        
     }));
 
@@ -305,11 +309,11 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for Functions",
         
-        examples: {
+        patterns: {
         
             //regular CSS functions
             "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
-            "counter(par-num, upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
+            "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
 
             //old-style IE filters - interpreted as bunch of tokens
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
@@ -325,11 +329,11 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for Properties",
         
-        examples: {
+        patterns: {
         
             //regular CSS functions
-            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
-            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
             
             "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FILTER, CSSTokens.SEMICOLON]
  
@@ -339,7 +343,7 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for odd cases",
         
-        examples: {
+        patterns: {
         
             //regular CSS functions
             ".name"       : [CSSTokens.DOT, CSSTokens.IDENT],

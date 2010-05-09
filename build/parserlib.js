@@ -3036,9 +3036,10 @@ CSSTokenStream.prototype = {
             delim   = reader.read(),
             string  = delim,            
             prev    = delim,
-            c       = reader.read();
+            c       = reader.peek();
             
         while(c){
+            c = reader.read();
             string += c;
             
             //if the delimiter is found with an escapement, we're done.
@@ -3054,7 +3055,7 @@ CSSTokenStream.prototype = {
         
             //save previous and get next
             prev = c;
-            c = reader.read();
+            c = reader.peek();
         }
         
         //if c is null, that means we're out of input and the string was never closed
@@ -3079,13 +3080,14 @@ CSSTokenStream.prototype = {
             inner = this.readURL();
         }
         
-        c = reader.read();
-        uri += inner + c;
+        c = reader.peek();
         
         //if there was no inner value or the next character isn't closing paren, it's not a URI
         if (inner == "" || c != ")"){
             uri = first;
             reader.reset();
+        } else {
+            uri += inner + reader.read();
         }
                 
         return uri;
@@ -3538,16 +3540,16 @@ var Tokens  = [
 
 (function(){
 
-    var nameMap = ["EOF"],
+    var nameMap = [],
         typeMap = {};
     
     Tokens.UNKNOWN = -1;
-    Tokens.EOF = 0;
+    Tokens.unshift({name:"EOF"});
     for (var i=0, len = Tokens.length; i < len; i++){
         nameMap.push(Tokens[i].name);
-        Tokens[Tokens[i].name] = i+1;
+        Tokens[Tokens[i].name] = i;
         if (Tokens[i].text){
-            typeMap[Tokens[i].text] = i+1;
+            typeMap[Tokens[i].text] = i;
         }
     }
     

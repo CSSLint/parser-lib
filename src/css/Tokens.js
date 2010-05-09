@@ -374,16 +374,16 @@ var Tokens  = [
 
 (function(){
 
-    var nameMap = ["EOF"],
+    var nameMap = [],
         typeMap = {};
     
     Tokens.UNKNOWN = -1;
-    Tokens.EOF = 0;
+    Tokens.unshift({name:"EOF"});
     for (var i=0, len = Tokens.length; i < len; i++){
         nameMap.push(Tokens[i].name);
-        Tokens[Tokens[i].name] = i+1;
+        Tokens[Tokens[i].name] = i;
         if (Tokens[i].text){
-            typeMap[Tokens[i].text] = i+1;
+            typeMap[Tokens[i].text] = i;
         }
     }
     

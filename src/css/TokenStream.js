@@ -543,9 +543,10 @@ CSSTokenStream.prototype = {
             delim   = reader.read(),
             string  = delim,            
             prev    = delim,
-            c       = reader.read();
+            c       = reader.peek();
             
         while(c){
+            c = reader.read();
             string += c;
             
             //if the delimiter is found with an escapement, we're done.
@@ -561,7 +562,7 @@ CSSTokenStream.prototype = {
         
             //save previous and get next
             prev = c;
-            c = reader.read();
+            c = reader.peek();
         }
         
         //if c is null, that means we're out of input and the string was never closed
@@ -586,13 +587,14 @@ CSSTokenStream.prototype = {
             inner = this.readURL();
         }
         
-        c = reader.read();
-        uri += inner + c;
+        c = reader.peek();
         
         //if there was no inner value or the next character isn't closing paren, it's not a URI
         if (inner == "" || c != ")"){
             uri = first;
             reader.reset();
+        } else {
+            uri += inner + reader.read();
         }
                 
         return uri;

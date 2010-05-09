@@ -1915,7 +1915,12 @@ CSSTokenStream.prototype = {
             ident += reader.read();
             if (ident.toLowerCase() == "url("){
                 tt = Tokens.URI;
-                ident = readURI(ident);
+                ident = this.readURI(ident);
+                
+                //didn't find a valid URL or there's no closing paren
+                if (ident.toLowerCase() == "url("){
+                    tt = Tokens.FUNCTION;
+                }
             } else {
                 tt = Tokens.FUNCTION;
             }
@@ -2121,9 +2126,77 @@ CSSTokenStream.prototype = {
         
         return number;
     },
-    readString: function(first){
-        return first;
-        //TODO
+    readString: function(){
+        var reader  = this.input,
+            delim   = reader.read(),
+            string  = delim,            
+            prev    = delim,
+            c       = reader.read();
+            
+        while(c){
+            string += c;
+            
+            //if the delimiter is found with an escapement, we're done.
+            if (c == delim && prev != "\\"){
+                break;
+            }
+
+            //if there's a newline without an escapement, it's an invalid string
+            if (isNewLine(reader.peek()) && c != "\\"){
+                string = "";
+                break;
+            }
+        
+            //save previous and get next
+            prev = c;
+            c = reader.read();
+        }
+        
+        //if c is null, that means we're out of input and the string was never closed
+        if (c == null){
+            string = "";
+        }
+                
+        return string;
+    },
+    readURI: function(first){
+        var reader  = this.input,
+            uri     = first,
+            inner   = "",
+            c       = reader.peek();
+            
+        reader.mark();
+            
+        //it's a string
+        if (c == "'" || c == "\""){
+            inner = this.readString();
+        } else {
+            inner = this.readURL();
+        }
+        
+        c = reader.read();
+        uri += inner + c;
+        
+        //if there was no inner value or the next character isn't closing paren, it's not a URI
+        if (inner == "" || c != ")"){
+            uri = first;
+            reader.reset();
+        }
+                
+        return uri;
+    },
+    readURL: function(){
+        var reader  = this.input,
+            url     = "",
+            c       = reader.peek();
+    
+        //TODO: Check for escape and nonascii
+        while (/^[!#$%&\\*-~]$/.test(c)){
+            url += reader.read();
+            c = reader.peek();
+        }
+    
+        return url;
     
     },
     readName: function(first){

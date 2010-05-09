@@ -22,6 +22,11 @@ YAHOO.test.CSSTokens = (function(){
         TokenStream = parserlib.css.TokenStream,
         CSSTokens = parserlib.css.Tokens;
     
+    
+    //-------------------------------------------------------------------------
+    // New testcase type to make it easier to test patterns
+    //-------------------------------------------------------------------------
+    
     function CSSTokenTestCase(info){    
     
         YAHOO.tool.TestCase.call(this, info);
@@ -29,9 +34,9 @@ YAHOO.test.CSSTokens = (function(){
         
         for (var prop in this.patterns){
             if (this.patterns.hasOwnProperty(prop)){
-                this["testExample: " + prop] = function(prop){
+                this["testPattern: " + prop] = function(prop){
                     return function(){
-                        this._testExample(prop, this.patterns[prop]);
+                        this._testPattern(prop, this.patterns[prop]);
                     };
                 }(prop);
             }
@@ -40,8 +45,8 @@ YAHOO.test.CSSTokens = (function(){
     
     CSSTokenTestCase.prototype = new YAHOO.tool.TestCase();
     
-    CSSTokenTestCase.prototype._testExample = function(example, outputs){
-        var tokenStream = new TokenStream(example, CSSTokens);
+    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs){
+        var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
     
         for (var i=0, len=outputs.length; i < len; i++){
@@ -57,12 +62,13 @@ YAHOO.test.CSSTokens = (function(){
     };
     
     //-------------------------------------------------------------------------
-    // Base Test Suite
+    // Simple CSS token tests
     //-------------------------------------------------------------------------
     
     var suite = new YAHOO.tool.TestSuite("CSS Tokens");
    
    
+    //note: \r\n is normalized to just \n by StringReader
     suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
         
@@ -88,8 +94,8 @@ YAHOO.test.CSSTokens = (function(){
         name: "Test for comparison operators",        
         
         patterns: {
-            "~=":   [ CSSTokens.INCLUDES],
-            "|=":   [ CSSTokens.DASHMATCH]        
+            "~="    :[CSSTokens.INCLUDES],
+            "|="    :[CSSTokens.DASHMATCH]        
         }
     }));
 
@@ -97,14 +103,14 @@ YAHOO.test.CSSTokens = (function(){
         name: "Test for identifiers",        
         
         patterns: {
-            "a":        [ CSSTokens.IDENT],
-            "ab":       [ CSSTokens.IDENT],
-            "a1":       [ CSSTokens.IDENT],
-            "a_c":      [ CSSTokens.IDENT],
-            "a-c":      [ CSSTokens.IDENT],
-            "a90":      [ CSSTokens.IDENT],
-            "a\\09":    [ CSSTokens.IDENT],
-            "\\sa":     [ CSSTokens.IDENT],
+            "a":        [CSSTokens.IDENT],
+            "ab":       [CSSTokens.IDENT],
+            "a1":       [CSSTokens.IDENT],
+            "a_c":      [CSSTokens.IDENT],
+            "a-c":      [CSSTokens.IDENT],
+            "a90":      [CSSTokens.IDENT],
+            "a\\09":    [CSSTokens.IDENT],
+            "\\sa":     [CSSTokens.IDENT],
             
             //not identifiers
             "9a":       [CSSTokens.DIMENSION]
@@ -121,6 +127,7 @@ YAHOO.test.CSSTokens = (function(){
             "\"\""          : [CSSTokens.STRING],
             "'hello\""      : [CSSTokens.INVALID],
             "\"hello'"      : [CSSTokens.INVALID],
+            "'hello"        : [CSSTokens.INVALID],
             "'hel\\\'lo'"   : [CSSTokens.STRING],
             "\"hel\\\"lo\"" : [CSSTokens.STRING]
         }        
@@ -135,7 +142,8 @@ YAHOO.test.CSSTokens = (function(){
             "#_identifer"       : [CSSTokens.HASH],
             "#0-9_"             : [CSSTokens.HASH],
             "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
-            "#h\\0fllo"         : [CSSTokens.HASH]
+            "#h\\0fllo"         : [CSSTokens.HASH],
+            "#ffeeff"           : [CSSTokens.HASH]
         }        
     }));
     
@@ -301,10 +309,7 @@ YAHOO.test.CSSTokens = (function(){
             "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],
             "url('booya'"       : [CSSTokens.FUNCTION, CSSTokens.STRING]
         }        
-    }));
-
-    
-    
+    }));   
 
     suite.add(new CSSTokenTestCase({
         name : "Tests for Functions",
@@ -318,12 +323,44 @@ YAHOO.test.CSSTokens = (function(){
             //old-style IE filters - interpreted as bunch of tokens
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
 
-            //IE filters
+            //IE filters - not sure how to handle these yet
             "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
             "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
             "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"   : [CSSTokens.IE_FILTER]
         }        
     }));    
+
+    suite.add(new CSSTokenTestCase({
+        name: "Test for single-character tokens",
+        
+        patterns: {
+            
+            //single characters with defined tokens
+            "/"     : [CSSTokens.SLASH],
+            "-"     : [CSSTokens.MINUS],
+            "+"     : [CSSTokens.PLUS],
+            "*"     : [CSSTokens.STAR],
+            ">"     : [CSSTokens.GREATER],
+            "{"     : [CSSTokens.LBRACE],
+            "}"     : [CSSTokens.RBRACE],
+            "["     : [CSSTokens.LBRACKET],
+            "]"     : [CSSTokens.RBRACKET],
+            "="     : [CSSTokens.EQUALS],
+            ":"     : [CSSTokens.COLON],
+            ";"     : [CSSTokens.SEMICOLON],
+            "("     : [CSSTokens.LPAREN],
+            ")"     : [CSSTokens.RPAREN],
+            "."     : [CSSTokens.DOT],
+            ","     : [CSSTokens.COMMA],
+            
+            //single characters without tokens
+            "@"     : [CSSTokens.UNKNOWN]
+        }
+    }));
+    
+    //-------------------------------------------------------------------------
+    // More complex testing patterns
+    //-------------------------------------------------------------------------
 
 
     suite.add(new CSSTokenTestCase({

@@ -430,7 +430,7 @@ CSSTokenStream.prototype = {
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this.input,
-            tt      = -1,
+            tt      = Tokens.UNKNOWN,
             valid   = false,
             c;
             

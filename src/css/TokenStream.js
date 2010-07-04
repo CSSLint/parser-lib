@@ -45,14 +45,14 @@ function isIdentStart(c){
 //-----------------------------------------------------------------------------
 
 
-function CSSTokenStream(input){
+function TokenStream(input){
 
     this.input = (typeof input == "string" ? new StringReader(input) : input);
 
     this._token = null;
 }
 
-CSSTokenStream.prototype = {
+TokenStream.prototype = {
 
     token: function(){
         return this._token;

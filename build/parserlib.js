@@ -926,8 +926,7 @@ THE SOFTWARE.
 
 */
 (function(){
-var TokenStream = parserlib.util.TokenStream,
-EventTarget = parserlib.util.EventTarget,
+var EventTarget = parserlib.util.EventTarget,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
@@ -2538,14 +2537,14 @@ function isIdentStart(c){
 //-----------------------------------------------------------------------------
 
 
-function CSSTokenStream(input){
+function TokenStream(input){
 
     this.input = (typeof input == "string" ? new StringReader(input) : input);
 
     this._token = null;
 }
 
-CSSTokenStream.prototype = {
+TokenStream.prototype = {
 
     token: function(){
         return this._token;
@@ -2923,7 +2922,7 @@ CSSTokenStream.prototype = {
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this.input,
-            tt      = -1,
+            tt      = Tokens.UNKNOWN,
             valid   = false,
             c;
             
@@ -3621,7 +3620,7 @@ PropertyValue       :PropertyValue,
 Selector            :Selector,
 SelectorPart        :SelectorPart,
 SelectorSubPart     :SelectorSubPart,
-TokenStream         :CSSTokenStream,
+TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();

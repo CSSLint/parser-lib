@@ -40,13 +40,13 @@
 <script type="text/javascript">
 
 function tokenize(){
-    stream = new parserlib.util.TokenStream(document.getElementById("input").value, parserlib.util.TokenStream.createTokenData(parserlib.css.Tokens));
+    stream = new parserlib.css.TokenStream(document.getElementById("input").value);
     document.getElementById("output").innerHTML = "";
     setTimeout(function(){
         var tt = stream.get();
         var output = document.getElementById("output");
         
-        output.innerHTML += tt + " - " + stream.tokenName(tt) + " - (" + stream.token().value + ")<br>";
+        output.innerHTML += tt + " - " + parserlib.css.Tokens.name(tt) + " - (" + stream.token().value + ")<br>";
         
         if (tt != 0){
             setTimeout(arguments.callee, 15);

@@ -38,7 +38,7 @@
                 SyntaxError : SyntaxError,
                 SyntaxUnit  : SyntaxUnit,
                 EventTarget : EventTarget,
-                TokenStream : TokenStream
+                TokenStreamBase : TokenStreamBase
             };
             })();
             </footer>
@@ -54,6 +54,7 @@
             */
             (function(){
             var EventTarget = parserlib.util.EventTarget,
+			    TokenStreamBase = parserlib.util.TokenStreamBase,
                 StringReader = parserlib.util.StringReader,
                 SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;

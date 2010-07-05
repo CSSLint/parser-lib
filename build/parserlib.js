@@ -23,6 +23,7 @@ THE SOFTWARE.
 var parserlib = {};
 (function(){
 
+
 /**
  * A generic base to inherit from for any object
  * that needs event handling.
@@ -893,15 +894,398 @@ TokenStream.prototype = {
 };
 
 
+/**
+ * Generic TokenStream providing base functionality.
+ * @class TokenStreamBase
+ * @namespace parserlib.util
+ * @constructor
+ * @param {String|StringReader} input The text to tokenize or a reader from 
+ *      which to read the input.
+ */
+function TokenStreamBase(input, tokenData){
+
+    /**
+     * The string reader for easy access to the text.
+     * @type StringReader
+     * @property _reader
+     * @private
+     */
+    this._reader = (typeof input == "string") ? new StringReader(input) : input;
+    
+    /**
+     * Token object for the last consumed token.
+     * @type Token
+     * @property _token
+     * @private
+     */
+    this._token = null;    
+    
+    /**
+     * The array of token information.
+     * @type Array
+     * @property _tokenData
+     * @private
+     */
+    this._tokenData = tokenData;
+    
+    /**
+     * Lookahead token buffer.
+     * @type Array
+     * @property _lt
+     * @private
+     */
+    this._lt = [];
+    
+    /**
+     * Lookahead token buffer index.
+     * @type int
+     * @property _ltIndex
+     * @private
+     */
+    this._ltIndex = -1;
+}
+
+/**
+ * Accepts an array of token information and outputs
+ * an array of token data containing key-value mappings
+ * and matching functions that the TokenStream needs.
+ * @param {Array} tokens An array of token descriptors.
+ * @return {Array} An array of processed token data.
+ * @method createTokenData
+ * @static
+ */
+TokenStreamBase.createTokenData = function(tokens){
+
+    var nameMap 	= [],
+        typeMap 	= {},
+		tokenData 	= tokens.concat([]),
+		i			= 0,
+		len			= tokenData.length+1;
+    
+    tokenData.UNKNOWN = -1;
+	tokenData.unshift({name:"EOF"});
+
+    for (; i < len; i++){
+        nameMap.push(tokenData[i].name);
+        tokenData[tokenData[i].name] = i;
+        if (tokenData[i].text){
+            typeMap[tokenData[i].text] = i;
+        }
+    }
+    
+    tokenData.name = function(tt){
+        return nameMap[tt];
+    };
+    
+    tokenData.type = function(c){
+        return typeMap[c];
+    };
+	
+	return tokenData;
+};
+
+TokenStreamBase.prototype = {
+
+    //restore constructor
+    constructor: TokenStreamBase,    
+    
+    //-------------------------------------------------------------------------
+    // Matching methods
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Determines if the next token matches the given token type.
+     * If so, that token is consumed; if not, the token is placed
+     * back onto the token stream. You can pass in any number of
+     * token types and this will return true if any of the token
+     * types is found.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token might be. If an array is passed,
+     *      it's assumed that the token can be any of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
+     * @return {Boolean} True if the token type matches, false if not.
+     * @method match
+     */
+    match: function(tokenTypes, channel){
+    
+        //always convert to an array, makes things easier
+        if (!(tokenTypes instanceof Array)){
+            tokenTypes = [tokenTypes];
+        }
+                
+        var tt  = this.get(channel),
+            i   = 0,
+            len = tokenTypes.length;
+            
+        while(i < len){
+            if (tt == tokenTypes[i++]){
+                return true;
+            }
+        }
+        
+        //no match found, put the token back
+        this.unget();
+        return false;
+    },    
+    
+    /**
+     * Determines if the next token matches the given token type.
+     * If so, that token is consumed; if not, an error is thrown.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token should be. If an array is passed,
+     *      it's assumed that the token must be one of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
+     * @return {void}
+     * @method mustMatch
+     */    
+    mustMatch: function(tokenTypes, channel){
+
+        //always convert to an array, makes things easier
+        if (!(tokenTypes instanceof Array)){
+            tokenTypes = [tokenTypes];
+        }
+
+        if (!this.match.apply(this, arguments)){    
+            token = this.LT(1);
+            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
+                " at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
+        }
+    },
+    
+    //-------------------------------------------------------------------------
+    // Consuming methods
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Keeps reading from the token stream until either one of the specified
+     * token types is found or until the end of the input is reached.
+     * @param {int|int[]} tokenTypes Either a single token type or an array of
+     *      token types that the next token should be. If an array is passed,
+     *      it's assumed that the token must be one of these.
+     * @param {variant} channel (Optional) The channel to read from. If not
+     *      provided, reads from the default (unnamed) channel.
+     * @return {void}
+     * @method advance
+     */
+    advance: function(tokenTypes, channel){
+        
+        while(this.LA(0) != 0 && !this.match(tokenTypes, channel)){
+            this.get();
+        }
+
+        return this.LA(0);    
+    },
+    
+    /**
+     * Consumes the next token from the token stream. 
+     * @return {int} The token type of the token that was just consumed.
+     * @method get
+     */      
+    get: function(channel){
+    
+        var tokenInfo   = this._tokenData,
+            reader      = this._reader,
+            value,
+            i           =0,
+            len         = tokenInfo.length,
+            found       = false,
+            token,
+            info;
+            
+        //check the lookahead buffer first
+        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
+            this._token = this._lt[this._ltIndex++];
+            info = tokenInfo[this._token.type];
+            
+            //obey channels logic
+            while((info.channel !== undefined && channel !== info.channel) &&
+                    this._ltIndex < this._lt.length){
+                this._token = this._lt[this._ltIndex++];
+                info = tokenInfo[this._token.type];
+            }
+            
+            //here be dragons
+            if ((info.channel === undefined || channel === info.channel) &&
+                    this._ltIndex <= this._lt.length){
+                return this._token.type;
+            }
+        }
+        
+        //call token retriever method
+		token = this._getToken(channel);
+        
+        //if it should be hidden, don't save a token
+        if (token.type > -1 && !tokenInfo[token.type].hide){
+         
+            //save for later
+            this._token = token;
+            this._lt.push(token);
+            
+            //keep the buffer under 5 items
+            if (this._lt.length > 15){
+                this._lt.shift();
+            }
+    
+            //update lookahead index
+            this._ltIndex = this._lt.length;
+        }
+            
+        /*
+         * Skip to the next token if:
+         * 1. The token type is marked as hidden.
+         * 2. The token type has a channel specified and it isn't the current channel.
+         */
+        info = tokenInfo[token.type];
+        if (info && 
+                (info.hide || 
+                (info.channel !== undefined && channel !== info.channel))){
+            return this.get(channel);
+        } else {
+            
+            //return just the type
+            return token.type;
+        }
+    },
+    
+    /**
+     * Looks ahead a certain number of tokens and returns the token type at
+     * that position. This will throw an error if you lookahead past the
+     * end of input, past the size of the lookahead buffer, or back past
+     * the first token in the lookahead buffer.
+     * @param {int} The index of the token type to retrieve. 0 for the
+     *      current token, 1 for the next, -1 for the previous, etc.
+     * @return {int} The token type of the token in the given position.
+     * @method LA
+     */
+    LA: function(index){
+        var total = index,
+            tt;
+        if (index > 0){
+            //TODO: Store 15 somewhere
+            if (index > 15){
+                throw new Error("Too much lookahead.");
+            }
+        
+            //get all those tokens
+            while(total){
+                tt = this.get();   
+                total--;                            
+            }
+            
+            //unget all those tokens
+            while(total < index){
+                this.unget();
+                total++;
+            }
+        } else if (index < 0){
+        
+            if(this._lt[this._ltIndex+index]){
+                tt = this._lt[this._ltIndex+index].type;
+            } else {
+                throw new Error("Too much lookbehind.");
+            }
+        
+        } else {
+            tt = this._token.type;
+        }
+        
+        return tt;
+    
+    },
+    
+    /**
+     * Looks ahead a certain number of tokens and returns the token at
+     * that position. This will throw an error if you lookahead past the
+     * end of input, past the size of the lookahead buffer, or back past
+     * the first token in the lookahead buffer.
+     * @param {int} The index of the token type to retrieve. 0 for the
+     *      current token, 1 for the next, -1 for the previous, etc.
+     * @return {Object} The token of the token in the given position.
+     * @method LA
+     */    
+    LT: function(index){
+    
+        //lookahead first to prime the token buffer
+        this.LA(index);
+        
+        //now find the token, subtract one because _ltIndex is already at the next index
+        return this._lt[this._ltIndex+index-1];    
+    },
+    
+    /**
+     * Returns the token type for the next token in the stream without 
+     * consuming it.
+     * @return {int} The token type of the next token in the stream.
+     * @method peek
+     */
+    peek: function(){
+        return this.LA(1);
+    },
+    
+    /**
+     * Returns the actual token object for the last consumed token.
+     * @return {Token} The token object for the last consumed token.
+     * @method token
+     */
+    token: function(){
+        return this._token;
+    },
+    
+    /**
+     * Returns the name of the token for the given token type.
+     * @param {int} tokenType The type of token to get the name of.
+     * @return {String} The name of the token or "UNKNOWN_TOKEN" for any
+     *      invalid token type.
+     * @method tokenName
+     */
+    tokenName: function(tokenType){
+        if (tokenType < 0 || tokenType > this._tokenData.length){
+            return "UNKNOWN_TOKEN";
+        } else {
+            return this._tokenData[tokenType].name;
+        }
+    },
+    
+    /**
+     * Returns the token type value for the given token name.
+     * @param {String} tokenName The name of the token whose value should be returned.
+     * @return {int} The token type value for the given token name or -1
+     *      for an unknown token.
+     * @method tokenName
+     */    
+    tokenType: function(tokenName){
+        return tokenInfo[tokenName] || -1;
+    },
+    
+    /**
+     * Returns the last consumed token to the token stream.
+     * @method unget
+     */      
+    unget: function(){
+        if (this._ltIndex > -1){
+            this._ltIndex--;
+            this._token = this._lt[this._ltIndex - 1];
+        } else {
+            throw new Error("Too much lookahead.");
+        }
+    }
+
+};
+
+
+
 
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
 SyntaxUnit  : SyntaxUnit,
 EventTarget : EventTarget,
-TokenStream : TokenStream
+TokenStreamBase : TokenStreamBase
 };
 })();
+
 
 /* 
 Copyright (c) 2009 Nicholas C. Zakas. All rights reserved.
@@ -927,9 +1311,11 @@ THE SOFTWARE.
 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
+TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
+
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -2532,28 +2918,30 @@ function isIdentStart(c){
     return c != null && (isNameStart(c) || c == "-");
 }
 
+function mix(receiver, supplier){
+	for (var prop in supplier){
+		if (supplier.hasOwnProperty(prop)){
+			receiver[prop] = supplier[prop];
+		}
+	}
+	return receiver;
+}
+
 //-----------------------------------------------------------------------------
 // CSS Token Stream
 //-----------------------------------------------------------------------------
 
 
 function TokenStream(input){
-
-    this.input = (typeof input == "string" ? new StringReader(input) : input);
-
-    this._token = null;
+	TokenStreamBase.call(this, input, Tokens);
 }
 
-TokenStream.prototype = {
+TokenStream.prototype = mix(new TokenStreamBase(), {
 
-    token: function(){
-        return this._token;
-    },
-
-    get: function(channel){
+    _getToken: function(channel){
     
         var c,
-            reader = this.input,
+            reader = this._reader,
             token   = null,
             startLine   = reader.getLine(),
             startCol    = reader.getCol();
@@ -2737,31 +3125,30 @@ TokenStream.prototype = {
             token = this.createToken(Tokens.EOF,null,startLine,startCol);
         }
         
-        this._token = token;
-        return token.type;
+        return token;
     },
     
     charToken: function(c, startLine, startCol){
         var tt      = Tokens.type(c) || -1,
-            reader  = this.input;
+            reader  = this._reader;
             
         return this.createToken(tt, c, startLine, startCol);
     },
     comparisonToken: function(c, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             comparison  = c + reader.read(),
             tt      = Tokens.type(comparison) || -1;
             
         return this.createToken(tt, comparison, startLine, startCol);
     },
     whitespaceToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             value   = first + this.readWhitespace();
         return this.createToken(Tokens.S, value, startLine, startCol);            
     },
 
     numberToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             value   = this.readNumber(first),
             ident,
             tt      = Tokens.NUMBER,
@@ -2796,21 +3183,21 @@ TokenStream.prototype = {
     },
     
     commentToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             comment = this.readComment(first);
 
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
     },
     
     hashToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             name    = this.readName(first);
 
         return this.createToken(Tokens.HASH, name, startLine, startCol);    
     },
     
     identOrFunctionToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             ident   = this.readName(first),
             tt      = Tokens.IDENT;
 
@@ -2834,7 +3221,7 @@ TokenStream.prototype = {
     },
     
     importantToken: function(first, startLine, startCol){
-        var reader      = this.input,
+        var reader      = this._reader,
             important   = first,
             tt          = -1,
             temp,
@@ -2887,7 +3274,7 @@ TokenStream.prototype = {
     stringToken: function(first, startLine, startCol){
         var delim   = first,
             string  = first,
-            reader  = this.input,
+            reader  = this._reader,
             prev    = first,
             tt      = Tokens.STRING,
             c       = reader.read();
@@ -2921,7 +3308,7 @@ TokenStream.prototype = {
     
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
-            reader  = this.input,
+            reader  = this._reader,
             tt      = Tokens.UNKNOWN,
             valid   = false,
             c;
@@ -2992,7 +3379,7 @@ TokenStream.prototype = {
 
 
     readWhitespace: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             whitespace = "",
             c       = reader.peek();
         
@@ -3005,7 +3392,7 @@ TokenStream.prototype = {
         return whitespace;
     },
     readNumber: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             number  = first,
             hasDot  = (first == "."),
             c       = reader.peek();
@@ -3031,7 +3418,7 @@ TokenStream.prototype = {
         return number;
     },
     readString: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             delim   = reader.read(),
             string  = delim,            
             prev    = delim,
@@ -3065,7 +3452,7 @@ TokenStream.prototype = {
         return string;
     },
     readURI: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             uri     = first,
             inner   = "",
             c       = reader.peek();
@@ -3092,7 +3479,7 @@ TokenStream.prototype = {
         return uri;
     },
     readURL: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             url     = "",
             c       = reader.peek();
     
@@ -3106,7 +3493,7 @@ TokenStream.prototype = {
     
     },
     readName: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             ident   = first,
             c       = reader.peek();
         
@@ -3119,7 +3506,7 @@ TokenStream.prototype = {
         return ident;
     },    
     readComment: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             comment = first,
             c       = reader.read();
         
@@ -3144,7 +3531,7 @@ TokenStream.prototype = {
     },
     
     createToken: function(tt, value, startLine, startCol, options){
-        var reader = this.input;
+        var reader = this._reader;
         options = options || {};
         
         return {
@@ -3160,7 +3547,7 @@ TokenStream.prototype = {
     },
 
 
-};
+});
 
 
 /*
@@ -3611,6 +3998,7 @@ var ValueTokens = (function(){
 
 });
 
+
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -3624,4 +4012,5 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
+
 

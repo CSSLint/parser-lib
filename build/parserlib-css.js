@@ -22,9 +22,11 @@ THE SOFTWARE.
 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
+TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
+
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -1627,28 +1629,30 @@ function isIdentStart(c){
     return c != null && (isNameStart(c) || c == "-");
 }
 
+function mix(receiver, supplier){
+	for (var prop in supplier){
+		if (supplier.hasOwnProperty(prop)){
+			receiver[prop] = supplier[prop];
+		}
+	}
+	return receiver;
+}
+
 //-----------------------------------------------------------------------------
 // CSS Token Stream
 //-----------------------------------------------------------------------------
 
 
 function TokenStream(input){
-
-    this.input = (typeof input == "string" ? new StringReader(input) : input);
-
-    this._token = null;
+	TokenStreamBase.call(this, input, Tokens);
 }
 
-TokenStream.prototype = {
+TokenStream.prototype = mix(new TokenStreamBase(), {
 
-    token: function(){
-        return this._token;
-    },
-
-    get: function(channel){
+    _getToken: function(channel){
     
         var c,
-            reader = this.input,
+            reader = this._reader,
             token   = null,
             startLine   = reader.getLine(),
             startCol    = reader.getCol();
@@ -1832,31 +1836,30 @@ TokenStream.prototype = {
             token = this.createToken(Tokens.EOF,null,startLine,startCol);
         }
         
-        this._token = token;
-        return token.type;
+        return token;
     },
     
     charToken: function(c, startLine, startCol){
         var tt      = Tokens.type(c) || -1,
-            reader  = this.input;
+            reader  = this._reader;
             
         return this.createToken(tt, c, startLine, startCol);
     },
     comparisonToken: function(c, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             comparison  = c + reader.read(),
             tt      = Tokens.type(comparison) || -1;
             
         return this.createToken(tt, comparison, startLine, startCol);
     },
     whitespaceToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             value   = first + this.readWhitespace();
         return this.createToken(Tokens.S, value, startLine, startCol);            
     },
 
     numberToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             value   = this.readNumber(first),
             ident,
             tt      = Tokens.NUMBER,
@@ -1891,21 +1894,21 @@ TokenStream.prototype = {
     },
     
     commentToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             comment = this.readComment(first);
 
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
     },
     
     hashToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             name    = this.readName(first);
 
         return this.createToken(Tokens.HASH, name, startLine, startCol);    
     },
     
     identOrFunctionToken: function(first, startLine, startCol){
-        var reader  = this.input,
+        var reader  = this._reader,
             ident   = this.readName(first),
             tt      = Tokens.IDENT;
 
@@ -1929,7 +1932,7 @@ TokenStream.prototype = {
     },
     
     importantToken: function(first, startLine, startCol){
-        var reader      = this.input,
+        var reader      = this._reader,
             important   = first,
             tt          = -1,
             temp,
@@ -1982,7 +1985,7 @@ TokenStream.prototype = {
     stringToken: function(first, startLine, startCol){
         var delim   = first,
             string  = first,
-            reader  = this.input,
+            reader  = this._reader,
             prev    = first,
             tt      = Tokens.STRING,
             c       = reader.read();
@@ -2016,7 +2019,7 @@ TokenStream.prototype = {
     
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
-            reader  = this.input,
+            reader  = this._reader,
             tt      = Tokens.UNKNOWN,
             valid   = false,
             c;
@@ -2087,7 +2090,7 @@ TokenStream.prototype = {
 
 
     readWhitespace: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             whitespace = "",
             c       = reader.peek();
         
@@ -2100,7 +2103,7 @@ TokenStream.prototype = {
         return whitespace;
     },
     readNumber: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             number  = first,
             hasDot  = (first == "."),
             c       = reader.peek();
@@ -2126,7 +2129,7 @@ TokenStream.prototype = {
         return number;
     },
     readString: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             delim   = reader.read(),
             string  = delim,            
             prev    = delim,
@@ -2160,7 +2163,7 @@ TokenStream.prototype = {
         return string;
     },
     readURI: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             uri     = first,
             inner   = "",
             c       = reader.peek();
@@ -2187,7 +2190,7 @@ TokenStream.prototype = {
         return uri;
     },
     readURL: function(){
-        var reader  = this.input,
+        var reader  = this._reader,
             url     = "",
             c       = reader.peek();
     
@@ -2201,7 +2204,7 @@ TokenStream.prototype = {
     
     },
     readName: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             ident   = first,
             c       = reader.peek();
         
@@ -2214,7 +2217,7 @@ TokenStream.prototype = {
         return ident;
     },    
     readComment: function(first){
-        var reader  = this.input,
+        var reader  = this._reader,
             comment = first,
             c       = reader.read();
         
@@ -2239,7 +2242,7 @@ TokenStream.prototype = {
     },
     
     createToken: function(tt, value, startLine, startCol, options){
-        var reader = this.input;
+        var reader = this._reader;
         options = options || {};
         
         return {
@@ -2255,7 +2258,7 @@ TokenStream.prototype = {
     },
 
 
-};
+});
 
 
 /*
@@ -2706,6 +2709,7 @@ var ValueTokens = (function(){
 
 });
 
+
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -2719,3 +2723,4 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
+

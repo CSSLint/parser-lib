@@ -193,6 +193,26 @@ StringReader.prototype = {
     //-------------------------------------------------------------------------
     
     /**
+     * Reads the next character without advancing the cursor.
+     * @param {int} count How many characters to look ahead (default is 1).
+     * @return {String} The next character or null if there is no next character.
+     * @method peek
+     */
+    peek: function(count){
+        var c = null;
+        count = (typeof count == "undefined" ? 1 : count);
+        
+        //if we're not at the end of the input...
+        if (this._cursor < this._input.length){        
+        
+            //get character and increment cursor and column
+            c = this._input.charAt(this._cursor + count - 1);
+        }
+        
+        return c;
+    },        
+       
+    /**
      * Reads the next character from the input and adjusts the row and column
      * accordingly.
      * @return {String} The next character or null if there is no next character.
@@ -218,8 +238,23 @@ StringReader.prototype = {
         }
         
         return c;
-    },
+    },        
        
+    //-------------------------------------------------------------------------
+    // Misc
+    //-------------------------------------------------------------------------
+    
+    mark: function(){
+        this._bookmark = this._cursor;
+    },
+    
+    reset: function(){
+        if (typeof this._bookmark == "number"){
+            this._cursor = this._bookmark;
+            delete this._bookmark;
+        }
+    },
+    
     //-------------------------------------------------------------------------
     // Advanced reading
     //-------------------------------------------------------------------------

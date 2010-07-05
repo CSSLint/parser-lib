@@ -3,6 +3,16 @@
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
  
+ /*
+  * Utility function for mixing objects together.
+  */
+ function mix(reciever, supplier){
+    for (var prop in supplier){
+        if (supplier.hasOwnProperty(prop)){
+            receiver[prop] = supplier[prop]
+        }
+    }
+ }
  
 /**
  * A CSS 2.1 parsers.
@@ -439,14 +449,17 @@ Parser.prototype = function(){
                         //see if there's another declaration
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
                         if (tt == Tokens.SEMICOLON){
+                            //if there's a semicolon, then there might be another declaration
                             this._rulesetEnd();
                         } else if (tt == Tokens.RBRACE){
-                            //do nothing
+                            //if there's a right brace, the rule is finished so don't do anything
                         } else {
+                            //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
                         }                        
                         
                     } else {
+                        //not a syntax error, rethrow it
                         throw ex;
                     }
                 }
@@ -944,7 +957,15 @@ Parser.prototype = function(){
                 throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
             },
             
+            _verifyEnd: function(){
+                if (this._tokenStream.LA(1) != Tokens.EOF){
+                    this._unexpectedToken(this._tokenStream.LT(1));
+                }            
+            },
             
+            //-----------------------------------------------------------------
+            // Parsing methods
+            //-----------------------------------------------------------------
             
             parse: function(input){    
                 this._tokenStream = new TokenStream(input, Tokens);
@@ -956,9 +977,7 @@ Parser.prototype = function(){
                 var result = this._selector();
                 
                 //if there's anything more, then it's an invalid selector
-                if (this._tokenStream.LA(1) != CSSTokens.EOF){
-                    this._unexpectedToken(this._tokenStream.LT(1));
-                }
+                this._verifyEnd();
                 
                 //otherwise return result
                 return result;

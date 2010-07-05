@@ -19,19 +19,24 @@ YAHOO.namespace("test");
 YAHOO.test.CSSTokens = (function(){
     
     var assert = YAHOO.util.Assert,
-        TokenStream = parserlib.util.TokenStream,
+        TokenStream = parserlib.css.TokenStream,
         CSSTokens = parserlib.css.Tokens;
+    
+    
+    //-------------------------------------------------------------------------
+    // New testcase type to make it easier to test patterns
+    //-------------------------------------------------------------------------
     
     function CSSTokenTestCase(info){    
     
         YAHOO.tool.TestCase.call(this, info);
-        this.examples = info.examples;    
+        this.patterns = info.patterns;    
         
-        for (var prop in this.examples){
-            if (this.examples.hasOwnProperty(prop)){
-                this["testExample: " + prop] = function(prop){
+        for (var prop in this.patterns){
+            if (this.patterns.hasOwnProperty(prop)){
+                this["testPattern: " + prop] = function(prop){
                     return function(){
-                        this._testExample(prop, this.examples[prop]);
+                        this._testPattern(prop, this.patterns[prop]);
                     };
                 }(prop);
             }
@@ -40,33 +45,34 @@ YAHOO.test.CSSTokens = (function(){
     
     CSSTokenTestCase.prototype = new YAHOO.tool.TestCase();
     
-    CSSTokenTestCase.prototype._testExample = function(example, outputs){
-        var tokenStream = new TokenStream(example, CSSTokens);
+    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs){
+        var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
     
         for (var i=0, len=outputs.length; i < len; i++){
             tt = tokenStream.get((outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined));
-            assert.areEqual(outputs[i], tt, "Token type should be " + tokenStream.tokenName(outputs[i]) + " but was " + tokenStream.tokenName(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");           
+            assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");           
         }
 
         //if there was an invalid token, stop here
         if (tt > -1){
             tt = tokenStream.get();
-            assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + tokenStream.tokenName(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+            assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
     };
     
     //-------------------------------------------------------------------------
-    // Base Test Suite
+    // Simple CSS token tests
     //-------------------------------------------------------------------------
     
     var suite = new YAHOO.tool.TestSuite("CSS Tokens");
    
    
+    //note: \r\n is normalized to just \n by StringReader
     suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
         
-        examples: {
+        patterns: {
             " "     : [CSSTokens.S],
             "\n"    : [CSSTokens.S],
             "\n \t" : [CSSTokens.S],
@@ -77,33 +83,216 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for comments",
         
-        examples: {
+        patterns: {
             "/* booya */"     : [],
             "/*\n booya */"   : [],
             "/*\n booya \n*/" : []     
         }        
     }));
+    
+    suite.add(new CSSTokenTestCase({
+        name: "Test for comparison operators",        
+        
+        patterns: {
+            "~="    :[CSSTokens.INCLUDES],
+            "|="    :[CSSTokens.DASHMATCH]        
+        }
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name: "Test for identifiers",        
+        
+        patterns: {
+            "a":        [CSSTokens.IDENT],
+            "ab":       [CSSTokens.IDENT],
+            "a1":       [CSSTokens.IDENT],
+            "a_c":      [CSSTokens.IDENT],
+            "a-c":      [CSSTokens.IDENT],
+            "a90":      [CSSTokens.IDENT],
+            "a\\09":    [CSSTokens.IDENT],
+            "\\sa":     [CSSTokens.IDENT],
+            
+            //not identifiers
+            "9a":       [CSSTokens.DIMENSION]
+        }
+    }));
 
     suite.add(new CSSTokenTestCase({
         name : "Tests for strings",
         
-        examples: {
+        patterns: {
             "'hello'"       : [CSSTokens.STRING],
             "\"hello\""     : [CSSTokens.STRING],
             "''"            : [CSSTokens.STRING],
             "\"\""          : [CSSTokens.STRING],
-            "'hello\""      : [CSSTokens.INVALID, CSSTokens.INVALID],
+            "'hello\""      : [CSSTokens.INVALID],
             "\"hello'"      : [CSSTokens.INVALID],
+            "'hello"        : [CSSTokens.INVALID],
             "'hel\\\'lo'"   : [CSSTokens.STRING],
             "\"hel\\\"lo\"" : [CSSTokens.STRING]
         }        
     }));
 
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for hashes",
+        
+        patterns: {
+            "#identifier"       : [CSSTokens.HASH],
+            "#_identifer"       : [CSSTokens.HASH],
+            "#0-9_"             : [CSSTokens.HASH],
+            "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
+            "#h\\0fllo"         : [CSSTokens.HASH],
+            "#ffeeff"           : [CSSTokens.HASH]
+        }        
+    }));
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for @charset",
+        
+        patterns: {
+            "@charset"      : [-1],
+            "@charset "     : [CSSTokens.CHARSET_SYM],
+            "@CHARSET"      : [-1],
+            "@CHARSET "     : [-1]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for @import",
+        
+        patterns: {
+            "@import"      : [CSSTokens.IMPORT_SYM],
+            "@import "     : [CSSTokens.IMPORT_SYM, CSSTokens.S],
+            "@IMPORT"      : [CSSTokens.IMPORT_SYM],
+            "@IMPORT "     : [CSSTokens.IMPORT_SYM, CSSTokens.S]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for @media",
+        
+        patterns: {
+            "@media"      : [CSSTokens.MEDIA_SYM],
+            "@media "     : [CSSTokens.MEDIA_SYM, CSSTokens.S],
+            "@MEDIA"      : [CSSTokens.MEDIA_SYM],
+            "@MEDIA "     : [CSSTokens.MEDIA_SYM, CSSTokens.S]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for @page",
+        
+        patterns: {
+            "@page"      : [CSSTokens.PAGE_SYM],
+            "@page "     : [CSSTokens.PAGE_SYM, CSSTokens.S],
+            "@PAGE"      : [CSSTokens.PAGE_SYM],
+            "@PAGE "     : [CSSTokens.PAGE_SYM, CSSTokens.S]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for !important",
+        
+        patterns: {
+            "!important"        : [CSSTokens.IMPORTANT_SYM],
+            "!IMPORTANT"        : [CSSTokens.IMPORTANT_SYM],
+            "!  important"      : [CSSTokens.IMPORTANT_SYM],
+            "!  IMPORTANT"      : [CSSTokens.IMPORTANT_SYM],
+            "!/*booya*/important"       : [CSSTokens.IMPORTANT_SYM],
+            "!/*booya*/IMPORTANT"       : [CSSTokens.IMPORTANT_SYM],
+            "! /*booya*/ important"     : [CSSTokens.IMPORTANT_SYM],
+            "! /*booya*/ IMPORTANT"     : [CSSTokens.IMPORTANT_SYM],
+
+            //bogus symbols            
+            "! /*IMPORTANT"     : [-1, CSSTokens.S, CSSTokens.COMMENT],            
+            "! / important"     : [-1, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
+            "!IMPO RTANT"       : [-1, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
+        }        
+    }));    
+    
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Numbers",
+        
+        patterns: {
+        
+            
+            //pixels
+            "4px"       : [CSSTokens.LENGTH],
+            "50.0PX"    : [CSSTokens.LENGTH],
+            ".6Px"      : [CSSTokens.LENGTH],
+            
+            
+            "7cm"       : [CSSTokens.LENGTH],
+            "7CM"       : [CSSTokens.LENGTH],
+            "7cM"       : [CSSTokens.LENGTH],
+            "8.0mm"     : [CSSTokens.LENGTH],
+            ".9in"      : [CSSTokens.LENGTH],
+            "7pc"       : [CSSTokens.LENGTH],
+            "8.0pt"     : [CSSTokens.LENGTH],
+            
+            "5em"       : [CSSTokens.EMS],
+            "50.0EM"    : [CSSTokens.EMS],
+            ".5eM"      : [CSSTokens.EMS],
+            
+            "5ex"       : [CSSTokens.EXS],
+            "50.0EX"    : [CSSTokens.EXS],
+            ".5eX"      : [CSSTokens.EXS],
+
+            "5deg"       : [CSSTokens.ANGLE],
+            "50.0DEG"    : [CSSTokens.ANGLE],
+            ".5Deg"      : [CSSTokens.ANGLE],
+            
+            "5rad"       : [CSSTokens.ANGLE],
+            "50.0RAD"    : [CSSTokens.ANGLE],
+            ".5Rad"      : [CSSTokens.ANGLE],
+            
+            "5grad"      : [CSSTokens.ANGLE],
+            "50.0GRAD"   : [CSSTokens.ANGLE],
+            ".5Grad"     : [CSSTokens.ANGLE],
+            
+            "5ms"           : [CSSTokens.TIME],
+            "50.0MS"        : [CSSTokens.TIME],
+            ".5Ms"          : [CSSTokens.TIME],
+  
+            "5s"            : [CSSTokens.TIME],
+            "50.0S"         : [CSSTokens.TIME],
+            
+            "5hz"           : [CSSTokens.FREQ],
+            "50.0HZ"        : [CSSTokens.FREQ],
+            ".5Hz"          : [CSSTokens.FREQ],
+  
+            "5khz"          : [CSSTokens.FREQ],
+            "50.0KHZ"       : [CSSTokens.FREQ],
+            ".5kHz"         : [CSSTokens.FREQ],
+  
+            "5ncz"          : [CSSTokens.DIMENSION],
+            "50.0NCZ"       : [CSSTokens.DIMENSION],
+            ".5nCz"         : [CSSTokens.DIMENSION],
+  
+            "3%"        : [CSSTokens.PERCENTAGE],
+            "45.05%"    : [CSSTokens.PERCENTAGE],
+            ".9%"       : [CSSTokens.PERCENTAGE],
+            
+            //regular numbers
+            "1"         : [CSSTokens.NUMBER],
+            "20.0"      : [CSSTokens.NUMBER],
+            ".3"        : [CSSTokens.NUMBER],  
+            
+            //invalid numbers
+            "-.3"       : [CSSTokens.MINUS, CSSTokens.NUMBER],
+            "+0"        : [CSSTokens.PLUS, CSSTokens.NUMBER],
+            "-name"     : [CSSTokens.IDENT],
+            "+name"     : [CSSTokens.PLUS, CSSTokens.IDENT]
+  
+        }        
+    }));   
    
     suite.add(new CSSTokenTestCase({
         name : "Tests for URLs",
         
-        examples: {
+        patterns: {
             "url(foo.jpg)"      : [CSSTokens.URI],
             "url('foo.jpg')"    : [CSSTokens.URI],
             "url(\"foo.jpg\")"  : [CSSTokens.URI],
@@ -114,94 +303,93 @@ YAHOO.test.CSSTokens = (function(){
             
             "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
             "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI]
+            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
+            
+            //invalid URLs
+            "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],
+            "url('booya'"       : [CSSTokens.FUNCTION, CSSTokens.STRING]
         }        
-    }));
+    }));   
 
     suite.add(new CSSTokenTestCase({
-        name : "Tests for @ rules",
+        name : "Tests for Functions",
         
-        examples: {
-            "@charset"      : [-1],
-            "@charset "     : [CSSTokens.CHARSET_SYM],
-            "@CHARSET"      : [-1],
-            "@CHARSET "     : [-1]
-            
-        }        
-    }));
-    
-    
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for Numbers",
+        patterns: {
         
-        examples: {
-        
-            //regular numbers
-            "1"         : [CSSTokens.NUMBER],
-            "20.0"      : [CSSTokens.NUMBER],
-            ".3"        : [CSSTokens.NUMBER],
-            
-            "4px"       : [CSSTokens.LENGTH],
-            "50.0PX"    : [CSSTokens.LENGTH],
-            ".6Px"      : [CSSTokens.LENGTH],
-            
-            "7cm"       : [CSSTokens.LENGTH],
-            "7CM"       : [CSSTokens.LENGTH],
-            "7cM"       : [CSSTokens.LENGTH],
-            "8.0mm"     : [CSSTokens.LENGTH],
-            ".9in"      : [CSSTokens.LENGTH],
-            "7pc"       : [CSSTokens.LENGTH],
-            "8.0pt"     : [CSSTokens.LENGTH],
-            
-            "3%"        : [CSSTokens.PERCENTAGE],
-            "45.05%"    : [CSSTokens.PERCENTAGE],
-            ".9%"       : [CSSTokens.PERCENTAGE],
+            //regular CSS functions
+            "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
 
-            "5em"       : [CSSTokens.EMS],
-            "50.0EM"    : [CSSTokens.EMS],
-            ".5eM"      : [CSSTokens.EMS],
-            
-            "5ex"       : [CSSTokens.EXS],
-            "50.0EX"    : [CSSTokens.EXS],
-            ".5eX"      : [CSSTokens.EXS]  
+            //old-style IE filters - interpreted as bunch of tokens
+            "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+
+            //IE filters - not sure how to handle these yet
+            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"   : [CSSTokens.IE_FILTER]
         }        
+    }));    
+
+    suite.add(new CSSTokenTestCase({
+        name: "Test for single-character tokens",
+        
+        patterns: {
+            
+            //single characters with defined tokens
+            "/"     : [CSSTokens.SLASH],
+            "-"     : [CSSTokens.MINUS],
+            "+"     : [CSSTokens.PLUS],
+            "*"     : [CSSTokens.STAR],
+            ">"     : [CSSTokens.GREATER],
+            "{"     : [CSSTokens.LBRACE],
+            "}"     : [CSSTokens.RBRACE],
+            "["     : [CSSTokens.LBRACKET],
+            "]"     : [CSSTokens.RBRACKET],
+            "="     : [CSSTokens.EQUALS],
+            ":"     : [CSSTokens.COLON],
+            ";"     : [CSSTokens.SEMICOLON],
+            "("     : [CSSTokens.LPAREN],
+            ")"     : [CSSTokens.RPAREN],
+            "."     : [CSSTokens.DOT],
+            ","     : [CSSTokens.COMMA],
+            
+            //single characters without tokens
+            "@"     : [CSSTokens.UNKNOWN]
+        }
     }));
+    
+    //-------------------------------------------------------------------------
+    // More complex testing patterns
+    //-------------------------------------------------------------------------
+
 
     suite.add(new CSSTokenTestCase({
         name : "Tests for Properties",
         
-        examples: {
+        patterns: {
         
             //regular CSS functions
-            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
-            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
             
             "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FILTER, CSSTokens.SEMICOLON]
  
         }        
     }));
 
-    
-    
-
     suite.add(new CSSTokenTestCase({
-        name : "Tests for Functions",
+        name : "Tests for odd cases",
         
-        examples: {
+        patterns: {
         
             //regular CSS functions
-            "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
-            "counter(par-num, upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
-
-            //old-style IE filters - interpreted as bunch of tokens
-            "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
-
-            //IE filters
-            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
-            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"   : [CSSTokens.IE_FILTER]
+            ".name"       : [CSSTokens.DOT, CSSTokens.IDENT],
+            "-name"       : [CSSTokens.IDENT]
+            
         }        
     }));
+
+
 
    
     

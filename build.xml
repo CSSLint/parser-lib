@@ -53,8 +53,8 @@
             ${license.text}
             */
             (function(){
-            var TokenStream = parserlib.util.TokenStream,
-                EventTarget = parserlib.util.EventTarget,
+            var EventTarget = parserlib.util.EventTarget,
+                StringReader = parserlib.util.StringReader,
                 SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;
             </header>        
@@ -70,6 +70,7 @@
                 Selector            :Selector,
                 SelectorPart        :SelectorPart,
                 SelectorSubPart     :SelectorSubPart,
+                TokenStream         :TokenStream,
                 Tokens              :Tokens
             };
             })();

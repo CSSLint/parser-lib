@@ -2,6 +2,7 @@
  * CSS token information based on Flex lexical scanner grammar:
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
+/* 
 var Tokens = function(){
 
     //token fragments
@@ -221,3 +222,180 @@ var Tokens = function(){
         return TokenStream.createTokenData(symbols);
 
 }();
+*/
+var Tokens  = [
+    {
+        name: "S",
+        channel: "ws"   //put onto another channel so I can get it later              
+    },
+    {
+        name: "COMMENT",
+        hide: true   //don't generate token
+    },
+    //CDO and CDC intentionally omitted
+    {
+        name: "INCLUDES",
+        text: "~="
+    },
+    {
+        name: "DASHMATCH",
+        text: "|="
+    },
+    {
+        name: "STRING"
+    },
+    {
+        name: "INVALID"
+    },
+    {
+        name: "HASH"
+    },
+    {
+        name: "IMPORT_SYM"
+    },
+    {
+        name: "PAGE_SYM"
+    },
+    {
+        name: "MEDIA_SYM"
+    },
+    {
+        name: "CHARSET_SYM"
+    },
+    {
+        name: "IMPORTANT_SYM"
+    },
+    {
+        name: "EMS"
+    },
+    {
+        name: "EXS"
+    },
+    {
+        name: "LENGTH"
+    },
+    {
+        name: "ANGLE"
+    },
+    {
+        name: "TIME"
+    },
+    {
+        name: "FREQ"
+    },
+    {
+        name: "DIMENSION"
+    },   
+    {
+        name: "PERCENTAGE"
+    },
+    {
+        name: "NUMBER"
+    },
+    {
+        name: "URI"
+    },
+
+    {
+        name: "FUNCTION"
+    },    
+        
+    {
+        name: "IDENT"
+    },        
+    //Not defined as tokens, but might as well be
+    {
+        name: "SLASH",
+        text: "/"
+    },
+    {
+        name: "MINUS",
+        text: "-"
+    },
+    {
+        name: "PLUS",
+        text: "+"
+    },
+    {
+        name: "STAR",
+        text: "*"
+    },
+    {
+        name: "GREATER",
+        text: ">"
+    },
+    {
+        name: "LBRACE",
+        text: "{"
+    },   
+    {
+        name: "RBRACE",
+        text: "}"
+    },      
+    {
+        name: "LBRACKET",
+        text: "["
+    },   
+    {
+        name: "RBRACKET",
+        text: "]"
+    },    
+    {
+        name: "EQUALS",
+        text: "="
+    },
+    {
+        name: "COLON",
+        text: ":"
+    },    
+    {
+        name: "SEMICOLON",
+        text: ";"
+    },    
+ 
+    {
+        name: "LPAREN",
+        text: "("
+    },   
+    {
+        name: "RPAREN",
+        text: ")"
+    },   
+  
+    {
+        name: "DOT",
+        text: "."
+    },    
+    {
+        name: "COMMA",
+        text: ","
+    }
+];
+
+(function(){
+
+    var nameMap = [],
+        typeMap = {};
+    
+    Tokens.UNKNOWN = -1;
+    Tokens.unshift({name:"EOF"});
+    for (var i=0, len = Tokens.length; i < len; i++){
+        nameMap.push(Tokens[i].name);
+        Tokens[Tokens[i].name] = i;
+        if (Tokens[i].text){
+            typeMap[Tokens[i].text] = i;
+        }
+    }
+    
+    Tokens.name = function(tt){
+        return nameMap[tt];
+    };
+    
+    Tokens.type = function(c){
+        return typeMap[c];
+    };
+
+})();
+
+
+

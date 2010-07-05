@@ -387,17 +387,6 @@ var Level2Properties = {
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
  
- /*
-  * Utility function for mixing objects together.
-  */
- function mix(reciever, supplier){
-    for (var prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
-            receiver[prop] = supplier[prop]
-        }
-    }
- }
- 
 /**
  * A CSS 2.1 parsers.
  * @namespace parserlib.css
@@ -1177,32 +1166,43 @@ Parser.prototype = function(){
         
                 var tokenStream = this._tokenStream,
                     values      = [],
+					valueParts	= [],
                     value       = null,
                     operator    = null;
                     
                 value = this._term();
                 if (value !== null){
                 
-                    values.push(value);
+                    valueParts.push(value);
                     
                     do {
                         operator = this._operator();
         
+                        //if there's an operator, keep building up the value parts
                         if (operator){
-                            values.push(operator);
-                        }
+                            valueParts.push(operator);
+                        } else {
+                            //if there's not an operator, you have a full value
+							values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+							valueParts = [];
+						}
                         
                         value = this._term();
                         
                         if (value === null){
                             break;
                         } else {
-                            values.push(value);
+                            valueParts.push(value);
                         }
                     } while(true);
                 }
+				
+				//cleanup
+                if (valueParts.length){
+                    values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+                }
         
-                return /*values.length == 1 ? values[0] :*/ values;
+                return values.length == 1 ? values[0] : values;
             },
             
             _term: function(){
@@ -1278,7 +1278,7 @@ Parser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new PropertyValue(unary !== null ? unary + value : value, line, col) :
+                        new PropertyValuePart(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -1406,8 +1406,9 @@ PropertyName.prototype.constructor = PropertyName;
 
 /**
  * Represents a single part of a CSS property value, meaning that it represents
- * just one part of the data between ":" and ";".
- * @param {String} text The text representation of the unit.
+ * just everything single part between ":" and ";". If there are multiple values
+ * separated by commas, this type represents just one of the values.
+ * @param {String[]} parts An array of value parts making up this value.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  * @namespace parserlib.css
@@ -1415,7 +1416,35 @@ PropertyName.prototype.constructor = PropertyName;
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function PropertyValue(text, line, col){
+function PropertyValue(parts, line, col){
+
+    SyntaxUnit.call(this, parts.join(" "), line, col);
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
+    this.parts = parts;
+    
+}
+
+PropertyValue.prototype = new SyntaxUnit();
+PropertyValue.prototype.constructor = PropertyValue;
+
+
+/**
+ * Represents a single part of a CSS property value, meaning that it represents
+ * just one part of the data between ":" and ";".
+ * @param {String} text The text representation of the unit.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ * @namespace parserlib.css
+ * @class PropertyValuePart
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ */
+function PropertyValuePart(text, line, col){
 
     SyntaxUnit.apply(this,arguments);
     
@@ -1484,8 +1513,8 @@ function PropertyValue(text, line, col){
 
 }
 
-PropertyValue.prototype = new SyntaxUnit();
-PropertyValue.prototype.constructor = PropertyValue;
+PropertyValuePart.prototype = new SyntaxUnit();
+PropertyValuePart.prototype.constructor = PropertyValue;
 
 
 /**

@@ -3,17 +3,6 @@
  * http://www.w3.org/TR/CSS2/grammar.html#scanner
  */    
  
- /*
-  * Utility function for mixing objects together.
-  */
- function mix(reciever, supplier){
-    for (var prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
-            receiver[prop] = supplier[prop]
-        }
-    }
- }
- 
 /**
  * A CSS 2.1 parsers.
  * @namespace parserlib.css
@@ -793,32 +782,43 @@ Parser.prototype = function(){
         
                 var tokenStream = this._tokenStream,
                     values      = [],
+					valueParts	= [],
                     value       = null,
                     operator    = null;
                     
                 value = this._term();
                 if (value !== null){
                 
-                    values.push(value);
+                    valueParts.push(value);
                     
                     do {
                         operator = this._operator();
         
+                        //if there's an operator, keep building up the value parts
                         if (operator){
-                            values.push(operator);
-                        }
+                            valueParts.push(operator);
+                        } else {
+                            //if there's not an operator, you have a full value
+							values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+							valueParts = [];
+						}
                         
                         value = this._term();
                         
                         if (value === null){
                             break;
                         } else {
-                            values.push(value);
+                            valueParts.push(value);
                         }
                     } while(true);
                 }
+				
+				//cleanup
+                if (valueParts.length){
+                    values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+                }
         
-                return /*values.length == 1 ? values[0] :*/ values;
+                return values.length == 1 ? values[0] : values;
             },
             
             _term: function(){
@@ -894,7 +894,7 @@ Parser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new PropertyValue(unary !== null ? unary + value : value, line, col) :
+                        new PropertyValuePart(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },

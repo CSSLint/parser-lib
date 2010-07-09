@@ -23,7 +23,6 @@ THE SOFTWARE.
 var parserlib = {};
 (function(){
 
-
 /**
  * A generic base to inherit from for any object
  * that needs event handling.
@@ -460,6 +459,72 @@ SyntaxUnit.prototype = {
     }
 
 };
+/**
+ * Buffer to be used for lookaheads.
+ * @class TokenBuffer
+ * @namespace parserlib.util
+ * @constructor
+ * @param {int} size The number of tokens to buffer.
+ */
+function TokenBuffer(size){
+
+    /**
+     * The number of tokens to buffer.
+     * @type int
+     * @property size
+     */
+    this.size = size;
+
+    /**
+     * The array to hold the tokens.
+     * @type Array
+     * @property _buffer
+     * @private
+     */
+    this._buffer = [];
+
+
+    /**
+     * The last index returned by the buffer.
+     * @type int
+     * @property _index
+     * @private
+     */
+    this._index = -1;
+    
+}
+
+TokenBuffer.prototype = {
+    constructor: TokenBuffer,
+    
+    add: function(token){
+    
+    },
+    
+    get: function(){
+        var tokenInfo = this._tokenData,
+            token;
+        if (this._buffer.length && this._index >= 0 && this._index < this._buffer.length){            
+            token = this._lt[this._index++];
+            info = tokenInfo[this._token.type];
+            
+            //obey channels logic
+            while((info.channel !== undefined && channel !== info.channel) &&
+                    this._index < this._buffer.length){
+                this._token = this._lt[this._index++];
+                info = tokenInfo[this._token.type];
+            }
+            
+            //here be dragons
+            if ((info.channel === undefined || channel === info.channel) &&
+                    this._index <= this._buffer.length){
+                return this._token.type;
+            }
+        }        
+    }
+
+};
+  
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStream
@@ -942,7 +1007,10 @@ function TokenStreamBase(input, tokenData){
      * @property _ltIndex
      * @private
      */
-    this._ltIndex = -1;
+    this._ltIndex = 0;
+    
+    this._ltIndexCache = [];
+    this._lastChannel = null;
 }
 
 /**
@@ -1095,7 +1163,9 @@ TokenStreamBase.prototype = {
             info;
             
         //check the lookahead buffer first
-        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){            
+        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){  
+                           
+            i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
             
@@ -1104,32 +1174,44 @@ TokenStreamBase.prototype = {
                     this._ltIndex < this._lt.length){
                 this._token = this._lt[this._ltIndex++];
                 info = tokenInfo[this._token.type];
+                i++;
             }
             
+              
+                        
             //here be dragons
             if ((info.channel === undefined || channel === info.channel) &&
                     this._ltIndex <= this._lt.length){
+                this._ltIndexCache.push(i);
                 return this._token.type;
             }
         }
         
         //call token retriever method
-		token = this._getToken(channel);
-        
+		token = this._getToken();
+
         //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide){
+                     
+            //apply token channel
+            token.channel = tokenInfo[token.type].channel;
          
             //save for later
             this._token = token;
             this._lt.push(token);
-            
+
+            //save space that will be moved (must be done before array is truncated)
+            this._ltIndexCache.push(this._lt.length - this._ltIndex + i);  
+        
             //keep the buffer under 5 items
-            if (this._lt.length > 15){
+            if (this._lt.length > 5){
                 this._lt.shift();
+                //this._ltIndexCache.shift();
             }
-    
+                
             //update lookahead index
             this._ltIndex = this._lt.length;
+                     
         }
             
         /*
@@ -1143,7 +1225,7 @@ TokenStreamBase.prototype = {
                 (info.channel !== undefined && channel !== info.channel))){
             return this.get(channel);
         } else {
-            
+            this._lastChannel = channel;
             //return just the type
             return token.type;
         }
@@ -1163,8 +1245,8 @@ TokenStreamBase.prototype = {
         var total = index,
             tt;
         if (index > 0){
-            //TODO: Store 15 somewhere
-            if (index > 15){
+            //TODO: Store 5 somewhere
+            if (index > 5){
                 throw new Error("Too much lookahead.");
             }
         
@@ -1256,7 +1338,7 @@ TokenStreamBase.prototype = {
      * @method tokenName
      */    
     tokenType: function(tokenName){
-        return tokenInfo[tokenName] || -1;
+        return this._tokenData[tokenName] || -1;
     },
     
     /**
@@ -1264,8 +1346,9 @@ TokenStreamBase.prototype = {
      * @method unget
      */      
     unget: function(){
-        if (this._ltIndex > -1){
-            this._ltIndex--;
+        //if (this._ltIndex > -1){
+        if (this._ltIndexCache.length){
+            this._ltIndex -= this._ltIndexCache.pop();//--;
             this._token = this._lt[this._ltIndex - 1];
         } else {
             throw new Error("Too much lookahead.");
@@ -1273,7 +1356,6 @@ TokenStreamBase.prototype = {
     }
 
 };
-
 
 
 
@@ -1285,7 +1367,6 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
-
 
 /* 
 Copyright (c) 2009 Nicholas C. Zakas. All rights reserved.
@@ -1315,7 +1396,6 @@ TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
-
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -4027,7 +4107,6 @@ var ValueTokens = (function(){
 
 });
 
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -4041,5 +4120,4 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
-
 

@@ -27,7 +27,6 @@ StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
 
-
 var Colors = {
     aliceblue       :"#f0f8ff",
     antiquewhite    :"#faebd7",
@@ -2738,7 +2737,6 @@ var ValueTokens = (function(){
 
 });
 
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -2752,4 +2750,3 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
-

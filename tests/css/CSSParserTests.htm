@@ -49,6 +49,58 @@ YAHOO.test.CSSParser = (function(){
     
     
     }));
+ 
+
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Special Cases",
+                
+        testWithCommentAndSpaces: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li /*booya*/ p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        },
+    
+        testWithCommentAndTrailingSpace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li/*booya*/ p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        },
+        
+        testWithCommentAndLeadingSpace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li /*booya*/p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        }
+    
+        
+    
+    
+    }));
     
     //return it
     return suite;

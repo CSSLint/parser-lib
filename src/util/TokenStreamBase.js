@@ -49,7 +49,6 @@ function TokenStreamBase(input, tokenData){
     this._ltIndex = 0;
     
     this._ltIndexCache = [];
-    this._lastChannel = null;
 }
 
 /**
@@ -216,8 +215,6 @@ TokenStreamBase.prototype = {
                 i++;
             }
             
-              
-                        
             //here be dragons
             if ((info.channel === undefined || channel === info.channel) &&
                     this._ltIndex <= this._lt.length){
@@ -244,8 +241,12 @@ TokenStreamBase.prototype = {
         
             //keep the buffer under 5 items
             if (this._lt.length > 5){
-                this._lt.shift();
-                //this._ltIndexCache.shift();
+                this._lt.shift();                
+            }
+            
+            //also keep the shift buffer under 5 items
+            if (this._ltIndexCache.length > 5){
+                this._ltIndexCache.shift();
             }
                 
             //update lookahead index
@@ -263,7 +264,6 @@ TokenStreamBase.prototype = {
                 (info.channel !== undefined && channel !== info.channel))){
             return this.get(channel);
         } else {
-            this._lastChannel = channel;
             //return just the type
             return token.type;
         }

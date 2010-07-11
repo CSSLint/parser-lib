@@ -299,6 +299,11 @@ var Tokens  = [
     {
         name: "FUNCTION"
     },    
+    
+    //not a real token, but useful for stupid IE filters
+    {
+        name: "IE_FUNCTION"
+    },    
         
     {
         name: "IDENT"

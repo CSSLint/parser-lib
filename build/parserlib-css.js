@@ -620,7 +620,7 @@ Parser.prototype = function(){
                 }
                 
                 tokenStream.mustMatch(Tokens.RBRACE);
-                tokenStream.match(Tokens.S);
+                this._matchWhitespace(); //tokenStream.match(Tokens.S);
                 
                 this.fire({
                     type:   "startpage",
@@ -877,7 +877,7 @@ Parser.prototype = function(){
                 } else {
                     
                     //if there's not whitespace, we're done
-                    if (tokenStream.match(Tokens.S, "ws")){           
+                    if (this._matchWhitespace()){           
     
                         //add whitespace separator
                         ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
@@ -975,7 +975,7 @@ Parser.prototype = function(){
                 while(i < len){
                 
                     //whitespace means we're done
-                    found = tokenStream.match(Tokens.S, "ws");                    
+                    found = this._matchWhitespace(); //tokenStream.match(Tokens.S, "ws");                    
                     if (found){
                         tokenStream.unget();
                         break;
@@ -1076,15 +1076,20 @@ Parser.prototype = function(){
             
                 /*
                  * pseudo
-                 *   : ':' [ IDENT | FUNCTION S* [IDENT S*]? ')' ]
+                 *   : ':' ':'? [ IDENT | FUNCTION S* [IDENT S*]? ')' ]
                  *   ;    
                  */   
             
                 var tokenStream = this._tokenStream,
                     pseudo      = null,
+                    colons      = ":",
                     token;
                 
                 if (tokenStream.match(Tokens.COLON)){
+                
+                    if (tokenStream.match(Tokens.COLON)){
+                        colons += ":";
+                    }
                 
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
@@ -1100,7 +1105,7 @@ Parser.prototype = function(){
                     }
                     
                     token = tokenStream.token();
-                    pseudo = new SelectorSubPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
+                    pseudo = new SelectorSubPart(colons + pseudo, "pseudo", token.startLine, token.startCol);
                 }
         
                 return pseudo;
@@ -1201,7 +1206,7 @@ Parser.prototype = function(){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }
         
-                return values.length == 1 ? values[0] : values;
+                return /*values.length == 1 ? values[0] :*/ values;
             },
             
             _term: function(){
@@ -1334,12 +1339,49 @@ Parser.prototype = function(){
                 return color;
             },
             
-          
+            //-----------------------------------------------------------------
+            // Helper methods
+            //-----------------------------------------------------------------
             
+            /**
+             * In some cases, you can end up with two white space tokens in a
+             * row. Instead of making a change in every function that looks for
+             * white space, this function is used to match as much white space
+             * as necessary.
+             * @method _matchWhitespace
+             * @return {Boolean} True if there's white space, false if not.
+             * @private
+             */
+            _matchWhitespace: function(){
+            
+                var tokenStream = this._tokenStream,
+                    found = false;
+                    
+                while(tokenStream.match(Tokens.S, "ws")){
+                    found = true;
+                }
+                
+                return found;
+            },
+          
+
+            /**
+             * Throws an error when an unexpected token is found.
+             * @param {Object} token The token that was found.
+             * @method _unexpectedToken
+             * @return {void}
+             * @private
+             */
             _unexpectedToken: function(token){
                 throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
             },
             
+            /**
+             * Helper method used for parsing subparts of a style sheet.
+             * @return {void}
+             * @method _verifyEnd
+             * @private
+             */
             _verifyEnd: function(){
                 if (this._tokenStream.LA(1) != Tokens.EOF){
                     this._unexpectedToken(this._tokenStream.LT(1));
@@ -1353,6 +1395,11 @@ Parser.prototype = function(){
             parse: function(input){    
                 this._tokenStream = new TokenStream(input, Tokens);
                 this._stylesheet();
+            },
+            
+            parseStyleSheet: function(input){
+                //just passthrough
+                return this.parse(input);
             },
             
             parseSelector: function(input){
@@ -1953,6 +2000,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 }
             } else {
                 tt = Tokens.FUNCTION;
+            }
+        } else if (reader.peek() == ":"){  //might be an IE function
+            
+            //IE-specific functions always being with progid:
+            if (ident.toLowerCase() == "progid"){
+                ident += reader.readTo("(");
+                tt = Tokens.IE_FUNCTION;
             }
         }
 
@@ -2589,6 +2643,11 @@ var Tokens  = [
 
     {
         name: "FUNCTION"
+    },    
+    
+    //not a real token, but useful for stupid IE filters
+    {
+        name: "IE_FUNCTION"
     },    
         
     {

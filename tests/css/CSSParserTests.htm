@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>CSS Tokens Tests</title>
+<title>CSS Parser Tests</title>
 <!-- Combo-handled YUI CSS files: -->
 <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
 <!-- Combo-handled YUI JS files: -->
@@ -95,6 +95,13 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
             assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
             assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        },
+    
+        testIEFilter: function(){
+            var parser = new Parser({ieFilters:true});
+            var result = parser.parseProperty("filter: progid:DXImageTransform.Microsoft.Wave(strength=100);");
+            
+            assert.isTrue(result);        
         }
     
         

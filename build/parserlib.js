@@ -460,72 +460,6 @@ SyntaxUnit.prototype = {
 
 };
 /**
- * Buffer to be used for lookaheads.
- * @class TokenBuffer
- * @namespace parserlib.util
- * @constructor
- * @param {int} size The number of tokens to buffer.
- */
-function TokenBuffer(size){
-
-    /**
-     * The number of tokens to buffer.
-     * @type int
-     * @property size
-     */
-    this.size = size;
-
-    /**
-     * The array to hold the tokens.
-     * @type Array
-     * @property _buffer
-     * @private
-     */
-    this._buffer = [];
-
-
-    /**
-     * The last index returned by the buffer.
-     * @type int
-     * @property _index
-     * @private
-     */
-    this._index = -1;
-    
-}
-
-TokenBuffer.prototype = {
-    constructor: TokenBuffer,
-    
-    add: function(token){
-    
-    },
-    
-    get: function(){
-        var tokenInfo = this._tokenData,
-            token;
-        if (this._buffer.length && this._index >= 0 && this._index < this._buffer.length){            
-            token = this._lt[this._index++];
-            info = tokenInfo[this._token.type];
-            
-            //obey channels logic
-            while((info.channel !== undefined && channel !== info.channel) &&
-                    this._index < this._buffer.length){
-                this._token = this._lt[this._index++];
-                info = tokenInfo[this._token.type];
-            }
-            
-            //here be dragons
-            if ((info.channel === undefined || channel === info.channel) &&
-                    this._index <= this._buffer.length){
-                return this._token.type;
-            }
-        }        
-    }
-
-};
-  
-/**
  * Generic TokenStream providing base functionality.
  * @class TokenStreamBase
  * @namespace parserlib.util
@@ -2063,7 +1997,7 @@ Parser.prototype = function(){
                 if (property !== null){
                     
                     tokenStream.mustMatch(Tokens.COLON);
-                    
+                                        
                     expr = this._expr();
                     
                     //if there's no parts for the value, it's an error
@@ -2151,7 +2085,7 @@ Parser.prototype = function(){
                  *   : unary_operator?
                  *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
                  *       TIME S* | FREQ S* ]
-                 *   | STRING S* | IDENT S* | URI S* | hexcolor | function
+                 *   | STRING S* | IDENT S* | URI S* | hexcolor | function | ie_function
                  *   ;   
                  */    
         
@@ -2169,9 +2103,9 @@ Parser.prototype = function(){
                 }                
                
                 //exception for IE filters
-                if (tokenStream.peek() == Tokens.IE_FILTER && this.options.ieFilters){
-                    tokenStream.get();
-                    value = tokenStream.token().value;
+                if (tokenStream.peek() == Tokens.IE_FUNCTION && this.options.ieFilters){
+                
+                    value = this._ie_function();
                     if (unary === null){
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol;
@@ -2197,10 +2131,12 @@ Parser.prototype = function(){
                         if (unary === null){
                             line = tokenStream.LT(1).startLine;
                             col = tokenStream.LT(1).startCol;
-                        }
+                        }                    
                     
                         //has to be a function
-                        value = this._function();
+                        if (value === null){
+                            value = this._function();
+                        }
 
                         /*if (value === null){
                             return null;
@@ -2240,6 +2176,43 @@ Parser.prototype = function(){
                     
                     tokenStream.match(Tokens.RPAREN);    
                     functionText += expr.join("") + ")"
+                }                
+                
+                return functionText;
+            }, 
+            
+            _ie_function: function(){
+            
+                /* (My own extension)
+                 * ie_function
+                 *   : IE_FUNCTION S* IDENT '=' term[',' IDENT '=' term]+ ')' S*
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    functionText = null,
+                    expr        = null;
+                    
+                if (tokenStream.match(Tokens.IE_FUNCTION)){
+                    functionText = tokenStream.token().value;
+                    
+                    do {
+                        //might be second time in the loop
+                        if (tokenStream.LA(0) == Tokens.COMMA){
+                            functionText += tokenStream.token().value;
+                        }
+                    
+                        tokenStream.match(Tokens.IDENT);
+                        functionText += tokenStream.token().value;
+                        
+                        tokenStream.match(Tokens.EQUALS);
+                        functionText += tokenStream.token().value;
+                        
+                        functionText += this._term();
+                    } while(tokenStream.match(Tokens.COMMA));                    
+                    
+                    tokenStream.match(Tokens.RPAREN);    
+                    functionText += ")"
                 }                
                 
                 return functionText;
@@ -2337,6 +2310,27 @@ Parser.prototype = function(){
                 return this.parse(input);
             },
             
+            parseProperty: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                var result = this._declaration();
+                
+                //okay to have a trailing semicolon
+                this._tokenStream.match(Tokens.SEMICOLON);
+                
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;
+            },
+            
+            /**
+             * Parses a single CSS selector (no comma)
+             * @param {String} input The text to parse as a CSS selector.
+             * @return {Selector} An object representing the selector.
+             * @throws parserlib.util.SyntaxError If an unexpected token is found.
+             * @method parseSelector
+             */
             parseSelector: function(input){
                 this._tokenStream = new TokenStream(input, Tokens);
                 var result = this._selector();

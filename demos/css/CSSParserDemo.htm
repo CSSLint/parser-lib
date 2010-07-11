@@ -125,11 +125,11 @@ function parse(){
         log("Ending media [" + event.media + "]");
     });    
 
-    //try {
+    try {
         parser.parse(document.getElementById("input").value)
-    //} catch (ex){
-    //    log("Parse error: " + ex.message, "error");
-    //}
+    } catch (ex){
+        log("Parse error: " + ex.message, "error");
+    }
 }
 
 

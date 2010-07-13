@@ -2185,7 +2185,7 @@ Parser.prototype = function(){
             
                 /* (My own extension)
                  * ie_function
-                 *   : IE_FUNCTION S* IDENT '=' term[',' IDENT '=' term]+ ')' S*
+                 *   : IE_FUNCTION S* IDENT '=' term [S* ','? IDENT '=' term]+ ')' S*
                  *   ;
                  */
                  
@@ -2209,7 +2209,7 @@ Parser.prototype = function(){
                         functionText += tokenStream.token().value;
                         
                         functionText += this._term();
-                    } while(tokenStream.match(Tokens.COMMA));                    
+                    } while(tokenStream.match([Tokens.COMMA, Tokens.S], "ws"));                    
                     
                     tokenStream.match(Tokens.RPAREN);    
                     functionText += ")"

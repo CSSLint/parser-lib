@@ -1322,7 +1322,8 @@ Parser.prototype = function(){
                  
                 var tokenStream = this._tokenStream,
                     functionText = null,
-                    expr        = null;
+                    expr        = null,
+                    lt;
                     
                 if (tokenStream.match(Tokens.IE_FUNCTION)){
                     functionText = tokenStream.token().value;
@@ -1339,7 +1340,13 @@ Parser.prototype = function(){
                         tokenStream.match(Tokens.EQUALS);
                         functionText += tokenStream.token().value;
                         
-                        functionText += this._term();
+                        //functionText += this._term();
+                        lt = tokenStream.peek("ws");
+                        while(lt != Tokens.COMMA && lt != Tokens.S && lt != Tokens.RPAREN){
+                            tokenStream.get();
+                            functionText += tokenStream.token().value;
+                            lt = tokenStream.peek("ws");
+                        }
                     } while(tokenStream.match([Tokens.COMMA, Tokens.S], "ws"));                    
                     
                     tokenStream.match(Tokens.RPAREN);    

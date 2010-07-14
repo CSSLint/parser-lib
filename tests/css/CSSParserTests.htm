@@ -102,7 +102,25 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseProperty("filter: progid:DXImageTransform.Microsoft.Wave(strength=100);");
             
             assert.isTrue(result);        
+        },
+        
+        testIEFilter2: function(){
+            var parser = new Parser({ieFilters:true});            
+            var result = parser.parseProperty("filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, src=http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png, sizingMethod=image);");
+            
+            assert.isTrue(result);
+        
+        },
+        
+        testIEFilter2: function(){
+            var parser = new Parser({ieFilters:true});            
+            var result = parser.parseProperty("filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png', sizingMethod='image');");
+            
+            assert.isTrue(result);
+        
         }
+        
+        
     
         
     

@@ -1,245 +1,35 @@
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
-/* 
-var Tokens = function(){
-
-    //token fragments
-    var h           = "[0-9a-fA-F]",
-        nonascii    = "[\\u0080-\\uFFFF]",
-        unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
-        escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
-        nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
-        string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
-        invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        
-        comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
-        name        = nmchar + "+",
-        num         = "(?:[0-9]*\\.[0-9]+|[0-9]+)",  //put decimal first as priority
-        string      = "(?:" + string1 + "|" + string2 + ")",
-        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
-        s           = "[ \\t\\r\\n\\f]+",
-        w           = "(?:" + s + ")?",
-
-        //return the token information
-        symbols = [
-            {
-                name: "S",
-                pattern: s,
-                channel: "ws"   //put onto another channel so I can get it later              
-            },
-            {
-                name: "COMMENT",
-                pattern: comment,
-                hide: true   //don't generate token
-            },
-            //CDO and CDC intentionally omitted
-            {
-                name: "INCLUDES",
-                text: "~="
-            },
-            {
-                name: "DASHMATCH",
-                text: "|="
-            },
-            {
-                name: "STRING",
-                pattern: string1 + "|" + string2,
-            },
-            {
-                name: "INVALID",
-                pattern: invalid1 + "|" + invalid2,
-            },  
-        
-
-            {
-                name: "HASH",
-                pattern: "#" + name
-            },
-            {
-                name: "IMPORT_SYM",
-                pattern: "@IMPORT",
-                patternOpt: "i"
-            },
-            {
-                name: "PAGE_SYM",
-                pattern: "@PAGE",
-                patternOpt: "i"
-            },
-            {
-                name: "MEDIA_SYM",
-                pattern: "@MEDIA",
-                patternOpt: "i"
-            },
-            {
-                name: "CHARSET_SYM",
-                text: "@charset "
-            },
-            {
-                name: "IMPORTANT_SYM",
-                pattern: "!(?:" + w + "|" + comment + ")*IMPORTANT",
-                patternOpt: "i"
-            },
-            {
-                name: "EMS",
-                pattern: num + "em",
-                patternOpt: "i"
-            },
-            {
-                name: "EXS",
-                pattern: num + "ex",
-                patternOpt: "i"
-            },
-            {
-                name: "LENGTH",
-                pattern: num + "px|" + num + "cm|" + num + "mm|" + num + "in|" + num + "pt|" + num + "pc",
-                patternOpt: "i"
-            },
-            {
-                name: "ANGLE",
-                pattern: num + "deg|" + num + "rad|" + num + "grad",
-                patternOpt: "i"
-            },
-            {
-                name: "TIME",
-                pattern: num + "ms|" + num + "s",
-                patternOpt: "i"
-            },
-            {
-                name: "FREQ",
-                pattern: num + "hz|" + num + "khz",
-                patternOpt: "i"
-            },
-            {
-                name: "DIMENSION",
-                pattern: num + ident
-            },   
-            {
-                name: "PERCENTAGE",
-                pattern: num + "%"
-            },
-            {
-                name: "NUMBER",
-                pattern: num 
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
-            },
-
-            //exception for IE filters - yuck
-            {
-                name: "IE_FILTER",
-                pattern: "progid:[a-z\\.]+\\([^\\)]*\\)",
-                patternOpt: "i"
-            },    
-
-            {
-                name: "FUNCTION",
-                pattern: ident + "\\("
-            },    
-                
-            {
-                name: "IDENT",
-                pattern: ident
-            },        
-            //Not defined as tokens, but might as well be
-            {
-                name: "SLASH",
-                text: "/"
-            },
-            {
-                name: "MINUS",
-                text: "-"
-            },
-            {
-                name: "PLUS",
-                text: "+"
-            },
-            {
-                name: "STAR",
-                text: "*"
-            },
-            {
-                name: "GREATER",
-                text: ">"
-            },
-            {
-                name: "LBRACE",
-                text: "{"
-            },   
-            {
-                name: "RBRACE",
-                text: "}"
-            },      
-            {
-                name: "LBRACKET",
-                text: "["
-            },   
-            {
-                name: "RBRACKET",
-                text: "]"
-            },    
-            {
-                name: "EQUALS",
-                text: "="
-            },
-            {
-                name: "COLON",
-                text: ":"
-            },    
-            {
-                name: "SEMICOLON",
-                text: ";"
-            },    
-         
-            {
-                name: "LPAREN",
-                text: "("
-            },   
-            {
-                name: "RPAREN",
-                text: ")"
-            },   
-          
-            {
-                name: "DOT",
-                text: "."
-            },    
-            {
-                name: "COMMA",
-                text: ","
-            }
-        ];
-        
-        return TokenStream.createTokenData(symbols);
-
-}();
-*/
 var Tokens  = [
+    /*
+     * The following productions are defined by http://www.w3.org/TR/css3-syntax/
+     * as the tokens of CSS:
+     *
+     * IDENT        ::=     ident
+     * ATKEYWORD    ::=     '@' ident
+     * STRING       ::=     string
+     * HASH         ::=     '#' name
+     * NUMBER       ::=     num
+     * PERCENTAGE   ::=     num '%'
+     * DIMENSION    ::=     num ident
+     * URI          ::=     "url(" w (string | urlchar* ) w ")"
+     * UNICODE-RANGE::=     "U+" [0-9A-F?]{1,6} ('-' [0-9A-F]{1,6})?
+     * CDO          ::=     "<!--"
+     * CDC          ::=     "-->"
+     * S            ::=     wc+
+     * COMMENT      ::=     "/*" [^*]* '*'+ ([^/] [^*]* '*'+)* "/"
+     * FUNCTION     ::=     ident '('
+     * INCLUDES     ::=     "~="
+     * DASHMATCH    ::=     "|="
+     * PREFIXMATCH  ::=     "^="
+     * SUFFIXMATCH  ::=     "$="
+     * SUBSTRINGMATCH   ::=     "*="
+     * CHAR         ::=     any other character not matched by the above rules, except for " or '
+     * BOM          ::=     #xFEFF
+    */
     {
-        name: "S",
-        channel: "ws"   //put onto another channel so I can get it later              
+        name: "IDENT"
     },
     {
-        name: "COMMENT",
-        hide: true   //don't generate token
-    },
-    //CDO and CDC intentionally omitted
-    {
-        name: "INCLUDES",
-        text: "~="
-    },
-    {
-        name: "DASHMATCH",
-        text: "|="
+        name: "ATKEYWORD"
     },
     {
         name: "STRING"
@@ -251,63 +41,85 @@ var Tokens  = [
         name: "HASH"
     },
     {
-        name: "IMPORT_SYM"
+        name: "NUMBER"
     },
-    {
-        name: "PAGE_SYM"
-    },
-    {
-        name: "MEDIA_SYM"
-    },
-    {
-        name: "CHARSET_SYM"
-    },
-    {
-        name: "IMPORTANT_SYM"
-    },
-    {
-        name: "EMS"
-    },
-    {
-        name: "EXS"
-    },
-    {
-        name: "LENGTH"
-    },
-    {
-        name: "ANGLE"
-    },
-    {
-        name: "TIME"
-    },
-    {
-        name: "FREQ"
-    },
-    {
-        name: "DIMENSION"
-    },   
     {
         name: "PERCENTAGE"
     },
     {
-        name: "NUMBER"
+        name: "DIMENSION"
     },
     {
         name: "URI"
     },
-
+    {
+        name: "UNICODE_RANGE"
+    },
+    {
+        name: "CDO"
+    },
+    {
+        name: "CDC"
+    },
+    {
+        name: "S",
+        channel: "ws"   //put onto another channel so I can get it later              
+    },
+    {
+        name: "COMMENT",
+        hide: true   //don't generate token
+    },
     {
         name: "FUNCTION"
     },    
+  
+/*
+
+
+
+
+
+
+
+
+*/  
+  
+
+    {
+        name: "INCLUDES",
+        text: "~="
+    },
+    {
+        name: "DASHMATCH",
+        text: "|="
+    },
+    {
+        name: "PREFIXMATCH",
+        text: "^="
+    },
+    {
+        name: "SUFFIXMATCH",
+        text: "$="
+    },
+    {
+        name: "SUBSTRINGMATCH",
+        text: "*="
+    },
+    {
+        name: "CHAR"
+    },
+    {
+        name: "BOM"
+    },
+    
+    
+    
     
     //not a real token, but useful for stupid IE filters
     {
         name: "IE_FUNCTION"
-    },    
-        
-    {
-        name: "IDENT"
-    },        
+    },      
+    //TODO: Needed?
     //Not defined as tokens, but might as well be
     {
         name: "SLASH",

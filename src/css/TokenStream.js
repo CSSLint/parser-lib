@@ -1,7 +1,29 @@
 /*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
+ * The following productions are defined by http://www.w3.org/TR/css3-syntax/
+ * as the tokens of CSS:
+ *
+ * IDENT        ::=     ident
+ * ATKEYWORD    ::=     '@' ident
+ * STRING       ::=     string
+ * HASH         ::=     '#' name
+ * NUMBER       ::=     num
+ * PERCENTAGE   ::=     num '%'
+ * DIMENSION    ::=     num ident
+ * URI          ::=     "url(" w (string | urlchar* ) w ")"
+ * UNICODE-RANGE::=     "U+" [0-9A-F?]{1,6} ('-' [0-9A-F]{1,6})?
+ * CDO          ::=     "<!--"
+ * CDC          ::=     "-->"
+ * S            ::=     wc+
+ * COMMENT      ::=     "/*" [^*]* '*'+ ([^/] [^*]* '*'+)* "/"
+ * FUNCTION     ::=     ident '('
+ * INCLUDES     ::=     "~="
+ * DASHMATCH    ::=     "|="
+ * PREFIXMATCH  ::=     "^="
+ * SUFFIXMATCH  ::=     "$="
+ * SUBSTRINGMATCH   ::=     "*="
+ * CHAR         ::=     any other character not matched by the above rules, except for " or '
+ * BOM          ::=     #xFEFF
+*/
  
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -54,12 +76,28 @@ function mix(receiver, supplier){
 //-----------------------------------------------------------------------------
 
 
+/**
+ * A token stream that produces CSS tokens.
+ * @param {String|Reader} input The source of text to tokenize.
+ * @constructor
+ * @class TokenStream
+ * @namespace parserlib.css
+ */
 function TokenStream(input){
 	TokenStreamBase.call(this, input, Tokens);
 }
 
 TokenStream.prototype = mix(new TokenStreamBase(), {
 
+    /**
+     * Overrides the TokenStreamBase method of the same name
+     * to produce CSS tokens.
+     * @param {variant} channel The name of the channel to use
+     *      for the next token.
+     * @return {Object} A token object representing the next token.
+     * @method _getToken
+     * @private
+     */
     _getToken: function(channel){
     
         var c,
@@ -78,7 +116,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - COMMENT
                  * - SLASH
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "/":
 
@@ -93,10 +131,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - DASHMATCH
                  * - INCLUDES
-                 * - UNKNOWN
+                 * - PREFIXMATCH
+                 * - SUFFIXMATCH
+                 * - SUBSTRINGMATCH
+                 * - CHAR
                  */
                 case "|":
                 case "~":
+                case "^":
+                case "$":
+                case "*":
                     if(reader.peek() == "="){
                         token = this.comparisonToken(c, startLine, startCol);
                     } else {
@@ -117,6 +161,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - HASH
+                 * - CHAR
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
@@ -131,12 +176,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - DOT
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case ".":
                     if (isDigit(reader.peek())){
@@ -151,12 +191,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - MINUS
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case "-":
                     if (isNameStart(reader.peek())){
@@ -169,7 +204,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - IMPORTANT_SYM
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
@@ -250,67 +285,101 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return token;
     },
     
-    charToken: function(c, startLine, startCol){
-        var tt      = Tokens.type(c) || -1,
-            reader  = this._reader;
-            
-        return this.createToken(tt, c, startLine, startCol);
-    },
-    comparisonToken: function(c, startLine, startCol){
-        var reader  = this._reader,
-            comparison  = c + reader.read(),
-            tt      = Tokens.type(comparison) || -1;
-            
-        return this.createToken(tt, comparison, startLine, startCol);
-    },
-    whitespaceToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = first + this.readWhitespace();
-        return this.createToken(Tokens.S, value, startLine, startCol);            
-    },
-
-    numberToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = this.readNumber(first),
-            ident,
-            tt      = Tokens.NUMBER,
-            c       = reader.peek();
-            
-        if (isIdentStart(c)){
-            ident = this.readName(reader.read());
-            value += ident;
-            
-            if (/em/i.test(ident)){
-                tt = Tokens.EMS;
-            } else if (/ex/i.test(ident)){
-                tt = Tokens.EXS;
-            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
-                tt = Tokens.LENGTH;
-            } else if (/deg|rad|grad/i.test(ident)){
-                tt = Tokens.ANGLE;
-            } else if (/ms|s/i.test(ident)){
-                tt = Tokens.TIME;
-            } else if (/hz|khz/i.test(ident)){
-                tt = Tokens.FREQ;
-            } else {
-                tt = Tokens.DIMENSION;
-            }
-        } else if (c == "%"){
-            value += reader.read();
-            tt = Tokens.PERCENTAGE;
-        }
-            
-
-        return this.createToken(tt, value, startLine, startCol);            
-    },
+    //-------------------------------------------------------------------------
+    // Methods to create tokens
+    //-------------------------------------------------------------------------
     
+    /**
+     * Produces a token based on available data and the current
+     * reader position information. This method is called by other
+     * private methods to create tokens and is never called directly.
+     * @param {int} tt The token type.
+     * @param {String} value The text value of the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @param {Object} options (Optional) Specifies a channel property
+     *      to indicate that a different channel should be scanned
+     *      and/or a hide property indicating that the token should
+     *      be hidden.
+     * @return {Object} A token object.
+     * @method createToken
+     */    
+    createToken: function(tt, value, startLine, startCol, options){
+        var reader = this._reader;
+        options = options || {};
+        
+        return {
+            value:      value,
+            type:       tt,
+            channel:    options.channel,
+            hide:       options.hide || false,
+            startLine:  startLine,
+            startCol:   startCol,
+            endLine:    reader.getLine(),
+            endCol:     reader.getCol()            
+        };    
+    },    
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method charToken
+     */
+    charToken: function(c, startLine, startCol){
+        var tt = Tokens.type(c) || Tokens.CHAR;            
+        return this.createToken(tt, c, startLine, startCol);
+    },    
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method commentToken
+     */    
     commentToken: function(first, startLine, startCol){
         var reader  = this._reader,
             comment = this.readComment(first);
 
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
+    },    
+    
+    /**
+     * Produces a comparison token based on the given character
+     * and location in the stream. The next character must be
+     * read and is already known to be an equals sign.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method comparisonToken
+     */    
+    comparisonToken: function(c, startLine, startCol){
+        var reader  = this._reader,
+            comparison  = c + reader.read(),
+            tt      = Tokens.type(comparison) || Tokens.CHAR;
+            
+        return this.createToken(tt, comparison, startLine, startCol);
     },
     
+    /**
+     * Produces a hash token based on the specified information. The
+     * first character provided is the pound sign (#) and then this
+     * method reads a name afterward.
+     * @param {String} first The first character (#) in the hash name.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method hashToken
+     */    
     hashToken: function(first, startLine, startCol){
         var reader  = this._reader,
             name    = this.readName(first);
@@ -318,6 +387,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(Tokens.HASH, name, startLine, startCol);    
     },
     
+    /**
+     * Produces an IDENT or FUNCTION token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the identifier.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method identOrFunctionToken
+     */    
     identOrFunctionToken: function(first, startLine, startCol){
         var reader  = this._reader,
             ident   = this.readName(first),
@@ -349,6 +428,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(tt, ident, startLine, startCol);    
     },
     
+    /**
+     * Produces an IMPORTANT_SYM or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method importantToken
+     */      
     importantToken: function(first, startLine, startCol){
         var reader      = this._reader,
             important   = first,
@@ -399,7 +488,49 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         
         
     },
+
+    /**
+     * Produces a number token based on the given character
+     * and location in the stream. There are three possible
+     * token types: NUMBER, DIMENSION, and PERCENTAGE.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method numberToken
+     */    
+    numberToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = this.readNumber(first),
+            ident,
+            tt      = Tokens.NUMBER,
+            c       = reader.peek();
+            
+        if (isIdentStart(c)){
+            ident = this.readName(reader.read());
+            value += ident;            
+            tt = Tokens.DIMENSION;
+        } else if (c == "%"){
+            value += reader.read();
+            tt = Tokens.PERCENTAGE;
+        }
+            
+        return this.createToken(tt, value, startLine, startCol);            
+    },    
     
+    /**
+     * Produces a string token based on the given character
+     * and location in the stream. Since strings may be indicated
+     * by single or double quotes, a failure to match starting
+     * and ending quotes results in an INVALID token being generated.
+     * The first character in the string is passed in and then
+     * the rest are read up to and including the final quotation mark.
+     * @param {String} first The first character in the string.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method stringToken
+     */    
     stringToken: function(first, startLine, startCol){
         var delim   = first,
             string  = first,
@@ -434,6 +565,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             
         return this.createToken(tt, string, startLine, startCol);        
     },
+    
+    whitespaceToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = first + this.readWhitespace();
+        return this.createToken(Tokens.S, value, startLine, startCol);            
+    },    
     
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
@@ -507,6 +644,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
 
+
+    //-------------------------------------------------------------------------
+    // Methods to read values from the string stream
+    //-------------------------------------------------------------------------
     readWhitespace: function(){
         var reader  = this._reader,
             whitespace = "",
@@ -659,21 +800,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     
     },
     
-    createToken: function(tt, value, startLine, startCol, options){
-        var reader = this._reader;
-        options = options || {};
-        
-        return {
-            value:      value,
-            type:       tt,
-            channel:    options.channel,
-            hide:       options.hide || false,
-            startLine:  startLine,
-            startCol:   startCol,
-            endLine:    reader.getLine(),
-            endCol:     reader.getCol()            
-        };    
-    },
+
 
 
 });

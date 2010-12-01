@@ -1971,7 +1971,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - PREFIXMATCH
                  * - SUFFIXMATCH
                  * - SUBSTRINGMATCH
-                 * - CHAR
+                 * - UNKNOWN
                  */
                 case "|":
                 case "~":
@@ -1998,7 +1998,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - HASH
-                 * - CHAR
+                 * - UNKNOWN
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
@@ -2025,13 +2025,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     
                 /*
                  * Potential tokens:
+                 * - CDC
                  * - MINUS
                  * - NUMBER
                  * - DIMENSION
                  * - PERCENTAGE
                  */
                 case "-":
-                    if (isNameStart(reader.peek())){
+                    if (reader.peek() == "-"){  //could be closing HTML-style comment
+                        token = this.htmlCommentEndToken(c, startLine, startCol);
+                    } else if (isNameStart(reader.peek())){
                         token = this.identOrFunctionToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
@@ -2048,16 +2051,29 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     break;
                     
                 /*
-                 * Potential tokens:
-                 * - IMPORT_SYM
-                 * - PAGE_SYM
-                 * - MEDIA_SYM
-                 * - CHARSET_SYM
+                 * Any at-keyword or UNKNOWN
                  */
                 case "@":
                     token = this.atRuleToken(c, startLine, startCol);
                     break;
                     
+                /*
+                 * Potential tokens:
+                 * - NOT
+                 * - UNKNOWN
+                 */
+                case ":":
+                    token = this.notToken(c, startLine, startCol);
+                    break;         
+           
+                /*
+                 * Potential tokens:
+                 * - CDO
+                 * - UNKNOWN
+                 */
+                case "<":
+                    token = this.htmlCommentStartToken(c, startLine, startCol);
+                    break;                    
                     
                 default:
                     
@@ -2155,7 +2171,98 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             endLine:    reader.getLine(),
             endCol:     reader.getCol()            
         };    
-    },    
+    }, 
+    
+    //-------------------------------------------------------------------------
+    // Methods to create specific tokens
+    //-------------------------------------------------------------------------    
+    
+    /**
+     * Produces a token for any at-rule. If the at-rule is unknown, then
+     * the token is for a single "@" character.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method atRuleToken
+     */    
+    atRuleToken: function(first, startLine, startCol){
+        var rule    = first,
+            reader  = this._reader,
+            tt      = Tokens.UNKNOWN,
+            valid   = false,
+            ident,
+            c;            
+                    
+        /*
+         * First, mark where we are. There are only four @ rules,
+         * so anything else is really just an invalid token.
+         * Basically, if this doesn't match one of the known @
+         * rules, just return '@' as an unknown token and allow
+         * parsing to continue after that point.
+         */
+        reader.mark();
+        
+        //try to find the at-keyword        
+        ident = this.readName();
+        tt = Tokens.type(first + ident.toLowerCase());
+        
+        /*
+        rule += c = reader.read();
+        
+        switch(c){
+        
+            //might be @import
+            case "i":
+            case "I":
+                rule += reader.readCount(5);
+                valid = /@import/i.test(rule);
+                if (valid){
+                    tt = Tokens.IMPORT_SYM;
+                }
+                break;
+                
+            //might be @page
+            case "p":
+            case "P":
+                rule += reader.readCount(3);
+                valid = /@page/i.test(rule);
+                if (valid){
+                    tt = Tokens.PAGE_SYM;
+                }
+                break;
+                
+            //might be @media
+            case "m":
+            case "M":
+                rule += reader.readCount(4);
+                valid = /@media/i.test(rule);
+                if (valid){
+                    tt = Tokens.MEDIA_SYM;
+                }
+                break;
+                
+            //might be @charset, requires space after
+            case "c":
+                rule += reader.readCount(7);
+                valid = (rule == "@charset ");
+                if (valid){
+                    tt = Tokens.CHARSET_SYM;
+                }
+                break;
+
+            //no default
+        }
+        */
+        
+        //if it's not valid, use the first character only and reset the reader
+        if (tt == Tokens.UNKNOWN){        
+            rule = first;
+            reader.reset();
+        }            
+            
+        return this.createToken(tt, rule, startLine, startCol);        
+    },         
     
     /**
      * Produces a character token based on the given character
@@ -2198,7 +2305,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method comparisonToken
-     */    
+     */
     comparisonToken: function(c, startLine, startCol){
         var reader  = this._reader,
             comparison  = c + reader.read(),
@@ -2216,13 +2323,63 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @param {int} startCol The beginning column for the character.
      * @return {Object} A token object.
      * @method hashToken
-     */    
+     */
     hashToken: function(first, startLine, startCol){
         var reader  = this._reader,
             name    = this.readName(first);
 
         return this.createToken(Tokens.HASH, name, startLine, startCol);    
     },
+    
+    /**
+     * Produces a CDO or UNKNOWN token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method htmlCommentStartToken
+     */      
+    htmlCommentStartToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
+
+        reader.mark();        
+        text += reader.readCount(3);
+            
+        if (text == "<!--"){
+            return this.createToken(Tokens.CDO, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }        
+    },    
+    
+    /**
+     * Produces a CDC or UNKNOWN token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method htmlCommentEndToken
+     */      
+    htmlCommentEndToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
+
+        reader.mark();        
+        text += reader.readCount(2);
+            
+        if (text == "-->"){
+            return this.createToken(Tokens.CDC, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }        
+    },    
     
     /**
      * Produces an IDENT or FUNCTION token based on the specified information. The
@@ -2327,6 +2484,31 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     /**
+     * Produces a NOT or UNKNOWN token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method notToken
+     */      
+    notToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
+
+        reader.mark();        
+        text += reader.readCount(4);
+            
+        if (text.toLowerCase() == ":not("){
+            return this.createToken(Tokens.NOT, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }
+    },
+
+    /**
      * Produces a number token based on the given character
      * and location in the stream. This may return a token of
      * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
@@ -2418,91 +2600,24 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
             
         return this.createToken(tt, string, startLine, startCol);        
-    },
+    },    
     
+    /**
+     * Produces a S token based on the specified information. Since whitespace
+     * may have multiple characters, this consumes all whitespace characters
+     * into a single token.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method whitespaceToken
+     */          
     whitespaceToken: function(first, startLine, startCol){
         var reader  = this._reader,
             value   = first + this.readWhitespace();
         return this.createToken(Tokens.S, value, startLine, startCol);            
     },    
-    
-    atRuleToken: function(first, startLine, startCol){
-        var rule    = first,
-            reader  = this._reader,
-            tt      = Tokens.UNKNOWN,
-            valid   = false,
-            ident,
-            c;            
-                    
-        /*
-         * First, mark where we are. There are only four @ rules,
-         * so anything else is really just an invalid token.
-         * Basically, if this doesn't match one of the known @
-         * rules, just return '@' as an unknown token and allow
-         * parsing to continue after that point.
-         */
-        reader.mark();
-        
-        //try to find the at-keyword        
-        ident = this.readName();
-        tt = Tokens.type(first + ident.toLowerCase());
-        
-        /*
-        rule += c = reader.read();
-        
-        switch(c){
-        
-            //might be @import
-            case "i":
-            case "I":
-                rule += reader.readCount(5);
-                valid = /@import/i.test(rule);
-                if (valid){
-                    tt = Tokens.IMPORT_SYM;
-                }
-                break;
-                
-            //might be @page
-            case "p":
-            case "P":
-                rule += reader.readCount(3);
-                valid = /@page/i.test(rule);
-                if (valid){
-                    tt = Tokens.PAGE_SYM;
-                }
-                break;
-                
-            //might be @media
-            case "m":
-            case "M":
-                rule += reader.readCount(4);
-                valid = /@media/i.test(rule);
-                if (valid){
-                    tt = Tokens.MEDIA_SYM;
-                }
-                break;
-                
-            //might be @charset, requires space after
-            case "c":
-                rule += reader.readCount(7);
-                valid = (rule == "@charset ");
-                if (valid){
-                    tt = Tokens.CHARSET_SYM;
-                }
-                break;
-
-            //no default
-        }
-        */
-        
-        //if it's not valid, use the first character only and reset the reader
-        if (tt == Tokens.UNKNOWN){        
-            rule = first;
-            reader.reset();
-        }            
-            
-        return this.createToken(tt, rule, startLine, startCol);        
-    },
+   
 
 
 

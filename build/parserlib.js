@@ -2358,6 +2358,137 @@ Parser.prototype = function(){
     
     return proto;
 }();
+
+
+
+
+/*
+ * CSS3 Paged Media
+page :
+       PAGE_SYM S* IDENT? pseudo_page? S* 
+       '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+       ;
+
+pseudo_page :
+       ':' [ "left" | "right" | "first" ]
+       ;
+
+margin :
+       margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
+       ;
+
+margin_sym :
+       TOPLEFTCORNER_SYM | 
+       TOPLEFT_SYM | 
+       TOPCENTER_SYM | 
+       TOPRIGHT_SYM | 
+       TOPRIGHTCORNER_SYM |
+       BOTTOMLEFTCORNER_SYM | 
+       BOTTOMLEFT_SYM | 
+       BOTTOMCENTER_SYM | 
+       BOTTOMRIGHT_SYM |
+       BOTTOMRIGHTCORNER_SYM |
+       LEFTTOP_SYM |
+       LEFTMIDDLE_SYM |
+       LEFTBOTTOM_SYM |
+       RIGHTTOP_SYM |
+       RIGHTMIDDLE_SYM |
+       RIGHTBOTTOM_SYM 
+       ;
+
+*/ 
+
+/*
+ * CSS3 Media Queries
+ 
+ media_query_list
+ : S* [media_query [ ',' S* media_query ]* ]?
+ ;
+media_query
+ : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+ | expression [ AND S* expression ]*
+ ;
+media_type
+ : IDENT
+ ;
+expression
+ : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+ ;
+media_feature
+ : IDEN
+ */
+ 
+ /* CSS3 Selectors
+ 
+ selectors_group
+  : selector [ COMMA S* selector ]*
+  ;
+
+selector
+  : simple_selector_sequence [ combinator simple_selector_sequence ]*
+  ;
+
+combinator
+  : PLUS S* | GREATER S* | TILDE S* | S+
+  ;
+
+simple_selector_sequence
+  : [ type_selector | universal ]
+    [ HASH | class | attrib | pseudo | negation ]*
+  | [ HASH | class | attrib | pseudo | negation ]+
+  ;
+
+type_selector
+  : [ namespace_prefix ]? element_name
+  ;
+
+namespace_prefix
+  : [ IDENT | '*' ]? '|'
+  ;
+
+element_name
+  : IDENT
+  ;
+
+universal
+  : [ namespace_prefix ]? '*'
+  ;
+
+class
+  : '.' IDENT
+  ;
+
+attrib
+  : '[' S* [ namespace_prefix ]? IDENT S*
+        [ [ PREFIXMATCH |
+            SUFFIXMATCH |
+            SUBSTRINGMATCH |
+            '=' |
+            INCLUDES |
+            DASHMATCH ] S* [ IDENT | STRING ] S*
+        ]? ']'
+  ;
+
+pseudo
+  : ':' ':'? [ IDENT | functional_pseudo ]
+  ;
+
+functional_pseudo
+  : FUNCTION S* expression ')'
+  ;
+
+expression
+  : [ [ PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ] S* ]+
+  ;
+
+negation
+  : NOT S* negation_arg S* ')'
+  ;
+
+negation_arg
+  : type_selector | universal | HASH | class | attrib | pseudo
+  ;
+  */
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -2598,10 +2729,7 @@ SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
 
 
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
+
  
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -2654,12 +2782,28 @@ function mix(receiver, supplier){
 //-----------------------------------------------------------------------------
 
 
+/**
+ * A token stream that produces CSS tokens.
+ * @param {String|Reader} input The source of text to tokenize.
+ * @constructor
+ * @class TokenStream
+ * @namespace parserlib.css
+ */
 function TokenStream(input){
 	TokenStreamBase.call(this, input, Tokens);
 }
 
 TokenStream.prototype = mix(new TokenStreamBase(), {
 
+    /**
+     * Overrides the TokenStreamBase method of the same name
+     * to produce CSS tokens.
+     * @param {variant} channel The name of the channel to use
+     *      for the next token.
+     * @return {Object} A token object representing the next token.
+     * @method _getToken
+     * @private
+     */
     _getToken: function(channel){
     
         var c,
@@ -2693,10 +2837,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - DASHMATCH
                  * - INCLUDES
-                 * - UNKNOWN
+                 * - PREFIXMATCH
+                 * - SUFFIXMATCH
+                 * - SUBSTRINGMATCH
+                 * - CHAR
                  */
                 case "|":
                 case "~":
+                case "^":
+                case "$":
+                case "*":
                     if(reader.peek() == "="){
                         token = this.comparisonToken(c, startLine, startCol);
                     } else {
@@ -2717,6 +2867,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - HASH
+                 * - CHAR
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
@@ -2731,12 +2882,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - DOT
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case ".":
                     if (isDigit(reader.peek())){
@@ -2751,12 +2897,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - MINUS
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case "-":
                     if (isNameStart(reader.peek())){
@@ -2850,67 +2991,101 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return token;
     },
     
-    charToken: function(c, startLine, startCol){
-        var tt      = Tokens.type(c) || -1,
-            reader  = this._reader;
-            
-        return this.createToken(tt, c, startLine, startCol);
-    },
-    comparisonToken: function(c, startLine, startCol){
-        var reader  = this._reader,
-            comparison  = c + reader.read(),
-            tt      = Tokens.type(comparison) || -1;
-            
-        return this.createToken(tt, comparison, startLine, startCol);
-    },
-    whitespaceToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = first + this.readWhitespace();
-        return this.createToken(Tokens.S, value, startLine, startCol);            
-    },
-
-    numberToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = this.readNumber(first),
-            ident,
-            tt      = Tokens.NUMBER,
-            c       = reader.peek();
-            
-        if (isIdentStart(c)){
-            ident = this.readName(reader.read());
-            value += ident;
-            
-            if (/em/i.test(ident)){
-                tt = Tokens.EMS;
-            } else if (/ex/i.test(ident)){
-                tt = Tokens.EXS;
-            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
-                tt = Tokens.LENGTH;
-            } else if (/deg|rad|grad/i.test(ident)){
-                tt = Tokens.ANGLE;
-            } else if (/ms|s/i.test(ident)){
-                tt = Tokens.TIME;
-            } else if (/hz|khz/i.test(ident)){
-                tt = Tokens.FREQ;
-            } else {
-                tt = Tokens.DIMENSION;
-            }
-        } else if (c == "%"){
-            value += reader.read();
-            tt = Tokens.PERCENTAGE;
-        }
-            
-
-        return this.createToken(tt, value, startLine, startCol);            
-    },
+    //-------------------------------------------------------------------------
+    // Methods to create tokens
+    //-------------------------------------------------------------------------
     
+    /**
+     * Produces a token based on available data and the current
+     * reader position information. This method is called by other
+     * private methods to create tokens and is never called directly.
+     * @param {int} tt The token type.
+     * @param {String} value The text value of the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @param {Object} options (Optional) Specifies a channel property
+     *      to indicate that a different channel should be scanned
+     *      and/or a hide property indicating that the token should
+     *      be hidden.
+     * @return {Object} A token object.
+     * @method createToken
+     */    
+    createToken: function(tt, value, startLine, startCol, options){
+        var reader = this._reader;
+        options = options || {};
+        
+        return {
+            value:      value,
+            type:       tt,
+            channel:    options.channel,
+            hide:       options.hide || false,
+            startLine:  startLine,
+            startCol:   startCol,
+            endLine:    reader.getLine(),
+            endCol:     reader.getCol()            
+        };    
+    },    
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method charToken
+     */
+    charToken: function(c, startLine, startCol){
+        var tt = Tokens.type(c) || Tokens.UNKNOWN;            
+        return this.createToken(tt, c, startLine, startCol);
+    },    
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method commentToken
+     */    
     commentToken: function(first, startLine, startCol){
         var reader  = this._reader,
             comment = this.readComment(first);
 
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
+    },    
+    
+    /**
+     * Produces a comparison token based on the given character
+     * and location in the stream. The next character must be
+     * read and is already known to be an equals sign.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method comparisonToken
+     */    
+    comparisonToken: function(c, startLine, startCol){
+        var reader  = this._reader,
+            comparison  = c + reader.read(),
+            tt      = Tokens.type(comparison) || Tokens.UNKNOWN;
+            
+        return this.createToken(tt, comparison, startLine, startCol);
     },
     
+    /**
+     * Produces a hash token based on the specified information. The
+     * first character provided is the pound sign (#) and then this
+     * method reads a name afterward.
+     * @param {String} first The first character (#) in the hash name.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method hashToken
+     */    
     hashToken: function(first, startLine, startCol){
         var reader  = this._reader,
             name    = this.readName(first);
@@ -2918,6 +3093,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(Tokens.HASH, name, startLine, startCol);    
     },
     
+    /**
+     * Produces an IDENT or FUNCTION token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the identifier.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method identOrFunctionToken
+     */    
     identOrFunctionToken: function(first, startLine, startCol){
         var reader  = this._reader,
             ident   = this.readName(first),
@@ -2949,6 +3134,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(tt, ident, startLine, startCol);    
     },
     
+    /**
+     * Produces an IMPORTANT_SYM or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method importantToken
+     */      
     importantToken: function(first, startLine, startCol){
         var reader      = this._reader,
             important   = first,
@@ -2999,7 +3194,66 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         
         
     },
+
+    /**
+     * Produces a number token based on the given character
+     * and location in the stream. This may return a token of
+     * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
+     * or PERCENTAGE.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method numberToken
+     */    
+    numberToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = this.readNumber(first),
+            ident,
+            tt      = Tokens.NUMBER,
+            c       = reader.peek();
+            
+        if (isIdentStart(c)){
+            ident = this.readName(reader.read());
+            value += ident;            
+
+            if (/em/i.test(ident)){
+                tt = Tokens.EMS;
+            } else if (/ex/i.test(ident)){
+                tt = Tokens.EXS;
+            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
+                tt = Tokens.LENGTH;
+            } else if (/deg|rad|grad/i.test(ident)){
+                tt = Tokens.ANGLE;
+            } else if (/ms|s/i.test(ident)){
+                tt = Tokens.TIME;
+            } else if (/hz|khz/i.test(ident)){
+                tt = Tokens.FREQ;
+            } else {
+                tt = Tokens.DIMENSION;
+            }
+
+        } else if (c == "%"){
+            value += reader.read();
+            tt = Tokens.PERCENTAGE;
+        }
+            
+        return this.createToken(tt, value, startLine, startCol);            
+    },    
     
+    /**
+     * Produces a string token based on the given character
+     * and location in the stream. Since strings may be indicated
+     * by single or double quotes, a failure to match starting
+     * and ending quotes results in an INVALID token being generated.
+     * The first character in the string is passed in and then
+     * the rest are read up to and including the final quotation mark.
+     * @param {String} first The first character in the string.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method stringToken
+     */    
     stringToken: function(first, startLine, startCol){
         var delim   = first,
             string  = first,
@@ -3035,13 +3289,20 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(tt, string, startLine, startCol);        
     },
     
+    whitespaceToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = first + this.readWhitespace();
+        return this.createToken(Tokens.S, value, startLine, startCol);            
+    },    
+    
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this._reader,
             tt      = Tokens.UNKNOWN,
             valid   = false,
-            c;
-            
+            ident,
+            c;            
+                    
         /*
          * First, mark where we are. There are only four @ rules,
          * so anything else is really just an invalid token.
@@ -3051,6 +3312,11 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          */
         reader.mark();
         
+        //try to find the at-keyword        
+        ident = this.readName();
+        tt = Tokens.type(first + ident.toLowerCase());
+        
+        /*
         rule += c = reader.read();
         
         switch(c){
@@ -3096,9 +3362,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             //no default
         }
+        */
         
         //if it's not valid, use the first character only and reset the reader
-        if (!valid){        
+        if (tt == Tokens.UNKNOWN){        
             rule = first;
             reader.reset();
         }            
@@ -3107,6 +3374,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
 
+
+    //-------------------------------------------------------------------------
+    // Methods to read values from the string stream
+    //-------------------------------------------------------------------------
     readWhitespace: function(){
         var reader  = this._reader,
             whitespace = "",
@@ -3223,7 +3494,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
     readName: function(first){
         var reader  = this._reader,
-            ident   = first,
+            ident   = first || "",
             c       = reader.peek();
         
 
@@ -3236,7 +3507,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },    
     readComment: function(first){
         var reader  = this._reader,
-            comment = first,
+            comment = first || "",
             c       = reader.read();
         
         if (c == "*"){
@@ -3259,336 +3530,121 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     
     },
     
-    createToken: function(tt, value, startLine, startCol, options){
-        var reader = this._reader;
-        options = options || {};
-        
-        return {
-            value:      value,
-            type:       tt,
-            channel:    options.channel,
-            hide:       options.hide || false,
-            startLine:  startLine,
-            startCol:   startCol,
-            endLine:    reader.getLine(),
-            endCol:     reader.getCol()            
-        };    
-    },
+
 
 
 });
 
 
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
-/* 
-var Tokens = function(){
-
-    //token fragments
-    var h           = "[0-9a-fA-F]",
-        nonascii    = "[\\u0080-\\uFFFF]",
-        unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
-        escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
-        nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
-        string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
-        invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        
-        comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
-        name        = nmchar + "+",
-        num         = "(?:[0-9]*\\.[0-9]+|[0-9]+)",  //put decimal first as priority
-        string      = "(?:" + string1 + "|" + string2 + ")",
-        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
-        s           = "[ \\t\\r\\n\\f]+",
-        w           = "(?:" + s + ")?",
-
-        //return the token information
-        symbols = [
-            {
-                name: "S",
-                pattern: s,
-                channel: "ws"   //put onto another channel so I can get it later              
-            },
-            {
-                name: "COMMENT",
-                pattern: comment,
-                hide: true   //don't generate token
-            },
-            //CDO and CDC intentionally omitted
-            {
-                name: "INCLUDES",
-                text: "~="
-            },
-            {
-                name: "DASHMATCH",
-                text: "|="
-            },
-            {
-                name: "STRING",
-                pattern: string1 + "|" + string2,
-            },
-            {
-                name: "INVALID",
-                pattern: invalid1 + "|" + invalid2,
-            },  
-        
-
-            {
-                name: "HASH",
-                pattern: "#" + name
-            },
-            {
-                name: "IMPORT_SYM",
-                pattern: "@IMPORT",
-                patternOpt: "i"
-            },
-            {
-                name: "PAGE_SYM",
-                pattern: "@PAGE",
-                patternOpt: "i"
-            },
-            {
-                name: "MEDIA_SYM",
-                pattern: "@MEDIA",
-                patternOpt: "i"
-            },
-            {
-                name: "CHARSET_SYM",
-                text: "@charset "
-            },
-            {
-                name: "IMPORTANT_SYM",
-                pattern: "!(?:" + w + "|" + comment + ")*IMPORTANT",
-                patternOpt: "i"
-            },
-            {
-                name: "EMS",
-                pattern: num + "em",
-                patternOpt: "i"
-            },
-            {
-                name: "EXS",
-                pattern: num + "ex",
-                patternOpt: "i"
-            },
-            {
-                name: "LENGTH",
-                pattern: num + "px|" + num + "cm|" + num + "mm|" + num + "in|" + num + "pt|" + num + "pc",
-                patternOpt: "i"
-            },
-            {
-                name: "ANGLE",
-                pattern: num + "deg|" + num + "rad|" + num + "grad",
-                patternOpt: "i"
-            },
-            {
-                name: "TIME",
-                pattern: num + "ms|" + num + "s",
-                patternOpt: "i"
-            },
-            {
-                name: "FREQ",
-                pattern: num + "hz|" + num + "khz",
-                patternOpt: "i"
-            },
-            {
-                name: "DIMENSION",
-                pattern: num + ident
-            },   
-            {
-                name: "PERCENTAGE",
-                pattern: num + "%"
-            },
-            {
-                name: "NUMBER",
-                pattern: num 
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
-            },
-
-            //exception for IE filters - yuck
-            {
-                name: "IE_FILTER",
-                pattern: "progid:[a-z\\.]+\\([^\\)]*\\)",
-                patternOpt: "i"
-            },    
-
-            {
-                name: "FUNCTION",
-                pattern: ident + "\\("
-            },    
-                
-            {
-                name: "IDENT",
-                pattern: ident
-            },        
-            //Not defined as tokens, but might as well be
-            {
-                name: "SLASH",
-                text: "/"
-            },
-            {
-                name: "MINUS",
-                text: "-"
-            },
-            {
-                name: "PLUS",
-                text: "+"
-            },
-            {
-                name: "STAR",
-                text: "*"
-            },
-            {
-                name: "GREATER",
-                text: ">"
-            },
-            {
-                name: "LBRACE",
-                text: "{"
-            },   
-            {
-                name: "RBRACE",
-                text: "}"
-            },      
-            {
-                name: "LBRACKET",
-                text: "["
-            },   
-            {
-                name: "RBRACKET",
-                text: "]"
-            },    
-            {
-                name: "EQUALS",
-                text: "="
-            },
-            {
-                name: "COLON",
-                text: ":"
-            },    
-            {
-                name: "SEMICOLON",
-                text: ";"
-            },    
-         
-            {
-                name: "LPAREN",
-                text: "("
-            },   
-            {
-                name: "RPAREN",
-                text: ")"
-            },   
-          
-            {
-                name: "DOT",
-                text: "."
-            },    
-            {
-                name: "COMMA",
-                text: ","
-            }
-        ];
-        
-        return TokenStream.createTokenData(symbols);
-
-}();
-*/
 var Tokens  = [
-    {
-        name: "S",
-        channel: "ws"   //put onto another channel so I can get it later              
-    },
-    {
-        name: "COMMENT",
-        hide: true   //don't generate token
-    },
-    //CDO and CDC intentionally omitted
-    {
-        name: "INCLUDES",
-        text: "~="
-    },
-    {
-        name: "DASHMATCH",
-        text: "|="
-    },
-    {
-        name: "STRING"
-    },
-    {
-        name: "INVALID"
-    },
-    {
-        name: "HASH"
-    },
-    {
-        name: "IMPORT_SYM"
-    },
-    {
-        name: "PAGE_SYM"
-    },
-    {
-        name: "MEDIA_SYM"
-    },
-    {
-        name: "CHARSET_SYM"
-    },
-    {
-        name: "IMPORTANT_SYM"
-    },
-    {
-        name: "EMS"
-    },
-    {
-        name: "EXS"
-    },
-    {
-        name: "LENGTH"
-    },
-    {
-        name: "ANGLE"
-    },
-    {
-        name: "TIME"
-    },
-    {
-        name: "FREQ"
-    },
-    {
-        name: "DIMENSION"
-    },   
-    {
-        name: "PERCENTAGE"
-    },
-    {
-        name: "NUMBER"
-    },
-    {
-        name: "URI"
-    },
 
-    {
-        name: "FUNCTION"
-    },    
+    /*
+     * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
+     */
+     
+    //HTML-style comments
+    { name: "CDO"},
+    { name: "CDC"},
+
+    //ignorables
+    { name: "S", whitespace: true, channel: "ws"},
+    { name: "COMMENT", comment: true, hide: true},
+        
+    //attribute equality
+    { name: "INCLUDES", text: "~="},
+    { name: "DASHMATCH", text: "|="},
+    { name: "PREFIXMATCH", text: "^="},
+    { name: "SUFFIXMATCH", text: "$="},
+    { name: "SUBSTRINGMATCH", text: "*="},
+        
+    //identifier types
+    { name: "STRING"},     
+    { name: "IDENT"},
+    { name: "HASH"},
+
+    //at-keywords
+    { name: "IMPORT_SYM", text: "@import"},
+    { name: "PAGE_SYM", text: "@page"},
+    { name: "MEDIA_SYM", text: "@media"},
+    { name: "FONT_FACE_SYM", text: "@font-face"},
+    { name: "CHARSET_SYM", text: "@charset"},
+    { name: "NAMESPACE_SYM", text: "@namespace"},
+    //{ name: "ATKEYWORD"},
+
+    //important symbol
+    { name: "IMPORTANT_SYM"},
+
+    //measurements
+    { name: "EMS"},
+    { name: "EXS"},
+    { name: "LENGTH"},
+    { name: "ANGLE"},
+    { name: "TIME"},
+    { name: "FREQ"},
+    { name: "DIMENSION"},
+    { name: "PERCENTAGE"},
+    { name: "NUMBER"},
+    
+    //functions
+    { name: "URI"},
+    { name: "FUNCTION"},
+    
+    //Unicode ranges
+    { name: "UNICODE_RANGE"},
+    
+    /*
+     * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
+     */    
+    
+    //invalid string
+    { name: "INVALID"},
+    
+    //combinators
+    { name: "PLUS", text: "+" },
+    { name: "GREATER", text: ">"},
+    { name: "COMMA", text: ","},
+    { name: "TILDE", text: "~"},
+    
+    //modifier
+    { name: "NOT"},        
+    
+    /*
+     * Defined in CSS3 Paged Media
+     */
+    { name: "TOPLEFTCORNER_SYM", text: "@top-left-corner"},
+    { name: "TOPLEFT_SYM", text: "@top-left"},
+    { name: "TOPCENTER_SYM", text: "@top-center"},
+    { name: "TOPRIGHT_SYM", text: "@top-right"},
+    { name: "TOPRIGHTCORNER_SYM", text: "@top-right-corner"},
+    { name: "BOTTOMLEFTCORNER_SYM", text: "@bottom-left-corner"},
+    { name: "BOTTOMLEFT_SYM", text: "@bottom-left"},
+    { name: "BOTTOMCENTER_SYM", text: "@bottom-center"},
+    { name: "BOTTOMRIGHT_SYM", text: "@bottom-right"},
+    { name: "BOTTOMRIGHTCORNER_SYM", text: "@bottom-right-corner"},
+    { name: "LEFTTOP_SYM", text: "@left-top"},
+    { name: "LEFTMIDDLE_SYM", text: "@left-middle"},
+    { name: "LEFTBOTTOM_SYM", text: "@left-bottom"},
+    { name: "RIGHTTOP_SYM", text: "@right-top"},
+    { name: "RIGHTMIDDLE_SYM", text: "@right-middle"},
+    { name: "RIGHTBOTTOM_SYM", text: "@right-bottom"},
+
+    /*
+     * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
+     */
+    { name: "MEDIA_ONLY", state: "media"},
+    { name: "MEDIA_NOT", state: "media"},
+    { name: "MEDIA_AND", state: "media"},
+    { name: "MEDIA_RESOLUTION", state: "media"},
+
+    /*
+     * The following token names are not defined in any CSS specification but are used by the lexer.
+     */
     
     //not a real token, but useful for stupid IE filters
     {
         name: "IE_FUNCTION"
-    },    
-        
-    {
-        name: "IDENT"
-    },        
+    },      
+    //TODO: Needed?
     //Not defined as tokens, but might as well be
     {
         name: "SLASH",
@@ -3599,17 +3655,10 @@ var Tokens  = [
         text: "-"
     },
     {
-        name: "PLUS",
-        text: "+"
-    },
-    {
         name: "STAR",
         text: "*"
     },
-    {
-        name: "GREATER",
-        text: ">"
-    },
+
     {
         name: "LBRACE",
         text: "{"
@@ -3646,15 +3695,10 @@ var Tokens  = [
     {
         name: "RPAREN",
         text: ")"
-    },   
-  
+    },     
     {
         name: "DOT",
         text: "."
-    },    
-    {
-        name: "COMMA",
-        text: ","
     }
 ];
 
@@ -3678,7 +3722,7 @@ var Tokens  = [
     };
     
     Tokens.type = function(c){
-        return typeMap[c];
+        return typeMap[c] || -1;
     };
 
 })();

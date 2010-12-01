@@ -1,29 +1,4 @@
-/*
- * The following productions are defined by http://www.w3.org/TR/css3-syntax/
- * as the tokens of CSS:
- *
- * IDENT        ::=     ident
- * ATKEYWORD    ::=     '@' ident
- * STRING       ::=     string
- * HASH         ::=     '#' name
- * NUMBER       ::=     num
- * PERCENTAGE   ::=     num '%'
- * DIMENSION    ::=     num ident
- * URI          ::=     "url(" w (string | urlchar* ) w ")"
- * UNICODE-RANGE::=     "U+" [0-9A-F?]{1,6} ('-' [0-9A-F]{1,6})?
- * CDO          ::=     "<!--"
- * CDC          ::=     "-->"
- * S            ::=     wc+
- * COMMENT      ::=     "/*" [^*]* '*'+ ([^/] [^*]* '*'+)* "/"
- * FUNCTION     ::=     ident '('
- * INCLUDES     ::=     "~="
- * DASHMATCH    ::=     "|="
- * PREFIXMATCH  ::=     "^="
- * SUFFIXMATCH  ::=     "$="
- * SUBSTRINGMATCH   ::=     "*="
- * CHAR         ::=     any other character not matched by the above rules, except for " or '
- * BOM          ::=     #xFEFF
-*/
+
  
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -116,7 +91,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - COMMENT
                  * - SLASH
-                 * - CHAR
+                 * - UNKNOWN
                  */
                 case "/":
 
@@ -204,7 +179,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - IMPORTANT_SYM
-                 * - CHAR
+                 * - UNKNOWN
                  */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
@@ -331,7 +306,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method charToken
      */
     charToken: function(c, startLine, startCol){
-        var tt = Tokens.type(c) || Tokens.CHAR;            
+        var tt = Tokens.type(c) || Tokens.UNKNOWN;            
         return this.createToken(tt, c, startLine, startCol);
     },    
     
@@ -365,7 +340,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     comparisonToken: function(c, startLine, startCol){
         var reader  = this._reader,
             comparison  = c + reader.read(),
-            tt      = Tokens.type(comparison) || Tokens.CHAR;
+            tt      = Tokens.type(comparison) || Tokens.UNKNOWN;
             
         return this.createToken(tt, comparison, startLine, startCol);
     },
@@ -491,8 +466,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
     /**
      * Produces a number token based on the given character
-     * and location in the stream. There are three possible
-     * token types: NUMBER, DIMENSION, and PERCENTAGE.
+     * and location in the stream. This may return a token of
+     * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
+     * or PERCENTAGE.
      * @param {String} first The first character for the token.
      * @param {int} startLine The beginning line for the character.
      * @param {int} startCol The beginning column for the character.
@@ -509,7 +485,23 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         if (isIdentStart(c)){
             ident = this.readName(reader.read());
             value += ident;            
-            tt = Tokens.DIMENSION;
+
+            if (/em/i.test(ident)){
+                tt = Tokens.EMS;
+            } else if (/ex/i.test(ident)){
+                tt = Tokens.EXS;
+            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
+                tt = Tokens.LENGTH;
+            } else if (/deg|rad|grad/i.test(ident)){
+                tt = Tokens.ANGLE;
+            } else if (/ms|s/i.test(ident)){
+                tt = Tokens.TIME;
+            } else if (/hz|khz/i.test(ident)){
+                tt = Tokens.FREQ;
+            } else {
+                tt = Tokens.DIMENSION;
+            }
+
         } else if (c == "%"){
             value += reader.read();
             tt = Tokens.PERCENTAGE;
@@ -577,8 +569,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             reader  = this._reader,
             tt      = Tokens.UNKNOWN,
             valid   = false,
-            c;
-            
+            ident,
+            c;            
+                    
         /*
          * First, mark where we are. There are only four @ rules,
          * so anything else is really just an invalid token.
@@ -588,6 +581,11 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          */
         reader.mark();
         
+        //try to find the at-keyword        
+        ident = this.readName();
+        tt = Tokens.type(first + ident.toLowerCase());
+        
+        /*
         rule += c = reader.read();
         
         switch(c){
@@ -633,9 +631,10 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             //no default
         }
+        */
         
         //if it's not valid, use the first character only and reset the reader
-        if (!valid){        
+        if (tt == Tokens.UNKNOWN){        
             rule = first;
             reader.reset();
         }            
@@ -764,7 +763,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
     readName: function(first){
         var reader  = this._reader,
-            ident   = first,
+            ident   = first || "",
             c       = reader.peek();
         
 
@@ -777,7 +776,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },    
     readComment: function(first){
         var reader  = this._reader,
-            comment = first,
+            comment = first || "",
             c       = reader.read();
         
         if (c == "*"){

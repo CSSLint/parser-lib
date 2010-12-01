@@ -94,8 +94,11 @@ YAHOO.test.CSSTokens = (function(){
         name: "Test for comparison operators",        
         
         patterns: {
-            "~="    :[CSSTokens.INCLUDES],
-            "|="    :[CSSTokens.DASHMATCH]        
+            "~=":   [CSSTokens.INCLUDES],
+            "|=":   [CSSTokens.DASHMATCH],
+            "^=":   [CSSTokens.PREFIXMATCH],
+            "$=":   [CSSTokens.SUFFIXMATCH],
+            "*=":   [CSSTokens.SUBSTRINGMATCH]
         }
     }));
 
@@ -147,49 +150,52 @@ YAHOO.test.CSSTokens = (function(){
         }        
     }));
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @charset",
-        
-        patterns: {
-            "@charset"      : [-1],
-            "@charset "     : [CSSTokens.CHARSET_SYM],
-            "@CHARSET"      : [-1],
-            "@CHARSET "     : [-1]
-        }        
-    }));    
+    //-------------------------------------------------------------------------
+    // Tests for at-rules
+    //-------------------------------------------------------------------------
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @import",
-        
-        patterns: {
-            "@import"      : [CSSTokens.IMPORT_SYM],
-            "@import "     : [CSSTokens.IMPORT_SYM, CSSTokens.S],
-            "@IMPORT"      : [CSSTokens.IMPORT_SYM],
-            "@IMPORT "     : [CSSTokens.IMPORT_SYM, CSSTokens.S]
-        }        
-    }));    
+    (function(){
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @media",
+        var atRules = {
+            "@charset"      : CSSTokens.CHARSET_SYM,
+            "@import"       : CSSTokens.IMPORT_SYM,
+            "@page"         : CSSTokens.PAGE_SYM,
+            "@media"        : CSSTokens.MEDIA_SYM,
+            "@font-face"    : CSSTokens.FONT_FACE_SYM,
+            "@namespace"    : CSSTokens.NAMESPACE_SYM,
+            "@top-left-corner"  : CSSTokens.TOPLEFTCORNER_SYM,
+            "@top-left"     : CSSTokens.TOPLEFT_SYM,
+            "@top-right-corner" : CSSTokens.TOPRIGHTCORNER_SYM,
+            "@top-right"    : CSSTokens.TOPRIGHT_SYM,
+            "@bottom-left-corner"   : CSSTokens.BOTTOMLEFTCORNER_SYM,
+            "@bottom-left" : CSSTokens.BOTTOMLEFT_SYM,
+            "@bottom-right-corner"  : CSSTokens.BOTTOMRIGHTCORNER_SYM,
+            "@bottom-right" : CSSTokens.BOTTOMRIGHT_SYM,
+            "@left-top"     : CSSTokens.LEFTTOP_SYM,
+            "@left-middle"  : CSSTokens.LEFTMIDDLE_SYM,
+            "@left-bottom"  : CSSTokens.LEFTBOTTOM_SYM,
+            "@right-top"    : CSSTokens.RIGHTTOP_SYM,
+            "@right-middle" : CSSTokens.RIGHTMIDDLE_SYM,
+            "@right-bottom" : CSSTokens.RIGHTBOTTOM_SYM
+        };
         
-        patterns: {
-            "@media"      : [CSSTokens.MEDIA_SYM],
-            "@media "     : [CSSTokens.MEDIA_SYM, CSSTokens.S],
-            "@MEDIA"      : [CSSTokens.MEDIA_SYM],
-            "@MEDIA "     : [CSSTokens.MEDIA_SYM, CSSTokens.S]
-        }        
-    }));    
+        var patterns;
+        
+        for (var prop in atRules){
+            patterns = {};
+            
+            patterns[prop] = [atRules[prop]];
+            patterns[prop + " "] = [atRules[prop], CSSTokens.S];
+            patterns[prop.toUpperCase()] = [atRules[prop]];
+            patterns[prop.toUpperCase() + " "] = [atRules[prop], CSSTokens.S];
+            
+            suite.add(new CSSTokenTestCase({
+                name: "Tests for " + prop,                
+                patterns: patterns            
+            }));
+        }
+    })();
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @page",
-        
-        patterns: {
-            "@page"      : [CSSTokens.PAGE_SYM],
-            "@page "     : [CSSTokens.PAGE_SYM, CSSTokens.S],
-            "@PAGE"      : [CSSTokens.PAGE_SYM],
-            "@PAGE "     : [CSSTokens.PAGE_SYM, CSSTokens.S]
-        }        
-    }));    
     
     suite.add(new CSSTokenTestCase({
         name : "Tests for !important",
@@ -211,6 +217,43 @@ YAHOO.test.CSSTokens = (function(){
         }        
     }));    
     
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for HTML-style comments",
+        
+        patterns: {
+            "<!--"  : [CSSTokens.CDO],
+            "<!-- " : [CSSTokens.CDO, CSSTokens.S],
+            "-->"   : [CSSTokens.CDC],
+            "--> "  : [CSSTokens.CDC, CSSTokens.S],
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Unicode ranges",
+        
+        patterns: {
+            "U+123456-123457"   : [CSSTokens.UNICODE_RANGE],
+            "U+ABCDEE-ABCDEF"   : [CSSTokens.UNICODE_RANGE],
+            "U+A-B"             : [CSSTokens.UNICODE_RANGE],
+            "U+AB-BC"           : [CSSTokens.UNICODE_RANGE],
+            "U+ABC-BCD"         : [CSSTokens.UNICODE_RANGE],
+            "U+A123-B"          : [CSSTokens.UNICODE_RANGE]            
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for :not",
+        
+        patterns: {
+            ":not("   : [CSSTokens.NOT],
+            ":noT("   : [CSSTokens.NOT],
+            ":nOT("   : [CSSTokens.NOT],
+            ":NOT("   : [CSSTokens.NOT],
+            ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S]
+        }        
+    }));    
+    
+
    
     suite.add(new CSSTokenTestCase({
         name : "Tests for Numbers",

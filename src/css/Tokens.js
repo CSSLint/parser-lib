@@ -1,119 +1,106 @@
 var Tokens  = [
+
     /*
-     * The following productions are defined by http://www.w3.org/TR/css3-syntax/
-     * as the tokens of CSS:
-     *
-     * IDENT        ::=     ident
-     * ATKEYWORD    ::=     '@' ident
-     * STRING       ::=     string
-     * HASH         ::=     '#' name
-     * NUMBER       ::=     num
-     * PERCENTAGE   ::=     num '%'
-     * DIMENSION    ::=     num ident
-     * URI          ::=     "url(" w (string | urlchar* ) w ")"
-     * UNICODE-RANGE::=     "U+" [0-9A-F?]{1,6} ('-' [0-9A-F]{1,6})?
-     * CDO          ::=     "<!--"
-     * CDC          ::=     "-->"
-     * S            ::=     wc+
-     * COMMENT      ::=     "/*" [^*]* '*'+ ([^/] [^*]* '*'+)* "/"
-     * FUNCTION     ::=     ident '('
-     * INCLUDES     ::=     "~="
-     * DASHMATCH    ::=     "|="
-     * PREFIXMATCH  ::=     "^="
-     * SUFFIXMATCH  ::=     "$="
-     * SUBSTRINGMATCH   ::=     "*="
-     * CHAR         ::=     any other character not matched by the above rules, except for " or '
-     * BOM          ::=     #xFEFF
-    */
-    {
-        name: "IDENT"
-    },
-    {
-        name: "ATKEYWORD"
-    },
-    {
-        name: "STRING"
-    },
-    {
-        name: "INVALID"
-    },
-    {
-        name: "HASH"
-    },
-    {
-        name: "NUMBER"
-    },
-    {
-        name: "PERCENTAGE"
-    },
-    {
-        name: "DIMENSION"
-    },
-    {
-        name: "URI"
-    },
-    {
-        name: "UNICODE_RANGE"
-    },
-    {
-        name: "CDO"
-    },
-    {
-        name: "CDC"
-    },
-    {
-        name: "S",
-        channel: "ws"   //put onto another channel so I can get it later              
-    },
-    {
-        name: "COMMENT",
-        hide: true   //don't generate token
-    },
-    {
-        name: "FUNCTION"
-    },    
-  
-/*
+     * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
+     */
+     
+    //HTML-style comments
+    { name: "CDO"},
+    { name: "CDC"},
 
+    //ignorables
+    { name: "S", whitespace: true, channel: "ws"},
+    { name: "COMMENT", comment: true, hide: true},
+        
+    //attribute equality
+    { name: "INCLUDES", text: "~="},
+    { name: "DASHMATCH", text: "|="},
+    { name: "PREFIXMATCH", text: "^="},
+    { name: "SUFFIXMATCH", text: "$="},
+    { name: "SUBSTRINGMATCH", text: "*="},
+        
+    //identifier types
+    { name: "STRING"},     
+    { name: "IDENT"},
+    { name: "HASH"},
 
+    //at-keywords
+    { name: "IMPORT_SYM", text: "@import"},
+    { name: "PAGE_SYM", text: "@page"},
+    { name: "MEDIA_SYM", text: "@media"},
+    { name: "FONT_FACE_SYM", text: "@font-face"},
+    { name: "CHARSET_SYM", text: "@charset"},
+    { name: "NAMESPACE_SYM", text: "@namespace"},
+    //{ name: "ATKEYWORD"},
 
+    //important symbol
+    { name: "IMPORTANT_SYM"},
 
-
-
-
-
-*/  
-  
-
-    {
-        name: "INCLUDES",
-        text: "~="
-    },
-    {
-        name: "DASHMATCH",
-        text: "|="
-    },
-    {
-        name: "PREFIXMATCH",
-        text: "^="
-    },
-    {
-        name: "SUFFIXMATCH",
-        text: "$="
-    },
-    {
-        name: "SUBSTRINGMATCH",
-        text: "*="
-    },
-    {
-        name: "CHAR"
-    },
-    {
-        name: "BOM"
-    },
+    //measurements
+    { name: "EMS"},
+    { name: "EXS"},
+    { name: "LENGTH"},
+    { name: "ANGLE"},
+    { name: "TIME"},
+    { name: "FREQ"},
+    { name: "DIMENSION"},
+    { name: "PERCENTAGE"},
+    { name: "NUMBER"},
     
+    //functions
+    { name: "URI"},
+    { name: "FUNCTION"},
     
+    //Unicode ranges
+    { name: "UNICODE_RANGE"},
     
+    /*
+     * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
+     */    
+    
+    //invalid string
+    { name: "INVALID"},
+    
+    //combinators
+    { name: "PLUS", text: "+" },
+    { name: "GREATER", text: ">"},
+    { name: "COMMA", text: ","},
+    { name: "TILDE", text: "~"},
+    
+    //modifier
+    { name: "NOT"},        
+    
+    /*
+     * Defined in CSS3 Paged Media
+     */
+    { name: "TOPLEFTCORNER_SYM", text: "@top-left-corner"},
+    { name: "TOPLEFT_SYM", text: "@top-left"},
+    { name: "TOPCENTER_SYM", text: "@top-center"},
+    { name: "TOPRIGHT_SYM", text: "@top-right"},
+    { name: "TOPRIGHTCORNER_SYM", text: "@top-right-corner"},
+    { name: "BOTTOMLEFTCORNER_SYM", text: "@bottom-left-corner"},
+    { name: "BOTTOMLEFT_SYM", text: "@bottom-left"},
+    { name: "BOTTOMCENTER_SYM", text: "@bottom-center"},
+    { name: "BOTTOMRIGHT_SYM", text: "@bottom-right"},
+    { name: "BOTTOMRIGHTCORNER_SYM", text: "@bottom-right-corner"},
+    { name: "LEFTTOP_SYM", text: "@left-top"},
+    { name: "LEFTMIDDLE_SYM", text: "@left-middle"},
+    { name: "LEFTBOTTOM_SYM", text: "@left-bottom"},
+    { name: "RIGHTTOP_SYM", text: "@right-top"},
+    { name: "RIGHTMIDDLE_SYM", text: "@right-middle"},
+    { name: "RIGHTBOTTOM_SYM", text: "@right-bottom"},
+
+    /*
+     * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
+     */
+    { name: "MEDIA_ONLY", state: "media"},
+    { name: "MEDIA_NOT", state: "media"},
+    { name: "MEDIA_AND", state: "media"},
+    { name: "MEDIA_RESOLUTION", state: "media"},
+
+    /*
+     * The following token names are not defined in any CSS specification but are used by the lexer.
+     */
     
     //not a real token, but useful for stupid IE filters
     {
@@ -130,17 +117,10 @@ var Tokens  = [
         text: "-"
     },
     {
-        name: "PLUS",
-        text: "+"
-    },
-    {
         name: "STAR",
         text: "*"
     },
-    {
-        name: "GREATER",
-        text: ">"
-    },
+
     {
         name: "LBRACE",
         text: "{"
@@ -177,15 +157,10 @@ var Tokens  = [
     {
         name: "RPAREN",
         text: ")"
-    },   
-  
+    },     
     {
         name: "DOT",
         text: "."
-    },    
-    {
-        name: "COMMA",
-        text: ","
     }
 ];
 
@@ -209,7 +184,7 @@ var Tokens  = [
     };
     
     Tokens.type = function(c){
-        return typeMap[c];
+        return typeMap[c] || -1;
     };
 
 })();

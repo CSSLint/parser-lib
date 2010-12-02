@@ -357,7 +357,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         
         //try to find the at-keyword        
         ident = this.readName();
-        tt = Tokens.type(first + ident.toLowerCase());
+        rule = first + ident;
+        tt = Tokens.type(rule.toLowerCase());
         
         /*
         rule += c = reader.read();

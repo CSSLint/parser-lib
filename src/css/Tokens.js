@@ -9,7 +9,7 @@ var Tokens  = [
     { name: "CDC"},
 
     //ignorables
-    { name: "S", whitespace: true, channel: "ws"},
+    { name: "S", whitespace: true/*, channel: "ws"*/},
     { name: "COMMENT", comment: true, hide: true},
         
     //attribute equality

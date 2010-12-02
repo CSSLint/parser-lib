@@ -1,10 +1,5 @@
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
- 
 /**
- * A CSS 2.1 parsers.
+ * A CSS3 parser.
  * @namespace parserlib.css
  * @class Parser
  * @constructor
@@ -516,22 +511,22 @@ Parser.prototype = function(){
                 
                 //look for a combinator
                 combinator = this._combinator();
-                while(combinator !== null){
+                /*while(combinator !== null){
                     selector.push(combinator);
                     nextSelector = this._simple_selector();
                     
                     //there must be a next selector
                     if (nextSelector === null){
-                        this._unexpectedToken(this.LT(1));
+                        this._unexpectedToken(tokenStream.LT(1));
                     } else {
-                        //nextSelector is an instance of Selector, but we really just want the parts
-                        selector = selector.concat(nextSelector.parts);
+                        //nextSelector is an instance of SelectorPart
+                        selector.push(nextSelector);
                     }
                     
                     combinator = this._combinator();
-                }
+                }*/
                 
-                /*if (combinator !== null){
+                if (combinator !== null){
                     selector.push(combinator);
                     nextSelector = this._simple_selector();
                     
@@ -546,7 +541,7 @@ Parser.prototype = function(){
                 } else {
                     
                     //if there's not whitespace, we're done
-                    if (this._matchWhitespace()){           
+                    if (this._readWhitespace()){           
     
                         //add whitespace separator
                         ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
@@ -572,7 +567,7 @@ Parser.prototype = function(){
                         }     
                     }                
                 
-                }    */            
+                }     
                 
                 return new Selector(selector, selector[0].line, selector[0].col);
             },
@@ -631,7 +626,7 @@ Parser.prototype = function(){
                 while(true){
 
                     //whitespace means we're done
-                    if (this._readWhitespace()){
+                    if (tokenStream.peek() == Tokens.S){
                         break;
                     }
                 
@@ -651,7 +646,8 @@ Parser.prototype = function(){
                     } else {
                         i = 0;
                         modifiers.push(component);
-                        selectorText += component.toString();                
+                        selectorText += component.toString(); 
+                        component = null;
                     }
                 }
 

@@ -91,7 +91,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - COMMENT
                  * - SLASH
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "/":
 
@@ -109,7 +109,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - PREFIXMATCH
                  * - SUFFIXMATCH
                  * - SUBSTRINGMATCH
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "|":
                 case "~":
@@ -136,7 +136,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - HASH
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
@@ -182,14 +182,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - IMPORTANT_SYM
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
                     break;
                     
                 /*
-                 * Any at-keyword or UNKNOWN
+                 * Any at-keyword or CHAR
                  */
                 case "@":
                     token = this.atRuleToken(c, startLine, startCol);
@@ -198,7 +198,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - NOT
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case ":":
                     token = this.notToken(c, startLine, startCol);
@@ -207,11 +207,25 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - CDO
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "<":
                     token = this.htmlCommentStartToken(c, startLine, startCol);
-                    break;                    
+                    break;     
+
+                /*
+                 * Potential tokens:
+                 * - UNICODE_RANGE
+                 * - URL
+                 * - CHAR
+                 */
+                case "U":
+                case "u":
+                    if (reader.peek() == "+"){
+                        token = this.unicodeRangeToken(c, startLine, startCol);
+                        break;
+                    } 
+                    /*falls through*/
                     
                 default:
                     
@@ -248,7 +262,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     
                     /*
                      * Potential tokens:
-                     * - UNKNOWN
+                     * - CHAR
                      * - PLUS
                      */
                     {
@@ -327,7 +341,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this._reader,
-            tt      = Tokens.UNKNOWN,
+            tt      = Tokens.CHAR,
             valid   = false,
             ident,
             c;            
@@ -394,7 +408,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         */
         
         //if it's not valid, use the first character only and reset the reader
-        if (tt == Tokens.UNKNOWN){        
+        if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
+            tt = Tokens.CHAR;
             rule = first;
             reader.reset();
         }            
@@ -413,7 +428,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method charToken
      */
     charToken: function(c, startLine, startCol){
-        var tt = Tokens.type(c) || Tokens.UNKNOWN;            
+        var tt = Tokens.type(c) || Tokens.CHAR;            
         return this.createToken(tt, c, startLine, startCol);
     },    
     
@@ -447,7 +462,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     comparisonToken: function(c, startLine, startCol){
         var reader  = this._reader,
             comparison  = c + reader.read(),
-            tt      = Tokens.type(comparison) || Tokens.UNKNOWN;
+            tt      = Tokens.type(comparison) || Tokens.CHAR;
             
         return this.createToken(tt, comparison, startLine, startCol);
     },
@@ -470,7 +485,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
     
     /**
-     * Produces a CDO or UNKNOWN token based on the specified information. The
+     * Produces a CDO or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
      * the correct token to create.
      * @param {String} first The first character in the token.
@@ -495,7 +510,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },    
     
     /**
-     * Produces a CDC or UNKNOWN token based on the specified information. The
+     * Produces a CDC or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
      * the correct token to create.
      * @param {String} first The first character in the token.
@@ -573,7 +588,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     importantToken: function(first, startLine, startCol){
         var reader      = this._reader,
             important   = first,
-            tt          = -1,
+            tt          = Tokens.CHAR,
             temp,
             c;
 
@@ -611,7 +626,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             c = reader.read();
         }
         
-        if (tt == -1){
+        if (tt == Tokens.CHAR){
             reader.reset();
             return this.charToken(first, startLine, startCol);
         } else {
@@ -622,7 +637,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     /**
-     * Produces a NOT or UNKNOWN token based on the specified information. The
+     * Produces a NOT or CHAR token based on the specified information. The
      * first character is provided and the rest is read by the function to determine
      * the correct token to create.
      * @param {String} first The first character in the token.
@@ -680,6 +695,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 tt = Tokens.TIME;
             } else if (/hz|khz/i.test(ident)){
                 tt = Tokens.FREQ;
+            } else if (/dpi|dpcm/i.test(ident)){
+                tt = Tokens.RESOLUTION;
             } else {
                 tt = Tokens.DIMENSION;
             }
@@ -740,6 +757,32 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return this.createToken(tt, string, startLine, startCol);        
     },    
     
+    unicodeRangeToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = first,
+            c,
+            tt      = Tokens.CHAR;
+         
+        //then it should be a unicode range
+        if (reader.peek() == "+"){
+            tt = Tokens.UNICODE_RANGE;
+            value += reader.read();
+            value += this.readUnicodeRangePart(true);
+            
+            //if there's a ? in the first part, there can't be a second part
+            if (value.indexOf("?") == -1){
+                        
+                if (reader.peek() == "-"){
+                    value += reader.read();
+                    value += this.readUnicodeRangePart(false);
+                }
+
+            }
+        }
+    
+        return this.createToken(tt, value, startLine, startCol);
+    },
+    
     /**
      * Produces a S token based on the specified information. Since whitespace
      * may have multiple characters, this consumes all whitespace characters
@@ -762,6 +805,33 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     //-------------------------------------------------------------------------
     // Methods to read values from the string stream
     //-------------------------------------------------------------------------
+    
+    readUnicodeRangePart: function(allowQuestionMark){
+        var reader  = this._reader,
+            part = "",            
+            c       = reader.peek();
+        
+        //first read hex digits
+        while(isHexDigit(c) && part.length < 6){
+            reader.read();
+            part += c;
+            c = reader.peek();            
+        }
+        
+        //then read question marks if allowed
+        if (allowQuestionMark){
+            while(c == "?" && part.length < 6){
+                reader.read();
+                part += c;
+                c = reader.peek();            
+            }
+        }
+
+        //there can't be any other characters after this point
+        
+        return part;    
+    },
+    
     readWhitespace: function(){
         var reader  = this._reader,
             whitespace = "",

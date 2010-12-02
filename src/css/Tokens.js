@@ -93,19 +93,21 @@ var Tokens  = [
     /*
      * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
      */
-    { name: "MEDIA_ONLY", state: "media"},
+    /*{ name: "MEDIA_ONLY", state: "media"},
     { name: "MEDIA_NOT", state: "media"},
-    { name: "MEDIA_AND", state: "media"},
-    { name: "MEDIA_RESOLUTION", state: "media"},
+    { name: "MEDIA_AND", state: "media"},*/
+    { name: "RESOLUTION", state: "media"},
 
     /*
      * The following token names are not defined in any CSS specification but are used by the lexer.
      */
     
     //not a real token, but useful for stupid IE filters
-    {
-        name: "IE_FUNCTION"
-    },      
+    { name: "IE_FUNCTION" },
+
+    //part of CSS3 grammar but not the Flex code
+    { name: "CHAR" },
+    
     //TODO: Needed?
     //Not defined as tokens, but might as well be
     {

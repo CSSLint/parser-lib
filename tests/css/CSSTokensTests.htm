@@ -232,12 +232,17 @@ YAHOO.test.CSSTokens = (function(){
         name : "Tests for Unicode ranges",
         
         patterns: {
-            "U+123456-123457"   : [CSSTokens.UNICODE_RANGE],
-            "U+ABCDEE-ABCDEF"   : [CSSTokens.UNICODE_RANGE],
-            "U+A-B"             : [CSSTokens.UNICODE_RANGE],
-            "U+AB-BC"           : [CSSTokens.UNICODE_RANGE],
-            "U+ABC-BCD"         : [CSSTokens.UNICODE_RANGE],
-            "U+A123-B"          : [CSSTokens.UNICODE_RANGE]            
+            "U+A5"          : [CSSTokens.UNICODE_RANGE],
+            "U+0-7F"        : [CSSTokens.UNICODE_RANGE],
+            "U+590-5ff"     : [CSSTokens.UNICODE_RANGE],
+            "U+AB-BC"       : [CSSTokens.UNICODE_RANGE],
+            "U+4E00-9FFF"   : [CSSTokens.UNICODE_RANGE],
+            "U+30??"        : [CSSTokens.UNICODE_RANGE],
+            "U+00-FF"       : [CSSTokens.UNICODE_RANGE],
+            "U+??????"      : [CSSTokens.UNICODE_RANGE],
+            "U+0??????"     : [CSSTokens.UNICODE_RANGE, CSSTokens.CHAR],
+            "U+00-??"       : [CSSTokens.UNICODE_RANGE, CSSTokens.MINUS, CSSTokens.CHAR, CSSTokens.CHAR],
+            "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER]
         }        
     }));    
     
@@ -250,6 +255,19 @@ YAHOO.test.CSSTokens = (function(){
             ":nOT("   : [CSSTokens.NOT],
             ":NOT("   : [CSSTokens.NOT],
             ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S]
+        }        
+    }));
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Media Queries",
+        
+        patterns: {
+            "not"   : [CSSTokens.IDENT],
+            "and"   : [CSSTokens.IDENT],
+            "only"  : [CSSTokens.IDENT],
+            "5dpi"  : [CSSTokens.RESOLUTION],
+            "5.2dPi": [CSSTokens.RESOLUTION],
+            ".5DPI" : [CSSTokens.RESOLUTION]
         }        
     }));
    
@@ -395,7 +413,7 @@ YAHOO.test.CSSTokens = (function(){
             ","     : [CSSTokens.COMMA],
             
             //single characters without tokens
-            "@"     : [CSSTokens.UNKNOWN]
+            "@"     : [CSSTokens.CHAR]
         }
     }));
     

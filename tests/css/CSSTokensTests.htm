@@ -211,9 +211,9 @@ YAHOO.test.CSSTokens = (function(){
             "! /*booya*/ IMPORTANT"     : [CSSTokens.IMPORTANT_SYM],
 
             //bogus symbols            
-            "! /*IMPORTANT"     : [-1, CSSTokens.S, CSSTokens.EOF],            
-            "! / important"     : [-1, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
-            "!IMPO RTANT"       : [-1, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
+            "! /*IMPORTANT"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.EOF],            
+            "! / important"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
+            "!IMPO RTANT"       : [CSSTokens.CHAR, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
         }        
     }));    
     
@@ -242,7 +242,9 @@ YAHOO.test.CSSTokens = (function(){
             "U+??????"      : [CSSTokens.UNICODE_RANGE],
             "U+0??????"     : [CSSTokens.UNICODE_RANGE, CSSTokens.CHAR],
             "U+00-??"       : [CSSTokens.UNICODE_RANGE, CSSTokens.MINUS, CSSTokens.CHAR, CSSTokens.CHAR],
-            "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER]
+            "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER],
+            "U+"            : [CSSTokens.CHAR, CSSTokens.PLUS],
+            "U+00-J"        : [CSSTokens.UNICODE_RANGE, CSSTokens.IDENT]
         }        
     }));    
     

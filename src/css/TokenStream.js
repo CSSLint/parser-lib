@@ -428,7 +428,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method charToken
      */
     charToken: function(c, startLine, startCol){
-        var tt = Tokens.type(c) || Tokens.CHAR;            
+        var tt = Tokens.type(c);
+
+        if (tt == -1){
+            tt = Tokens.CHAR;
+        }
+        
         return this.createToken(tt, c, startLine, startCol);
     },    
     
@@ -760,23 +765,39 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     unicodeRangeToken: function(first, startLine, startCol){
         var reader  = this._reader,
             value   = first,
-            c,
+            temp,
             tt      = Tokens.CHAR;
          
         //then it should be a unicode range
         if (reader.peek() == "+"){
-            tt = Tokens.UNICODE_RANGE;
+            reader.mark();
             value += reader.read();
             value += this.readUnicodeRangePart(true);
             
-            //if there's a ? in the first part, there can't be a second part
-            if (value.indexOf("?") == -1){
+            //ensure there's an actual unicode range here
+            if (value.length == 2){
+                reader.reset();
+            } else {
+                
+                tt = Tokens.UNICODE_RANGE;
+            
+                //if there's a ? in the first part, there can't be a second part
+                if (value.indexOf("?") == -1){
+                            
+                    if (reader.peek() == "-"){
+                        reader.mark();
+                        temp = reader.read();
+                        temp += this.readUnicodeRangePart(false);
                         
-                if (reader.peek() == "-"){
-                    value += reader.read();
-                    value += this.readUnicodeRangePart(false);
-                }
+                        //if there's not another value, back up and just take the first
+                        if (temp.length == 1){
+                            reader.reset();
+                        } else {
+                            value += temp;
+                        }
+                    }
 
+                }
             }
         }
     

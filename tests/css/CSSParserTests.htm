@@ -32,24 +32,193 @@ YAHOO.test.CSSParser = (function(){
    
     suite.add(new YAHOO.tool.TestCase({
     
-        name: "Selectors",
+        name: "Type Selector Tests",
         
+        testSimpleTypeSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+        },
         
+        testSimpleTypeSelectorPlusNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("svg|rect");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("svg|rect", result.parts[0].elementName, "Element name should be 'svg|rect'.");
+            assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+        },
+        
+        testSimpleTypeSelectorPlusBlankNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("|rect");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("|rect", result.parts[0].elementName, "Element name should be '|rect'.");
+            assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+        },
+        
+        testSimpleTypeSelectorPlusUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*|rect");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("*|rect", result.parts[0].elementName, "Element name should be '*|rect'.");
+            assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+        }    
+    }));
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Universal Selector Tests",    
+    
+        testSimpleUniversalSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("*", result.parts[0].elementName, "Element name should be '*'.");
+            assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+        },
+        
+        testSimpleUniversalSelectorPlusNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("svg|*");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("svg|*", result.parts[0].elementName, "Element name should be 'svg|*'.");
+            assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+        },
+        
+        testSimpleUniversalSelectorPlusBlankNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("|*");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("|*", result.parts[0].elementName, "Element name should be '|*'.");
+            assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+        },
+        
+        testSimpleUniversalSelectorPlusUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*|*");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("*|*", result.parts[0].elementName, "Element name should be '*|*'.");
+            assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+        }    
+    
+    }));
+
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Attribute Selector Tests",    
+    
+        testAttributePresenceSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[class]", result.parts[0].modifiers[0].text, "Modifier text should be '[class]'.");
+            
+        },
+        
+        testAttributeEquivalenceSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class=\"selected\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[class=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=\"selected\"]'.");
+            
+        },
+        
+        testAttributeContainsSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class~=\"selected\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[class~=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class~=\"selected\"]'.");
+            
+        },
+        
+        testAttributeDashMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class|=\"selected\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[class|=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class|=\"selected\"]'.");
+            
+        }        
+    
+    }));
+
+
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Combinators",
+                
         testWithCombinator: function(){
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover > p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+        },
+        
+        testWithNthChild: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-child(2n+1) a");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
             assert.areEqual(3, result.parts.length, "Should be three parts.");
-            
+        
         }
-    
-    
     }));
- 
 
     suite.add(new YAHOO.tool.TestCase({
     

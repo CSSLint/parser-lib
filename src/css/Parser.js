@@ -844,43 +844,43 @@ Parser.prototype = function(){
         
                 var tokenStream = this._tokenStream,
                     values      = [],
-					valueParts	= [],
+					//valueParts	= [],
                     value       = null,
                     operator    = null;
                     
                 value = this._term();
                 if (value !== null){
                 
-                    valueParts.push(value);
+                    values.push(value);
                     
                     do {
                         operator = this._operator();
         
                         //if there's an operator, keep building up the value parts
                         if (operator){
-                            valueParts.push(operator);
-                        } else {
+                            values.push(operator);
+                        } /*else {
                             //if there's not an operator, you have a full value
 							values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
 							valueParts = [];
-						}
+						}*/
                         
                         value = this._term();
                         
                         if (value === null){
                             break;
                         } else {
-                            valueParts.push(value);
+                            values.push(value);
                         }
                     } while(true);
                 }
 				
 				//cleanup
-                if (valueParts.length){
+                /*if (valueParts.length){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
-                }
+                }*/
         
-                return /*values.length == 1 ? values[0] :*/ values;
+                return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
             },
             
             _term: function(){                       

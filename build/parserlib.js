@@ -1694,20 +1694,64 @@ Parser.prototype = function(){
                 return value;
             },
         
-        
+            //Augmented with CSS3 Selectors
             _ruleset: function(){
                 /*
                  * ruleset
-                 *   : selector [ ',' S* selector ]*
+                 *   : selectors_group
                  *     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
                  *   ;    
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    selectors   = [],
-                    selector    = null,
-                    tt;
+                    selectors   = this._selectors_group();
                 
+                if (selectors){
+                    /*selector = this._selector();
+                    if (selector !== null){
+                    
+                        selectors.push(selector);
+                        while(tokenStream.match(Tokens.COMMA)){
+                            this._readWhitespace();
+                            selector = this._selector();
+                            if (selector !== null){
+                                selectors.push(selector);
+                            }
+                        }
+                    } else {
+                        return null;
+                    }*/     
+                                    
+                    this.fire({
+                        type:       "startrule",
+                        selectors:  selectors
+                    });                
+                    
+                    this._readDeclarations(true);                
+                    
+                    this.fire({
+                        type:       "endrule",
+                        selectors:  selectors
+                    });  
+                    
+                }
+                
+                return selectors;
+                
+            },
+
+            //CSS3 Selectors
+            _selectors_group: function(){
+            
+                /*            
+                 * selectors_group
+                 *   : selector [ COMMA S* selector ]*
+                 *   ;
+                 */           
+                var tokenStream = this._tokenStream,
+                    selectors   = [],
+                    selector;
+                    
                 selector = this._selector();
                 if (selector !== null){
                 
@@ -1717,33 +1761,20 @@ Parser.prototype = function(){
                         selector = this._selector();
                         if (selector !== null){
                             selectors.push(selector);
+                        } else {
+                            this._unexpectedToken(tokenStream.LT(1));
                         }
                     }
-                } else {
-                    return null;
-                }        
-                                
-                this.fire({
-                    type:       "startrule",
-                    selectors:  selectors
-                });                
-                
-                this._readDeclarations(true);                
-                
-                this.fire({
-                    type:       "endrule",
-                    selectors:  selectors
-                });  
-                
-                return selectors;
-                
+                }
+
+                return selectors.length ? selectors : null;
             },
                 
-            
+            //CSS3 Selectors
             _selector: function(){
                 /*
                  * selector
-                 *   : simple_selector [ combinator simple_selector ]*
+                 *   : simple_selector_sequence [ combinator simple_selector_sequence ]*
                  *   ;    
                  */
                  
@@ -1754,7 +1785,7 @@ Parser.prototype = function(){
                     ws          = null;
                 
                 //if there's no simple selector, then there's no selector
-                nextSelector = this._simple_selector();
+                nextSelector = this._simple_selector_sequence();
                 if (nextSelector === null){
                     return null;
                 }
@@ -1780,15 +1811,15 @@ Parser.prototype = function(){
                 
                 if (combinator !== null){
                     selector.push(combinator);
-                    nextSelector = this._simple_selector();
+                    nextSelector = this._simple_selector_sequence();
                     
                     //there must be a next selector
                     if (nextSelector === null){
                         this._unexpectedToken(this.LT(1));
                     } else {
                     
-                        //nextSelector is an instance of Selector, but we really just want the parts
-                        selector = selector.concat(nextSelector.parts);
+                        //nextSelector is an instance of SelectorPart
+                        selector.push(nextSelector.parts);
                     }
                 } else {
                     
@@ -1802,7 +1833,7 @@ Parser.prototype = function(){
                         combinator = this._combinator();
                         
                         //selector is required if there's a combinator
-                        nextSelector = this._selector();
+                        nextSelector = this._simple_selector_sequence();
                         if (nextSelector === null){                        
                             if (combinator !== null){
                                 this._unexpectedToken(tokenStream.LT(1));
@@ -1815,7 +1846,7 @@ Parser.prototype = function(){
                                 selector.push(ws);
                             }
                             
-                            selector = selector.concat(nextSelector.parts);
+                            selector.push(nextSelector.parts);
                         }     
                     }                
                 
@@ -1909,6 +1940,112 @@ Parser.prototype = function(){
                         null;
             },
             
+            //CSS3 Selectors
+            _simple_selector_sequence: function(){
+                /*
+                 * simple_selector_sequence
+                 *   : [ type_selector | universal ]
+                 *     [ HASH | class | attrib | pseudo | negation ]*
+                 *   | [ HASH | class | attrib | pseudo | negation ]+
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                
+                    //parts of a simple selector
+                    elementName = null,
+                    modifiers   = [],
+                    
+                    //complete selector text
+                    selectorText= "",
+
+                    //the different parts after the element name to search for
+                    components  = [
+                        //HASH
+                        function(){
+                            return tokenStream.match(Tokens.HASH) ?
+                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
+                                    null;
+                        },
+                        this._class,
+                        this._attrib,
+                        this._pseudo,
+                        this._negation
+                    ],
+                    i           = 0,
+                    len         = components.length,
+                    component   = null,
+                    found       = false,
+                    line,
+                    col;
+                    
+                    
+                //get starting line and column for the selector
+                line = tokenStream.LT(1).startLine;
+                col = tokenStream.LT(1).startCol;
+                                        
+                elementName = this._type_selector();
+                if (!elementName){
+                    elementName = this._universal();
+                }
+                
+                if (elementName !== null){
+                    selectorText += elementName.toString();
+                }                
+                
+                while(true){
+
+                    //whitespace means we're done
+                    if (tokenStream.peek() == Tokens.S){
+                        break;
+                    }
+                
+                    //check for each component
+                    while(i < len && component == null){
+                        component = components[i++].call(this);
+                    }
+        
+                    if (component === null){
+                    
+                        //we don't have a selector
+                        if (selectorText === ""){
+                            return null;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        i = 0;
+                        modifiers.push(component);
+                        selectorText += component.toString(); 
+                        component = null;
+                    }
+                }
+
+                 
+                return selectorText !== "" ?
+                        new SelectorPart(elementName, modifiers, selectorText, line, col) :
+                        null;
+            },            
+            
+            //CSS3 Selectors
+            _type_selector: function(){
+                /*
+                 * type_selector
+                 *   : [ namespace_prefix ]? element_name
+                 *   ;
+                 */
+                 
+                var ns          = this._namespace_prefix(),
+                    elementName = this._element_name();
+                    
+                if (!elementName){
+                    return null;
+                } else {                
+                    return ns ? ns + elementName : elementName;
+                }
+            },
+            
+            //CSS3 Selectors
             _class: function(){
                 /*
                  * class
@@ -1929,17 +2066,18 @@ Parser.prototype = function(){
         
             },
             
+            //CSS3 Selectors
             _element_name: function(){
                 /*
                  * element_name
-                 *   : IDENT | '*'
+                 *   : IDENT
                  *   ;
                  */    
                 
                 var tokenStream = this._tokenStream,
                     token;
                 
-                if (tokenStream.match([Tokens.IDENT, Tokens.STAR])){
+                if (tokenStream.match(Tokens.IDENT)){
                     token = tokenStream.token();
                     return new SelectorSubPart(token.value, "elementName", token.startLine, token.startCol);        
                 
@@ -1948,60 +2086,122 @@ Parser.prototype = function(){
                 }
             },
             
+            //CSS3 Selectors
+            _namespace_prefix: function(){
+                /*            
+                 * namespace_prefix
+                 *   : [ IDENT | '*' ]? '|'
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    value       = "";
+                    
+                //verify that this is a namespace prefix
+                if (tokenStream.LA(2) == Tokens.PIPE){
+                        
+                    if(tokenStream.match([Tokens.IDENT, Tokens.STAR])){
+                        value += tokenStream.token().value;
+                    }
+                    
+                    tokenStream.mustMatch(Tokens.PIPE);
+                    value += "|";
+                    
+                }
+                
+                return value.length ? value : null;                
+            },
+            
+            //CSS3 Selectors
+            _universal: function(){
+                /*
+                 * universal
+                 *   : [ namespace_prefix ]? '*'
+                 *   ;            
+                 */
+                var tokenStream = this._tokenStream,
+                    value       = "",
+                    ns;
+                    
+                ns = this._namespace_prefix();
+                if(ns){
+                    value += ns;
+                }
+                
+                if(tokenStream.match(Tokens.STAR)){
+                    value += "*";
+                }
+                
+                return value.length ? value : null;
+                
+           },
+            
+            //CSS3 Selectors
             _attrib: function(){
                 /*
                  * attrib
-                 *   : '[' S* IDENT S* [ [ '=' | INCLUDES | DASHMATCH ] S*
-                 *     [ IDENT | STRING ] S* ]? ']'
+                 *   : '[' S* [ namespace_prefix ]? IDENT S*
+                 *         [ [ PREFIXMATCH |
+                 *             SUFFIXMATCH |
+                 *             SUBSTRINGMATCH |
+                 *             '=' |
+                 *             INCLUDES |
+                 *             DASHMATCH ] S* [ IDENT | STRING ] S*
+                 *         ]? ']'
                  *   ;    
                  */
                  
                 var tokenStream = this._tokenStream,
                     value       = null,
+                    ns,
                     token;
                 
                 if (tokenStream.match(Tokens.LBRACKET)){
-                    value = tokenStream.token().value;
-
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.IDENT);
-                    value += tokenStream.token().value;
-                    
-                    this._readWhitespace();
-                    
-                    //may or may not be more to this expression
-                    if(tokenStream.match([Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])){               
-                        
-                        value += tokenStream.token().value;
-                        
-                        this._readWhitespace();
-                        tokenStream.mustMatch(Tokens.IDENT, Tokens.STRING);
-                        
-                        value += tokenStream.token().value;                    
-                    }
-                    
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.RBRACKET);
                     token = tokenStream.token();
+                    value = token.value;
+                    value += this._readWhitespace();
+                    
+                    ns = this._namespace_prefix();
+                    
+                    if (ns){
+                        value += ns;
+                    }
                                         
-                    return new SelectorSubPart(value + token.value, "attribute", token.startLine, token.startCol);
+                    tokenStream.mustMatch(Tokens.IDENT);
+                    value += tokenStream.token().value;                    
+                    value += this._readWhitespace();
+                    
+                    tokenStream.mustMatch([Tokens.PREFIXMATCH, Tokens.SUFFIXMATCH, Tokens.SUBSTRINGMATCH,
+                            Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH]);
+                    
+                    value += tokenStream.token().value;                    
+                    value += this._readWhitespace();
+                    
+                    tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+                    value += tokenStream.token().value;                    
+                    value += this._readWhitespace();
+                    
+                    tokenStream.mustMatch(Tokens.RBRACKET);
+                                        
+                    return new SelectorSubPart(value + "]", "attribute", token.startLine, token.startCol);
                 } else {
                     return null;
                 }
             },
             
+            //CSS3 Selectors
             _pseudo: function(){
             
                 /*
                  * pseudo
-                 *   : ':' ':' [ IDENT | FUNCTION S* IDENT S* ')' ]
+                 *   : ':' ':'? [ IDENT | functional_pseudo ]
                  *   ;    
                  */   
             
                 var tokenStream = this._tokenStream,
                     pseudo      = null,
                     colons      = ":",
-                    token;
+                    line,
+                    col;
                 
                 if (tokenStream.match(Tokens.COLON)){
                 
@@ -2011,24 +2211,127 @@ Parser.prototype = function(){
                 
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
-                    } else if (tokenStream.mustMatch(Tokens.FUNCTION)){
-                        pseudo = tokenStream.token().value;
-                        
-                        this._readWhitespace();
-                        if (tokenStream.match(Tokens.IDENT)){
-                            pseudo += tokenStream.token().value;
-                        }
-                        
-                        this._readWhitespace();
-                        tokenStream.mustMatch(Tokens.RPAREN);
-                        pseudo += tokenStream.token().value;
+                        line = tokenStream.token().line;
+                        col = tokenStream.token().col;
+                    } else if (tokenStream.peek() == Tokens.FUNCTION){
+                        line = tokenStream.LT(1).line;
+                        col = tokenStream.LT(1).col;
+                        pseudo = this._functional_pseudo();
                     }
                     
-                    token = tokenStream.token();
-                    pseudo = new SelectorSubPart(colons + pseudo, "pseudo", token.startLine, token.startCol);
+                    if (pseudo){
+                        pseudo = new SelectorSubPart(colons + pseudo, "pseudo", token.startLine, token.startCol);
+                    }
                 }
         
                 return pseudo;
+            },
+            
+            //CSS3 Selectors
+            _functional_pseudo: function(){
+                /*
+                 * functional_pseudo
+                 *   : FUNCTION S* expression ')'
+                 *   ;
+                */            
+                
+                var tokenStream = this._tokenStream,
+                    value = null;
+                
+                if(tokenStream.mustMatch(Tokens.FUNCTION)){
+                    value = tokenStream.token().value;
+                    value += this._readWhitespace();
+                    value += this._expression();
+                    tokenStream.mustMatch(Tokens.RPAREN);
+                    value += ")";
+                }
+                
+                return value;
+            },
+            
+            //CSS3 Selectors
+            _expression: function(){
+                /*
+                 * expression
+                 *   : [ [ PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ] S* ]+
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    value       = "";
+                    
+                while(tokenStream.mustMatch([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
+                        Tokens.NUMBER, Tokens.STRING, Tokens.IDENT])){
+                    
+                    value += tokenStream.token().value;
+                    value += this._readWhitespace();                        
+                }
+                
+                return value.length ? value : null;
+                
+            },
+
+            //CSS3 Selectors
+            _negation: function(){
+                /*            
+                 * negation
+                 *   : NOT S* negation_arg S* ')'
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    value       = "";
+                    
+                if (tokenStream.match(Tokens.NOT)){
+                    value = tokenStream.token().value;
+                    value += this._readWhitespace();
+                    value += this._negation_arg();
+                    value += this._readWhitespace();
+                    tokenStream.match(Tokens.RPAREN);
+                    value += tokenStream.token().value;
+                }
+                
+                return value.length ? value : null;
+            },
+            
+            //CSS3 Selectors
+            _negation_arg: function(){            
+                /*
+                 * negation_arg
+                 *   : type_selector | universal | HASH | class | attrib | pseudo
+                 *   ;            
+                 */           
+                 
+                var tokenStream = this._tokenStream,
+                    args        = [
+                        this._type_selector,
+                        this._universal,
+                        function(){
+                            return tokenStream.match(Tokens.HASH) ?
+                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
+                                    null;                        
+                        },
+                        this._class,
+                        this._attrib,
+                        this.pseudo                    
+                    ],
+                    arg,
+                    i           = 0,
+                    len         = args.length;
+                    
+                while(i < len && arg === null){
+                    
+                    arg = args[i].call(this);
+                    i++;
+                }
+                
+                //must be a negation arg
+                if (arg === null){
+                    this._unexpectedToken(tokenStream.LT(1));
+                }
+ 
+                return arg;
+                 
             },
             
             _declaration: function(){
@@ -4004,6 +4307,10 @@ var Tokens  = [
     
     //TODO: Needed?
     //Not defined as tokens, but might as well be
+    {
+        name: "PIPE",
+        text: "|"
+    },
     {
         name: "SLASH",
         text: "/"

@@ -111,6 +111,10 @@ var Tokens  = [
     //TODO: Needed?
     //Not defined as tokens, but might as well be
     {
+        name: "PIPE",
+        text: "|"
+    },
+    {
         name: "SLASH",
         text: "/"
     },

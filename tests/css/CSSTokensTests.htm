@@ -256,7 +256,8 @@ YAHOO.test.CSSTokens = (function(){
             ":noT("   : [CSSTokens.NOT],
             ":nOT("   : [CSSTokens.NOT],
             ":NOT("   : [CSSTokens.NOT],
-            ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S]
+            ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S],
+            "button:not([DISABLED])": [CSSTokens.IDENT, CSSTokens.NOT, CSSTokens.LBRACKET, CSSTokens.IDENT, CSSTokens.RBRACKET, CSSTokens.RPAREN]
         }        
     }));
    

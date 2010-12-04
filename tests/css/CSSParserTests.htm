@@ -161,6 +161,20 @@ YAHOO.test.CSSParser = (function(){
             
         },
         
+        testAttributeEquivalenceSelectorNoString: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class=selected]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=selected]'.");
+            
+        },
+        
         testAttributeContainsSelector: function(){
             var parser = new Parser();
             var result = parser.parseSelector("li[class~=\"selected\"]");
@@ -187,8 +201,88 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class|=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class|=\"selected\"]'.");
             
-        }        
-    
+        },
+
+        testAttributeStartMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("object[type^=\"image/\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("object", result.parts[0].elementName, "Element name should be 'object'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[type^=\"image/\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[type^=\"image/\"]'.");            
+        },
+
+        testAttributeEndMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("a[href$=\".html\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("a", result.parts[0].elementName, "Element name should be 'a'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[href$=\".html\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[href$=\".html\"]'.");            
+        },
+
+        testAttributeContainsMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("p[title*=\"hello\"]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("p", result.parts[0].elementName, "Element name should be 'p'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[title*=\"hello\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[title*=\"hello\"]'.");            
+        },
+
+        testAttributeEquivalenceSelectorNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[html|class=selected]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[html|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[html|class=selected]'.");
+            
+        },
+        
+        testAttributeEquivalenceSelectorUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[*|class=selected]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[*|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[*|class=selected]'.");
+            
+        },
+        
+        testAttributeEquivalenceSelectorDefaultNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[|class=selected]");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            assert.areEqual("[|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[|class=selected]'.");
+            
+        }
     }));
 
 

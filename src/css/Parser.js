@@ -594,98 +594,13 @@ Parser.prototype = function(){
                                 selector.push(ws);
                             }
                             
-                            selector.push(nextSelector.parts);
+                            selector.push(nextSelector);
                         }     
                     }                
                 
                 }     
                 
                 return new Selector(selector, selector[0].line, selector[0].col);
-            },
-            
-            
-            /**
-             * Parses a simple selector. A simple selector has the form
-             * elementName#elementId.className:pseudo.
-             * @method _simple_selector
-             */
-            _simple_selector: function(){
-                /*
-                 * simple_selector
-                 *   : element_name? [ HASH | class | attrib | pseudo ]* S*
-                 *   ;    
-                 */
-                 
-                var tokenStream = this._tokenStream,
-                
-                    //parts of a simple selector
-                    elementName = null,
-                    modifiers   = [],
-                    
-                    //complete selector text
-                    selectorText= "",
-
-                    //the different parts after the element name to search for
-                    components  = [
-                        //HASH
-                        function(){
-                            return tokenStream.match(Tokens.HASH) ?
-                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
-                                    null;
-                        },
-                        this._class,
-                        this._attrib,
-                        this._pseudo            
-                    ],
-                    i           = 0,
-                    len         = components.length,
-                    component   = null,
-                    found       = false,
-                    line,
-                    col;
-                    
-                    
-                //get starting line and column for the selector
-                line = tokenStream.LT(1).startLine;
-                col = tokenStream.LT(1).startCol;
-                                        
-                elementName = this._element_name();   
-                if (elementName !== null){
-                    selectorText += elementName.toString();
-                }
-                
-                while(true){
-
-                    //whitespace means we're done
-                    if (tokenStream.peek() == Tokens.S){
-                        break;
-                    }
-                
-                    //check for each component
-                    while(i < len && component == null){
-                        component = components[i++].call(this);
-                    }
-        
-                    if (component === null){
-                    
-                        //we don't have a selector
-                        if (selectorText === ""){
-                            return null;
-                        } else {
-                            break;
-                        }
-                    } else {
-                        i = 0;
-                        modifiers.push(component);
-                        selectorText += component.toString(); 
-                        component = null;
-                    }
-                }
-
-                 
-                return selectorText !== "" ?
-                        new SelectorPart(elementName, modifiers, selectorText, line, col) :
-                        null;
             },
             
             //CSS3 Selectors
@@ -738,18 +653,18 @@ Parser.prototype = function(){
                 }
                 
                 if (elementName !== null){
-                    selectorText += elementName.toString();
+                    selectorText += elementName;
                 }                
                 
                 while(true){
 
                     //whitespace means we're done
-                    if (tokenStream.peek() == Tokens.S){
+                    if (tokenStream.peek() === Tokens.S){
                         break;
                     }
                 
                     //check for each component
-                    while(i < len && component == null){
+                    while(i < len && component === null){
                         component = components[i++].call(this);
                     }
         
@@ -783,10 +698,24 @@ Parser.prototype = function(){
                  *   ;
                  */
                  
-                var ns          = this._namespace_prefix(),
+                var tokenStream = this._tokenStream,
+                    ns          = this._namespace_prefix(),
                     elementName = this._element_name();
                     
-                if (!elementName){
+                if (!elementName){                    
+                    /*
+                     * Need to back out the namespace that was read due to both
+                     * type_selector and universal reading namespace_prefix
+                     * first. Kind of hacky, but only way I can figure out
+                     * right now how to not change the grammar.
+                     */
+                    if (ns){
+                        tokenStream.unget();
+                        if (ns.length > 1){
+                            tokenStream.unget();
+                        }
+                    }
+                
                     return null;
                 } else {                
                     return ns ? ns + elementName : elementName;
@@ -845,7 +774,7 @@ Parser.prototype = function(){
                     value       = "";
                     
                 //verify that this is a namespace prefix
-                if (tokenStream.LA(2) == Tokens.PIPE){
+                if (tokenStream.LA(1) === Tokens.PIPE || tokenStream.LA(2) === Tokens.PIPE){
                         
                     if(tokenStream.match([Tokens.IDENT, Tokens.STAR])){
                         value += tokenStream.token().value;
@@ -918,15 +847,16 @@ Parser.prototype = function(){
                     value += tokenStream.token().value;                    
                     value += this._readWhitespace();
                     
-                    tokenStream.mustMatch([Tokens.PREFIXMATCH, Tokens.SUFFIXMATCH, Tokens.SUBSTRINGMATCH,
-                            Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH]);
+                    if(tokenStream.match([Tokens.PREFIXMATCH, Tokens.SUFFIXMATCH, Tokens.SUBSTRINGMATCH,
+                            Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])){
                     
-                    value += tokenStream.token().value;                    
-                    value += this._readWhitespace();
-                    
-                    tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
-                    value += tokenStream.token().value;                    
-                    value += this._readWhitespace();
+                        value += tokenStream.token().value;                    
+                        value += this._readWhitespace();
+                        
+                        tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+                        value += tokenStream.token().value;                    
+                        value += this._readWhitespace();
+                    }
                     
                     tokenStream.mustMatch(Tokens.RBRACKET);
                                         
@@ -968,7 +898,7 @@ Parser.prototype = function(){
                     }
                     
                     if (pseudo){
-                        pseudo = new SelectorSubPart(colons + pseudo, "pseudo", token.startLine, token.startCol);
+                        pseudo = new SelectorSubPart(colons + pseudo, "pseudo", line, col);
                     }
                 }
         
@@ -986,7 +916,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value = null;
                 
-                if(tokenStream.mustMatch(Tokens.FUNCTION)){
+                if(tokenStream.match(Tokens.FUNCTION)){
                     value = tokenStream.token().value;
                     value += this._readWhitespace();
                     value += this._expression();
@@ -1008,7 +938,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     value       = "";
                     
-                while(tokenStream.mustMatch([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
+                while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT])){
                     
                     value += tokenStream.token().value;

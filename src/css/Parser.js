@@ -1448,6 +1448,7 @@ Parser.prototype = function(){
             },
             
             parseProperty: function(input){
+            
                 this._tokenStream = new TokenStream(input, Tokens);
                 var result = this._declaration();
                 
@@ -1469,6 +1470,10 @@ Parser.prototype = function(){
              * @method parseSelector
              */
             parseSelector: function(input){
+
+                //strip leading/trailing whitespace as it's irrelevant in this context
+                input = input.replace(/^\s+|\s+$/g, "");
+            
                 this._tokenStream = new TokenStream(input, Tokens);
                 var result = this._selector();
                 
@@ -1490,132 +1495,9 @@ Parser.prototype = function(){
 }();
 
 
-
-
 /*
- * CSS3 Paged Media
-page :
-       PAGE_SYM S* IDENT? pseudo_page? S* 
-       '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
-       ;
-
-pseudo_page :
-       ':' [ "left" | "right" | "first" ]
-       ;
-
-margin :
-       margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
-       ;
-
-margin_sym :
-       TOPLEFTCORNER_SYM | 
-       TOPLEFT_SYM | 
-       TOPCENTER_SYM | 
-       TOPRIGHT_SYM | 
-       TOPRIGHTCORNER_SYM |
-       BOTTOMLEFTCORNER_SYM | 
-       BOTTOMLEFT_SYM | 
-       BOTTOMCENTER_SYM | 
-       BOTTOMRIGHT_SYM |
-       BOTTOMRIGHTCORNER_SYM |
-       LEFTTOP_SYM |
-       LEFTMIDDLE_SYM |
-       LEFTBOTTOM_SYM |
-       RIGHTTOP_SYM |
-       RIGHTMIDDLE_SYM |
-       RIGHTBOTTOM_SYM 
-       ;
-
-*/ 
-
-/*
- * CSS3 Media Queries
- 
- media_query_list
- : S* [media_query [ ',' S* media_query ]* ]?
- ;
-media_query
- : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
- | expression [ AND S* expression ]*
- ;
-media_type
- : IDENT
- ;
-expression
- : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
- ;
-media_feature
- : IDEN
- */
- 
- /* CSS3 Selectors
- 
- selectors_group
-  : selector [ COMMA S* selector ]*
+nth
+  : S* [ ['-'|'+']? INTEGER? {N} [ S* ['-'|'+'] S* INTEGER ]? |
+         ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
-
-selector
-  : simple_selector_sequence [ combinator simple_selector_sequence ]*
-  ;
-
-combinator
-  : PLUS S* | GREATER S* | TILDE S* | S+
-  ;
-
-simple_selector_sequence
-  : [ type_selector | universal ]
-    [ HASH | class | attrib | pseudo | negation ]*
-  | [ HASH | class | attrib | pseudo | negation ]+
-  ;
-
-type_selector
-  : [ namespace_prefix ]? element_name
-  ;
-
-namespace_prefix
-  : [ IDENT | '*' ]? '|'
-  ;
-
-element_name
-  : IDENT
-  ;
-
-universal
-  : [ namespace_prefix ]? '*'
-  ;
-
-class
-  : '.' IDENT
-  ;
-
-attrib
-  : '[' S* [ namespace_prefix ]? IDENT S*
-        [ [ PREFIXMATCH |
-            SUFFIXMATCH |
-            SUBSTRINGMATCH |
-            '=' |
-            INCLUDES |
-            DASHMATCH ] S* [ IDENT | STRING ] S*
-        ]? ']'
-  ;
-
-pseudo
-  : ':' ':'? [ IDENT | functional_pseudo ]
-  ;
-
-functional_pseudo
-  : FUNCTION S* expression ')'
-  ;
-
-expression
-  : [ [ PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ] S* ]+
-  ;
-
-negation
-  : NOT S* negation_arg S* ')'
-  ;
-
-negation_arg
-  : type_selector | universal | HASH | class | attrib | pseudo
-  ;
-  */
+*/

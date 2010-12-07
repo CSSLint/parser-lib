@@ -2210,10 +2210,14 @@ Parser.prototype = function(){
                  */
 
                 var tokenStream = this._tokenStream,
+                    line,
+                    col,
                     value       = "";
                     
                 if (tokenStream.match(Tokens.NOT)){
                     value = tokenStream.token().value;
+                    line = tokenStream.token().line;
+                    col = tokenStream.token().col;
                     value += this._readWhitespace();
                     value += this._negation_arg();
                     value += this._readWhitespace();
@@ -2221,7 +2225,7 @@ Parser.prototype = function(){
                     value += tokenStream.token().value;
                 }
                 
-                return value.length ? value : null;
+                return value.length ? new SelectorSubPart(value, "not", line, col) : null;
             },
             
             //CSS3 Selectors
@@ -2243,9 +2247,9 @@ Parser.prototype = function(){
                         },
                         this._class,
                         this._attrib,
-                        this.pseudo                    
+                        this._pseudo                    
                     ],
-                    arg,
+                    arg         = null,
                     i           = 0,
                     len         = args.length;
                     

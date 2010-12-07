@@ -500,7 +500,7 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("button", result.parts[0].elementName);
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
-            assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
             assert.areEqual(":not([DISABLED])", result.parts[0].modifiers[0].text, "Modifier text should be ':not([DISABLED])'.");            
         },
         
@@ -513,7 +513,7 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("button", result.parts[0].elementName);
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
-            assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
             assert.areEqual(":not(foo)", result.parts[0].modifiers[0].text, "Modifier text should be ':not(foo)'.");            
         }       
     }));
@@ -658,6 +658,50 @@ YAHOO.test.CSSParser = (function(){
         //body > h2:nth-of-type(n+2):nth-last-of-type(n+2)
         //body > h2:not(:first-of-type):not(:last-of-type)        
         //html|*:not(:link):not(:visited)
+    }));
+
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Complex Cases",
+                
+        testWithComplexSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("body > h2:nth-of-type(n+2):nth-last-of-type(n+2)");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");   
+                 
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        },
+        
+        testWithComplexSelector2: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("body > h2:not(:first-of-type):not(:last-of-type)");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");   
+                 
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        },
+        
+        testWithComplexSelector3: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("html|*:not(:link):not(:visited)");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.parts.length, "Should be one part.");   
+                 
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            //assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            //assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        }
+        
+        
+        
     }));
 
     suite.add(new YAHOO.tool.TestCase({

@@ -20,6 +20,13 @@ function SelectorSubPart(text, type, line, col){
      * @property type
      */
     this.type = type;
+    
+    /**
+     * Some subparts have arguments, this represents them.
+     * @type Array
+     * @property args
+     */
+    this.args = [];
 
 }
 

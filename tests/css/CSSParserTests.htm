@@ -502,6 +502,15 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
             assert.areEqual(":not([DISABLED])", result.parts[0].modifiers[0].text, "Modifier text should be ':not([DISABLED])'.");            
+            assert.areEqual(1, result.parts[0].modifiers[0].args.length, "Modifier should have one argument.");
+            
+            var arg = result.parts[0].modifiers[0].args[0];
+            
+            assert.isInstanceOf(SelectorPart, arg, "Result should be an instance of Selector.");
+            assert.areEqual("[DISABLED]", arg.toString());
+            assert.isNull(arg.elementName);
+            assert.areEqual(1, arg.modifiers.length);
+            assert.areEqual("attribute", arg.modifiers[0].type);
         },
         
         testPseudoClassNotSelector2: function(){
@@ -515,6 +524,16 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
             assert.areEqual(":not(foo)", result.parts[0].modifiers[0].text, "Modifier text should be ':not(foo)'.");            
+            assert.areEqual(1, result.parts[0].modifiers[0].args.length, "Modifier should have one argument.");
+
+
+            var arg = result.parts[0].modifiers[0].args[0];
+            
+            assert.isInstanceOf(SelectorPart, arg, "Result should be an instance of Selector.");
+            assert.areEqual("foo", arg.toString());
+            assert.areEqual("foo", arg.elementName, "Element name should be 'foo'.");
+            assert.areEqual(0, arg.modifiers.length);
+
         }       
     }));
 

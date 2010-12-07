@@ -366,7 +366,7 @@ Parser.prototype = function(){
             
                 /*
                  * combinator
-                 *  '+' S* | '>' S* | /(empty)/
+                 *  : PLUS S* | GREATER S* | TILDE S* | S+
                  *  ;
                  */    
                  
@@ -374,7 +374,7 @@ Parser.prototype = function(){
                     value       = null,
                     token;
                 
-                if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
+                if(tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE])){                
                     token = tokenStream.token();
                     value = new Combinator(token.value, token.startLine, token.startCol);
                     this._readWhitespace();
@@ -717,8 +717,12 @@ Parser.prototype = function(){
                     }
                 
                     return null;
-                } else {                
-                    return ns ? ns + elementName : elementName;
+                } else {     
+                    if (ns){
+                        elementName.text = ns + elementName.text;
+                        elementName.col -= ns.length;
+                    }
+                    return elementName;
                 }
             },
             
@@ -960,20 +964,26 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     line,
                     col,
-                    value       = "";
+                    value       = "",
+                    arg,
+                    subpart     = null;
                     
                 if (tokenStream.match(Tokens.NOT)){
                     value = tokenStream.token().value;
                     line = tokenStream.token().line;
                     col = tokenStream.token().col;
                     value += this._readWhitespace();
-                    value += this._negation_arg();
+                    arg = this._negation_arg();
+                    value += arg;
                     value += this._readWhitespace();
                     tokenStream.match(Tokens.RPAREN);
                     value += tokenStream.token().value;
+                    
+                    subpart = new SelectorSubPart(value, "not", line, col);
+                    subpart.args.push(arg);
                 }
                 
-                return value.length ? new SelectorSubPart(value, "not", line, col) : null;
+                return subpart;
             },
             
             //CSS3 Selectors
@@ -999,8 +1009,15 @@ Parser.prototype = function(){
                     ],
                     arg         = null,
                     i           = 0,
-                    len         = args.length;
+                    len         = args.length,
+                    elementName,
+                    line,
+                    col,
+                    part;
                     
+                line = tokenStream.LT(1).line;
+                col = tokenStream.LT(1).col;
+                
                 while(i < len && arg === null){
                     
                     arg = args[i].call(this);
@@ -1012,8 +1029,14 @@ Parser.prototype = function(){
                     this._unexpectedToken(tokenStream.LT(1));
                 }
  
-                return arg;
-                 
+                //it's an element name
+                if (arg.type == "elementName"){
+                    part = new SelectorPart(arg, [], arg.toString(), line, col);
+                } else {
+                    part = new SelectorPart(null, [arg], arg.toString(), line, col);
+                }
+                
+                return part;                
             },
             
             _declaration: function(){

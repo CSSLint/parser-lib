@@ -382,6 +382,47 @@ var Level2Properties = {
     "z-index": 1
 };
 /**
+ * Represents an individual media queyr.
+ * @namespace parserlib.css
+ * @class MediaQuery
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {Array} parts Array of selectors parts making up this selector.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function MediaQuery(modifier, mediaType, parts, line, col){
+    
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + parts.join(" and "), line, col);
+
+    /**
+     * The media modifier ("not" or "only")
+     * @type String
+     * @property modifier
+     */
+    this.modifier = modifier;
+
+    /**
+     * The mediaType (i.e., "print")
+     * @type String
+     * @property mediaType
+     */
+    this.mediaType = mediaType;    
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
+    this.parts = parts;
+
+}
+
+MediaQuery.prototype = new SyntaxUnit();
+MediaQuery.prototype.constructor = Selector;
+
+
+/**
  * A CSS3 parser.
  * @namespace parserlib.css
  * @class Parser
@@ -634,6 +675,7 @@ Parser.prototype = function(){
                 /*
                  * medium
                  *   : IDENT S*
+                 *   ;
                  */
                 var tokenStream = this._tokenStream,
                     medium      = "";
@@ -644,6 +686,159 @@ Parser.prototype = function(){
                 
                 return medium;
             },            
+        
+
+            //TODO
+            _media_query_list: function(){
+                /*
+                 * media_query_list
+                 *   : S* [media_query [ ',' S* media_query ]* ]?
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    mediaList   = [];
+                
+                
+                this._readWhitespace();
+                
+                if (tokenStream.peek() == Tokens.IDENT){
+                    mediaList.push(this._media_query())
+                }
+                
+                while(tokenStream.match(Tokens.COMMA)){
+                    this._readWhitespace();
+                    mediaList.push(this._media_query());
+                }
+                
+                return mediaList;
+            },
+            
+            /*
+             * Note: "expression" in the grammar maps to the _media_expression
+             * method.
+             
+             */
+            _media_query: function(){
+                /*
+                 * media_query
+                 *   : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+                 *   | expression [ AND S* expression ]*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    type        = null,
+                    ident       = null,
+                    token       = null,
+                    expressions = [];
+                    
+                if (tokenStream.match(Tokens.IDENT)){
+                    ident = tokenStream.token().value.toLowerCase();
+                    
+                    //since there's no custom tokens for these, need to manually check
+                    if (ident != "only" && ident != "not"){
+                        tokenStream.unget();
+                        ident = null;
+                    } else {
+                        token = tokenStream.token();
+                    }
+                }
+                                
+                this._readWhitespace();
+                
+                if (tokenStream.peek() == Tokens.IDENT){
+                    type = this._media_type();
+                    if (token === null){
+                        token = tokenStream.token();
+                    }
+                } else if (tokenStream.peek() == Tokens.LPAREN){
+                    if (token === null){
+                        token = tokenStream.LT(1);
+                    }
+                    expressions.push(this._media_expression());
+                }                               
+                
+                if (type === null && expressions.length === 0){
+                    return null;
+                } else {                
+                    this._readWhitespace();
+                    while (tokenStream.match(Tokens.IDENT)){
+                        if (tokenStream.token().value.toLowerCase() != "and"){
+                            this._unexpectedToken(tokenStream.token());
+                        }
+                        
+                        this._readWhitespace();
+                        expressions.push(this._media_expression());
+                    }
+                }
+
+                return new MediaQuery(ident, type, expressions, token.startLine, token.startCol);
+            },
+
+            //CSS3 Media Queries
+            _media_type: function(){
+                /*
+                 * media_type
+                 *   : IDENT
+                 *   ;
+                 */
+                return this._media_feature();           
+            },
+
+            /**
+             * Note: in CSS3 Media Queries, this is called "expression".
+             * Renamed here to avoid conflict with CSS3 Selectors
+             * definition of "expression". Also note that "expr" in the
+             * grammar now maps to "expression" from CSS3 selectors.
+             * @method _media_expression
+             * @private
+             */
+            _media_expression: function(){
+                /*
+                 * expression
+                 *  : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream,
+                    feature     = null,
+                    expression  = null;
+                
+                tokenStream.mustMatch(Tokens.LPAREN);
+                
+                feature = this._media_feature();
+                this._readWhitespace();
+                
+                if (tokenStream.match(Tokens.COLON)){
+                    this._readWhitespace();
+                    expression = this._expression();
+                }
+                
+                tokenStream.mustMatch(Tokens.RPAREN);
+                this._readWhitespace();
+
+                return {
+                    feature: feature,
+                    value: expression
+                };
+            
+            },
+
+            //CSS3 Media Queries
+            _media_feature: function(){
+                /*
+                 * media_feature
+                 *   : IDENT
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    feature      = "";
+                    
+                tokenStream.mustMatch(Tokens.IDENT);
+                feature = tokenStream.token().value;
+                
+                return new SyntaxUnit(feature, tokenStream.token().line, tokenStream.token().col);            
+            },
+            
+
         
             _page: function(){
                 /*
@@ -1857,6 +2052,17 @@ Parser.prototype = function(){
                 return this.parse(input);
             },
             
+            parseMediaQuery: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                var result = this._media_query();
+                
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;            
+            },
+            
             parseProperty: function(input){
             
                 this._tokenStream = new TokenStream(input, Tokens);
@@ -1880,13 +2086,17 @@ Parser.prototype = function(){
              * @method parseSelector
              */
             parseSelector: function(input){
-
-                //strip leading/trailing whitespace as it's irrelevant in this context
-                input = input.replace(/^\s+|\s+$/g, "");
             
                 this._tokenStream = new TokenStream(input, Tokens);
+                
+                //skip any leading white space
+                this._readWhitespace();
+                
                 var result = this._selector();
                 
+                //skip any trailing white space
+                this._readWhitespace();
+
                 //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
                 
@@ -3424,6 +3634,7 @@ Combinator          :Combinator,
 Parser              :Parser,
 PropertyName        :PropertyName,
 PropertyValue       :PropertyValue,
+MediaQuery          :MediaQuery,
 Selector            :Selector,
 SelectorPart        :SelectorPart,
 SelectorSubPart     :SelectorSubPart,

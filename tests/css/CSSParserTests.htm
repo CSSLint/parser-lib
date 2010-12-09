@@ -19,6 +19,7 @@ YAHOO.namespace("test");
 YAHOO.test.CSSParser = (function(){
     
     var assert = YAHOO.util.Assert,
+        MediaQuery = parserlib.css.MediaQuery,
         Selector = parserlib.css.Selector,
         Combinator = parserlib.css.Combinator,
         SelectorPart = parserlib.css.SelectorPart,
@@ -719,6 +720,67 @@ YAHOO.test.CSSParser = (function(){
             //assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
         }
         
+        
+        
+    }));
+    
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Media Queries",
+                
+                
+        testSimpleMediaQuery: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("print");
+            
+            assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            assert.areEqual(1, result.line, "Line should be 1");
+            assert.areEqual(1, result.col, "Column should be 1");
+            assert.isNull(result.modifier);
+            assert.areEqual("print", result.mediaType);
+            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+        },
+        
+        testSimpleMediaQueryNot: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("not print");
+            
+            assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            assert.areEqual(1, result.line, "Line should be 1");
+            assert.areEqual(1, result.col, "Column should be 1");
+            assert.areEqual("not", result.modifier);
+            assert.areEqual("print", result.mediaType);
+            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+        },
+        
+        testSimpleMediaQueryOnly: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only print");
+            
+            assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            assert.areEqual(1, result.line, "Line should be 1");
+            assert.areEqual(1, result.col, "Column should be 1");
+            assert.areEqual("only", result.modifier);
+            assert.areEqual("print", result.mediaType);
+            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+        },
+        
+        testComplexMediaQuery: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("screen and (max-weight: 3kg) and (color)");
+            
+            assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            assert.areEqual(1, result.line, "Line should be 1");
+            assert.areEqual(1, result.col, "Column should be 1");
+            assert.isNull(result.modifier);
+            assert.areEqual("screen", result.mediaType);
+            assert.areEqual(2, result.parts.length, "Should be two parts.");
+            assert.areEqual("max-weight", result.parts[0].feature);
+            assert.areEqual("3kg", result.parts[0].value);
+            assert.areEqual("color", result.parts[1].feature);
+            
+        }
         
         
     }));

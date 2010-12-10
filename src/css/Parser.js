@@ -376,6 +376,7 @@ Parser.prototype = function(){
                  */
                 var tokenStream = this._tokenStream,
                     feature     = null,
+                    token,
                     expression  = null;
                 
                 tokenStream.mustMatch(Tokens.LPAREN);
@@ -385,17 +386,14 @@ Parser.prototype = function(){
                 
                 if (tokenStream.match(Tokens.COLON)){
                     this._readWhitespace();
+                    token = tokenStream.LT(1);
                     expression = this._expression();
                 }
                 
                 tokenStream.mustMatch(Tokens.RPAREN);
                 this._readWhitespace();
 
-                return {
-                    feature: feature,
-                    value: expression
-                };
-            
+                return new MediaFeature(feature, (expression ? new SyntaxUnit(expression, token.startLine, token.startCol) : null));            
             },
 
             //CSS3 Media Queries
@@ -411,7 +409,7 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.IDENT);
                 feature = tokenStream.token().value;
                 
-                return new SyntaxUnit(feature, tokenStream.token().line, tokenStream.token().col);            
+                return new SyntaxUnit(feature, tokenStream.token().startLine, tokenStream.token().startCol);            
             },
             
 
@@ -754,7 +752,7 @@ Parser.prototype = function(){
                 
                 }     
                 
-                return new Selector(selector, selector[0].line, selector[0].col);
+                return new Selector(selector, selector[0].startLine, selector[0].startCol);
             },
             
             //CSS3 Selectors
@@ -1047,11 +1045,11 @@ Parser.prototype = function(){
                 
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
-                        line = tokenStream.token().line;
-                        col = tokenStream.token().col;
+                        line = tokenStream.token().startLine;
+                        col = tokenStream.token().startCol;
                     } else if (tokenStream.peek() == Tokens.FUNCTION){
-                        line = tokenStream.LT(1).line;
-                        col = tokenStream.LT(1).col;
+                        line = tokenStream.LT(1).startLine;
+                        col = tokenStream.LT(1).startCol;
                         pseudo = this._functional_pseudo();
                     }
                     
@@ -1124,8 +1122,8 @@ Parser.prototype = function(){
                     
                 if (tokenStream.match(Tokens.NOT)){
                     value = tokenStream.token().value;
-                    line = tokenStream.token().line;
-                    col = tokenStream.token().col;
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
                     value += this._readWhitespace();
                     arg = this._negation_arg();
                     value += arg;
@@ -1169,8 +1167,8 @@ Parser.prototype = function(){
                     col,
                     part;
                     
-                line = tokenStream.LT(1).line;
-                col = tokenStream.LT(1).col;
+                line = tokenStream.LT(1).startLine;
+                col = tokenStream.LT(1).startCol;
                 
                 while(i < len && arg === null){
                     
@@ -1294,7 +1292,7 @@ Parser.prototype = function(){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }*/
         
-                return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
+                return values.length > 0 ? new PropertyValue(values, values[0].startLine, values[0].startCol) : null;
             },
             
             _term: function(){                       

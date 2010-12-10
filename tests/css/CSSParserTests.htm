@@ -739,7 +739,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.col, "Column should be 1");
             assert.isNull(result.modifier);
             assert.areEqual("print", result.mediaType);
-            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+            assert.areEqual(0, result.features.length, "Should be zero parts.");
         },
         
         testSimpleMediaQueryNot: function(){
@@ -751,7 +751,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.col, "Column should be 1");
             assert.areEqual("not", result.modifier);
             assert.areEqual("print", result.mediaType);
-            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+            assert.areEqual(0, result.features.length, "Should be zero parts.");
         },
         
         testSimpleMediaQueryOnly: function(){
@@ -763,7 +763,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.col, "Column should be 1");
             assert.areEqual("only", result.modifier);
             assert.areEqual("print", result.mediaType);
-            assert.areEqual(0, result.parts.length, "Should be zero parts.");
+            assert.areEqual(0, result.features.length, "Should be zero parts.");
         },
         
         testComplexMediaQuery: function(){
@@ -775,13 +775,15 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.col, "Column should be 1");
             assert.isNull(result.modifier);
             assert.areEqual("screen", result.mediaType);
-            assert.areEqual(2, result.parts.length, "Should be two parts.");
-            assert.areEqual("max-weight", result.parts[0].feature);
-            assert.areEqual("3kg", result.parts[0].value);
-            assert.areEqual("color", result.parts[1].feature);
+            assert.areEqual(2, result.features.length, "Should be two features.");
+            assert.areEqual("max-weight", result.features[0].name);
+            assert.areEqual(25, result.features[0].value.col);
+            assert.areEqual("3kg", result.features[0].value);
+            assert.areEqual("color", result.features[1].name);
+            assert.areEqual(35, result.features[1].name.col);
             
         }
-        
+      
         
     }));
 

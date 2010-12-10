@@ -128,11 +128,11 @@ function StringReader(text){
     
     /**
      * The row for the character to be read next.
-     * @property _row
+     * @property _line
      * @type int
      * @private
      */
-    this._row = 1;
+    this._line = 1;
     
     
     /**
@@ -176,7 +176,7 @@ StringReader.prototype = {
      * @method getLine
      */    
     getLine: function(){
-        return this._row ;
+        return this._line ;
     },
     
     /**
@@ -227,7 +227,7 @@ StringReader.prototype = {
             //if the last character was a newline, increment row count
             //and reset column count
             if (this._input.charAt(this._cursor) == "\n"){
-                this._row++;
+                this._line++;
                 this._col=1;
             } else {
                 this._col++;
@@ -244,13 +244,24 @@ StringReader.prototype = {
     // Misc
     //-------------------------------------------------------------------------
     
+    /**
+     * Saves the current location so it can be returned to later.
+     * @method mark
+     * @return {void}
+     */
     mark: function(){
-        this._bookmark = this._cursor;
+        this._bookmark = {
+            cursor: this._cursor,
+            line:   this._line,
+            col:    this._col
+        };
     },
     
     reset: function(){
-        if (typeof this._bookmark == "number"){
-            this._cursor = this._bookmark;
+        if (this._bookmark){
+            this._cursor = this._bookmark.cursor;
+            this._line = this._bookmark.line;
+            this._col = this._bookmark.col;
             delete this._bookmark;
         }
     },
@@ -282,7 +293,7 @@ StringReader.prototype = {
             if (c){
                 buffer += c;
             } else {
-                throw new Error("Expected \"" + pattern + "\" at line " + this._row  + ", col " + this._col + ".");
+                throw new Error("Expected \"" + pattern + "\" at line " + this._line  + ", col " + this._col + ".");
             }
         }
         
@@ -1251,18 +1262,52 @@ var Level2Properties = {
     "z-index": 1
 };
 /**
- * Represents an individual media queyr.
+ * Represents a media feature, such as max-width:500.
+ * @namespace parserlib.css
+ * @class MediaFeature
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {SyntaxUnit} name The name of the feature.
+ * @param {SyntaxUnit} value The value of the feature or null if none.
+ */
+function MediaFeature(name, value){
+    
+    SyntaxUnit.call(this, name + (value !== null ? ":" + value : ""), name.startLine, name.startCol);
+
+    /**
+     * The name of the media feature
+     * @type String
+     * @property name
+     */
+    this.name = name;
+
+    /**
+     * The value for the feature or null if there is none.
+     * @type SyntaxUnit
+     * @property value
+     */
+    this.value = value;
+}
+
+MediaFeature.prototype = new SyntaxUnit();
+MediaFeature.prototype.constructor = MediaFeature;
+
+
+/**
+ * Represents an individual media query.
  * @namespace parserlib.css
  * @class MediaQuery
  * @extends parserlib.util.SyntaxUnit
  * @constructor
+ * @param {String} modifier The modifier "not" or "only" (or null).
+ * @param {String} mediaType The type of media (i.e., "print").
  * @param {Array} parts Array of selectors parts making up this selector.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function MediaQuery(modifier, mediaType, parts, line, col){
+function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + parts.join(" and "), line, col);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col);
 
     /**
      * The media modifier ("not" or "only")
@@ -1281,14 +1326,14 @@ function MediaQuery(modifier, mediaType, parts, line, col){
     /**
      * The parts that make up the selector.
      * @type Array
-     * @property parts
+     * @property features
      */
-    this.parts = parts;
+    this.features = features;
 
 }
 
 MediaQuery.prototype = new SyntaxUnit();
-MediaQuery.prototype.constructor = Selector;
+MediaQuery.prototype.constructor = MediaQuery;
 
 
 /**
@@ -1669,6 +1714,7 @@ Parser.prototype = function(){
                  */
                 var tokenStream = this._tokenStream,
                     feature     = null,
+                    token,
                     expression  = null;
                 
                 tokenStream.mustMatch(Tokens.LPAREN);
@@ -1678,17 +1724,14 @@ Parser.prototype = function(){
                 
                 if (tokenStream.match(Tokens.COLON)){
                     this._readWhitespace();
+                    token = tokenStream.LT(1);
                     expression = this._expression();
                 }
                 
                 tokenStream.mustMatch(Tokens.RPAREN);
                 this._readWhitespace();
 
-                return {
-                    feature: feature,
-                    value: expression
-                };
-            
+                return new MediaFeature(feature, (expression ? new SyntaxUnit(expression, token.startLine, token.startCol) : null));            
             },
 
             //CSS3 Media Queries
@@ -1704,7 +1747,7 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.IDENT);
                 feature = tokenStream.token().value;
                 
-                return new SyntaxUnit(feature, tokenStream.token().line, tokenStream.token().col);            
+                return new SyntaxUnit(feature, tokenStream.token().startLine, tokenStream.token().startCol);            
             },
             
 
@@ -2047,7 +2090,7 @@ Parser.prototype = function(){
                 
                 }     
                 
-                return new Selector(selector, selector[0].line, selector[0].col);
+                return new Selector(selector, selector[0].startLine, selector[0].startCol);
             },
             
             //CSS3 Selectors
@@ -2340,11 +2383,11 @@ Parser.prototype = function(){
                 
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
-                        line = tokenStream.token().line;
-                        col = tokenStream.token().col;
+                        line = tokenStream.token().startLine;
+                        col = tokenStream.token().startCol;
                     } else if (tokenStream.peek() == Tokens.FUNCTION){
-                        line = tokenStream.LT(1).line;
-                        col = tokenStream.LT(1).col;
+                        line = tokenStream.LT(1).startLine;
+                        col = tokenStream.LT(1).startCol;
                         pseudo = this._functional_pseudo();
                     }
                     
@@ -2417,8 +2460,8 @@ Parser.prototype = function(){
                     
                 if (tokenStream.match(Tokens.NOT)){
                     value = tokenStream.token().value;
-                    line = tokenStream.token().line;
-                    col = tokenStream.token().col;
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
                     value += this._readWhitespace();
                     arg = this._negation_arg();
                     value += arg;
@@ -2462,8 +2505,8 @@ Parser.prototype = function(){
                     col,
                     part;
                     
-                line = tokenStream.LT(1).line;
-                col = tokenStream.LT(1).col;
+                line = tokenStream.LT(1).startLine;
+                col = tokenStream.LT(1).startCol;
                 
                 while(i < len && arg === null){
                     
@@ -2587,7 +2630,7 @@ Parser.prototype = function(){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }*/
         
-                return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
+                return values.length > 0 ? new PropertyValue(values, values[0].startLine, values[0].startCol) : null;
             },
             
             _term: function(){                       
@@ -4503,6 +4546,7 @@ Combinator          :Combinator,
 Parser              :Parser,
 PropertyName        :PropertyName,
 PropertyValue       :PropertyValue,
+MediaFeature        :MediaFeature,
 MediaQuery          :MediaQuery,
 Selector            :Selector,
 SelectorPart        :SelectorPart,

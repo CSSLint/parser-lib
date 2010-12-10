@@ -73,7 +73,7 @@ YAHOO.test.StringReader = (function(){
             while(c){
                 assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect."); 
                 if (c == "\n"){
-                    assert.areEqual(2, reader.getRow(), "Should now be on second row.");
+                    assert.areEqual(2, reader.getLine(), "Should now be on second row.");
                     assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
                 } 
                 c = reader.read();
@@ -95,7 +95,7 @@ YAHOO.test.StringReader = (function(){
             reader.read();
             
             assert.areEqual(1, reader.getCol());
-            assert.areEqual(2, reader.getRow());
+            assert.areEqual(2, reader.getLine());
             
         },
         
@@ -156,108 +156,12 @@ YAHOO.test.StringReader = (function(){
                 
                 
             assert.areEqual("Hello world!\nN", reader.readTo("N"));  
-            assert.areEqual(2, reader.getRow());
+            assert.areEqual(2, reader.getLine());
             assert.areEqual(2, reader.getCol());
         }
                 
     }));    
     
-    //-------------------------------------------------------------------------
-    // Test Case for unread
-    //-------------------------------------------------------------------------
-    
-    suite.add(new YAHOO.tool.TestCase({
-    
-        name : "unread() Tests",
-
-
-        //---------------------------------------------------------------------
-        // Tests
-        //---------------------------------------------------------------------
-    
-        /*
-         * Tests that calling unread at the beginning of the string does nothing.
-         */
-        testUnreadBeginning: function(){
-            var testString = "Hello world!",
-                reader = new StringReader(testString);
-                
-            reader.unread();
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(1, reader.getRow());
-            assert.areEqual("H", reader.read());
-        },
-        
-        /*
-         * Tests that calling unread() moves back one space on same line.
-         */
-        testUnreadSimple: function(){
-            var testString = "Hello world!\nNice day, isn't it?",
-                reader = new StringReader(testString);
-                
-            reader.read();
-            reader.unread();
-                
-            assert.areEqual("H", reader.read(), "First character read should be 'H'.");   
-            assert.areEqual(2, reader.getCol());
-            assert.areEqual(1, reader.getRow());
-        },
-        
-         /*
-         * Tests that calling unread() moves back across lines.
-         */
-        testUnreadMultiLine: function(){
-            var testString = "Hello world!\nNice day, isn't it?",
-                reader = new StringReader(testString);
-                
-            reader.readTo("\n");
-            reader.unread();
-                
-            assert.areEqual(13, reader.getCol());
-            assert.areEqual(1, reader.getRow());                
-            assert.areEqual("\n", reader.read(), "First character read should be '\\n'.");   
-
-        },
-
-         /*
-         * Tests that calling unread() moves back across lines.
-         */
-        testUnreadMultiLine2: function(){
-            var testString = "A\nB\nC",
-                reader = new StringReader(testString);
-                
-            reader.readTo("C");
-            reader.unread();
-                
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(3, reader.getRow());                
-
-            reader.unread();
-            
-            assert.areEqual(2, reader.getCol());
-            assert.areEqual(2, reader.getRow());   
-
-            reader.unread();
-            
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(2, reader.getRow());   
-
-            reader.unread();
-            
-            assert.areEqual(2, reader.getCol());
-            assert.areEqual(1, reader.getRow());   
-
-            reader.unread();
-            
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(1, reader.getRow());   
-
-            assert.areEqual("A", reader.read(), "First character read should be 'A'.");
-           
-        }       
-                
-    }));      
-
     //-------------------------------------------------------------------------
     // Test Case for readWhile()
     //-------------------------------------------------------------------------
@@ -283,7 +187,7 @@ YAHOO.test.StringReader = (function(){
             });
 
             assert.areEqual(testString, result);
-            assert.areEqual(1, reader.getRow());
+            assert.areEqual(1, reader.getLine());
             assert.areEqual(13, reader.getCol());
         }
     }));      
@@ -357,51 +261,7 @@ YAHOO.test.StringReader = (function(){
         
     }));      
     
-    //-------------------------------------------------------------------------
-    // Test Case for unreadCount()
-    //-------------------------------------------------------------------------
-    
-    suite.add(new YAHOO.tool.TestCase({
-    
-        name : "unreadCount() Tests",
-
-
-        //---------------------------------------------------------------------
-        // Tests
-        //---------------------------------------------------------------------
-    
-        /*
-         * Tests that unreading in the middle of a string works.
-         */
-        testUnreadCountMiddle: function(){
-            var testString = "Hello world!",
-                reader = new StringReader(testString);
-                
-            reader.readTo("w");
-            reader.unreadCount(3);
-            
-            assert.areEqual(5, reader.getCol());
-            assert.areEqual(1, reader.getRow());
-            assert.areEqual("o", reader.read());
-        },
-        
-        /*
-         * Tests that unreading to the start of a string works.
-         */
-        testUnreadCountBeginning: function(){
-            var testString = "Hello world!",
-                reader = new StringReader(testString);
-                
-            reader.readTo(" ");
-            reader.unreadCount(12);
-            
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(1, reader.getRow());
-            assert.areEqual("H", reader.read());
-        }        
-        
-        
-    }));          
+     
     
     //-------------------------------------------------------------------------
     // Test Case for eof()
@@ -425,6 +285,37 @@ YAHOO.test.StringReader = (function(){
                 
             reader.readTo("!");
             assert.isTrue(reader.eof());
+        }     
+        
+        
+    }));         
+    
+    //-------------------------------------------------------------------------
+    // Test Case for mark() and reset()
+    //-------------------------------------------------------------------------
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name : "mark() and reset() Tests",
+
+
+        //---------------------------------------------------------------------
+        // Tests
+        //---------------------------------------------------------------------
+    
+        /*
+         * Tests that mark() and reset() preserve lines/cols correctly.
+         */
+        testMarkResetSimple: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+                
+            reader.mark();
+            reader.readTo("!");
+            reader.reset();
+            
+            assert.areEqual(1, reader.getLine(), "Row should be 1");
+            assert.areEqual(1, reader.getCol(), "Column should be 1");
         }     
         
         

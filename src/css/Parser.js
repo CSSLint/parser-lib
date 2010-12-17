@@ -218,15 +218,7 @@ Parser.prototype = function(){
                 
                 //look for @media
                 tokenStream.mustMatch(Tokens.MEDIA_SYM);
-                this._readWhitespace();
-                
-                //must be least one medium
-                //mediaList.push(this._medium());
-                
-                //while(tokenStream.match(Tokens.COMMA)){
-                //    this._readWhitespace();
-                //    mediaList.push(this._medium());                
-                //}
+                this._readWhitespace();               
 
                 mediaList = this._media_query_list();
 
@@ -441,6 +433,132 @@ Parser.prototype = function(){
                 });  
                 
             },
+            
+            //CSS3 Paged Media
+            _new_page: function(){
+                /*
+                 * page:
+                 *    PAGE_SYM S* IDENT? pseudo_page? S* 
+                 *    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+                 *    ;
+                 */            
+                var tokenStream = this._tokenStream,
+                    identifier  = null,
+                    pseudoPage  = null;
+                
+                //look for @page
+                tokenStream.mustMatch(Tokens.PAGE_SYM);
+                this._readWhitespace();
+                
+                if (tokenStream.match(Tokens.IDENT)){
+                    identifier = tokenStream.token().value;
+
+                    //The value 'auto' may not be used as a page name and MUST be treated as a syntax error.
+                    if (identifier.toLowerCase() === "auto"){
+                        this._unexpectedToken(tokenStream.token());
+                    }
+                }                
+                
+                //see if there's a colon upcoming
+                if (tokenStream.peek() == Tokens.COLON){
+                    pseudoPage = this._pseudo_page();
+                }
+            
+                this._readWhitespace();
+                
+                this.fire({
+                    type:   "startpage",
+                    id:     identifier,
+                    pseudo: pseudoPage
+                });     
+
+                if (tokenStream.match([Tokens.TOPLEFTCORNER_SYM, Tokens.TOPLEFT_SYM,
+                        Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
+                        Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM, 
+                        Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
+                        Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM, 
+                        Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
+                        Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM]))
+                {
+                
+                
+                }
+
+                this._readDeclarations(true);                
+                
+                this.fire({
+                    type:   "endpage",
+                    id:     identifier,
+                    pseudo: pseudoPage
+                });             
+            
+            },
+            
+            //CSS3 Paged Media
+            _margin: function(){
+                /*
+                 * margin :
+                 *    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
+                 *    ;
+                 */
+                var tokenStream = this._tokenStream,
+                    marginSym   = this._margin_sym();
+                    
+                this.fire({
+                    type: "startpagemargin",
+                    margin: marginSym
+                });    
+                
+                this._readDeclarations(true);
+
+                this.fire({
+                    type: "endpagemargin",
+                    margin: marginSym
+                });    
+
+            },
+
+            //CSS3 Paged Media
+            _margin_sym: function(){
+            
+                /*
+                 * margin_sym :
+                 *    TOPLEFTCORNER_SYM | 
+                 *    TOPLEFT_SYM | 
+                 *    TOPCENTER_SYM | 
+                 *    TOPRIGHT_SYM | 
+                 *    TOPRIGHTCORNER_SYM |
+                 *    BOTTOMLEFTCORNER_SYM | 
+                 *    BOTTOMLEFT_SYM | 
+                 *    BOTTOMCENTER_SYM | 
+                 *    BOTTOMRIGHT_SYM |
+                 *    BOTTOMRIGHTCORNER_SYM |
+                 *    LEFTTOP_SYM |
+                 *    LEFTMIDDLE_SYM |
+                 *    LEFTBOTTOM_SYM |
+                 *    RIGHTTOP_SYM |
+                 *    RIGHTMIDDLE_SYM |
+                 *    RIGHTBOTTOM_SYM 
+                 *    ;
+                 */
+            
+                var tokenStream = this._tokenStream;
+            
+                if(tokenStream.match([Tokens.TOPLEFTCORNER_SYM, Tokens.TOPLEFT_SYM,
+                        Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
+                        Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM, 
+                        Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
+                        Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM, 
+                        Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
+                        Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM]))
+                {
+                    return new SyntaxUnit(tokenStream.token().value, 
+                        tokenStream.token().startLine, tokenStream.token().startCol);                
+                } else {
+                    return null;
+                }
+            
+            }
             
             _pseudo_page: function(){
                 /*

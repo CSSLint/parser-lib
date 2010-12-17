@@ -1272,7 +1272,7 @@ var Level2Properties = {
  */
 function MediaFeature(name, value){
     
-    SyntaxUnit.call(this, name + (value !== null ? ":" + value : ""), name.startLine, name.startCol);
+    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol);
 
     /**
      * The name of the media feature
@@ -1548,23 +1548,25 @@ Parser.prototype = function(){
             _media: function(){
                 /*
                  * media
-                 *   : MEDIA_SYM S* medium [ ',' S* medium ]* '{' S* ruleset* '}' S*
+                 *   : MEDIA_SYM S* media_query_list S* '{' S* ruleset* '}' S*
                  *   ;
                  */
                 var tokenStream     = this._tokenStream,
-                    mediaList       = [];
+                    mediaList;//       = [];
                 
                 //look for @media
                 tokenStream.mustMatch(Tokens.MEDIA_SYM);
                 this._readWhitespace();
                 
                 //must be least one medium
-                mediaList.push(this._medium());
+                //mediaList.push(this._medium());
                 
-                while(tokenStream.match(Tokens.COMMA)){
-                    this._readWhitespace();
-                    mediaList.push(this._medium());                
-                }
+                //while(tokenStream.match(Tokens.COMMA)){
+                //    this._readWhitespace();
+                //    mediaList.push(this._medium());                
+                //}
+
+                mediaList = this._media_query_list();
 
                 tokenStream.mustMatch(Tokens.LBRACE);
                 this._readWhitespace();
@@ -1583,26 +1585,10 @@ Parser.prototype = function(){
                     type:   "endmedia",
                     media:  mediaList
                 });
-            },    
-            
-            _medium: function(){
-                /*
-                 * medium
-                 *   : IDENT S*
-                 *   ;
-                 */
-                var tokenStream = this._tokenStream,
-                    medium      = "";
-                    
-                tokenStream.mustMatch(Tokens.IDENT);
-                medium = tokenStream.token().value;
-                this._readWhitespace();
-                
-                return medium;
-            },            
+            },                           
         
 
-            //TODO
+            //CSS3 Media Queries
             _media_query_list: function(){
                 /*
                  * media_query_list
@@ -2433,7 +2419,9 @@ Parser.prototype = function(){
                     value       = "";
                     
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
-                        Tokens.NUMBER, Tokens.STRING, Tokens.IDENT])){
+                        Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
+                        Tokens.FREQ, Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.RESOLUTION])){
                     
                     value += tokenStream.token().value;
                     value += this._readWhitespace();                        
@@ -2732,7 +2720,7 @@ Parser.prototype = function(){
                     expr = this._expr();
                     
                     tokenStream.match(Tokens.RPAREN);    
-                    functionText += expr.join("") + ")"
+                    functionText += expr + ")"
                     this._readWhitespace();
                 }                
                 
@@ -2850,11 +2838,14 @@ Parser.prototype = function(){
             _readDeclarations: function(checkStart){
                 /*
                  * Reads the pattern
-                 * '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 * S* '{' S* declaration [ ';' S* declaration ]* '}' S*
                  */
                 var tokenStream = this._tokenStream,
                     tt;
-                                    
+                       
+
+                this._readWhitespace();
+                
                 if (checkStart){
                     tokenStream.mustMatch(Tokens.LBRACE);            
                 }

@@ -780,8 +780,25 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(25, result.features[0].value.col);
             assert.areEqual("3kg", result.features[0].value);
             assert.areEqual("color", result.features[1].name);
+            assert.isNull(result.features[1].value);
             assert.areEqual(35, result.features[1].name.col);
             
+        },
+        
+        testComplexMediaQuery2: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only screen and (max-device-width: 768px) and (orientation:portrait)");
+            
+            assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            assert.areEqual(1, result.line, "Line should be 1");
+            assert.areEqual(1, result.col, "Column should be 1");
+            assert.areEqual("only", result.modifier);
+            assert.areEqual("screen", result.mediaType);
+            assert.areEqual(2, result.features.length, "Should be two features.");
+            assert.areEqual("max-device-width", result.features[0].name);
+            assert.areEqual("768px", result.features[0].value);
+            assert.areEqual("orientation", result.features[1].name);
+            assert.areEqual("portrait", result.features[1].value);
         }
       
         

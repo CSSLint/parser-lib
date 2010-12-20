@@ -40,6 +40,17 @@ li.last {
     }
 }
 
+@page {
+  margin: 10%;
+  counter-increment: page;
+
+  @top-center {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 2em;
+    content: counter(page);
+  }
+}
 </textarea>
 <p><input type="checkbox" id="starHack" /><label for="starHack">Accept star hack</label>&nbsp;&nbsp;<input type="checkbox" id="ieFilters" /><label for="ieFilters">Accept IE filters</label>&nbsp;&nbsp;<input type="checkbox" id="strictMode" /><label for="strictMode">Strict mode</label></p>
 <input type="button" onclick="parse()" value="parse">
@@ -86,6 +97,16 @@ function parse(){
     parser.addListener("endpage", function(event){
         log("Starting page with ID=" + event.id + " and pseudo=" + event.pseudo);
     });
+
+    parser.addListener("startpagemargin", function(event){
+        log("Starting page margin " + event.margin);
+    });
+    
+    
+    parser.addListener("endpagemargin", function(event){
+        log("Ending page margin " + event.margin);
+    });
+
     
     parser.addListener("import", function(event){
         log("Importing " + event.uri + " for media types [" + event.media + "]");

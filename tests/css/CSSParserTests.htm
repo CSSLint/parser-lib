@@ -40,6 +40,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("li");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
@@ -51,6 +53,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("svg|rect");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("svg|rect", result.parts[0].elementName, "Element name should be 'svg|rect'.");
@@ -62,6 +66,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("|rect");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("|rect", result.parts[0].elementName, "Element name should be '|rect'.");
@@ -73,6 +79,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("*|rect");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("*|rect", result.parts[0].elementName, "Element name should be '*|rect'.");
@@ -89,6 +97,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("*");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("*", result.parts[0].elementName, "Element name should be '*'.");
@@ -100,6 +110,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("svg|*");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("svg|*", result.parts[0].elementName, "Element name should be 'svg|*'.");
@@ -111,6 +123,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("|*");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("|*", result.parts[0].elementName, "Element name should be '|*'.");
@@ -122,6 +136,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("*|*");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("*|*", result.parts[0].elementName, "Element name should be '*|*'.");
@@ -139,12 +155,16 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("li[class]");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class]", result.parts[0].modifiers[0].text, "Modifier text should be '[class]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -159,6 +179,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=\"selected\"]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -173,6 +195,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=selected]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -187,6 +211,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class~=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class~=\"selected\"]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -201,6 +227,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[class|=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class|=\"selected\"]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
 
@@ -215,6 +243,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[type^=\"image/\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[type^=\"image/\"]'.");            
+            assert.areEqual(7, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
         },
 
         testAttributeEndMatchSelector: function(){
@@ -228,6 +258,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[href$=\".html\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[href$=\".html\"]'.");            
+            assert.areEqual(2, result.parts[0].modifiers[0].col, "Modifier column should be 2.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
         },
 
         testAttributeContainsMatchSelector: function(){
@@ -241,6 +273,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[title*=\"hello\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[title*=\"hello\"]'.");            
+            assert.areEqual(2, result.parts[0].modifiers[0].col, "Modifier column should be 2.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
         },
 
         testAttributeEquivalenceSelectorNamespace: function(){
@@ -254,6 +288,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[html|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[html|class=selected]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -268,6 +304,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[*|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[*|class=selected]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         },
         
@@ -282,6 +320,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
             assert.areEqual("[|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[|class=selected]'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
             
         }
     }));
@@ -296,8 +336,12 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector(".selected");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have one parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual(1, result.parts[0].line, "Line start should be 1");
+            assert.areEqual(1, result.parts[0].col, "Column start should be 1");
             assert.isNull(result.parts[0].elementName, "Element name should be null.");
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
@@ -310,6 +354,8 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector(".selected.foo");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(1, result.line, "Line start should be 1");
+            assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have one parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             assert.isNull(result.parts[0].elementName, "Element name should be null.");
@@ -331,6 +377,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
             assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].line, "Line start should be 3");
+            assert.areEqual(1, result.parts[0].modifiers[0].col, "Column start should be 1");
             
         },
         
@@ -345,8 +393,12 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(2, result.parts[0].modifiers.length, "Element should have two modifiers.");
             assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
             assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            assert.areEqual(3, result.parts[0].modifiers[0].line, "Line start should be 3");
+            assert.areEqual(1, result.parts[0].modifiers[0].col, "Column start should be 1");
             assert.areEqual("class", result.parts[0].modifiers[1].type, "Modifier type should be 'class'.");
             assert.areEqual(".foo", result.parts[0].modifiers[1].text, "Modifier text should be '.foo'.");            
+            assert.areEqual(12, result.parts[0].modifiers[1].line, "Line start should be 12");
+            assert.areEqual(1, result.parts[0].modifiers[1].col, "Column start should be 1");
         }
         
     }));

@@ -123,7 +123,7 @@ Parser.prototype = function(){
                 /*
                  * import
                  *   : IMPORT_SYM S*
-                 *    [STRING|URI] S* [ medium [ ',' S* medium]* ]? ';' S*
+                 *    [STRING|URI] S* media_query_list? ';' S*
                  */    
             
                 var tokenStream = this._tokenStream,
@@ -144,14 +144,8 @@ Parser.prototype = function(){
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
 
                 this._readWhitespace();
-
-                //check for media information
-                if (tokenStream.peek() == Tokens.IDENT){
-                    do {
-                        this._readWhitespace();
-                        mediaList.push(this._medium());
-                    } while (tokenStream.match(Tokens.COMMA));
-                }
+                
+                mediaList = this._media_query_list();
                 
                 //must end with a semicolon
                 tokenStream.mustMatch(Tokens.SEMICOLON);
@@ -391,8 +385,7 @@ Parser.prototype = function(){
             },
             
 
-        
-            _page: function(){
+            _old_page: function(){
                 /*
                  * page
                  *   : PAGE_SYM S* IDENT? pseudo_page? S*
@@ -435,7 +428,7 @@ Parser.prototype = function(){
             },
             
             //CSS3 Paged Media
-            _new_page: function(){
+            _page: function(){
                 /*
                  * page:
                  *    PAGE_SYM S* IDENT? pseudo_page? S* 
@@ -470,21 +463,9 @@ Parser.prototype = function(){
                     type:   "startpage",
                     id:     identifier,
                     pseudo: pseudoPage
-                });     
+                });                   
 
-                if (tokenStream.match([Tokens.TOPLEFTCORNER_SYM, Tokens.TOPLEFT_SYM,
-                        Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
-                        Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM, 
-                        Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
-                        Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM, 
-                        Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
-                        Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM]))
-                {
-                
-                
-                }
-
-                this._readDeclarations(true);                
+                this._readDeclarations(true, true);                
                 
                 this.fire({
                     type:   "endpage",
@@ -503,19 +484,23 @@ Parser.prototype = function(){
                  */
                 var tokenStream = this._tokenStream,
                     marginSym   = this._margin_sym();
+
+                if (marginSym){
+                    this.fire({
+                        type: "startpagemargin",
+                        margin: marginSym
+                    });    
                     
-                this.fire({
-                    type: "startpagemargin",
-                    margin: marginSym
-                });    
-                
-                this._readDeclarations(true);
+                    this._readDeclarations(true);
 
-                this.fire({
-                    type: "endpagemargin",
-                    margin: marginSym
-                });    
-
+                    this.fire({
+                        type: "endpagemargin",
+                        margin: marginSym
+                    });    
+                    return true;
+                } else {
+                    return false;
+                }
             },
 
             //CSS3 Paged Media
@@ -558,7 +543,7 @@ Parser.prototype = function(){
                     return null;
                 }
             
-            }
+            },
             
             _pseudo_page: function(){
                 /*
@@ -571,6 +556,8 @@ Parser.prototype = function(){
                 
                 tokenStream.mustMatch(Tokens.COLON);
                 tokenStream.mustMatch(Tokens.IDENT);
+                
+                //TODO: CSS3 Paged Media says only "left", "center", and "right" are allowed
                 
                 return tokenStream.token().value;
             },
@@ -856,7 +843,7 @@ Parser.prototype = function(){
                 
                 }     
                 
-                return new Selector(selector, selector[0].startLine, selector[0].startCol);
+                return new Selector(selector, selector[0].line, selector[0].col);
             },
             
             //CSS3 Selectors
@@ -1604,21 +1591,27 @@ Parser.prototype = function(){
                 }
             },
 
-            
             /**
              * Not part of CSS grammar, but this pattern occurs frequently
              * in the official CSS grammar. Split out here to eliminate
              * duplicate code.
              * @param {Boolean} checkStart Indicates if the rule should check
              *      for the left brace at the beginning.
+             * @param {Boolean} readMargins Indicates if the rule should check
+             *      for margin patterns.
              * @return {void}
              * @method _readDeclarations
              * @private
              */
-            _readDeclarations: function(checkStart){
+            _readDeclarations: function(checkStart, readMargins){
                 /*
                  * Reads the pattern
                  * S* '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 * or
+                 * S* '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+                 * Note that this is how it is described in CSS3 Paged Media, but is actually incorrect.
+                 * A semicolon is only necessary following a delcaration is there's another declaration
+                 * or margin afterwards. 
                  */
                 var tokenStream = this._tokenStream,
                     tt;
@@ -1634,10 +1627,21 @@ Parser.prototype = function(){
 
                 try {
                     
-                    while(this._declaration()){
-                        if (!tokenStream.match(Tokens.SEMICOLON)){
+                    while(true){
+                    
+                        if (readMargins && this._margin()){
+                            //noop
+                        } else if (this._declaration()){
+                            if (!tokenStream.match(Tokens.SEMICOLON)){
+                                break;
+                            }
+                        } else {
                             break;
                         }
+                    
+                        //if ((!this._margin() && !this._declaration()) || !tokenStream.match(Tokens.SEMICOLON)){
+                        //    break;
+                        //}
                         this._readWhitespace();
                     }
                     
@@ -1660,7 +1664,7 @@ Parser.prototype = function(){
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
                         if (tt == Tokens.SEMICOLON){
                             //if there's a semicolon, then there might be another declaration
-                            this._readDeclarations(false);
+                            this._readDeclarations(false, readMargins);
                         } else if (tt == Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
                         } else {
@@ -1672,9 +1676,9 @@ Parser.prototype = function(){
                         //not a syntax error, rethrow it
                         throw ex;
                     }
-                }           
+                }    
             
-            },            
+            },      
             
             /**
              * In some cases, you can end up with two white space tokens in a

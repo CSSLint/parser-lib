@@ -2321,7 +2321,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.DOT)){
                     tokenStream.mustMatch(Tokens.IDENT);    
                     token = tokenStream.token();
-                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol);        
+                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol - 1);        
                 } else {
                     return null;
                 }

@@ -123,7 +123,7 @@ The `parserlib.css.Selector` type represents a single selector. Each instance ha
 
 This selector has three parts: `li.selected`, `>`, and `a:hover`. The first part is a `SelectorPart`, the second is a `Combinator`, and the third is a `SelectorPart`. Each `SelectorPart` is made up of an optional element name followed by an ID, class, attribute condition, pseudo class, and/or pseudo element.
 
-Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one, and a `modifiers` property, which is an array of `parserlib.css.SelectorSubPart` objects. Each `SelectorSubPart` object represents the smallest individual piece of a selector and has a `type` property indicating the type of subpart, "elementName", "class", "attribute", "pseudo", or "id". 
+Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one, and a `modifiers` property, which is an array of `parserlib.css.SelectorSubPart` objects. Each `SelectorSubPart` object represents the smallest individual piece of a selector and has a `type` property indicating the type of subpart, "elementName", "class", "attribute", "pseudo", "id", "not". If the `type` is "not", then the `args` property contains an array of `SelectorPart` arguments that were passed to `not()`. 
 
 Each instance of `parserlib.css.Combinator` has an additional `type` property that indicates the type of combinator: "descendant", "child", "sibling", or "adjacent-sibling".
 

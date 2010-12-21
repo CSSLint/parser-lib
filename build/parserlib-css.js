@@ -2329,12 +2329,12 @@ function PropertyValuePart(text, line, col){
             this.green  = parseInt(temp.substring(2,4),16);
             this.blue   = parseInt(temp.substring(4,6),16);            
         }
-    } else if (/^rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color with absolute numbers
+    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)){ //rgb() color with absolute numbers
         this.type   = "color";
         this.red    = +RegExp.$1;
         this.green  = +RegExp.$2;
         this.blue   = +RegExp.$3;
-    } else if (/^rgb\((\d+)%,(\d+)%,(\d+)%\)/i.test(text)){ //rgb() color with percentages
+    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //rgb() color with percentages
         this.type   = "color";
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;

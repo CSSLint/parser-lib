@@ -15,7 +15,7 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     //this._reader = (typeof input == "string") ? new StringReader(input) : input;
-    this._reader = new StringReader(input.toString());
+    this._reader = input ? new StringReader(input.toString()) : null;
     
     /**
      * Token object for the last consumed token.

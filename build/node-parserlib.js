@@ -53,7 +53,7 @@ EventTarget.prototype = {
      * @method addListener
      */
     addListener: function(type, listener){
-        if (typeof this._listeners[type] == "undefined"){
+        if (!this._listeners[type]){
             this._listeners[type] = [];
         }
 
@@ -79,8 +79,8 @@ EventTarget.prototype = {
             throw new Error("Event object missing 'type' property.");
         }
         
-        if (this._listeners[event.type] instanceof Array){
-            var listeners = this._listeners[event.type];
+        if (this._listeners[event.type]){
+            var listeners = this._listeners[event.type].concat();
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);
             }
@@ -95,7 +95,7 @@ EventTarget.prototype = {
      * @method removeListener
      */
     removeListener: function(type, listener){
-        if (this._listeners[type] instanceof Array){
+        if (this._listeners[type]){
             var listeners = this._listeners[type];
             for (var i=0, len=listeners.length; i < len; i++){
                 if (listeners[i] === listener){
@@ -487,7 +487,7 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     //this._reader = (typeof input == "string") ? new StringReader(input) : input;
-    this._reader = new StringReader(input.toString());
+    this._reader = input ? new StringReader(input.toString()) : null;
     
     /**
      * Token object for the last consumed token.
@@ -1725,49 +1725,6 @@ Parser.prototype = function(){
                 return new SyntaxUnit(feature, tokenStream.token().startLine, tokenStream.token().startCol);            
             },
             
-
-            _old_page: function(){
-                /*
-                 * page
-                 *   : PAGE_SYM S* IDENT? pseudo_page? S*
-                 *     '{' S* declaration [ ';' S* declaration ]* '}' S*
-                 *   ;
-                 */     
-                var tokenStream = this._tokenStream,
-                    identifier  = null,
-                    pseudoPage  = null;
-                
-                //look for @page
-                tokenStream.mustMatch(Tokens.PAGE_SYM);
-                this._readWhitespace();
-                
-                if (tokenStream.match(Tokens.IDENT)){
-                    identifier = tokenStream.token().value;                    
-                }                
-                
-                //see if there's a colon upcoming
-                if (tokenStream.peek() == Tokens.COLON){
-                    pseudoPage = this._pseudo_page();
-                }
-            
-                this._readWhitespace();
-                
-                this.fire({
-                    type:   "startpage",
-                    id:     identifier,
-                    pseudo: pseudoPage
-                });     
-
-                this._readDeclarations(true);                
-                
-                this.fire({
-                    type:   "endpage",
-                    id:     identifier,
-                    pseudo: pseudoPage
-                });  
-                
-            },
-            
             //CSS3 Paged Media
             _page: function(){
                 /*
@@ -2126,20 +2083,6 @@ Parser.prototype = function(){
                 
                 //look for a combinator
                 combinator = this._combinator();
-                /*while(combinator !== null){
-                    selector.push(combinator);
-                    nextSelector = this._simple_selector();
-                    
-                    //there must be a next selector
-                    if (nextSelector === null){
-                        this._unexpectedToken(tokenStream.LT(1));
-                    } else {
-                        //nextSelector is an instance of SelectorPart
-                        selector.push(nextSelector);
-                    }
-                    
-                    combinator = this._combinator();
-                }*/
                 
                 if (combinator !== null){
                     selector.push(combinator);
@@ -2478,10 +2421,10 @@ Parser.prototype = function(){
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
                         line = tokenStream.token().startLine;
-                        col = tokenStream.token().startCol;
+                        col = tokenStream.token().startCol - colons.length;
                     } else if (tokenStream.peek() == Tokens.FUNCTION){
                         line = tokenStream.LT(1).startLine;
-                        col = tokenStream.LT(1).startCol;
+                        col = tokenStream.LT(1).startCol - colons.length;
                         pseudo = this._functional_pseudo();
                     }
                     
@@ -3091,13 +3034,21 @@ Parser.prototype = function(){
                 return result;            
             },
             
-            parseProperty: function(input){
+            /**
+             * Parses a property value (everything after the semicolon).
+             * @return {parserlib.css.PropertyValue} The property value.
+             * @throws parserlib.util.SyntaxError If an unexpected token is found.
+             * @method parserPropertyValue
+             */             
+            parsePropertyValue: function(input){
             
                 this._tokenStream = new TokenStream(input, Tokens);
-                var result = this._declaration();
+                this._readWhitespace();
                 
-                //okay to have a trailing semicolon
-                this._tokenStream.match(Tokens.SEMICOLON);
+                var result = this._expr();
+                
+                //okay to have a trailing white space
+                this._readWhitespace();
                 
                 //if there's anything more, then it's an invalid selector
                 this._verifyEnd();

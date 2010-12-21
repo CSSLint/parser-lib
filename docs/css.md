@@ -46,14 +46,81 @@ The `parse()` method throws an error if a non-recoverable syntax error occurs, o
 
 Note: The `parseStyleSheet()` method is provided for compatibility with SAC-based APIs but does the exact same thing as `parse()`.
 
+Understanding syntax units
+--------------------------
+
+The CSS parser defines several types that inherit from `parserlib.util.SyntaxUnit`. These types are designed to give you easy access to all relevant parts of the CSS syntax.
+
+### Media Queries
+
+The `parserlib.css.MediaFeature` type represents a specific media feature in a media query, such as `(orientation:portrait)` or `(color)`. Essentially, this type of object represents anything enclosed in parentheses in a media query. Object of this type have the following properties:
+
+* `name` - the name of the media feature such as "orientation"
+* `value` - the value of the media feature (may be `null`)
+
+The `parserlib.css.MediaQuery` type represents all parts of a media query. Each instance has the following properties:
+
+* `modifier` - either "not" or "only"
+* `mediaType` - the actual media type such as "print"
+* `features` - an array of `parserlib.css.MediaFeature` objects
+
+For example, consider the following media query:
+
+    only screen and (max-device-width: 768px) and (orientation:portrait)
+    
+A corresponding object would have the following values:
+
+* `modifier` = "only"
+* `mediaType` = "screen"
+* `features` = array of (`name`="max-device-width", `value`="768px") and (`name`="orientation", `value`="portrait")
+
+### Properties
+
+The `parserlib.css.PropertyName` type represents a property name. Each instance has the following properties:
+
+* `hack` - if star or underscore hacks are allowed, either "*" or "_" if present (`null` if not present or hacks are not allowed)
+
+When star hacks are allowed, the `text` property becomes the actual property name, so `*width` has `hack` equal to "*" and `text` equal to "width". If no hacks are allowed, then `*width` causes a syntax error while `_width` has `hack` equal to `null` and `text` equal to "_width".
+
+The `parserlib.css.PropertyValue` type represents a property value. Since property values in CSS are complex, this type of object wraps the various parts into a single interface. Each instance has the following properties:
+
+* `parts` - array of `PropertyValuePart` objects
+
+The `parts` array always has at least one item.
+
+The `parserlib.css.PropertyValuePart` type represents an individual part of a property value. Each instance has the following properties:
+
+* `type` - the type of value part ("unknown", "length", "percentage", "integer", "number", "hexcolor", "color", "uri", or "string")
+
+A part is considered any atomic piece of a property value not including white space. Consider the following:
+
+    font: 1em/1.5em "Times New Roman", Times, serif;
+
+The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em", "/", "1.5em", "\"Times New Roman\"", "Times", and "serif".
+
+### PropertyValuePart
+
+The `parserlib.css.PropertyValuePart` type represents 
+
+
 Using events
 ------------
 
 The CSS parser fires events as it parses text. The events correspond to important parts of the parsing algorithm and are designed to provide developers with all of the information necessary to create lint checkers, ASTs, and other data structures.
 
-### `startstylesheet` and `endstylesheet` events
+For many events, the `event` object contains additional information. This additional information is most frequently in the form of a `parserlib.util.SyntaxUnit` object, which has three properties:
 
-The `startstylesheet` event fires just before parsing of the CSS text begins and the `endstylesheet` event fires just after all of the CSS text has been parsed. There is no additional information provided for these events. Example usage:
+1. `text` - the string value
+1. `line` - the line on which this token appeared
+1. `col` - the column within the line at which this token appeared
+
+The `toString()` method for these objects is overridden to be the same value as `text`, so that you can treat the object as a string for comparison and concatenation purposes.
+
+You should assign your event handlers before calling the `parse()` method.
+
+### startstylesheet and endstylesheet events
+
+The `startstylesheet` event fires just before parsing of the CSS text begins and the `endstylesheet` event fires just after all of the CSS text has been parsed. There is no additional information provided for these events. Example:
 
     parser.addListener("startstylesheet", function(){
         console.log("Starting to parse style sheet");
@@ -63,7 +130,7 @@ The `startstylesheet` event fires just before parsing of the CSS text begins and
         console.log("Finished parsing style sheet");
     });
 
-### `charset` event
+### charset event
 
 The `charset` event fires when the `@charset` directive is found in a style sheet. Since `@charset` is required to appear first in a style sheet, any other occurances cause a syntax error. The `charset` event provides an `event` object with a property called `charset`, which contains the name of the character set for the style sheet. Example:
 
@@ -71,12 +138,122 @@ The `charset` event fires when the `@charset` directive is found in a style shee
         console.log("Character set is " + event.charset);
     });
 
-### `namespace` event
+### namespace event
 
 The `namespace` event fires when the `@namespace` directive is found in a style sheet. The `namespace` event provides an `event` object with two properties: `prefix`, which is the namespace prefix, and `uri`, which is the namespace URI. Example:
 
     parser.addListener("namespace", function(event){
-        log("Namespace with prefix=" + event.prefix + " and URI=" + event.uri);
+        console.log("Namespace with prefix=" + event.prefix + " and URI=" + event.uri);
+    });
+
+### import event
+
+The `import` event fires when the `@import` directive is found in a style sheet. The `import` event provides an `event` object with two properties: `uri`, which is the URI to import, and `media`, which is an array of media queries for which this URI applies. The `media` array contains zero or more `parserlib.css.MediaQuery` objects. Example:
+    
+    parser.addListener("import", function(event){
+        console.log("Importing " + event.uri + " for media types [" + event.media + "]");
     });
     
+### startfontface and endfontface events
 
+The `startfontface` event fires when `@font-face` is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after `@font-face`. There is no additional information available on the `event` object. Example:
+
+    parser.addListener("startfontface", function(event){
+        console.log("Starting font face");
+    });
+    
+    parser.addListener("endfontface", function(event){
+        console.log("Ending font face");
+    });
+    
+### startpage and endpage events
+    
+The `startpage` event fires when `@page` is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after `@page`. The `event` object has two properties: `id`, which is the page ID, and `pseudo`, which is the page pseudo class. Example:
+   
+    parser.addListener("startpage", function(event){
+        console.log("Starting page with ID=" + event.id + " and pseudo=" + event.pseudo);
+    });
+    
+    parser.addListener("endpage", function(event){
+        console.log("Ending page with ID=" + event.id + " and pseudo=" + event.pseudo);
+    });
+
+### startpagemargin and endpagemargin events
+    
+The `startpagemargin` event fires when a page margin directive (such as `@top-left`) is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after the page margin. The `event` object has a `margin` property, which contains the actual page margin encountered. Example:
+   
+    parser.addListener("startpagemargin", function(event){
+        console.log("Starting page margin " + event.margin);
+    });
+    
+    
+    parser.addListener("endpagemargin", function(event){
+        console.log("Ending page margin " + event.margin);
+    });
+
+### startmedia and endmedia events
+    
+The `startmedia` event fires when `@media` is encountered and the `endmedia` event fires just after the closing right brace (`}`) is encountered after `@media`. The `event` object has one property, `media`, which is an array of `parserlib.css.MediaQuery` objects. Example:
+   
+    parser.addListener("startpagemargin", function(event){
+        console.log("Starting page margin " + event.margin);
+    });
+    
+    
+    parser.addListener("endpagemargin", function(event){
+        console.log("Ending page margin " + event.margin);
+    });
+
+### startrule and endrule events
+    
+The `startrule` event fires just after all selectors on a rule have been parsed and the `endrule` event fires just after the closing right brace (`}`) is encountered for the rule. The `event` object has one additional property, `selectors`, which is an array of `parserlib.css.Selector` objects. Example:    
+        
+    parser.addListener("startrule", function(event){
+        console.log("Starting rule with " + event.selectors.length + " selector(s)");
+        
+        for (var i=0,len=event.selectors.length; i < len; i++){
+            var selector = event.selectors[i];
+            
+            console.log("  Selector #1 (" + selector.line + "," + selector.col + ")");
+            
+            for (var j=0,count=selector.parts.length; j < count; j++){
+                console.log("    Unit #" + (j+1));
+                
+                if (selector.parts[j] instanceof parserlib.css.SelectorPart){
+                    console.log("      Element name: " + selector.parts[j].elementName);
+                    
+                    for (var k=0; k < selector.parts[j].modifiers.length; k++){
+                        console.log("        Modifier: " + selector.parts[j].modifiers[k]);
+                    }
+                } else{
+                    log("      Combinator: " + selector.parts[j]);
+                }
+                
+                
+            }
+            
+            
+        }
+
+    });
+    
+    parser.addListener("endrule", function(event){
+        log("Ending rule with selectors [" + event.selectors + "]");
+    });
+    
+    
+### property event
+
+The `property` event fires whenever a CSS property (`name:value`) is encountered, which may be inside of a rule, a media block, a page block, etc. The `event` object has three additional properties: `property`, which is the name of the property as a `parserlib.css.PropertyName` object, `value`, which is an instance of `parserlib.css.PropertyValue`(both types inherit from `parserlib.util.SyntaxUnit`), and `important`, which is a Boolean value indicating if the property is flagged with `!important`. Example:
+    
+    parser.addListener("property", function(event){
+        console.log("Property '" + event.property + "' has a value of '" + event.value + "' and " + (event.important ? "is" : "isn't") + " important. (" + event.property.line + "," + event.property.col + ")");
+    });
+    
+### error event
+
+The `error` event fires whenever a recoverable error occurs during parsing. When in strict mode, this event does not fire. The `event` object contains three additional properties: `message`, which is the error message, `line`, which is the line on which the error occurred, and `col`, which is the column on that line in which the error occurred. Example:
+    
+    parser.addListener("error", function(event){
+        console.log("Parse error: " + event.message + " (" + event.line + "," + event.col + ")", "error");
+    });

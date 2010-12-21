@@ -1455,7 +1455,10 @@ Parser.prototype = function(){
                         case Tokens.FONT_FACE_SYM:
                             this._font_face(); 
                             this._skipCruft();
-                            break;                   
+                            break;  
+                        case Tokens.S:
+                            this._readWhitespace();
+                            break;
                         default:                            
                             if(!this._ruleset()){
                                 tokenStream.get();  //get the last token
@@ -1490,9 +1493,6 @@ Parser.prototype = function(){
                 this._readWhitespace();
                 
                 tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
-                /*if (!tokenStream.match(Tokens.STRING)){
-                    tokenStream.mustMatch(Tokens.URI);
-                }*/
                 
                 //grab the URI value
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
@@ -2003,23 +2003,47 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    selectors   = this._selectors_group();
-                
-                if (selectors){
-                    /*selector = this._selector();
-                    if (selector !== null){
+                    selectors;
+
+
+                /*
+                 * Error Recovery: If even a single selector fails to parse,
+                 * then the entire ruleset should be thrown away.
+                 */
+                try {
+                    selectors = this._selectors_group();
+                } catch (ex){
+                    if (ex instanceof SyntaxError && !this.options.strict){
                     
-                        selectors.push(selector);
-                        while(tokenStream.match(Tokens.COMMA)){
-                            this._readWhitespace();
-                            selector = this._selector();
-                            if (selector !== null){
-                                selectors.push(selector);
-                            }
-                        }
+                        //fire error event
+                        this.fire({
+                            type:       "error",
+                            error:      ex,
+                            message:    ex.message,
+                            line:       ex.line,
+                            col:        ex.col
+                        });                          
+                        
+                        //skip over everything until closing brace
+                        tt = tokenStream.advance([Tokens.RBRACE]);
+                        if (tt == Tokens.RBRACE){
+                            //if there's a right brace, the rule is finished so don't do anything
+                        } else {
+                            //otherwise, rethrow the error because it wasn't handled properly
+                            throw ex;
+                        }                        
+                        
                     } else {
-                        return null;
-                    }*/     
+                        //not a syntax error, rethrow it
+                        throw ex;
+                    }                
+                
+                    //trigger parser to continue
+                    return true;
+                }
+                
+                //if it got here, all selectors parsed
+                if (selectors){ 
                                     
                     this.fire({
                         type:       "startrule",
@@ -2601,7 +2625,7 @@ Parser.prototype = function(){
                     expr = this._expr();
                     
                     //if there's no parts for the value, it's an error
-                    if (expr.length === 0){
+                    if (!expr || expr.length === 0){
                         this._unexpectedToken(tokenStream.LT(1));
                     }
                     

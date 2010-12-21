@@ -107,13 +107,13 @@ The `parts` array always has at least one item.
 
 The `parserlib.css.PropertyValuePart` type represents an individual part of a property value. Each instance has the following properties:
 
-* `type` - the type of value part ("unknown", "dimension", "percentage", "integer", "number", "color", "uri",  "string", or "operator")
+* `type` - the type of value part ("unknown", "dimension", "percentage", "integer", "number", "color", "uri",  "string", "identifier" or "operator")
 
 A part is considered any atomic piece of a property value not including white space. Consider the following:
 
     font: 1em/1.5em "Times New Roman", Times, serif;
 
-The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em" (dimension), "/" (operator), "1.5em" (dimension), "\"Times New Roman\"" (string), "," (operator), "Times", and "serif".
+The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em" (dimension), "/" (operator), "1.5em" (dimension), "\"Times New Roman\"" (string), "," (operator), "Times" (identifier), "," (operator), and "serif" (identifier).
 
 ### Selectors
 
@@ -282,3 +282,24 @@ The `error` event fires whenever a recoverable error occurs during parsing. When
     parser.addListener("error", function(event){
         console.log("Parse error: " + event.message + " (" + event.line + "," + event.col + ")", "error");
     });
+
+Error recovery
+--------------
+
+The CSS parser's goal is to be on-par with error recovery of CSS parsers in browsers. To that end, the following error recovery mechanisms are in place:
+
+* **Properties** - a syntactically incorrect property definition will be skipped over completely. For instance, the second property below is dropped:
+
+    a:hover {
+        color: red;
+        font:: Helvetica;    /*dropped!*/
+        text-decoration: underline;
+    }
+    
+* **Selectors** - if there's a syntax error in *any* selector, the entire rule is skipped over. For instance, the following rule is completely skipped:
+
+    a:hover, foo ... bar {
+        color: red;
+        font: Helvetica;
+        text-decoration: underline;
+    }

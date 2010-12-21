@@ -627,6 +627,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
             assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             assert.areEqual(">", result.parts[1].text);
+            assert.areEqual("child", result.parts[1].type);
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
             assert.areEqual("p", result.parts[2].elementName);
         },
@@ -645,6 +646,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
             assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             assert.areEqual("+", result.parts[1].text);
+            assert.areEqual("adjacent-sibling", result.parts[1].type);
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
             assert.areEqual("p", result.parts[2].elementName);
         },
@@ -663,6 +665,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
             assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             assert.areEqual("~", result.parts[1].text);
+            assert.areEqual("sibling", result.parts[1].type);
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
             assert.areEqual("p", result.parts[2].elementName);
         },
@@ -681,6 +684,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
             assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             assert.areEqual(" ", result.parts[1].text);
+            assert.areEqual("descendant", result.parts[1].type);
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
             assert.areEqual("p", result.parts[2].elementName);
         },

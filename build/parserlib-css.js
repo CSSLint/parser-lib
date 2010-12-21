@@ -197,6 +197,8 @@ function Combinator(text, line, col){
         this.type = "child";
     } else if (text == "+"){
         this.type = "adjacent-sibling";
+    } else if (text == "~"){
+        this.type = "sibling";
     }
 
 }

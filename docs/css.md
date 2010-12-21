@@ -6,10 +6,12 @@ Introduction
 
 The ParserLib CSS parser is a CSS3 SAX-inspired parser written in JavaScript. By default, the parser only deals with standard CSS syntax and doesn't do validation (checking of property names and values).
 
-Adding to your page
+Installation
 -------------------
 
-To use the CSS parser, you can either include the entire library on your page:
+The CSS parser is intended for use primarily in command line JavaScript environments.
+
+You can, though, use the CSS parser in an HTML page. To use the CSS parser on an HTML page, you can either include the entire library on your page:
 
     <script src="parserlib.js"></script>
     
@@ -226,7 +228,7 @@ The `startrule` event fires just after all selectors on a rule have been parsed 
                         console.log("        Modifier: " + selector.parts[j].modifiers[k]);
                     }
                 } else{
-                    log("      Combinator: " + selector.parts[j]);
+                    console.log("      Combinator: " + selector.parts[j]);
                 }
                 
                 
@@ -238,7 +240,7 @@ The `startrule` event fires just after all selectors on a rule have been parsed 
     });
     
     parser.addListener("endrule", function(event){
-        log("Ending rule with selectors [" + event.selectors + "]");
+        console.log("Ending rule with selectors [" + event.selectors + "]");
     });
     
     

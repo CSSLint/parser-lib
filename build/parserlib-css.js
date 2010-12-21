@@ -1015,7 +1015,7 @@ Parser.prototype = function(){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 
-                return token ? SyntaxUnit.fromToken(token) : null;
+                return token ? PropertyValuePart.fromToken(token) : null;
                 
             },
             
@@ -2351,6 +2351,12 @@ function PropertyValuePart(text, line, col){
         this.red    = parseInt(temp.substring(0,2),16);
         this.green  = parseInt(temp.substring(2,4),16);
         this.blue   = parseInt(temp.substring(4,6),16);         
+    } else if (/^[\,\/]$/.test(text)){
+        this.type   = "operator";
+        this.value  = text;
+    } else if (/^[a-z\-\u0080-\uFFFF][a-z0-9\-\u0080-\uFFFF]*$/i.test(text)){
+        this.type   = "identifier";
+        this.value  = text;
     }
 
 
@@ -2359,7 +2365,18 @@ function PropertyValuePart(text, line, col){
 PropertyValuePart.prototype = new SyntaxUnit();
 PropertyValuePart.prototype.constructor = PropertyValue;
 
-
+/**
+ * Create a new syntax unit based solely on the given token.
+ * Convenience method for creating a new syntax unit when
+ * it represents a single token instead of multiple.
+ * @param {Object} token The token object to represent.
+ * @return {parserlib.css.PropertyValuePart} The object representing the token.
+ * @static
+ * @method fromToken
+ */
+PropertyValuePart.fromToken = function(token){
+    return new PropertyValuePart(token.value, token.startLine, token.startCol);
+};
 /**
  * Represents an entire single selector, including all parts but not
  * including multiple selectors (those separated by commas).

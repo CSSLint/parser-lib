@@ -555,7 +555,7 @@ Parser.prototype = function(){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 
-                return token ? SyntaxUnit.fromToken(token) : null;
+                return token ? PropertyValuePart.fromToken(token) : null;
                 
             },
             

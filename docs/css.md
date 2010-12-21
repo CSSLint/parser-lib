@@ -107,13 +107,13 @@ The `parts` array always has at least one item.
 
 The `parserlib.css.PropertyValuePart` type represents an individual part of a property value. Each instance has the following properties:
 
-* `type` - the type of value part ("unknown", "length", "percentage", "integer", "number", "hexcolor", "color", "uri", or "string")
+* `type` - the type of value part ("unknown", "dimension", "percentage", "integer", "number", "color", "uri",  "string", or "operator")
 
 A part is considered any atomic piece of a property value not including white space. Consider the following:
 
     font: 1em/1.5em "Times New Roman", Times, serif;
 
-The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em", "/", "1.5em", "\"Times New Roman\"", "Times", and "serif".
+The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em" (dimension), "/" (operator), "1.5em" (dimension), "\"Times New Roman\"" (string), "," (operator), "Times", and "serif".
 
 ### Selectors
 

@@ -1028,7 +1028,8 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("dimension", result.parts[0].type); 
             assert.areEqual(10, result.parts[0].value);
             assert.areEqual("px", result.parts[0].units);
-            assert.isInstanceOf(parserlib.util.SyntaxUnit, result.parts[1]);            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[1]);   
+            assert.areEqual("operator", result.parts[1].type);
             assert.areEqual("/", result.parts[1].text); 
             assert.areEqual(1, result.parts[1].line, "Line should be 1.");
             assert.areEqual(6, result.parts[1].col, "Column should be 6.");
@@ -1036,6 +1037,47 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("dimension", result.parts[2].type); 
             assert.areEqual(1, result.parts[2].value);
             assert.areEqual("em", result.parts[2].units);            
+        },
+        
+        testValueWithOperators2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("1em/1.5em \"Times New Roman\", Times, serif");
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(8, result.parts.length);
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
+            assert.areEqual("dimension", result.parts[0].type); 
+            assert.areEqual(1, result.parts[0].value);
+            assert.areEqual("em", result.parts[0].units);
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[1]);   
+            assert.areEqual("operator", result.parts[1].type);
+            assert.areEqual("/", result.parts[1].value); 
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
+            assert.areEqual("dimension", result.parts[2].type); 
+            assert.areEqual(1.5, result.parts[2].value);
+            assert.areEqual("em", result.parts[2].units); 
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[3]);            
+            assert.areEqual("string", result.parts[3].type); 
+            assert.areEqual("Times New Roman", result.parts[3].value);
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[4]);   
+            assert.areEqual("operator", result.parts[4].type);
+            assert.areEqual(",", result.parts[4].value); 
+
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[5]);            
+            assert.areEqual("identifier", result.parts[5].type); 
+            assert.areEqual("Times", result.parts[5].value);
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[6]);   
+            assert.areEqual("operator", result.parts[6].type);
+            assert.areEqual(",", result.parts[6].value); 
+            
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[7]);            
+            assert.areEqual("identifier", result.parts[7].type); 
+            assert.areEqual("serif", result.parts[7].value);            
         }
         
         

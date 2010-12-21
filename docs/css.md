@@ -115,9 +115,17 @@ A part is considered any atomic piece of a property value not including white sp
 
 The `PropertyName` is "font" and the `PropertyValue' represents everything after the colon. The parts are "1em", "/", "1.5em", "\"Times New Roman\"", "Times", and "serif".
 
-### PropertyValuePart
+### Selectors
 
-The `parserlib.css.PropertyValuePart` type represents 
+The `parserlib.css.Selector` type represents a single selector. Each instance has a `parts` property, which is an array of `parserlib.css.SelectorPart` objects, which represent atomic parts of the selector, and `parserlib.css.Combinator` objects, which represent combinators in the selector. Consider the following selector:
+
+    li.selected > a:hover
+
+This selector has three parts: `li.selected`, `>`, and `a:hover`. The first part is a `SelectorPart`, the second is a `Combinator`, and the third is a `SelectorPart`. Each `SelectorPart` is made up of an optional element name followed by an ID, class, attribute condition, pseudo class, and/or pseudo element.
+
+Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one, and a `modifiers` property, which is an array of `parserlib.css.SelectorSubPart` objects. Each `SelectorSubPart` object represents the smallest individual piece of a selector and has a `type` property indicating the type of subpart, "elementName", "class", "attribute", "pseudo", or "id". 
+
+Each instance of `parserlib.css.Combinator` has an additional `type` property that indicates the type of combinator: "descendant", "child", "sibling", or "adjacent-sibling".
 
 
 Using events

@@ -3730,51 +3730,6 @@ var Tokens  = [
 
 
 
-
-
-var ValueTokens = (function(){
-
-
-    var symbols = {
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return TokenStream.createTokenData(symbols);
-
-});
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                

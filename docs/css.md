@@ -6,12 +6,27 @@ Introduction
 
 The ParserLib CSS parser is a CSS3 SAX-inspired parser written in JavaScript. By default, the parser only deals with standard CSS syntax and doesn't do validation (checking of property names and values).
 
-Installation
--------------------
+Adding to your project
+----------------------
 
-The CSS parser is intended for use primarily in command line JavaScript environments.
+The CSS parser is intended for use primarily in command line JavaScript environments. The files you should use are in the `build` directory. Copy the files to an appropriate location for your usage.
 
-You can, though, use the CSS parser in an HTML page. To use the CSS parser on an HTML page, you can either include the entire library on your page:
+### Node.js
+
+To use the CSS parser in a Node.js script, include it at the beginning:
+
+    var parserlib = require("./node-parserlib.js");
+    
+### Rhino
+
+To use the CSS parser in a Rhino script, include it at the beginning:
+
+    load("parserlib.js");
+
+
+### HTML page
+
+To use the CSS parser on an HTML page, you can either include the entire library on your page:
 
     <script src="parserlib.js"></script>
     
@@ -20,7 +35,7 @@ Or include it as its component parts, the ParserLib core and the CSS parser:
     <script src="parserlib-core.js"></script>
     <script src="parserlib-css.js"></script>
 
-All of these files are located in the `build` directory.
+Note that parsing large JavaScript files may cause the browser to become unresponsive.
 
 Basic usage
 -----------

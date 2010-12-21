@@ -10,6 +10,7 @@
     <property name="full.build.file" value="parserlib.js"/>
     <property name="core.build.file" value="parserlib-core.js"/>
     <property name="css.build.file" value="parserlib-css.js"/>
+    <property name="node.build.file" value="node-parserlib.js"/>
     
     <loadfile property="license.text" srcfile="LICENSE" />
     
@@ -83,8 +84,53 @@
            
     </target>
     
+    <!-- Build the Node version -->
+    <target name="build.node">
+        <!--<concat destfile="${build.dir}/${node.build.file}"  fixlastline="true">
+            <header trimleading="yes">/* 
+            ${license.text}
+            */
+            </header>
+            <fileset dir="${src.dir}/util" includes="*.js" />
+            <fileset dir="${src.dir}/css" includes="*.js" />
+            <footer trimleading="yes">
+            exports.util = {
+                StringReader: StringReader,
+                SyntaxError : SyntaxError,
+                SyntaxUnit  : SyntaxUnit,
+                EventTarget : EventTarget,
+                TokenStreamBase : TokenStreamBase
+            };
+            exports.css = {
+                Colors              :Colors,    
+                Combinator          :Combinator,                
+                Parser              :Parser,
+                PropertyName        :PropertyName,
+                PropertyValue       :PropertyValue,
+                MediaFeature        :MediaFeature,
+                MediaQuery          :MediaQuery,
+                Selector            :Selector,
+                SelectorPart        :SelectorPart,
+                SelectorSubPart     :SelectorSubPart,
+                TokenStream         :TokenStream,
+                Tokens              :Tokens
+            };
+            </footer>
+        </concat>-->
+        <concat destfile="${build.dir}/${node.build.file}" fixlastline="true">
+            <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
+            <footer trimleading="yes">
+            (function(){
+                for(var prop in parserlib){
+                    exports[prop] = parserlib[prop];                 
+                }
+            })();
+            </footer>
+        </concat>
+    </target>
+    
     
     <!-- Build all files -->
-    <target name="all" depends="build.full"/>
+    <target name="all" depends="build.full,build.node"/>
 
 </project>

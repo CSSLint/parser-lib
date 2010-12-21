@@ -4626,3 +4626,9 @@ Tokens              :Tokens
 };
 })();
 
+
+(function(){
+for(var prop in parserlib){
+exports[prop] = parserlib[prop];                 
+}
+})();

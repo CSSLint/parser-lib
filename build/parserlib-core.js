@@ -446,6 +446,19 @@ function SyntaxUnit(text, line, col){
 
 }
 
+/**
+ * Create a new syntax unit based solely on the given token.
+ * Convenience method for creating a new syntax unit when
+ * it represents a single token instead of multiple.
+ * @param {Object} token The token object to represent.
+ * @return {parserlib.util.SyntaxUnit} The object representing the token.
+ * @static
+ * @method fromToken
+ */
+SyntaxUnit.fromToken = function(token){
+    return new SyntaxUnit(token.value, token.startLine, token.startCol);
+};
+
 SyntaxUnit.prototype = {
 
     //restore constructor

@@ -25,10 +25,13 @@ function PropertyValuePart(text, line, col){
     var temp;
     
     //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
-        this.type = "length";
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
+        this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2 || null;
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+        this.type = "percentage";
+        this.value = +RegExp.$1;
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;

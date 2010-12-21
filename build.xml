@@ -69,6 +69,7 @@
                 Parser              :Parser,
                 PropertyName        :PropertyName,
                 PropertyValue       :PropertyValue,
+                PropertyValuePart   :PropertyValuePart,
                 MediaFeature        :MediaFeature,
                 MediaQuery          :MediaQuery,
                 Selector            :Selector,

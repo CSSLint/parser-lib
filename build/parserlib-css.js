@@ -835,13 +835,11 @@ Parser.prototype = function(){
                  *   : IDENT
                  *   ;
                  */
-                var tokenStream = this._tokenStream,
-                    feature      = "";
+                var tokenStream = this._tokenStream;
                     
                 tokenStream.mustMatch(Tokens.IDENT);
-                feature = tokenStream.token().value;
                 
-                return new SyntaxUnit(feature, tokenStream.token().startLine, tokenStream.token().startCol);            
+                return SyntaxUnit.fromToken(tokenStream.token());            
             },
             
             //CSS3 Paged Media
@@ -954,8 +952,7 @@ Parser.prototype = function(){
                         Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
                         Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM]))
                 {
-                    return new SyntaxUnit(tokenStream.token().value, 
-                        tokenStream.token().startLine, tokenStream.token().startCol);                
+                    return SyntaxUnit.fromToken(tokenStream.token());                
                 } else {
                     return null;
                 }
@@ -1012,13 +1009,13 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    value       = null;
+                    token       = null;
                 
                 if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
-                    value =  tokenStream.token().value;
+                    token =  tokenStream.token();
                     this._readWhitespace();
                 } 
-                return value;
+                return token ? SyntaxUnit.fromToken(token) : null;
                 
             },
             
@@ -2303,10 +2300,13 @@ function PropertyValuePart(text, line, col){
     var temp;
     
     //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
-        this.type = "length";
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
+        this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2 || null;
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+        this.type = "percentage";
+        this.value = +RegExp.$1;
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
@@ -3687,6 +3687,7 @@ Combinator          :Combinator,
 Parser              :Parser,
 PropertyName        :PropertyName,
 PropertyValue       :PropertyValue,
+PropertyValuePart   :PropertyValuePart,
 MediaFeature        :MediaFeature,
 MediaQuery          :MediaQuery,
 Selector            :Selector,

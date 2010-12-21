@@ -879,14 +879,15 @@ YAHOO.test.CSSParser = (function(){
     
         name: "Property Values",
                 
-        testLengthValue: function(){
+        testDimensionValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
             
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(1, result.parts.length);
-            assert.areEqual("length", result.parts[0].type); 
+            assert.areEqual("dimension", result.parts[0].type); 
             assert.areEqual(1, result.parts[0].value);
+            assert.areEqual("px", result.parts[0].units);
         },
         
         testPercentageValue: function(){
@@ -933,7 +934,7 @@ YAHOO.test.CSSParser = (function(){
         
         testRGBColorValue: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("rgb(255, 238, 221)");
+            var result = parser.parsePropertyValue("rgb(255, 238 , 221)");
             
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(1, result.parts.length);
@@ -945,7 +946,7 @@ YAHOO.test.CSSParser = (function(){
         
         testRGBColorValue2: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("rgb(100%, 50%, 75%)");
+            var result = parser.parsePropertyValue("rgb(100%,50%, 75%)");
             
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(1, result.parts.length);
@@ -954,6 +955,89 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(127.5, result.parts[0].green);
             assert.areEqual(191.25, result.parts[0].blue);
         },
+        
+        testColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("red");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("color", result.parts[0].type);            
+            assert.areEqual(255, result.parts[0].red);
+            assert.areEqual(0, result.parts[0].green);
+            assert.areEqual(0, result.parts[0].blue);
+        },
+        
+        testURIValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(http://www.yahoo.com)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("uri", result.parts[0].type);            
+            assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testURIValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url('http://www.yahoo.com')");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("uri", result.parts[0].type);            
+            assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testURIValue3: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(\"http://www.yahoo.com\")");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("uri", result.parts[0].type);            
+            assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testStringValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("'Hello world!'");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("string", result.parts[0].type);            
+            assert.areEqual("Hello world!", result.parts[0].value);
+        },
+        
+        testStringValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\"Hello world!\"");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("string", result.parts[0].type);            
+            assert.areEqual("Hello world!", result.parts[0].value);
+        },
+        
+        testValueWithOperators: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("10px / 1em");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(3, result.parts.length);
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
+            assert.areEqual("dimension", result.parts[0].type); 
+            assert.areEqual(10, result.parts[0].value);
+            assert.areEqual("px", result.parts[0].units);
+            assert.isInstanceOf(parserlib.util.SyntaxUnit, result.parts[1]);            
+            assert.areEqual("/", result.parts[1].text); 
+            assert.areEqual(1, result.parts[1].line, "Line should be 1.");
+            assert.areEqual(6, result.parts[1].col, "Column should be 6.");
+            assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
+            assert.areEqual("dimension", result.parts[2].type); 
+            assert.areEqual(1, result.parts[2].value);
+            assert.areEqual("em", result.parts[2].units);            
+        }
+        
         
         
     }));

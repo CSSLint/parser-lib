@@ -788,6 +788,29 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             //assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
             //assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        },
+        
+        testWithMultipartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("ul li a span");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(7, result.parts.length, "Should be four parts.");   
+            
+            assert.isInstanceOf(SelectorPart, result.parts[0], "Part should be a SelectorPart.");
+            assert.areEqual("ul", result.parts[0].elementName);
+            
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[2].elementName);
+
+            assert.isInstanceOf(SelectorPart, result.parts[4], "Part should be a SelectorPart.");
+            assert.areEqual("a", result.parts[4].elementName);
+
+            assert.isInstanceOf(SelectorPart, result.parts[6], "Part should be a SelectorPart.");
+            assert.areEqual("span", result.parts[6].elementName);
+            
+            
+        
         }
         
         
@@ -1078,6 +1101,42 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[7]);            
             assert.areEqual("identifier", result.parts[7].type); 
             assert.areEqual("serif", result.parts[7].value);            
+        }
+        
+        
+        
+    }));
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Rules",
+                
+        testRuleWithOnePartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p { color: red; }");
+            
+            assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithTwoPartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li { color: red; }");
+            
+            assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithThreePartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li a{ color: red; }");
+            
+            assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithFourPartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li a span { color: red; }");
+            
+            assert.isObject(result, "Parse should have completed.");
         }
         
         

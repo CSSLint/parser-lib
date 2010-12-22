@@ -1443,27 +1443,42 @@ Parser.prototype = function(){
                 //try to read the rest
                 while(tt > Tokens.EOF){
                 
-                    switch(tt){
-                        case Tokens.MEDIA_SYM:
-                            this._media();
-                            this._skipCruft();
-                            break;
-                        case Tokens.PAGE_SYM:
-                            this._page(); 
-                            this._skipCruft();
-                            break;                   
-                        case Tokens.FONT_FACE_SYM:
-                            this._font_face(); 
-                            this._skipCruft();
-                            break;  
-                        case Tokens.S:
-                            this._readWhitespace();
-                            break;
-                        default:                            
-                            if(!this._ruleset()){
-                                tokenStream.get();  //get the last token
-                                this._unexpectedToken(tokenStream.token());
-                            }
+                    try {
+                
+                        switch(tt){
+                            case Tokens.MEDIA_SYM:
+                                this._media();
+                                this._skipCruft();
+                                break;
+                            case Tokens.PAGE_SYM:
+                                this._page(); 
+                                this._skipCruft();
+                                break;                   
+                            case Tokens.FONT_FACE_SYM:
+                                this._font_face(); 
+                                this._skipCruft();
+                                break;  
+                            case Tokens.S:
+                                this._readWhitespace();
+                                break;
+                            default:                            
+                                if(!this._ruleset()){
+                                    tokenStream.get();  //get the last token
+                                    this._unexpectedToken(tokenStream.token());
+                                }
+                        }
+                    } catch(ex) {
+                        if (ex instanceof SyntaxError && !this.options.strict){
+                            this.fire({
+                                type:       "error",
+                                error:      ex,
+                                message:    ex.message,
+                                line:       ex.line,
+                                col:        ex.col
+                            });                     
+                        } else {
+                            throw ex;
+                        }
                     }
                     
                     tt = tokenStream.peek();
@@ -2115,51 +2130,56 @@ Parser.prototype = function(){
                 
                 selector.push(nextSelector);
                 
-                //look for a combinator
-                combinator = this._combinator();
-                
-                if (combinator !== null){
-                    selector.push(combinator);
-                    nextSelector = this._simple_selector_sequence();
+                do {
                     
-                    //there must be a next selector
-                    if (nextSelector === null){
-                        this._unexpectedToken(this.LT(1));
-                    } else {
+                    //look for a combinator
+                    combinator = this._combinator();
                     
-                        //nextSelector is an instance of SelectorPart
-                        selector.push(nextSelector.parts);
-                    }
-                } else {
-                    
-                    //if there's not whitespace, we're done
-                    if (this._readWhitespace()){           
-    
-                        //add whitespace separator
-                        ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
-                        
-                        //combinator is not required
-                        combinator = this._combinator();
-                        
-                        //selector is required if there's a combinator
+                    if (combinator !== null){
+                        selector.push(combinator);
                         nextSelector = this._simple_selector_sequence();
-                        if (nextSelector === null){                        
-                            if (combinator !== null){
-                                this._unexpectedToken(tokenStream.LT(1));
-                            }
+                        
+                        //there must be a next selector
+                        if (nextSelector === null){
+                            this._unexpectedToken(this.LT(1));
                         } else {
+                        
+                            //nextSelector is an instance of SelectorPart
+                            selector.push(nextSelector.parts);
+                        }
+                    } else {
+                        
+                        //if there's not whitespace, we're done
+                        if (this._readWhitespace()){           
+        
+                            //add whitespace separator
+                            ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                             
-                            if (combinator !== null){
-                                selector.push(combinator);
+                            //combinator is not required
+                            combinator = this._combinator();
+                            
+                            //selector is required if there's a combinator
+                            nextSelector = this._simple_selector_sequence();
+                            if (nextSelector === null){                        
+                                if (combinator !== null){
+                                    this._unexpectedToken(tokenStream.LT(1));
+                                }
                             } else {
-                                selector.push(ws);
-                            }
-                            
-                            selector.push(nextSelector);
-                        }     
-                    }                
-                
-                }     
+                                
+                                if (combinator !== null){
+                                    selector.push(combinator);
+                                } else {
+                                    selector.push(ws);
+                                }
+                                
+                                selector.push(nextSelector);
+                            }     
+                        } else {
+                            break;
+                        }               
+                    
+                    }
+                } while(true);
                 
                 return new Selector(selector, selector[0].line, selector[0].col);
             },
@@ -3089,6 +3109,31 @@ Parser.prototype = function(){
                 
                 //otherwise return result
                 return result;
+            },
+            
+            /**
+             * Parses a complete CSS rule, including selectors and
+             * properties.
+             * @param {String} input The text to parser.
+             * @return {Boolean} True if the parse completed successfully, false if not.
+             * @method parseRule
+             */
+            parseRule: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                
+                //skip any leading white space
+                this._readWhitespace();
+                
+                var result = this._ruleset();
+                
+                //skip any trailing white space
+                this._readWhitespace();
+
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;            
             },
             
             /**

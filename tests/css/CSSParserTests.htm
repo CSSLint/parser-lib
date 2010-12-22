@@ -908,7 +908,7 @@ YAHOO.test.CSSParser = (function(){
             
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(1, result.parts.length);
-            assert.areEqual("dimension", result.parts[0].type); 
+            assert.areEqual("length", result.parts[0].type); 
             assert.areEqual(1, result.parts[0].value);
             assert.areEqual("px", result.parts[0].units);
         },
@@ -1048,7 +1048,7 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(3, result.parts.length);
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
-            assert.areEqual("dimension", result.parts[0].type); 
+            assert.areEqual("length", result.parts[0].type); 
             assert.areEqual(10, result.parts[0].value);
             assert.areEqual("px", result.parts[0].units);
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[1]);   
@@ -1057,7 +1057,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts[1].line, "Line should be 1.");
             assert.areEqual(6, result.parts[1].col, "Column should be 6.");
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
-            assert.areEqual("dimension", result.parts[2].type); 
+            assert.areEqual("length", result.parts[2].type); 
             assert.areEqual(1, result.parts[2].value);
             assert.areEqual("em", result.parts[2].units);            
         },
@@ -1069,7 +1069,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(8, result.parts.length);
             
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
-            assert.areEqual("dimension", result.parts[0].type); 
+            assert.areEqual("length", result.parts[0].type); 
             assert.areEqual(1, result.parts[0].value);
             assert.areEqual("em", result.parts[0].units);
             
@@ -1078,7 +1078,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("/", result.parts[1].value); 
             
             assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
-            assert.areEqual("dimension", result.parts[2].type); 
+            assert.areEqual("length", result.parts[2].type); 
             assert.areEqual(1.5, result.parts[2].value);
             assert.areEqual("em", result.parts[2].units); 
             

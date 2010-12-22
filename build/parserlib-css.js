@@ -2372,7 +2372,48 @@ function PropertyValuePart(text, line, col){
     if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
         this.type = "dimension";
         this.value = +RegExp.$1;
-        this.units = RegExp.$2 || null;
+        this.units = RegExp.$2;
+        
+        //try to narrow down
+        switch(this.units.toLowerCase()){
+        
+            case "em":
+            case "rem":
+            case "ex":
+            case "px":
+            case "cm":
+            case "mm":
+            case "in":
+            case "pt":
+            case "pc":
+                this.type = "length";
+                break;
+                
+            case "deg":
+            case "rad":
+            case "grad":
+                this.type = "angle";
+                break;
+            
+            case "ms":
+            case "s":
+                this.type = "time";
+                break;
+            
+            case "hz":
+            case "khz":
+                this.type = "frequency";
+                break;
+            
+            case "dpi":
+            case "dpcm":
+                this.type = "resolution";
+                break;
+                
+            //default
+                
+        }
+        
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
@@ -2427,7 +2468,6 @@ function PropertyValuePart(text, line, col){
         this.type   = "identifier";
         this.value  = text;
     }
-
 
 }
 

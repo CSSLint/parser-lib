@@ -791,7 +791,7 @@ Parser.prototype = function(){
                         } else {
                         
                             //nextSelector is an instance of SelectorPart
-                            selector.push(nextSelector.parts);
+                            selector.push(nextSelector);
                         }
                     } else {
                         

@@ -632,6 +632,63 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("p", result.parts[2].elementName);
         },
         
+        testChildCombinatorNoSpaces: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover>p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName);
+            assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual(">", result.parts[1].text);
+            assert.areEqual("child", result.parts[1].type);
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testChildCombinatorOneSpaceBefore: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover >p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName);
+            assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual(">", result.parts[1].text);
+            assert.areEqual("child", result.parts[1].type);
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testChildCombinatorOneSpaceAfter: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover> p");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("li", result.parts[0].elementName);
+            assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            assert.areEqual(">", result.parts[1].text);
+            assert.areEqual("child", result.parts[1].type);
+            assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            assert.areEqual("p", result.parts[2].elementName);
+        },
+        
         testAdjacentSiblingCombinator: function(){
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover + p");
@@ -809,8 +866,6 @@ YAHOO.test.CSSParser = (function(){
             assert.isInstanceOf(SelectorPart, result.parts[6], "Part should be a SelectorPart.");
             assert.areEqual("span", result.parts[6].elementName);
             
-            
-        
         }
         
         

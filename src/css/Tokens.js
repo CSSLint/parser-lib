@@ -1,309 +1,119 @@
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
-/* 
-var Tokens = function(){
-
-    //token fragments
-    var h           = "[0-9a-fA-F]",
-        nonascii    = "[\\u0080-\\uFFFF]",
-        unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
-        escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
-        nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
-        string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
-        invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        
-        comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
-        name        = nmchar + "+",
-        num         = "(?:[0-9]*\\.[0-9]+|[0-9]+)",  //put decimal first as priority
-        string      = "(?:" + string1 + "|" + string2 + ")",
-        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
-        s           = "[ \\t\\r\\n\\f]+",
-        w           = "(?:" + s + ")?",
-
-        //return the token information
-        symbols = [
-            {
-                name: "S",
-                pattern: s,
-                channel: "ws"   //put onto another channel so I can get it later              
-            },
-            {
-                name: "COMMENT",
-                pattern: comment,
-                hide: true   //don't generate token
-            },
-            //CDO and CDC intentionally omitted
-            {
-                name: "INCLUDES",
-                text: "~="
-            },
-            {
-                name: "DASHMATCH",
-                text: "|="
-            },
-            {
-                name: "STRING",
-                pattern: string1 + "|" + string2,
-            },
-            {
-                name: "INVALID",
-                pattern: invalid1 + "|" + invalid2,
-            },  
-        
-
-            {
-                name: "HASH",
-                pattern: "#" + name
-            },
-            {
-                name: "IMPORT_SYM",
-                pattern: "@IMPORT",
-                patternOpt: "i"
-            },
-            {
-                name: "PAGE_SYM",
-                pattern: "@PAGE",
-                patternOpt: "i"
-            },
-            {
-                name: "MEDIA_SYM",
-                pattern: "@MEDIA",
-                patternOpt: "i"
-            },
-            {
-                name: "CHARSET_SYM",
-                text: "@charset "
-            },
-            {
-                name: "IMPORTANT_SYM",
-                pattern: "!(?:" + w + "|" + comment + ")*IMPORTANT",
-                patternOpt: "i"
-            },
-            {
-                name: "EMS",
-                pattern: num + "em",
-                patternOpt: "i"
-            },
-            {
-                name: "EXS",
-                pattern: num + "ex",
-                patternOpt: "i"
-            },
-            {
-                name: "LENGTH",
-                pattern: num + "px|" + num + "cm|" + num + "mm|" + num + "in|" + num + "pt|" + num + "pc",
-                patternOpt: "i"
-            },
-            {
-                name: "ANGLE",
-                pattern: num + "deg|" + num + "rad|" + num + "grad",
-                patternOpt: "i"
-            },
-            {
-                name: "TIME",
-                pattern: num + "ms|" + num + "s",
-                patternOpt: "i"
-            },
-            {
-                name: "FREQ",
-                pattern: num + "hz|" + num + "khz",
-                patternOpt: "i"
-            },
-            {
-                name: "DIMENSION",
-                pattern: num + ident
-            },   
-            {
-                name: "PERCENTAGE",
-                pattern: num + "%"
-            },
-            {
-                name: "NUMBER",
-                pattern: num 
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
-            },
-
-            //exception for IE filters - yuck
-            {
-                name: "IE_FILTER",
-                pattern: "progid:[a-z\\.]+\\([^\\)]*\\)",
-                patternOpt: "i"
-            },    
-
-            {
-                name: "FUNCTION",
-                pattern: ident + "\\("
-            },    
-                
-            {
-                name: "IDENT",
-                pattern: ident
-            },        
-            //Not defined as tokens, but might as well be
-            {
-                name: "SLASH",
-                text: "/"
-            },
-            {
-                name: "MINUS",
-                text: "-"
-            },
-            {
-                name: "PLUS",
-                text: "+"
-            },
-            {
-                name: "STAR",
-                text: "*"
-            },
-            {
-                name: "GREATER",
-                text: ">"
-            },
-            {
-                name: "LBRACE",
-                text: "{"
-            },   
-            {
-                name: "RBRACE",
-                text: "}"
-            },      
-            {
-                name: "LBRACKET",
-                text: "["
-            },   
-            {
-                name: "RBRACKET",
-                text: "]"
-            },    
-            {
-                name: "EQUALS",
-                text: "="
-            },
-            {
-                name: "COLON",
-                text: ":"
-            },    
-            {
-                name: "SEMICOLON",
-                text: ";"
-            },    
-         
-            {
-                name: "LPAREN",
-                text: "("
-            },   
-            {
-                name: "RPAREN",
-                text: ")"
-            },   
-          
-            {
-                name: "DOT",
-                text: "."
-            },    
-            {
-                name: "COMMA",
-                text: ","
-            }
-        ];
-        
-        return TokenStream.createTokenData(symbols);
-
-}();
-*/
 var Tokens  = [
-    {
-        name: "S",
-        channel: "ws"   //put onto another channel so I can get it later              
-    },
-    {
-        name: "COMMENT",
-        hide: true   //don't generate token
-    },
-    //CDO and CDC intentionally omitted
-    {
-        name: "INCLUDES",
-        text: "~="
-    },
-    {
-        name: "DASHMATCH",
-        text: "|="
-    },
-    {
-        name: "STRING"
-    },
-    {
-        name: "INVALID"
-    },
-    {
-        name: "HASH"
-    },
-    {
-        name: "IMPORT_SYM"
-    },
-    {
-        name: "PAGE_SYM"
-    },
-    {
-        name: "MEDIA_SYM"
-    },
-    {
-        name: "CHARSET_SYM"
-    },
-    {
-        name: "IMPORTANT_SYM"
-    },
-    {
-        name: "EMS"
-    },
-    {
-        name: "EXS"
-    },
-    {
-        name: "LENGTH"
-    },
-    {
-        name: "ANGLE"
-    },
-    {
-        name: "TIME"
-    },
-    {
-        name: "FREQ"
-    },
-    {
-        name: "DIMENSION"
-    },   
-    {
-        name: "PERCENTAGE"
-    },
-    {
-        name: "NUMBER"
-    },
-    {
-        name: "URI"
-    },
 
-    {
-        name: "FUNCTION"
-    },    
+    /*
+     * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
+     */
+     
+    //HTML-style comments
+    { name: "CDO"},
+    { name: "CDC"},
+
+    //ignorables
+    { name: "S", whitespace: true/*, channel: "ws"*/},
+    { name: "COMMENT", comment: true, hide: true},
         
-    {
-        name: "IDENT"
-    },        
+    //attribute equality
+    { name: "INCLUDES", text: "~="},
+    { name: "DASHMATCH", text: "|="},
+    { name: "PREFIXMATCH", text: "^="},
+    { name: "SUFFIXMATCH", text: "$="},
+    { name: "SUBSTRINGMATCH", text: "*="},
+        
+    //identifier types
+    { name: "STRING"},     
+    { name: "IDENT"},
+    { name: "HASH"},
+
+    //at-keywords
+    { name: "IMPORT_SYM", text: "@import"},
+    { name: "PAGE_SYM", text: "@page"},
+    { name: "MEDIA_SYM", text: "@media"},
+    { name: "FONT_FACE_SYM", text: "@font-face"},
+    { name: "CHARSET_SYM", text: "@charset"},
+    { name: "NAMESPACE_SYM", text: "@namespace"},
+    //{ name: "ATKEYWORD"},
+
+    //important symbol
+    { name: "IMPORTANT_SYM"},
+
+    //measurements
+    { name: "EMS"},
+    { name: "EXS"},
+    { name: "LENGTH"},
+    { name: "ANGLE"},
+    { name: "TIME"},
+    { name: "FREQ"},
+    { name: "DIMENSION"},
+    { name: "PERCENTAGE"},
+    { name: "NUMBER"},
+    
+    //functions
+    { name: "URI"},
+    { name: "FUNCTION"},
+    
+    //Unicode ranges
+    { name: "UNICODE_RANGE"},
+    
+    /*
+     * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
+     */    
+    
+    //invalid string
+    { name: "INVALID"},
+    
+    //combinators
+    { name: "PLUS", text: "+" },
+    { name: "GREATER", text: ">"},
+    { name: "COMMA", text: ","},
+    { name: "TILDE", text: "~"},
+    
+    //modifier
+    { name: "NOT"},        
+    
+    /*
+     * Defined in CSS3 Paged Media
+     */
+    { name: "TOPLEFTCORNER_SYM", text: "@top-left-corner"},
+    { name: "TOPLEFT_SYM", text: "@top-left"},
+    { name: "TOPCENTER_SYM", text: "@top-center"},
+    { name: "TOPRIGHT_SYM", text: "@top-right"},
+    { name: "TOPRIGHTCORNER_SYM", text: "@top-right-corner"},
+    { name: "BOTTOMLEFTCORNER_SYM", text: "@bottom-left-corner"},
+    { name: "BOTTOMLEFT_SYM", text: "@bottom-left"},
+    { name: "BOTTOMCENTER_SYM", text: "@bottom-center"},
+    { name: "BOTTOMRIGHT_SYM", text: "@bottom-right"},
+    { name: "BOTTOMRIGHTCORNER_SYM", text: "@bottom-right-corner"},
+    { name: "LEFTTOP_SYM", text: "@left-top"},
+    { name: "LEFTMIDDLE_SYM", text: "@left-middle"},
+    { name: "LEFTBOTTOM_SYM", text: "@left-bottom"},
+    { name: "RIGHTTOP_SYM", text: "@right-top"},
+    { name: "RIGHTMIDDLE_SYM", text: "@right-middle"},
+    { name: "RIGHTBOTTOM_SYM", text: "@right-bottom"},
+
+    /*
+     * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
+     */
+    /*{ name: "MEDIA_ONLY", state: "media"},
+    { name: "MEDIA_NOT", state: "media"},
+    { name: "MEDIA_AND", state: "media"},*/
+    { name: "RESOLUTION", state: "media"},
+
+    /*
+     * The following token names are not defined in any CSS specification but are used by the lexer.
+     */
+    
+    //not a real token, but useful for stupid IE filters
+    { name: "IE_FUNCTION" },
+
+    //part of CSS3 grammar but not the Flex code
+    { name: "CHAR" },
+    
+    //TODO: Needed?
     //Not defined as tokens, but might as well be
+    {
+        name: "PIPE",
+        text: "|"
+    },
     {
         name: "SLASH",
         text: "/"
@@ -313,17 +123,10 @@ var Tokens  = [
         text: "-"
     },
     {
-        name: "PLUS",
-        text: "+"
-    },
-    {
         name: "STAR",
         text: "*"
     },
-    {
-        name: "GREATER",
-        text: ">"
-    },
+
     {
         name: "LBRACE",
         text: "{"
@@ -360,15 +163,10 @@ var Tokens  = [
     {
         name: "RPAREN",
         text: ")"
-    },   
-  
+    },     
     {
         name: "DOT",
         text: "."
-    },    
-    {
-        name: "COMMA",
-        text: ","
     }
 ];
 
@@ -392,7 +190,7 @@ var Tokens  = [
     };
     
     Tokens.type = function(c){
-        return typeMap[c];
+        return typeMap[c] || -1;
     };
 
 })();

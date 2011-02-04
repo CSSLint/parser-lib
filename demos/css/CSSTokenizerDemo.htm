@@ -46,7 +46,7 @@ function tokenize(){
         var tt = stream.get();
         var output = document.getElementById("output");
         
-        output.innerHTML += tt + " - " + parserlib.css.Tokens.name(tt) + " - (" + stream.token().value + ")<br>";
+        output.innerHTML += tt + " - " + parserlib.css.Tokens.name(tt) + " - (" + stream.token().value + "|line=" + stream.token().startLine + ",startCol=" + stream.token().startCol + ",endCol=" + stream.token().endCol + ")<br>";
         
         if (tt != 0){
             setTimeout(arguments.callee, 15);

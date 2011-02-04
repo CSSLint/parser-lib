@@ -18,11 +18,11 @@ function StringReader(text){
     
     /**
      * The row for the character to be read next.
-     * @property _row
+     * @property _line
      * @type int
      * @private
      */
-    this._row = 1;
+    this._line = 1;
     
     
     /**
@@ -66,7 +66,7 @@ StringReader.prototype = {
      * @method getLine
      */    
     getLine: function(){
-        return this._row ;
+        return this._line ;
     },
     
     /**
@@ -117,7 +117,7 @@ StringReader.prototype = {
             //if the last character was a newline, increment row count
             //and reset column count
             if (this._input.charAt(this._cursor) == "\n"){
-                this._row++;
+                this._line++;
                 this._col=1;
             } else {
                 this._col++;
@@ -134,13 +134,24 @@ StringReader.prototype = {
     // Misc
     //-------------------------------------------------------------------------
     
+    /**
+     * Saves the current location so it can be returned to later.
+     * @method mark
+     * @return {void}
+     */
     mark: function(){
-        this._bookmark = this._cursor;
+        this._bookmark = {
+            cursor: this._cursor,
+            line:   this._line,
+            col:    this._col
+        };
     },
     
     reset: function(){
-        if (typeof this._bookmark == "number"){
-            this._cursor = this._bookmark;
+        if (this._bookmark){
+            this._cursor = this._bookmark.cursor;
+            this._line = this._bookmark.line;
+            this._col = this._bookmark.col;
             delete this._bookmark;
         }
     },
@@ -172,7 +183,7 @@ StringReader.prototype = {
             if (c){
                 buffer += c;
             } else {
-                throw new Error("Expected \"" + pattern + "\" at line " + this._row  + ", col " + this._col + ".");
+                throw new Error("Expected \"" + pattern + "\" at line " + this._line  + ", col " + this._col + ".");
             }
         }
         

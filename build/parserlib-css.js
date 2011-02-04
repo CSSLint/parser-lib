@@ -27,7 +27,6 @@ StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
 
-
 var Colors = {
     aliceblue       :"#f0f8ff",
     antiquewhite    :"#faebd7",
@@ -198,6 +197,8 @@ function Combinator(text, line, col){
         this.type = "child";
     } else if (text == "+"){
         this.type = "adjacent-sibling";
+    } else if (text == "~"){
+        this.type = "sibling";
     }
 
 }
@@ -382,24 +383,83 @@ var Level2Properties = {
     "word-spacing": 1,
     "z-index": 1
 };
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
- 
- /*
-  * Utility function for mixing objects together.
-  */
- function mix(reciever, supplier){
-    for (var prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
-            receiver[prop] = supplier[prop]
-        }
-    }
- }
- 
 /**
- * A CSS 2.1 parsers.
+ * Represents a media feature, such as max-width:500.
+ * @namespace parserlib.css
+ * @class MediaFeature
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {SyntaxUnit} name The name of the feature.
+ * @param {SyntaxUnit} value The value of the feature or null if none.
+ */
+function MediaFeature(name, value){
+    
+    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol);
+
+    /**
+     * The name of the media feature
+     * @type String
+     * @property name
+     */
+    this.name = name;
+
+    /**
+     * The value for the feature or null if there is none.
+     * @type SyntaxUnit
+     * @property value
+     */
+    this.value = value;
+}
+
+MediaFeature.prototype = new SyntaxUnit();
+MediaFeature.prototype.constructor = MediaFeature;
+
+
+/**
+ * Represents an individual media query.
+ * @namespace parserlib.css
+ * @class MediaQuery
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ * @param {String} modifier The modifier "not" or "only" (or null).
+ * @param {String} mediaType The type of media (i.e., "print").
+ * @param {Array} parts Array of selectors parts making up this selector.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ */
+function MediaQuery(modifier, mediaType, features, line, col){
+    
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col);
+
+    /**
+     * The media modifier ("not" or "only")
+     * @type String
+     * @property modifier
+     */
+    this.modifier = modifier;
+
+    /**
+     * The mediaType (i.e., "print")
+     * @type String
+     * @property mediaType
+     */
+    this.mediaType = mediaType;    
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property features
+     */
+    this.features = features;
+
+}
+
+MediaQuery.prototype = new SyntaxUnit();
+MediaQuery.prototype.constructor = MediaQuery;
+
+
+/**
+ * A CSS3 parser.
  * @namespace parserlib.css
  * @class Parser
  * @constructor
@@ -430,14 +490,19 @@ Parser.prototype = function(){
             //restore constructor
             constructor: Parser,
         
+            //-----------------------------------------------------------------
+            // Grammar
+            //-----------------------------------------------------------------
         
             _stylesheet: function(){
             
                 /*
                  * stylesheet
-                 *   : [ CHARSET_SYM STRING ';' ]?
-                 *     [ import ]*
-                 *     [ [ ruleset | media | page ] ]*
+                 *  : [ CHARSET_SYM S* STRING S* ';' ]?
+                 *    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
+                 *    [ namespace [S|CDO|CDC]* ]*
+                 *    [ [ ruleset | media | page | font_face ] [S|CDO|CDC]* ]*
+                 *  ;
                  */ 
                
                 var tokenStream = this._tokenStream,
@@ -449,46 +514,80 @@ Parser.prototype = function(){
             
                 //try to read character set
                 if (tokenStream.match(Tokens.CHARSET_SYM)){
+                    this._readWhitespace();
                     tokenStream.mustMatch(Tokens.STRING);
+                    
                     token = tokenStream.token();
                     charset = token.value;
+                    
+                    this._readWhitespace();
                     tokenStream.mustMatch(Tokens.SEMICOLON);
+                    
                     this.fire({ 
                         type:       "charset",
                         charset:    charset
                     });
                 }
                 
+                this._skipCruft();
+
                 //try to read imports - may be more than one
                 while (tokenStream.peek() == Tokens.IMPORT_SYM){
                     this._import();
+                    this._skipCruft();
+                }
+                
+                //try to read namespaces - may be more than one
+                while (tokenStream.peek() == Tokens.NAMESPACE_SYM){
+                    this._namespace();
+                    this._skipCruft();
                 }
                 
                 //get the next token
-                tt = tokenStream.get();
+                tt = tokenStream.peek();
                 
                 //try to read the rest
                 while(tt > Tokens.EOF){
                 
-                    switch(tt){
-                        case Tokens.MEDIA_SYM:
-                            tokenStream.unget();
-                            this._media();
-                            break;
-                        case Tokens.PAGE_SYM:
-                            tokenStream.unget();
-                            this._page(); 
-                            break;                   
-                        default:
-                            tokenStream.unget();
-                            
-                            if(!this._ruleset()){
-                                tokenStream.get();  //re-get the last token
-                                this._unexpectedToken(tokenStream.token());
-                            }
+                    try {
+                
+                        switch(tt){
+                            case Tokens.MEDIA_SYM:
+                                this._media();
+                                this._skipCruft();
+                                break;
+                            case Tokens.PAGE_SYM:
+                                this._page(); 
+                                this._skipCruft();
+                                break;                   
+                            case Tokens.FONT_FACE_SYM:
+                                this._font_face(); 
+                                this._skipCruft();
+                                break;  
+                            case Tokens.S:
+                                this._readWhitespace();
+                                break;
+                            default:                            
+                                if(!this._ruleset()){
+                                    tokenStream.get();  //get the last token
+                                    this._unexpectedToken(tokenStream.token());
+                                }
+                        }
+                    } catch(ex) {
+                        if (ex instanceof SyntaxError && !this.options.strict){
+                            this.fire({
+                                type:       "error",
+                                error:      ex,
+                                message:    ex.message,
+                                line:       ex.line,
+                                col:        ex.col
+                            });                     
+                        } else {
+                            throw ex;
+                        }
                     }
                     
-                    tt = tokenStream.get();
+                    tt = tokenStream.peek();
                 }
                 
                 if (tt != Tokens.EOF){
@@ -502,7 +601,7 @@ Parser.prototype = function(){
                 /*
                  * import
                  *   : IMPORT_SYM S*
-                 *    [STRING|URI] S* media_list? ';' S*
+                 *    [STRING|URI] S* media_query_list? ';' S*
                  */    
             
                 var tokenStream = this._tokenStream,
@@ -512,22 +611,20 @@ Parser.prototype = function(){
                 
                 //read import symbol
                 tokenStream.mustMatch(Tokens.IMPORT_SYM);
+                this._readWhitespace();
                 
-                //next must be either a string or URI
-                if (!tokenStream.match(Tokens.STRING)){
-                    tokenStream.mustMatch(Tokens.URI);
-                }
+                tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
                 
-                //grab the URI
+                //grab the URI value
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
 
-                //check for media information
-                if (tokenStream.peek() == Tokens.IDENT){
-                    mediaList = this._media_list();
-                }
+                this._readWhitespace();
+                
+                mediaList = this._media_query_list();
                 
                 //must end with a semicolon
                 tokenStream.mustMatch(Tokens.SEMICOLON);
+                this._readWhitespace();
                 
                 this.fire({
                     type:   "import",
@@ -537,22 +634,65 @@ Parser.prototype = function(){
         
             },
             
+            _namespace: function(){
+                /*
+                 * namespace
+                 *   : NAMESPACE_SYM S* [namespace_prefix S*]? [STRING|URI] S* ';' S*
+                 */    
+            
+                var tokenStream = this._tokenStream,
+                    prefix,
+                    uri;
+                
+                //read import symbol
+                tokenStream.mustMatch(Tokens.NAMESPACE_SYM);
+                this._readWhitespace();
+                
+                //it's a namespace prefix - no _namespace_prefix() method because it's just an IDENT
+                if (tokenStream.match(Tokens.IDENT)){
+                    prefix = tokenStream.token().value;
+                    this._readWhitespace();
+                }
+                
+                tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
+                /*if (!tokenStream.match(Tokens.STRING)){
+                    tokenStream.mustMatch(Tokens.URI);
+                }*/
+                
+                //grab the URI value
+                uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");                
+
+                this._readWhitespace();
+
+                //must end with a semicolon
+                tokenStream.mustMatch(Tokens.SEMICOLON);
+                this._readWhitespace();
+                
+                this.fire({
+                    type:   "namespace",
+                    prefix: prefix,
+                    uri:    uri               
+                });
+        
+            },            
+                       
             _media: function(){
                 /*
                  * media
-                 *   : MEDIA_SYM S* media_list LBRACE S* ruleset* '}' S*
+                 *   : MEDIA_SYM S* media_query_list S* '{' S* ruleset* '}' S*
                  *   ;
                  */
                 var tokenStream     = this._tokenStream,
-                    mediaList       = [];
+                    mediaList;//       = [];
                 
                 //look for @media
                 tokenStream.mustMatch(Tokens.MEDIA_SYM);
-        
-                //read the medialist
-                mediaList = this._media_list();
-         
+                this._readWhitespace();               
+
+                mediaList = this._media_query_list();
+
                 tokenStream.mustMatch(Tokens.LBRACE);
+                this._readWhitespace();
                 
                 this.fire({
                     type:   "startmedia",
@@ -562,89 +702,282 @@ Parser.prototype = function(){
                 while(this._ruleset()){}
                 
                 tokenStream.mustMatch(Tokens.RBRACE);
+                this._readWhitespace();
         
                 this.fire({
                     type:   "endmedia",
                     media:  mediaList
                 });
-            },    
+            },                           
         
-            _media_list: function(){
-                /*         
-                 * media_list
-                 *   : medium [ COMMA S* medium]*
-                 *   ;
-                 */    
-            
-                var tokenStream     = this._tokenStream,
-                    mediaList       = [];
-           
-                //must be at least one
-                mediaList.push(this._medium());
-           
-                //check for more
-                while (tokenStream.match(Tokens.COMMA)){                
-                    mediaList.push(this._medium());
-                }
-        
-                return mediaList;    
-            },
-            
-            _medium: function(){
+
+            //CSS3 Media Queries
+            _media_query_list: function(){
                 /*
-                 * medium
-                 *   : IDENT S*
-                 */        
-                var tokenStream = this._tokenStream;
-                tokenStream.mustMatch(Tokens.IDENT);                
-                return tokenStream.token().value;
+                 * media_query_list
+                 *   : S* [media_query [ ',' S* media_query ]* ]?
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    mediaList   = [];
+                
+                
+                this._readWhitespace();
+                
+                if (tokenStream.peek() == Tokens.IDENT){
+                    mediaList.push(this._media_query())
+                }
+                
+                while(tokenStream.match(Tokens.COMMA)){
+                    this._readWhitespace();
+                    mediaList.push(this._media_query());
+                }
+                
+                return mediaList;
             },
-        
+            
+            /*
+             * Note: "expression" in the grammar maps to the _media_expression
+             * method.
+             
+             */
+            _media_query: function(){
+                /*
+                 * media_query
+                 *   : [ONLY | NOT]? S* media_type S* [ AND S* expression ]*
+                 *   | expression [ AND S* expression ]*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    type        = null,
+                    ident       = null,
+                    token       = null,
+                    expressions = [];
+                    
+                if (tokenStream.match(Tokens.IDENT)){
+                    ident = tokenStream.token().value.toLowerCase();
+                    
+                    //since there's no custom tokens for these, need to manually check
+                    if (ident != "only" && ident != "not"){
+                        tokenStream.unget();
+                        ident = null;
+                    } else {
+                        token = tokenStream.token();
+                    }
+                }
+                                
+                this._readWhitespace();
+                
+                if (tokenStream.peek() == Tokens.IDENT){
+                    type = this._media_type();
+                    if (token === null){
+                        token = tokenStream.token();
+                    }
+                } else if (tokenStream.peek() == Tokens.LPAREN){
+                    if (token === null){
+                        token = tokenStream.LT(1);
+                    }
+                    expressions.push(this._media_expression());
+                }                               
+                
+                if (type === null && expressions.length === 0){
+                    return null;
+                } else {                
+                    this._readWhitespace();
+                    while (tokenStream.match(Tokens.IDENT)){
+                        if (tokenStream.token().value.toLowerCase() != "and"){
+                            this._unexpectedToken(tokenStream.token());
+                        }
+                        
+                        this._readWhitespace();
+                        expressions.push(this._media_expression());
+                    }
+                }
+
+                return new MediaQuery(ident, type, expressions, token.startLine, token.startCol);
+            },
+
+            //CSS3 Media Queries
+            _media_type: function(){
+                /*
+                 * media_type
+                 *   : IDENT
+                 *   ;
+                 */
+                return this._media_feature();           
+            },
+
+            /**
+             * Note: in CSS3 Media Queries, this is called "expression".
+             * Renamed here to avoid conflict with CSS3 Selectors
+             * definition of "expression". Also note that "expr" in the
+             * grammar now maps to "expression" from CSS3 selectors.
+             * @method _media_expression
+             * @private
+             */
+            _media_expression: function(){
+                /*
+                 * expression
+                 *  : '(' S* media_feature S* [ ':' S* expr ]? ')' S*
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream,
+                    feature     = null,
+                    token,
+                    expression  = null;
+                
+                tokenStream.mustMatch(Tokens.LPAREN);
+                
+                feature = this._media_feature();
+                this._readWhitespace();
+                
+                if (tokenStream.match(Tokens.COLON)){
+                    this._readWhitespace();
+                    token = tokenStream.LT(1);
+                    expression = this._expression();
+                }
+                
+                tokenStream.mustMatch(Tokens.RPAREN);
+                this._readWhitespace();
+
+                return new MediaFeature(feature, (expression ? new SyntaxUnit(expression, token.startLine, token.startCol) : null));            
+            },
+
+            //CSS3 Media Queries
+            _media_feature: function(){
+                /*
+                 * media_feature
+                 *   : IDENT
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream;
+                    
+                tokenStream.mustMatch(Tokens.IDENT);
+                
+                return SyntaxUnit.fromToken(tokenStream.token());            
+            },
+            
+            //CSS3 Paged Media
             _page: function(){
                 /*
-                 * page
-                 *   : PAGE_SYM S* pseudo_page?
-                 *     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
-                 *   ;
-                 */     
+                 * page:
+                 *    PAGE_SYM S* IDENT? pseudo_page? S* 
+                 *    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+                 *    ;
+                 */            
                 var tokenStream = this._tokenStream,
+                    identifier  = null,
                     pseudoPage  = null;
                 
                 //look for @page
                 tokenStream.mustMatch(Tokens.PAGE_SYM);
+                this._readWhitespace();
+                
+                if (tokenStream.match(Tokens.IDENT)){
+                    identifier = tokenStream.token().value;
+
+                    //The value 'auto' may not be used as a page name and MUST be treated as a syntax error.
+                    if (identifier.toLowerCase() === "auto"){
+                        this._unexpectedToken(tokenStream.token());
+                    }
+                }                
                 
                 //see if there's a colon upcoming
                 if (tokenStream.peek() == Tokens.COLON){
                     pseudoPage = this._pseudo_page();
                 }
             
-                tokenStream.mustMatch(Tokens.LBRACE);
+                this._readWhitespace();
+                
+                this.fire({
+                    type:   "startpage",
+                    id:     identifier,
+                    pseudo: pseudoPage
+                });                   
+
+                this._readDeclarations(true, true);                
+                
+                this.fire({
+                    type:   "endpage",
+                    id:     identifier,
+                    pseudo: pseudoPage
+                });             
             
-                this.fire({
-                    type:   "startpage",
-                    pseudo: pseudoPage
-                });            
-        
-                while(this._declaration()){
-                    if (!tokenStream.match(Tokens.SEMICOLON)){
-                        break;
-                    }                    
+            },
+            
+            //CSS3 Paged Media
+            _margin: function(){
+                /*
+                 * margin :
+                 *    margin_sym S* '{' declaration [ ';' S* declaration? ]* '}' S*
+                 *    ;
+                 */
+                var tokenStream = this._tokenStream,
+                    marginSym   = this._margin_sym();
+
+                if (marginSym){
+                    this.fire({
+                        type: "startpagemargin",
+                        margin: marginSym
+                    });    
+                    
+                    this._readDeclarations(true);
+
+                    this.fire({
+                        type: "endpagemargin",
+                        margin: marginSym
+                    });    
+                    return true;
+                } else {
+                    return false;
                 }
-                
-                tokenStream.mustMatch(Tokens.RBRACE);
-                tokenStream.match(Tokens.S);
-                
-                this.fire({
-                    type:   "startpage",
-                    pseudo: pseudoPage
-                });  
-                
+            },
+
+            //CSS3 Paged Media
+            _margin_sym: function(){
+            
+                /*
+                 * margin_sym :
+                 *    TOPLEFTCORNER_SYM | 
+                 *    TOPLEFT_SYM | 
+                 *    TOPCENTER_SYM | 
+                 *    TOPRIGHT_SYM | 
+                 *    TOPRIGHTCORNER_SYM |
+                 *    BOTTOMLEFTCORNER_SYM | 
+                 *    BOTTOMLEFT_SYM | 
+                 *    BOTTOMCENTER_SYM | 
+                 *    BOTTOMRIGHT_SYM |
+                 *    BOTTOMRIGHTCORNER_SYM |
+                 *    LEFTTOP_SYM |
+                 *    LEFTMIDDLE_SYM |
+                 *    LEFTBOTTOM_SYM |
+                 *    RIGHTTOP_SYM |
+                 *    RIGHTMIDDLE_SYM |
+                 *    RIGHTBOTTOM_SYM 
+                 *    ;
+                 */
+            
+                var tokenStream = this._tokenStream;
+            
+                if(tokenStream.match([Tokens.TOPLEFTCORNER_SYM, Tokens.TOPLEFT_SYM,
+                        Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
+                        Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM, 
+                        Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
+                        Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM, 
+                        Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
+                        Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM]))
+                {
+                    return SyntaxUnit.fromToken(tokenStream.token());                
+                } else {
+                    return null;
+                }
+            
             },
             
             _pseudo_page: function(){
                 /*
                  * pseudo_page
-                 *   : ':' IDENT S*
+                 *   : ':' IDENT
                  *   ;    
                  */
         
@@ -653,24 +986,51 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.COLON);
                 tokenStream.mustMatch(Tokens.IDENT);
                 
+                //TODO: CSS3 Paged Media says only "left", "center", and "right" are allowed
+                
                 return tokenStream.token().value;
             },
             
+            _font_face: function(){
+                /*
+                 * font_face
+                 *   : FONT_FACE_SYM S* 
+                 *     '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 *   ;
+                 */     
+                var tokenStream = this._tokenStream;
+                
+                //look for @page
+                tokenStream.mustMatch(Tokens.FONT_FACE_SYM);
+                this._readWhitespace();
+
+                this.fire({
+                    type:   "startfontface"
+                });                    
+                
+                this._readDeclarations(true);
+                
+                this.fire({
+                    type:   "endfontface"
+                });              
+            },
+
             _operator: function(){
             
                 /*
                  * operator
-                 *  : '/' S* | ',' S*
+                 *  : '/' S* | ',' S* | /( empty )/
                  *  ;
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    value       = null;
+                    token       = null;
                 
                 if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
-                    value =  tokenStream.token().value;
+                    token =  tokenStream.token();
+                    this._readWhitespace();
                 } 
-                return value;
+                return token ? PropertyValuePart.fromToken(token) : null;
                 
             },
             
@@ -678,8 +1038,7 @@ Parser.prototype = function(){
             
                 /*
                  * combinator
-                 *  : '+' S*
-                 *  | '>' S*
+                 *  : PLUS S* | GREATER S* | TILDE S* | S+
                  *  ;
                  */    
                  
@@ -687,9 +1046,10 @@ Parser.prototype = function(){
                     value       = null,
                     token;
                 
-                if(tokenStream.match([Tokens.PLUS, Tokens.GREATER])){                
+                if(tokenStream.match([Tokens.PLUS, Tokens.GREATER, Tokens.TILDE])){                
                     token = tokenStream.token();
                     value = new Combinator(token.value, token.startLine, token.startCol);
+                    this._readWhitespace();
                 }
                 
                 return value;
@@ -748,77 +1108,32 @@ Parser.prototype = function(){
                     }
                     
                     value = new PropertyName(tokenValue, hack, (line||token.startLine), (col||token.startCol));
+                    this._readWhitespace();
                 }
                 
                 return value;
             },
         
-        
+            //Augmented with CSS3 Selectors
             _ruleset: function(){
                 /*
                  * ruleset
-                 *   : selector [ ',' S* selector ]*
+                 *   : selectors_group
                  *     '{' S* declaration? [ ';' S* declaration? ]* '}' S*
                  *   ;    
                  */    
                  
                 var tokenStream = this._tokenStream,
-                    selectors   = [],
-                    selector    = null,
-                    tt;
-                
-                selector = this._selector();
-                if (selector !== null){
-                
-                    selectors.push(selector);
-                    while(tokenStream.match(Tokens.COMMA)){
-                        selector = this._selector();
-                        if (selector !== null){
-                            selectors.push(selector);
-                        }
-                    }
-                } else {
-                    return null;
-                }        
-                
-                tokenStream.mustMatch(Tokens.LBRACE);
-                
-                this.fire({
-                    type:       "startrule",
-                    selectors:  selectors
-                });                
-                
-                this._rulesetEnd();                
-                
-                this.fire({
-                    type:       "endrule",
-                    selectors:  selectors
-                });  
-                
-                return selectors;
-                
-            },
-            
-            //abstracted for _ruleset for error correction
-            _rulesetEnd: function(){
-            
-                /* Partial:
-                 * declaration? [ ';' S* declaration? ]* '}'
-                 */            
-            
-                var tokenStream = this._tokenStream,
-                    tt;
-                    
+                    selectors;
+
+
+                /*
+                 * Error Recovery: If even a single selector fails to parse,
+                 * then the entire ruleset should be thrown away.
+                 */
                 try {
-                    if (this._declaration()){
-                        
-                        //if there's a semicolon, there may be another declaration
-                        while(this._tokenStream.match(Tokens.SEMICOLON)){
-                            this._declaration();
-                        }
-                    }
-                    tokenStream.mustMatch(Tokens.RBRACE);
-                } catch (ex) {
+                    selectors = this._selectors_group();
+                } catch (ex){
                     if (ex instanceof SyntaxError && !this.options.strict){
                     
                         //fire error event
@@ -830,12 +1145,9 @@ Parser.prototype = function(){
                             col:        ex.col
                         });                          
                         
-                        //see if there's another declaration
-                        tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
-                        if (tt == Tokens.SEMICOLON){
-                            //if there's a semicolon, then there might be another declaration
-                            this._rulesetEnd();
-                        } else if (tt == Tokens.RBRACE){
+                        //skip over everything until closing brace
+                        tt = tokenStream.advance([Tokens.RBRACE]);
+                        if (tt == Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
                         } else {
                             //otherwise, rethrow the error because it wasn't handled properly
@@ -845,14 +1157,68 @@ Parser.prototype = function(){
                     } else {
                         //not a syntax error, rethrow it
                         throw ex;
+                    }                
+                
+                    //trigger parser to continue
+                    return true;
+                }
+                
+                //if it got here, all selectors parsed
+                if (selectors){ 
+                                    
+                    this.fire({
+                        type:       "startrule",
+                        selectors:  selectors
+                    });                
+                    
+                    this._readDeclarations(true);                
+                    
+                    this.fire({
+                        type:       "endrule",
+                        selectors:  selectors
+                    });  
+                    
+                }
+                
+                return selectors;
+                
+            },
+
+            //CSS3 Selectors
+            _selectors_group: function(){
+            
+                /*            
+                 * selectors_group
+                 *   : selector [ COMMA S* selector ]*
+                 *   ;
+                 */           
+                var tokenStream = this._tokenStream,
+                    selectors   = [],
+                    selector;
+                    
+                selector = this._selector();
+                if (selector !== null){
+                
+                    selectors.push(selector);
+                    while(tokenStream.match(Tokens.COMMA)){
+                        this._readWhitespace();
+                        selector = this._selector();
+                        if (selector !== null){
+                            selectors.push(selector);
+                        } else {
+                            this._unexpectedToken(tokenStream.LT(1));
+                        }
                     }
                 }
-            },            
-            
+
+                return selectors.length ? selectors : null;
+            },
+                
+            //CSS3 Selectors
             _selector: function(){
                 /*
                  * selector
-                 *   : simple_selector [ combinator selector | S+ [ combinator? selector ]? ]?
+                 *   : simple_selector_sequence [ combinator simple_selector_sequence ]*
                  *   ;    
                  */
                  
@@ -863,75 +1229,75 @@ Parser.prototype = function(){
                     ws          = null;
                 
                 //if there's no simple selector, then there's no selector
-                nextSelector = this._simple_selector();
+                nextSelector = this._simple_selector_sequence();
                 if (nextSelector === null){
                     return null;
                 }
                 
                 selector.push(nextSelector);
                 
-                //TODO: Cleanup this next section
-                
-                //look for a combinator
-                combinator = this._combinator();
-                if (combinator !== null){
-                    selector.push(combinator);
-                    nextSelector = this._selector();
+                do {
                     
-                    //there must be a next selector
-                    if (nextSelector === null){
-                        this._unexpectedToken(this.LT(1));
-                    } else {
+                    //look for a combinator
+                    combinator = this._combinator();
                     
-                        //nextSelector is an instance of Selector, but we really just want the parts
-                        selector = selector.concat(nextSelector.parts);
-                    }
-                } else {
-                    
-                    //if there's not whitespace, we're done
-                    if (tokenStream.match(Tokens.S, "ws")){           
-    
-                        //add whitespace separator
-                        ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
+                    if (combinator !== null){
+                        selector.push(combinator);
+                        nextSelector = this._simple_selector_sequence();
                         
-                        //combinator is not required
-                        combinator = this._combinator();
-                        
-                        //selector is required if there's a combinator
-                        nextSelector = this._selector();
-                        if (nextSelector === null){                        
-                            if (combinator !== null){
-                                this._unexpectedToken(tokenStream.LT(1));
-                            }
+                        //there must be a next selector
+                        if (nextSelector === null){
+                            this._unexpectedToken(this.LT(1));
                         } else {
+                        
+                            //nextSelector is an instance of SelectorPart
+                            selector.push(nextSelector);
+                        }
+                    } else {
+                        
+                        //if there's not whitespace, we're done
+                        if (this._readWhitespace()){           
+        
+                            //add whitespace separator
+                            ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
                             
-                            if (combinator !== null){
-                                selector.push(combinator);
+                            //combinator is not required
+                            combinator = this._combinator();
+                            
+                            //selector is required if there's a combinator
+                            nextSelector = this._simple_selector_sequence();
+                            if (nextSelector === null){                        
+                                if (combinator !== null){
+                                    this._unexpectedToken(tokenStream.LT(1));
+                                }
                             } else {
-                                selector.push(ws);
-                            }
-                            
-                            selector = selector.concat(nextSelector.parts);
-                        }     
-                    }                
-                
-                }                
+                                
+                                if (combinator !== null){
+                                    selector.push(combinator);
+                                } else {
+                                    selector.push(ws);
+                                }
+                                
+                                selector.push(nextSelector);
+                            }     
+                        } else {
+                            break;
+                        }               
+                    
+                    }
+                } while(true);
                 
                 return new Selector(selector, selector[0].line, selector[0].col);
             },
             
-            
-            /**
-             * Parses a simple selector. A simple selector has the form
-             * elementName#elementId.className:pseudo.
-             * @method _simple_selector
-             */
-            _simple_selector: function(){
+            //CSS3 Selectors
+            _simple_selector_sequence: function(){
                 /*
-                 * simple_selector
-                 *   : element_name [ HASH | class | attrib | pseudo ]*
-                 *   | [ HASH | class | attrib | pseudo ]+
-                 *   ;    
+                 * simple_selector_sequence
+                 *   : [ type_selector | universal ]
+                 *     [ HASH | class | attrib | pseudo | negation ]*
+                 *   | [ HASH | class | attrib | pseudo | negation ]+
+                 *   ;
                  */
                  
                 var tokenStream = this._tokenStream,
@@ -941,8 +1307,9 @@ Parser.prototype = function(){
                     modifiers   = [],
                     
                     //complete selector text
-                    selectorText= null,
+                    selectorText= "",
 
+                    //the different parts after the element name to search for
                     components  = [
                         //HASH
                         function(){
@@ -952,7 +1319,8 @@ Parser.prototype = function(){
                         },
                         this._class,
                         this._attrib,
-                        this._pseudo            
+                        this._pseudo,
+                        this._negation
                     ],
                     i           = 0,
                     len         = components.length,
@@ -961,53 +1329,91 @@ Parser.prototype = function(){
                     line,
                     col;
                     
-                elementName = this._element_name();
-                if (elementName == null){
-                
-                    while(i < len && component == null){
-                        component = components[i++].call(this);
-                    }
-        
-                    //if it's still null, then we don't have a selector
-                    if (component === null){
-                        return null;
-                    }
                     
-                    modifiers.push(component);
-                    selectorText = component.toString();
-                } else {
-                    selectorText = elementName.toString();
-                }
-
                 //get starting line and column for the selector
-                line = tokenStream.token().startLine;
-                col = tokenStream.token().startCol;
-                        
-                i = 0;
-                while(i < len){
+                line = tokenStream.LT(1).startLine;
+                col = tokenStream.LT(1).startCol;
+                                        
+                elementName = this._type_selector();
+                if (!elementName){
+                    elementName = this._universal();
+                }
                 
+                if (elementName !== null){
+                    selectorText += elementName;
+                }                
+                
+                while(true){
+
                     //whitespace means we're done
-                    found = tokenStream.match(Tokens.S, "ws");                    
-                    if (found){
-                        tokenStream.unget();
+                    if (tokenStream.peek() === Tokens.S){
                         break;
                     }
                 
-                    component = components[i++].call(this);
+                    //check for each component
+                    while(i < len && component === null){
+                        component = components[i++].call(this);
+                    }
+        
+                    if (component === null){
                     
-                    //if it's not null, then reset i to keep looping
-                    if (component !== null){
+                        //we don't have a selector
+                        if (selectorText === ""){
+                            return null;
+                        } else {
+                            break;
+                        }
+                    } else {
                         i = 0;
                         modifiers.push(component);
-                        selectorText += component;
+                        selectorText += component.toString(); 
+                        component = null;
                     }
                 }
+
                  
-                return selectorText !== null ?
+                return selectorText !== "" ?
                         new SelectorPart(elementName, modifiers, selectorText, line, col) :
                         null;
+            },            
+            
+            //CSS3 Selectors
+            _type_selector: function(){
+                /*
+                 * type_selector
+                 *   : [ namespace_prefix ]? element_name
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    ns          = this._namespace_prefix(),
+                    elementName = this._element_name();
+                    
+                if (!elementName){                    
+                    /*
+                     * Need to back out the namespace that was read due to both
+                     * type_selector and universal reading namespace_prefix
+                     * first. Kind of hacky, but only way I can figure out
+                     * right now how to not change the grammar.
+                     */
+                    if (ns){
+                        tokenStream.unget();
+                        if (ns.length > 1){
+                            tokenStream.unget();
+                        }
+                    }
+                
+                    return null;
+                } else {     
+                    if (ns){
+                        elementName.text = ns + elementName.text;
+                        elementName.col -= ns.length;
+                    }
+                    return elementName;
+                }
             },
             
+            //CSS3 Selectors
             _class: function(){
                 /*
                  * class
@@ -1021,24 +1427,25 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.DOT)){
                     tokenStream.mustMatch(Tokens.IDENT);    
                     token = tokenStream.token();
-                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol);        
+                    return new SelectorSubPart("." + token.value, "class", token.startLine, token.startCol - 1);        
                 } else {
                     return null;
                 }
         
             },
             
+            //CSS3 Selectors
             _element_name: function(){
                 /*
                  * element_name
-                 *   : IDENT | '*'
+                 *   : IDENT
                  *   ;
                  */    
                 
                 var tokenStream = this._tokenStream,
                     token;
                 
-                if (tokenStream.match([Tokens.IDENT, Tokens.STAR])){
+                if (tokenStream.match(Tokens.IDENT)){
                     token = tokenStream.token();
                     return new SelectorSubPart(token.value, "elementName", token.startLine, token.startCol);        
                 
@@ -1047,75 +1454,278 @@ Parser.prototype = function(){
                 }
             },
             
+            //CSS3 Selectors
+            _namespace_prefix: function(){
+                /*            
+                 * namespace_prefix
+                 *   : [ IDENT | '*' ]? '|'
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    value       = "";
+                    
+                //verify that this is a namespace prefix
+                if (tokenStream.LA(1) === Tokens.PIPE || tokenStream.LA(2) === Tokens.PIPE){
+                        
+                    if(tokenStream.match([Tokens.IDENT, Tokens.STAR])){
+                        value += tokenStream.token().value;
+                    }
+                    
+                    tokenStream.mustMatch(Tokens.PIPE);
+                    value += "|";
+                    
+                }
+                
+                return value.length ? value : null;                
+            },
+            
+            //CSS3 Selectors
+            _universal: function(){
+                /*
+                 * universal
+                 *   : [ namespace_prefix ]? '*'
+                 *   ;            
+                 */
+                var tokenStream = this._tokenStream,
+                    value       = "",
+                    ns;
+                    
+                ns = this._namespace_prefix();
+                if(ns){
+                    value += ns;
+                }
+                
+                if(tokenStream.match(Tokens.STAR)){
+                    value += "*";
+                }
+                
+                return value.length ? value : null;
+                
+           },
+            
+            //CSS3 Selectors
             _attrib: function(){
                 /*
                  * attrib
-                 *   : '[' S* IDENT S* [ [ '=' | INCLUDES | DASHMATCH ] S*
-                 *     [ IDENT | STRING ] S* ]? ']'
+                 *   : '[' S* [ namespace_prefix ]? IDENT S*
+                 *         [ [ PREFIXMATCH |
+                 *             SUFFIXMATCH |
+                 *             SUBSTRINGMATCH |
+                 *             '=' |
+                 *             INCLUDES |
+                 *             DASHMATCH ] S* [ IDENT | STRING ] S*
+                 *         ]? ']'
                  *   ;    
                  */
                  
                 var tokenStream = this._tokenStream,
                     value       = null,
+                    ns,
                     token;
                 
                 if (tokenStream.match(Tokens.LBRACKET)){
-                    value = tokenStream.token().value;
-
-                    tokenStream.mustMatch(Tokens.IDENT);
-                    value += tokenStream.token().value;
+                    token = tokenStream.token();
+                    value = token.value;
+                    value += this._readWhitespace();
                     
-                    //may or may not be more to this expression
-                    if(tokenStream.match([Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])){               
-                        
-                        value += tokenStream.token().value;
-                        
-                        tokenStream.mustMatch(Tokens.IDENT, Tokens.STRING);
-                        
+                    ns = this._namespace_prefix();
+                    
+                    if (ns){
+                        value += ns;
+                    }
+                                        
+                    tokenStream.mustMatch(Tokens.IDENT);
+                    value += tokenStream.token().value;                    
+                    value += this._readWhitespace();
+                    
+                    if(tokenStream.match([Tokens.PREFIXMATCH, Tokens.SUFFIXMATCH, Tokens.SUBSTRINGMATCH,
+                            Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])){
+                    
                         value += tokenStream.token().value;                    
+                        value += this._readWhitespace();
+                        
+                        tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+                        value += tokenStream.token().value;                    
+                        value += this._readWhitespace();
                     }
                     
                     tokenStream.mustMatch(Tokens.RBRACKET);
-                    token = tokenStream.token();
                                         
-                    return new SelectorSubPart(value + token.value, "attribute", token.startLine, token.startCol);
+                    return new SelectorSubPart(value + "]", "attribute", token.startLine, token.startCol);
                 } else {
                     return null;
                 }
             },
             
+            //CSS3 Selectors
             _pseudo: function(){
             
                 /*
                  * pseudo
-                 *   : ':' [ IDENT | FUNCTION S* [IDENT S*]? ')' ]
+                 *   : ':' ':'? [ IDENT | functional_pseudo ]
                  *   ;    
                  */   
             
                 var tokenStream = this._tokenStream,
                     pseudo      = null,
-                    token;
+                    colons      = ":",
+                    line,
+                    col;
                 
                 if (tokenStream.match(Tokens.COLON)){
                 
+                    if (tokenStream.match(Tokens.COLON)){
+                        colons += ":";
+                    }
+                
                     if (tokenStream.match(Tokens.IDENT)){
                         pseudo = tokenStream.token().value;
-                    } else if (tokenStream.mustMatch(Tokens.FUNCTION)){
-                        pseudo = tokenStream.token().value;
-                        
-                        if (tokenStream.match(Tokens.IDENT)){
-                            pseudo += tokenStream.token().value;
-                        }
-                        
-                        tokenStream.mustMatch(Tokens.RPAREN);
-                        pseudo += tokenStream.token().value;
+                        line = tokenStream.token().startLine;
+                        col = tokenStream.token().startCol - colons.length;
+                    } else if (tokenStream.peek() == Tokens.FUNCTION){
+                        line = tokenStream.LT(1).startLine;
+                        col = tokenStream.LT(1).startCol - colons.length;
+                        pseudo = this._functional_pseudo();
                     }
                     
-                    token = tokenStream.token();
-                    pseudo = new SelectorSubPart(":" + pseudo, "pseudo", token.startLine, token.startCol);
+                    if (pseudo){
+                        pseudo = new SelectorSubPart(colons + pseudo, "pseudo", line, col);
+                    }
                 }
         
                 return pseudo;
+            },
+            
+            //CSS3 Selectors
+            _functional_pseudo: function(){
+                /*
+                 * functional_pseudo
+                 *   : FUNCTION S* expression ')'
+                 *   ;
+                */            
+                
+                var tokenStream = this._tokenStream,
+                    value = null;
+                
+                if(tokenStream.match(Tokens.FUNCTION)){
+                    value = tokenStream.token().value;
+                    value += this._readWhitespace();
+                    value += this._expression();
+                    tokenStream.mustMatch(Tokens.RPAREN);
+                    value += ")";
+                }
+                
+                return value;
+            },
+            
+            //CSS3 Selectors
+            _expression: function(){
+                /*
+                 * expression
+                 *   : [ [ PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ] S* ]+
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    value       = "";
+                    
+                while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
+                        Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
+                        Tokens.FREQ, Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.RESOLUTION])){
+                    
+                    value += tokenStream.token().value;
+                    value += this._readWhitespace();                        
+                }
+                
+                return value.length ? value : null;
+                
+            },
+
+            //CSS3 Selectors
+            _negation: function(){
+                /*            
+                 * negation
+                 *   : NOT S* negation_arg S* ')'
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    line,
+                    col,
+                    value       = "",
+                    arg,
+                    subpart     = null;
+                    
+                if (tokenStream.match(Tokens.NOT)){
+                    value = tokenStream.token().value;
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
+                    value += this._readWhitespace();
+                    arg = this._negation_arg();
+                    value += arg;
+                    value += this._readWhitespace();
+                    tokenStream.match(Tokens.RPAREN);
+                    value += tokenStream.token().value;
+                    
+                    subpart = new SelectorSubPart(value, "not", line, col);
+                    subpart.args.push(arg);
+                }
+                
+                return subpart;
+            },
+            
+            //CSS3 Selectors
+            _negation_arg: function(){            
+                /*
+                 * negation_arg
+                 *   : type_selector | universal | HASH | class | attrib | pseudo
+                 *   ;            
+                 */           
+                 
+                var tokenStream = this._tokenStream,
+                    args        = [
+                        this._type_selector,
+                        this._universal,
+                        function(){
+                            return tokenStream.match(Tokens.HASH) ?
+                                    new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
+                                    null;                        
+                        },
+                        this._class,
+                        this._attrib,
+                        this._pseudo                    
+                    ],
+                    arg         = null,
+                    i           = 0,
+                    len         = args.length,
+                    elementName,
+                    line,
+                    col,
+                    part;
+                    
+                line = tokenStream.LT(1).startLine;
+                col = tokenStream.LT(1).startCol;
+                
+                while(i < len && arg === null){
+                    
+                    arg = args[i].call(this);
+                    i++;
+                }
+                
+                //must be a negation arg
+                if (arg === null){
+                    this._unexpectedToken(tokenStream.LT(1));
+                }
+ 
+                //it's an element name
+                if (arg.type == "elementName"){
+                    part = new SelectorPart(arg, [], arg.toString(), line, col);
+                } else {
+                    part = new SelectorPart(null, [arg], arg.toString(), line, col);
+                }
+                
+                return part;                
             },
             
             _declaration: function(){
@@ -1123,6 +1733,7 @@ Parser.prototype = function(){
                 /*
                  * declaration
                  *   : property ':' S* expr prio?
+                 *   | /( empty )/
                  *   ;     
                  */    
             
@@ -1135,11 +1746,12 @@ Parser.prototype = function(){
                 if (property !== null){
                     
                     tokenStream.mustMatch(Tokens.COLON);
+                    this._readWhitespace();
                     
                     expr = this._expr();
                     
                     //if there's no parts for the value, it's an error
-                    if (expr.length === 0){
+                    if (!expr || expr.length === 0){
                         this._unexpectedToken(tokenStream.LT(1));
                     }
                     
@@ -1165,18 +1777,23 @@ Parser.prototype = function(){
                  *   ;    
                  */
                  
-                return this._tokenStream.match(Tokens.IMPORTANT_SYM);  
+                var tokenStream = this._tokenStream,
+                    result      = tokenStream.match(Tokens.IMPORTANT_SYM);
+                    
+                this._readWhitespace();
+                return result;
             },
             
             _expr: function(){
                 /*
                  * expr
-                 *   : term [ operator? term ]*
+                 *   : term [ operator term ]*
                  *   ;
                  */
         
                 var tokenStream = this._tokenStream,
                     values      = [],
+					//valueParts	= [],
                     value       = null,
                     operator    = null;
                     
@@ -1188,9 +1805,14 @@ Parser.prototype = function(){
                     do {
                         operator = this._operator();
         
+                        //if there's an operator, keep building up the value parts
                         if (operator){
                             values.push(operator);
-                        }
+                        } /*else {
+                            //if there's not an operator, you have a full value
+							values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+							valueParts = [];
+						}*/
                         
                         value = this._term();
                         
@@ -1201,19 +1823,24 @@ Parser.prototype = function(){
                         }
                     } while(true);
                 }
+				
+				//cleanup
+                /*if (valueParts.length){
+                    values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
+                }*/
         
-                return /*values.length == 1 ? values[0] :*/ values;
+                return values.length > 0 ? new PropertyValue(values, values[0].startLine, values[0].startCol) : null;
             },
             
-            _term: function(){
+            _term: function(){                       
             
                 /*
                  * term
                  *   : unary_operator?
                  *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
-                 *       TIME S* | FREQ S* ]
-                 *   | STRING S* | IDENT S* | URI S* | hexcolor | function
-                 *   ;   
+                 *       TIME S* | FREQ S* | function | ie_function ]
+                 *   | STRING S* | IDENT S* | URI S* | UNICODERANGE S* | hexcolor
+                 *   ;
                  */    
         
                 var tokenStream = this._tokenStream,
@@ -1230,9 +1857,9 @@ Parser.prototype = function(){
                 }                
                
                 //exception for IE filters
-                if (tokenStream.peek() == Tokens.IE_FILTER && this.options.ieFilters){
-                    tokenStream.get();
-                    value = tokenStream.token().value;
+                if (tokenStream.peek() == Tokens.IE_FUNCTION && this.options.ieFilters){
+                
+                    value = this._ie_function();
                     if (unary === null){
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol;
@@ -1241,13 +1868,14 @@ Parser.prototype = function(){
                 //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
                         Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
-                        Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI])){
+                        Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])){
                  
                     value = tokenStream.token().value;
                     if (unary === null){
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol;
                     }
+                    this._readWhitespace();
                 } else {
                 
                     //see if it's a color
@@ -1258,10 +1886,12 @@ Parser.prototype = function(){
                         if (unary === null){
                             line = tokenStream.LT(1).startLine;
                             col = tokenStream.LT(1).startCol;
-                        }
+                        }                    
                     
                         //has to be a function
-                        value = this._function();
+                        if (value === null){
+                            value = this._function();
+                        }
 
                         /*if (value === null){
                             return null;
@@ -1278,7 +1908,7 @@ Parser.prototype = function(){
                 }                
                 
                 return value !== null ?
-                        new PropertyValue(unary !== null ? unary + value : value, line, col) :
+                        new PropertyValuePart(unary !== null ? unary + value : value, line, col) :
                         null;
         
             },
@@ -1297,10 +1927,62 @@ Parser.prototype = function(){
                     
                 if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
+                    this._readWhitespace();
                     expr = this._expr();
                     
                     tokenStream.match(Tokens.RPAREN);    
-                    functionText += expr.join("") + ")"
+                    functionText += expr + ")"
+                    this._readWhitespace();
+                }                
+                
+                return functionText;
+            }, 
+            
+            _ie_function: function(){
+            
+                /* (My own extension)
+                 * ie_function
+                 *   : IE_FUNCTION S* IDENT '=' term [S* ','? IDENT '=' term]+ ')' S*
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    functionText = null,
+                    expr        = null,
+                    lt;
+                    
+                if (tokenStream.match(Tokens.IE_FUNCTION)){
+                    functionText = tokenStream.token().value;
+                    
+                    do {
+                    
+                        if (this._readWhitespace()){
+                            functionText += tokenStream.token().value;
+                        }
+                        
+                        //might be second time in the loop
+                        if (tokenStream.LA(0) == Tokens.COMMA){
+                            functionText += tokenStream.token().value;
+                        }
+                    
+                        tokenStream.match(Tokens.IDENT);
+                        functionText += tokenStream.token().value;
+                        
+                        tokenStream.match(Tokens.EQUALS);
+                        functionText += tokenStream.token().value;
+                        
+                        //functionText += this._term();
+                        lt = tokenStream.peek();
+                        while(lt != Tokens.COMMA && lt != Tokens.S && lt != Tokens.RPAREN){
+                            tokenStream.get();
+                            functionText += tokenStream.token().value;
+                            lt = tokenStream.peek();
+                        }
+                    } while(tokenStream.match([Tokens.COMMA, Tokens.S]));                    
+                    
+                    tokenStream.match(Tokens.RPAREN);    
+                    functionText += ")"
+                    this._readWhitespace();
                 }                
                 
                 return functionText;
@@ -1330,17 +2012,157 @@ Parser.prototype = function(){
                     if (!/#[a-f0-9]{3,6}/i.test(color)){
                         throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
                     }
+                    this._readWhitespace();
                 }
                 
                 return color;
             },
             
-          
+            //-----------------------------------------------------------------
+            // Helper methods
+            //-----------------------------------------------------------------
             
+            /**
+             * Not part of CSS grammar, but useful for skipping over
+             * combination of white space and HTML-style comments.
+             * @return {void}
+             * @method _skipCruft
+             * @private
+             */
+            _skipCruft: function(){
+                while(this._tokenStream.match([Tokens.S, Tokens.CDO, Tokens.CDC])){
+                    //noop
+                }
+            },
+
+            /**
+             * Not part of CSS grammar, but this pattern occurs frequently
+             * in the official CSS grammar. Split out here to eliminate
+             * duplicate code.
+             * @param {Boolean} checkStart Indicates if the rule should check
+             *      for the left brace at the beginning.
+             * @param {Boolean} readMargins Indicates if the rule should check
+             *      for margin patterns.
+             * @return {void}
+             * @method _readDeclarations
+             * @private
+             */
+            _readDeclarations: function(checkStart, readMargins){
+                /*
+                 * Reads the pattern
+                 * S* '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 * or
+                 * S* '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+                 * Note that this is how it is described in CSS3 Paged Media, but is actually incorrect.
+                 * A semicolon is only necessary following a delcaration is there's another declaration
+                 * or margin afterwards. 
+                 */
+                var tokenStream = this._tokenStream,
+                    tt;
+                       
+
+                this._readWhitespace();
+                
+                if (checkStart){
+                    tokenStream.mustMatch(Tokens.LBRACE);            
+                }
+                
+                this._readWhitespace();
+
+                try {
+                    
+                    while(true){
+                    
+                        if (readMargins && this._margin()){
+                            //noop
+                        } else if (this._declaration()){
+                            if (!tokenStream.match(Tokens.SEMICOLON)){
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    
+                        //if ((!this._margin() && !this._declaration()) || !tokenStream.match(Tokens.SEMICOLON)){
+                        //    break;
+                        //}
+                        this._readWhitespace();
+                    }
+                    
+                    tokenStream.mustMatch(Tokens.RBRACE);
+                    this._readWhitespace();
+                    
+                } catch (ex) {
+                    if (ex instanceof SyntaxError && !this.options.strict){
+                    
+                        //fire error event
+                        this.fire({
+                            type:       "error",
+                            error:      ex,
+                            message:    ex.message,
+                            line:       ex.line,
+                            col:        ex.col
+                        });                          
+                        
+                        //see if there's another declaration
+                        tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
+                        if (tt == Tokens.SEMICOLON){
+                            //if there's a semicolon, then there might be another declaration
+                            this._readDeclarations(false, readMargins);
+                        } else if (tt == Tokens.RBRACE){
+                            //if there's a right brace, the rule is finished so don't do anything
+                        } else {
+                            //otherwise, rethrow the error because it wasn't handled properly
+                            throw ex;
+                        }                        
+                        
+                    } else {
+                        //not a syntax error, rethrow it
+                        throw ex;
+                    }
+                }    
+            
+            },      
+            
+            /**
+             * In some cases, you can end up with two white space tokens in a
+             * row. Instead of making a change in every function that looks for
+             * white space, this function is used to match as much white space
+             * as necessary.
+             * @method _readWhitespace
+             * @return {String} The white space if found, empty string if not.
+             * @private
+             */
+            _readWhitespace: function(){
+            
+                var tokenStream = this._tokenStream,
+                    ws = "";
+                    
+                while(tokenStream.match(Tokens.S)){
+                    ws += tokenStream.token().value;
+                }
+                
+                return ws;
+            },
+          
+
+            /**
+             * Throws an error when an unexpected token is found.
+             * @param {Object} token The token that was found.
+             * @method _unexpectedToken
+             * @return {void}
+             * @private
+             */
             _unexpectedToken: function(token){
                 throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
             },
             
+            /**
+             * Helper method used for parsing subparts of a style sheet.
+             * @return {void}
+             * @method _verifyEnd
+             * @private
+             */
             _verifyEnd: function(){
                 if (this._tokenStream.LA(1) != Tokens.EOF){
                     this._unexpectedToken(this._tokenStream.LT(1));
@@ -1356,10 +2178,89 @@ Parser.prototype = function(){
                 this._stylesheet();
             },
             
-            parseSelector: function(input){
+            parseStyleSheet: function(input){
+                //just passthrough
+                return this.parse(input);
+            },
+            
+            parseMediaQuery: function(input){
                 this._tokenStream = new TokenStream(input, Tokens);
+                var result = this._media_query();
+                
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;            
+            },
+            
+            /**
+             * Parses a property value (everything after the semicolon).
+             * @return {parserlib.css.PropertyValue} The property value.
+             * @throws parserlib.util.SyntaxError If an unexpected token is found.
+             * @method parserPropertyValue
+             */             
+            parsePropertyValue: function(input){
+            
+                this._tokenStream = new TokenStream(input, Tokens);
+                this._readWhitespace();
+                
+                var result = this._expr();
+                
+                //okay to have a trailing white space
+                this._readWhitespace();
+                
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;
+            },
+            
+            /**
+             * Parses a complete CSS rule, including selectors and
+             * properties.
+             * @param {String} input The text to parser.
+             * @return {Boolean} True if the parse completed successfully, false if not.
+             * @method parseRule
+             */
+            parseRule: function(input){
+                this._tokenStream = new TokenStream(input, Tokens);
+                
+                //skip any leading white space
+                this._readWhitespace();
+                
+                var result = this._ruleset();
+                
+                //skip any trailing white space
+                this._readWhitespace();
+
+                //if there's anything more, then it's an invalid selector
+                this._verifyEnd();
+                
+                //otherwise return result
+                return result;            
+            },
+            
+            /**
+             * Parses a single CSS selector (no comma)
+             * @param {String} input The text to parse as a CSS selector.
+             * @return {Selector} An object representing the selector.
+             * @throws parserlib.util.SyntaxError If an unexpected token is found.
+             * @method parseSelector
+             */
+            parseSelector: function(input){
+            
+                this._tokenStream = new TokenStream(input, Tokens);
+                
+                //skip any leading white space
+                this._readWhitespace();
+                
                 var result = this._selector();
                 
+                //skip any trailing white space
+                this._readWhitespace();
+
                 //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
                 
@@ -1376,6 +2277,14 @@ Parser.prototype = function(){
     
     return proto;
 }();
+
+
+/*
+nth
+  : S* [ ['-'|'+']? INTEGER? {N} [ S* ['-'|'+'] S* INTEGER ]? |
+         ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
+  ;
+*/
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css
@@ -1406,8 +2315,9 @@ PropertyName.prototype.constructor = PropertyName;
 
 /**
  * Represents a single part of a CSS property value, meaning that it represents
- * just one part of the data between ":" and ";".
- * @param {String} text The text representation of the unit.
+ * just everything single part between ":" and ";". If there are multiple values
+ * separated by commas, this type represents just one of the values.
+ * @param {String[]} parts An array of value parts making up this value.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  * @namespace parserlib.css
@@ -1415,7 +2325,35 @@ PropertyName.prototype.constructor = PropertyName;
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function PropertyValue(text, line, col){
+function PropertyValue(parts, line, col){
+
+    SyntaxUnit.call(this, parts.join(" "), line, col);
+    
+    /**
+     * The parts that make up the selector.
+     * @type Array
+     * @property parts
+     */
+    this.parts = parts;
+    
+}
+
+PropertyValue.prototype = new SyntaxUnit();
+PropertyValue.prototype.constructor = PropertyValue;
+
+
+/**
+ * Represents a single part of a CSS property value, meaning that it represents
+ * just one part of the data between ":" and ";".
+ * @param {String} text The text representation of the unit.
+ * @param {int} line The line of text on which the unit resides.
+ * @param {int} col The column of text on which the unit resides.
+ * @namespace parserlib.css
+ * @class PropertyValuePart
+ * @extends parserlib.util.SyntaxUnit
+ * @constructor
+ */
+function PropertyValuePart(text, line, col){
 
     SyntaxUnit.apply(this,arguments);
     
@@ -1431,10 +2369,54 @@ function PropertyValue(text, line, col){
     var temp;
     
     //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //length
-        this.type = "length";
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
+        this.type = "dimension";
         this.value = +RegExp.$1;
-        this.units = RegExp.$2 || null;
+        this.units = RegExp.$2;
+        
+        //try to narrow down
+        switch(this.units.toLowerCase()){
+        
+            case "em":
+            case "rem":
+            case "ex":
+            case "px":
+            case "cm":
+            case "mm":
+            case "in":
+            case "pt":
+            case "pc":
+                this.type = "length";
+                break;
+                
+            case "deg":
+            case "rad":
+            case "grad":
+                this.type = "angle";
+                break;
+            
+            case "ms":
+            case "s":
+                this.type = "time";
+                break;
+            
+            case "hz":
+            case "khz":
+                this.type = "frequency";
+                break;
+            
+            case "dpi":
+            case "dpcm":
+                this.type = "resolution";
+                break;
+                
+            //default
+                
+        }
+        
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+        this.type = "percentage";
+        this.value = +RegExp.$1;
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
@@ -1457,12 +2439,12 @@ function PropertyValue(text, line, col){
             this.green  = parseInt(temp.substring(2,4),16);
             this.blue   = parseInt(temp.substring(4,6),16);            
         }
-    } else if (/^rgb\((\d+),(\d+),(\d+)\)/i.test(text)){ //rgb() color with absolute numbers
+    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)){ //rgb() color with absolute numbers
         this.type   = "color";
         this.red    = +RegExp.$1;
         this.green  = +RegExp.$2;
         this.blue   = +RegExp.$3;
-    } else if (/^rgb\((\d+)%,(\d+)%,(\d+)%\)/i.test(text)){ //rgb() color with percentages
+    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //rgb() color with percentages
         this.type   = "color";
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
@@ -1479,15 +2461,31 @@ function PropertyValue(text, line, col){
         this.red    = parseInt(temp.substring(0,2),16);
         this.green  = parseInt(temp.substring(2,4),16);
         this.blue   = parseInt(temp.substring(4,6),16);         
+    } else if (/^[\,\/]$/.test(text)){
+        this.type   = "operator";
+        this.value  = text;
+    } else if (/^[a-z\-\u0080-\uFFFF][a-z0-9\-\u0080-\uFFFF]*$/i.test(text)){
+        this.type   = "identifier";
+        this.value  = text;
     }
-
 
 }
 
-PropertyValue.prototype = new SyntaxUnit();
-PropertyValue.prototype.constructor = PropertyValue;
+PropertyValuePart.prototype = new SyntaxUnit();
+PropertyValuePart.prototype.constructor = PropertyValue;
 
-
+/**
+ * Create a new syntax unit based solely on the given token.
+ * Convenience method for creating a new syntax unit when
+ * it represents a single token instead of multiple.
+ * @param {Object} token The token object to represent.
+ * @return {parserlib.css.PropertyValuePart} The object representing the token.
+ * @static
+ * @method fromToken
+ */
+PropertyValuePart.fromToken = function(token){
+    return new PropertyValuePart(token.value, token.startLine, token.startCol);
+};
 /**
  * Represents an entire single selector, including all parts but not
  * including multiple selectors (those separated by commas).
@@ -1580,6 +2578,13 @@ function SelectorSubPart(text, type, line, col){
      * @property type
      */
     this.type = type;
+    
+    /**
+     * Some subparts have arguments, this represents them.
+     * @type Array
+     * @property args
+     */
+    this.args = [];
 
 }
 
@@ -1587,10 +2592,7 @@ SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
 
 
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
+
  
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -1643,12 +2645,28 @@ function mix(receiver, supplier){
 //-----------------------------------------------------------------------------
 
 
+/**
+ * A token stream that produces CSS tokens.
+ * @param {String|Reader} input The source of text to tokenize.
+ * @constructor
+ * @class TokenStream
+ * @namespace parserlib.css
+ */
 function TokenStream(input){
 	TokenStreamBase.call(this, input, Tokens);
 }
 
 TokenStream.prototype = mix(new TokenStreamBase(), {
 
+    /**
+     * Overrides the TokenStreamBase method of the same name
+     * to produce CSS tokens.
+     * @param {variant} channel The name of the channel to use
+     *      for the next token.
+     * @return {Object} A token object representing the next token.
+     * @method _getToken
+     * @private
+     */
     _getToken: function(channel){
     
         var c,
@@ -1667,7 +2685,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - COMMENT
                  * - SLASH
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "/":
 
@@ -1682,10 +2700,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * Potential tokens:
                  * - DASHMATCH
                  * - INCLUDES
-                 * - UNKNOWN
+                 * - PREFIXMATCH
+                 * - SUFFIXMATCH
+                 * - SUBSTRINGMATCH
+                 * - CHAR
                  */
                 case "|":
                 case "~":
+                case "^":
+                case "$":
+                case "*":
                     if(reader.peek() == "="){
                         token = this.comparisonToken(c, startLine, startCol);
                     } else {
@@ -1706,6 +2730,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - HASH
+                 * - CHAR
                  */
                 case "#":
                     if (isNameChar(reader.peek())){
@@ -1720,12 +2745,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - DOT
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case ".":
                     if (isDigit(reader.peek())){
@@ -1737,18 +2757,16 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     
                 /*
                  * Potential tokens:
+                 * - CDC
                  * - MINUS
                  * - NUMBER
                  * - DIMENSION
-                 * - LENGTH
-                 * - FREQ
-                 * - TIME
-                 * - EMS
-                 * - EXS
-                 * - ANGLE
+                 * - PERCENTAGE
                  */
                 case "-":
-                    if (isNameStart(reader.peek())){
+                    if (reader.peek() == "-"){  //could be closing HTML-style comment
+                        token = this.htmlCommentEndToken(c, startLine, startCol);
+                    } else if (isNameStart(reader.peek())){
                         token = this.identOrFunctionToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
@@ -1758,23 +2776,50 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - IMPORTANT_SYM
-                 * - UNKNOWN
+                 * - CHAR
                  */
                 case "!":
                     token = this.importantToken(c, startLine, startCol);
                     break;
                     
                 /*
-                 * Potential tokens:
-                 * - IMPORT_SYM
-                 * - PAGE_SYM
-                 * - MEDIA_SYM
-                 * - CHARSET_SYM
+                 * Any at-keyword or CHAR
                  */
                 case "@":
                     token = this.atRuleToken(c, startLine, startCol);
                     break;
                     
+                /*
+                 * Potential tokens:
+                 * - NOT
+                 * - CHAR
+                 */
+                case ":":
+                    token = this.notToken(c, startLine, startCol);
+                    break;         
+           
+                /*
+                 * Potential tokens:
+                 * - CDO
+                 * - CHAR
+                 */
+                case "<":
+                    token = this.htmlCommentStartToken(c, startLine, startCol);
+                    break;     
+
+                /*
+                 * Potential tokens:
+                 * - UNICODE_RANGE
+                 * - URL
+                 * - CHAR
+                 */
+                case "U":
+                case "u":
+                    if (reader.peek() == "+"){
+                        token = this.unicodeRangeToken(c, startLine, startCol);
+                        break;
+                    } 
+                    /*falls through*/
                     
                 default:
                     
@@ -1811,7 +2856,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     
                     /*
                      * Potential tokens:
-                     * - UNKNOWN
+                     * - CHAR
                      * - PLUS
                      */
                     {
@@ -1839,191 +2884,62 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return token;
     },
     
-    charToken: function(c, startLine, startCol){
-        var tt      = Tokens.type(c) || -1,
-            reader  = this._reader;
-            
-        return this.createToken(tt, c, startLine, startCol);
-    },
-    comparisonToken: function(c, startLine, startCol){
-        var reader  = this._reader,
-            comparison  = c + reader.read(),
-            tt      = Tokens.type(comparison) || -1;
-            
-        return this.createToken(tt, comparison, startLine, startCol);
-    },
-    whitespaceToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = first + this.readWhitespace();
-        return this.createToken(Tokens.S, value, startLine, startCol);            
-    },
-
-    numberToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = this.readNumber(first),
-            ident,
-            tt      = Tokens.NUMBER,
-            c       = reader.peek();
-            
-        if (isIdentStart(c)){
-            ident = this.readName(reader.read());
-            value += ident;
-            
-            if (/em/i.test(ident)){
-                tt = Tokens.EMS;
-            } else if (/ex/i.test(ident)){
-                tt = Tokens.EXS;
-            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
-                tt = Tokens.LENGTH;
-            } else if (/deg|rad|grad/i.test(ident)){
-                tt = Tokens.ANGLE;
-            } else if (/ms|s/i.test(ident)){
-                tt = Tokens.TIME;
-            } else if (/hz|khz/i.test(ident)){
-                tt = Tokens.FREQ;
-            } else {
-                tt = Tokens.DIMENSION;
-            }
-        } else if (c == "%"){
-            value += reader.read();
-            tt = Tokens.PERCENTAGE;
-        }
-            
-
-        return this.createToken(tt, value, startLine, startCol);            
-    },
+    //-------------------------------------------------------------------------
+    // Methods to create tokens
+    //-------------------------------------------------------------------------
     
-    commentToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            comment = this.readComment(first);
-
-        return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
-    },
+    /**
+     * Produces a token based on available data and the current
+     * reader position information. This method is called by other
+     * private methods to create tokens and is never called directly.
+     * @param {int} tt The token type.
+     * @param {String} value The text value of the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @param {Object} options (Optional) Specifies a channel property
+     *      to indicate that a different channel should be scanned
+     *      and/or a hide property indicating that the token should
+     *      be hidden.
+     * @return {Object} A token object.
+     * @method createToken
+     */    
+    createToken: function(tt, value, startLine, startCol, options){
+        var reader = this._reader;
+        options = options || {};
+        
+        return {
+            value:      value,
+            type:       tt,
+            channel:    options.channel,
+            hide:       options.hide || false,
+            startLine:  startLine,
+            startCol:   startCol,
+            endLine:    reader.getLine(),
+            endCol:     reader.getCol()            
+        };    
+    }, 
     
-    hashToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            name    = this.readName(first);
-
-        return this.createToken(Tokens.HASH, name, startLine, startCol);    
-    },
+    //-------------------------------------------------------------------------
+    // Methods to create specific tokens
+    //-------------------------------------------------------------------------    
     
-    identOrFunctionToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            ident   = this.readName(first),
-            tt      = Tokens.IDENT;
-
-        //if there's a left paren immediately after, it's a URI or function
-        if (reader.peek() == "("){
-            ident += reader.read();
-            if (ident.toLowerCase() == "url("){
-                tt = Tokens.URI;
-                ident = this.readURI(ident);
-                
-                //didn't find a valid URL or there's no closing paren
-                if (ident.toLowerCase() == "url("){
-                    tt = Tokens.FUNCTION;
-                }
-            } else {
-                tt = Tokens.FUNCTION;
-            }
-        }
-
-        return this.createToken(tt, ident, startLine, startCol);    
-    },
-    
-    importantToken: function(first, startLine, startCol){
-        var reader      = this._reader,
-            important   = first,
-            tt          = -1,
-            temp,
-            c;
-
-        reader.mark();
-        c = reader.read();
-            
-        while(c){
-        
-            //there can be a comment in here
-            if (c == "/"){
-            
-                //if the next character isn't a star, then this isn't a valid !important token
-                if (reader.peek() != "*"){
-                    break;
-                } else {
-                    temp = this.readComment(c);
-                    if (temp == ""){    //broken!
-                        break;
-                    }
-                }
-            } else if (isWhitespace(c)){
-                important += c + this.readWhitespace();
-            } else if (/i/i.test(c)){
-                temp = reader.readCount(8);
-                if (/mportant/i.test(temp)){
-                    important += c + temp;
-                    tt = Tokens.IMPORTANT_SYM;
-                    
-                }
-                break;  //we're done
-            } else {
-                break;
-            }
-        
-            c = reader.read();
-        }
-        
-        if (tt == -1){
-            reader.reset();
-            return this.charToken(first, startLine, startCol);
-        } else {
-            return this.createToken(tt, important, startLine, startCol);
-        }
-        
-        
-    },
-    
-    stringToken: function(first, startLine, startCol){
-        var delim   = first,
-            string  = first,
-            reader  = this._reader,
-            prev    = first,
-            tt      = Tokens.STRING,
-            c       = reader.read();
-            
-        while(c){
-            string += c;
-            
-            //if the delimiter is found with an escapement, we're done.
-            if (c == delim && prev != "\\"){
-                break;
-            }
-
-            //if there's a newline without an escapement, it's an invalid string
-            if (isNewLine(reader.peek()) && c != "\\"){
-                tt = Tokens.INVALID;
-                break;
-            }
-        
-            //save previous and get next
-            prev = c;
-            c = reader.read();
-        }
-        
-        //if c is null, that means we're out of input and the string was never closed
-        if (c == null){
-            tt = Tokens.INVALID;
-        }
-            
-        return this.createToken(tt, string, startLine, startCol);        
-    },
-    
+    /**
+     * Produces a token for any at-rule. If the at-rule is unknown, then
+     * the token is for a single "@" character.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method atRuleToken
+     */    
     atRuleToken: function(first, startLine, startCol){
         var rule    = first,
             reader  = this._reader,
-            tt      = Tokens.UNKNOWN,
+            tt      = Tokens.CHAR,
             valid   = false,
-            c;
-            
+            ident,
+            c;            
+                    
         /*
          * First, mark where we are. There are only four @ rules,
          * so anything else is really just an invalid token.
@@ -2033,6 +2949,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          */
         reader.mark();
         
+        //try to find the at-keyword        
+        ident = this.readName();
+        rule = first + ident;
+        tt = Tokens.type(rule.toLowerCase());
+        
+        /*
         rule += c = reader.read();
         
         switch(c){
@@ -2078,17 +3000,454 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             //no default
         }
+        */
         
         //if it's not valid, use the first character only and reset the reader
-        if (!valid){        
+        if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
+            tt = Tokens.CHAR;
             rule = first;
             reader.reset();
         }            
             
         return this.createToken(tt, rule, startLine, startCol);        
+    },         
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method charToken
+     */
+    charToken: function(c, startLine, startCol){
+        var tt = Tokens.type(c);
+
+        if (tt == -1){
+            tt = Tokens.CHAR;
+        }
+        
+        return this.createToken(tt, c, startLine, startCol);
+    },    
+    
+    /**
+     * Produces a character token based on the given character
+     * and location in the stream. If there's a special (non-standard)
+     * token name, this is used; otherwise CHAR is used.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method commentToken
+     */    
+    commentToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            comment = this.readComment(first);
+
+        return this.createToken(Tokens.COMMENT, comment, startLine, startCol);    
+    },    
+    
+    /**
+     * Produces a comparison token based on the given character
+     * and location in the stream. The next character must be
+     * read and is already known to be an equals sign.
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method comparisonToken
+     */
+    comparisonToken: function(c, startLine, startCol){
+        var reader  = this._reader,
+            comparison  = c + reader.read(),
+            tt      = Tokens.type(comparison) || Tokens.CHAR;
+            
+        return this.createToken(tt, comparison, startLine, startCol);
+    },
+    
+    /**
+     * Produces a hash token based on the specified information. The
+     * first character provided is the pound sign (#) and then this
+     * method reads a name afterward.
+     * @param {String} first The first character (#) in the hash name.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method hashToken
+     */
+    hashToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            name    = this.readName(first);
+
+        return this.createToken(Tokens.HASH, name, startLine, startCol);    
+    },
+    
+    /**
+     * Produces a CDO or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method htmlCommentStartToken
+     */      
+    htmlCommentStartToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
+
+        reader.mark();        
+        text += reader.readCount(3);
+            
+        if (text == "<!--"){
+            return this.createToken(Tokens.CDO, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }        
+    },    
+    
+    /**
+     * Produces a CDC or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method htmlCommentEndToken
+     */      
+    htmlCommentEndToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
+
+        reader.mark();        
+        text += reader.readCount(2);
+            
+        if (text == "-->"){
+            return this.createToken(Tokens.CDC, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }        
+    },    
+    
+    /**
+     * Produces an IDENT or FUNCTION token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the identifier.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method identOrFunctionToken
+     */    
+    identOrFunctionToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            ident   = this.readName(first),
+            tt      = Tokens.IDENT;
+
+        //if there's a left paren immediately after, it's a URI or function
+        if (reader.peek() == "("){
+            ident += reader.read();
+            if (ident.toLowerCase() == "url("){
+                tt = Tokens.URI;
+                ident = this.readURI(ident);
+                
+                //didn't find a valid URL or there's no closing paren
+                if (ident.toLowerCase() == "url("){
+                    tt = Tokens.FUNCTION;
+                }
+            } else {
+                tt = Tokens.FUNCTION;
+            }
+        } else if (reader.peek() == ":"){  //might be an IE function
+            
+            //IE-specific functions always being with progid:
+            if (ident.toLowerCase() == "progid"){
+                ident += reader.readTo("(");
+                tt = Tokens.IE_FUNCTION;
+            }
+        }
+
+        return this.createToken(tt, ident, startLine, startCol);    
+    },
+    
+    /**
+     * Produces an IMPORTANT_SYM or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method importantToken
+     */      
+    importantToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            important   = first,
+            tt          = Tokens.CHAR,
+            temp,
+            c;
+
+        reader.mark();
+        c = reader.read();
+            
+        while(c){
+        
+            //there can be a comment in here
+            if (c == "/"){
+            
+                //if the next character isn't a star, then this isn't a valid !important token
+                if (reader.peek() != "*"){
+                    break;
+                } else {
+                    temp = this.readComment(c);
+                    if (temp == ""){    //broken!
+                        break;
+                    }
+                }
+            } else if (isWhitespace(c)){
+                important += c + this.readWhitespace();
+            } else if (/i/i.test(c)){
+                temp = reader.readCount(8);
+                if (/mportant/i.test(temp)){
+                    important += c + temp;
+                    tt = Tokens.IMPORTANT_SYM;
+                    
+                }
+                break;  //we're done
+            } else {
+                break;
+            }
+        
+            c = reader.read();
+        }
+        
+        if (tt == Tokens.CHAR){
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        } else {
+            return this.createToken(tt, important, startLine, startCol);
+        }
+        
+        
     },
 
+    /**
+     * Produces a NOT or CHAR token based on the specified information. The
+     * first character is provided and the rest is read by the function to determine
+     * the correct token to create.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method notToken
+     */      
+    notToken: function(first, startLine, startCol){
+        var reader      = this._reader,
+            text        = first;
 
+        reader.mark();        
+        text += reader.readCount(4);
+            
+        if (text.toLowerCase() == ":not("){
+            return this.createToken(Tokens.NOT, text, startLine, startCol);
+        } else {
+            reader.reset();
+            return this.charToken(first, startLine, startCol);
+        }
+    },
+
+    /**
+     * Produces a number token based on the given character
+     * and location in the stream. This may return a token of
+     * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
+     * or PERCENTAGE.
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method numberToken
+     */    
+    numberToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = this.readNumber(first),
+            ident,
+            tt      = Tokens.NUMBER,
+            c       = reader.peek();
+            
+        if (isIdentStart(c)){
+            ident = this.readName(reader.read());
+            value += ident;            
+
+            if (/em/i.test(ident)){
+                tt = Tokens.EMS;
+            } else if (/ex/i.test(ident)){
+                tt = Tokens.EXS;
+            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
+                tt = Tokens.LENGTH;
+            } else if (/deg|rad|grad/i.test(ident)){
+                tt = Tokens.ANGLE;
+            } else if (/ms|s/i.test(ident)){
+                tt = Tokens.TIME;
+            } else if (/hz|khz/i.test(ident)){
+                tt = Tokens.FREQ;
+            } else if (/dpi|dpcm/i.test(ident)){
+                tt = Tokens.RESOLUTION;
+            } else {
+                tt = Tokens.DIMENSION;
+            }
+
+        } else if (c == "%"){
+            value += reader.read();
+            tt = Tokens.PERCENTAGE;
+        }
+            
+        return this.createToken(tt, value, startLine, startCol);            
+    },    
+    
+    /**
+     * Produces a string token based on the given character
+     * and location in the stream. Since strings may be indicated
+     * by single or double quotes, a failure to match starting
+     * and ending quotes results in an INVALID token being generated.
+     * The first character in the string is passed in and then
+     * the rest are read up to and including the final quotation mark.
+     * @param {String} first The first character in the string.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method stringToken
+     */    
+    stringToken: function(first, startLine, startCol){
+        var delim   = first,
+            string  = first,
+            reader  = this._reader,
+            prev    = first,
+            tt      = Tokens.STRING,
+            c       = reader.read();
+            
+        while(c){
+            string += c;
+            
+            //if the delimiter is found with an escapement, we're done.
+            if (c == delim && prev != "\\"){
+                break;
+            }
+
+            //if there's a newline without an escapement, it's an invalid string
+            if (isNewLine(reader.peek()) && c != "\\"){
+                tt = Tokens.INVALID;
+                break;
+            }
+        
+            //save previous and get next
+            prev = c;
+            c = reader.read();
+        }
+        
+        //if c is null, that means we're out of input and the string was never closed
+        if (c == null){
+            tt = Tokens.INVALID;
+        }
+            
+        return this.createToken(tt, string, startLine, startCol);        
+    },    
+    
+    unicodeRangeToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = first,
+            temp,
+            tt      = Tokens.CHAR;
+         
+        //then it should be a unicode range
+        if (reader.peek() == "+"){
+            reader.mark();
+            value += reader.read();
+            value += this.readUnicodeRangePart(true);
+            
+            //ensure there's an actual unicode range here
+            if (value.length == 2){
+                reader.reset();
+            } else {
+                
+                tt = Tokens.UNICODE_RANGE;
+            
+                //if there's a ? in the first part, there can't be a second part
+                if (value.indexOf("?") == -1){
+                            
+                    if (reader.peek() == "-"){
+                        reader.mark();
+                        temp = reader.read();
+                        temp += this.readUnicodeRangePart(false);
+                        
+                        //if there's not another value, back up and just take the first
+                        if (temp.length == 1){
+                            reader.reset();
+                        } else {
+                            value += temp;
+                        }
+                    }
+
+                }
+            }
+        }
+    
+        return this.createToken(tt, value, startLine, startCol);
+    },
+    
+    /**
+     * Produces a S token based on the specified information. Since whitespace
+     * may have multiple characters, this consumes all whitespace characters
+     * into a single token.
+     * @param {String} first The first character in the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method whitespaceToken
+     */          
+    whitespaceToken: function(first, startLine, startCol){
+        var reader  = this._reader,
+            value   = first + this.readWhitespace();
+        return this.createToken(Tokens.S, value, startLine, startCol);            
+    },    
+   
+
+
+
+    //-------------------------------------------------------------------------
+    // Methods to read values from the string stream
+    //-------------------------------------------------------------------------
+    
+    readUnicodeRangePart: function(allowQuestionMark){
+        var reader  = this._reader,
+            part = "",            
+            c       = reader.peek();
+        
+        //first read hex digits
+        while(isHexDigit(c) && part.length < 6){
+            reader.read();
+            part += c;
+            c = reader.peek();            
+        }
+        
+        //then read question marks if allowed
+        if (allowQuestionMark){
+            while(c == "?" && part.length < 6){
+                reader.read();
+                part += c;
+                c = reader.peek();            
+            }
+        }
+
+        //there can't be any other characters after this point
+        
+        return part;    
+    },
+    
     readWhitespace: function(){
         var reader  = this._reader,
             whitespace = "",
@@ -2205,7 +3564,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
     readName: function(first){
         var reader  = this._reader,
-            ident   = first,
+            ident   = first || "",
             c       = reader.peek();
         
 
@@ -2218,7 +3577,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },    
     readComment: function(first){
         var reader  = this._reader,
-            comment = first,
+            comment = first || "",
             c       = reader.read();
         
         if (c == "*"){
@@ -2241,332 +3600,128 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     
     },
     
-    createToken: function(tt, value, startLine, startCol, options){
-        var reader = this._reader;
-        options = options || {};
-        
-        return {
-            value:      value,
-            type:       tt,
-            channel:    options.channel,
-            hide:       options.hide || false,
-            startLine:  startLine,
-            startCol:   startCol,
-            endLine:    reader.getLine(),
-            endCol:     reader.getCol()            
-        };    
-    },
+
 
 
 });
 
 
-/*
- * CSS token information based on Flex lexical scanner grammar:
- * http://www.w3.org/TR/CSS2/grammar.html#scanner
- */    
-/* 
-var Tokens = function(){
-
-    //token fragments
-    var h           = "[0-9a-fA-F]",
-        nonascii    = "[\\u0080-\\uFFFF]",
-        unicode     = "(?:\\\\" + h + "{1,6}(?:\\r\\n|[ \\t\\r\\n\\f])?)",
-        escape      = "(?:" + unicode + "|\\\\[^\r\n\f0-9a-fA-F])",
-        nmstart     = "(?:[_a-zA-Z]|" + nonascii + "|" + escape + ")", 
-        nmchar      = "(?:[_a-zA-Z0-9\\-]|" + nonascii + "|" + escape + ")",
-        nl          = "(?:\\n|\\r\\n|\\r|\\f)",
-        string1     = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*\\\")",
-        string2     = "(?:\\'(?:[^\\n\\r\\f\']|\\\\" + nl + "|" + escape + ")*\\')",
-        invalid1    = "(?:\\\"(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        invalid2    = "(?:\\'(?:[^\\n\\r\\f\\\"]|\\\\" + nl + "|" + escape + ")*)",
-        
-        comment     = "\\/\\*[^\\*]*\\*+([^\/\\*][^\\*]*\\*+)*\\/",
-        ident       = "(?:\\-?" + nmstart + nmchar + "*)",
-        name        = nmchar + "+",
-        num         = "(?:[0-9]*\\.[0-9]+|[0-9]+)",  //put decimal first as priority
-        string      = "(?:" + string1 + "|" + string2 + ")",
-        invalid     = "(?:" + invalid1 + "|" + invalid2 + ")",
-        url         = "(?:[!#$%&\\*-~]|" + nonascii + "|" + escape + ")*",
-        s           = "[ \\t\\r\\n\\f]+",
-        w           = "(?:" + s + ")?",
-
-        //return the token information
-        symbols = [
-            {
-                name: "S",
-                pattern: s,
-                channel: "ws"   //put onto another channel so I can get it later              
-            },
-            {
-                name: "COMMENT",
-                pattern: comment,
-                hide: true   //don't generate token
-            },
-            //CDO and CDC intentionally omitted
-            {
-                name: "INCLUDES",
-                text: "~="
-            },
-            {
-                name: "DASHMATCH",
-                text: "|="
-            },
-            {
-                name: "STRING",
-                pattern: string1 + "|" + string2,
-            },
-            {
-                name: "INVALID",
-                pattern: invalid1 + "|" + invalid2,
-            },  
-        
-
-            {
-                name: "HASH",
-                pattern: "#" + name
-            },
-            {
-                name: "IMPORT_SYM",
-                pattern: "@IMPORT",
-                patternOpt: "i"
-            },
-            {
-                name: "PAGE_SYM",
-                pattern: "@PAGE",
-                patternOpt: "i"
-            },
-            {
-                name: "MEDIA_SYM",
-                pattern: "@MEDIA",
-                patternOpt: "i"
-            },
-            {
-                name: "CHARSET_SYM",
-                text: "@charset "
-            },
-            {
-                name: "IMPORTANT_SYM",
-                pattern: "!(?:" + w + "|" + comment + ")*IMPORTANT",
-                patternOpt: "i"
-            },
-            {
-                name: "EMS",
-                pattern: num + "em",
-                patternOpt: "i"
-            },
-            {
-                name: "EXS",
-                pattern: num + "ex",
-                patternOpt: "i"
-            },
-            {
-                name: "LENGTH",
-                pattern: num + "px|" + num + "cm|" + num + "mm|" + num + "in|" + num + "pt|" + num + "pc",
-                patternOpt: "i"
-            },
-            {
-                name: "ANGLE",
-                pattern: num + "deg|" + num + "rad|" + num + "grad",
-                patternOpt: "i"
-            },
-            {
-                name: "TIME",
-                pattern: num + "ms|" + num + "s",
-                patternOpt: "i"
-            },
-            {
-                name: "FREQ",
-                pattern: num + "hz|" + num + "khz",
-                patternOpt: "i"
-            },
-            {
-                name: "DIMENSION",
-                pattern: num + ident
-            },   
-            {
-                name: "PERCENTAGE",
-                pattern: num + "%"
-            },
-            {
-                name: "NUMBER",
-                pattern: num 
-            },
-            {
-                name: "URI",
-                pattern: "url\\(" + w + string + w + "\\)" + "|" + "url\\(" + w + url + w + "\\)"
-            },
-
-            //exception for IE filters - yuck
-            {
-                name: "IE_FILTER",
-                pattern: "progid:[a-z\\.]+\\([^\\)]*\\)",
-                patternOpt: "i"
-            },    
-
-            {
-                name: "FUNCTION",
-                pattern: ident + "\\("
-            },    
-                
-            {
-                name: "IDENT",
-                pattern: ident
-            },        
-            //Not defined as tokens, but might as well be
-            {
-                name: "SLASH",
-                text: "/"
-            },
-            {
-                name: "MINUS",
-                text: "-"
-            },
-            {
-                name: "PLUS",
-                text: "+"
-            },
-            {
-                name: "STAR",
-                text: "*"
-            },
-            {
-                name: "GREATER",
-                text: ">"
-            },
-            {
-                name: "LBRACE",
-                text: "{"
-            },   
-            {
-                name: "RBRACE",
-                text: "}"
-            },      
-            {
-                name: "LBRACKET",
-                text: "["
-            },   
-            {
-                name: "RBRACKET",
-                text: "]"
-            },    
-            {
-                name: "EQUALS",
-                text: "="
-            },
-            {
-                name: "COLON",
-                text: ":"
-            },    
-            {
-                name: "SEMICOLON",
-                text: ";"
-            },    
-         
-            {
-                name: "LPAREN",
-                text: "("
-            },   
-            {
-                name: "RPAREN",
-                text: ")"
-            },   
-          
-            {
-                name: "DOT",
-                text: "."
-            },    
-            {
-                name: "COMMA",
-                text: ","
-            }
-        ];
-        
-        return TokenStream.createTokenData(symbols);
-
-}();
-*/
 var Tokens  = [
-    {
-        name: "S",
-        channel: "ws"   //put onto another channel so I can get it later              
-    },
-    {
-        name: "COMMENT",
-        hide: true   //don't generate token
-    },
-    //CDO and CDC intentionally omitted
-    {
-        name: "INCLUDES",
-        text: "~="
-    },
-    {
-        name: "DASHMATCH",
-        text: "|="
-    },
-    {
-        name: "STRING"
-    },
-    {
-        name: "INVALID"
-    },
-    {
-        name: "HASH"
-    },
-    {
-        name: "IMPORT_SYM"
-    },
-    {
-        name: "PAGE_SYM"
-    },
-    {
-        name: "MEDIA_SYM"
-    },
-    {
-        name: "CHARSET_SYM"
-    },
-    {
-        name: "IMPORTANT_SYM"
-    },
-    {
-        name: "EMS"
-    },
-    {
-        name: "EXS"
-    },
-    {
-        name: "LENGTH"
-    },
-    {
-        name: "ANGLE"
-    },
-    {
-        name: "TIME"
-    },
-    {
-        name: "FREQ"
-    },
-    {
-        name: "DIMENSION"
-    },   
-    {
-        name: "PERCENTAGE"
-    },
-    {
-        name: "NUMBER"
-    },
-    {
-        name: "URI"
-    },
 
-    {
-        name: "FUNCTION"
-    },    
+    /*
+     * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
+     */
+     
+    //HTML-style comments
+    { name: "CDO"},
+    { name: "CDC"},
+
+    //ignorables
+    { name: "S", whitespace: true/*, channel: "ws"*/},
+    { name: "COMMENT", comment: true, hide: true},
         
-    {
-        name: "IDENT"
-    },        
+    //attribute equality
+    { name: "INCLUDES", text: "~="},
+    { name: "DASHMATCH", text: "|="},
+    { name: "PREFIXMATCH", text: "^="},
+    { name: "SUFFIXMATCH", text: "$="},
+    { name: "SUBSTRINGMATCH", text: "*="},
+        
+    //identifier types
+    { name: "STRING"},     
+    { name: "IDENT"},
+    { name: "HASH"},
+
+    //at-keywords
+    { name: "IMPORT_SYM", text: "@import"},
+    { name: "PAGE_SYM", text: "@page"},
+    { name: "MEDIA_SYM", text: "@media"},
+    { name: "FONT_FACE_SYM", text: "@font-face"},
+    { name: "CHARSET_SYM", text: "@charset"},
+    { name: "NAMESPACE_SYM", text: "@namespace"},
+    //{ name: "ATKEYWORD"},
+
+    //important symbol
+    { name: "IMPORTANT_SYM"},
+
+    //measurements
+    { name: "EMS"},
+    { name: "EXS"},
+    { name: "LENGTH"},
+    { name: "ANGLE"},
+    { name: "TIME"},
+    { name: "FREQ"},
+    { name: "DIMENSION"},
+    { name: "PERCENTAGE"},
+    { name: "NUMBER"},
+    
+    //functions
+    { name: "URI"},
+    { name: "FUNCTION"},
+    
+    //Unicode ranges
+    { name: "UNICODE_RANGE"},
+    
+    /*
+     * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
+     */    
+    
+    //invalid string
+    { name: "INVALID"},
+    
+    //combinators
+    { name: "PLUS", text: "+" },
+    { name: "GREATER", text: ">"},
+    { name: "COMMA", text: ","},
+    { name: "TILDE", text: "~"},
+    
+    //modifier
+    { name: "NOT"},        
+    
+    /*
+     * Defined in CSS3 Paged Media
+     */
+    { name: "TOPLEFTCORNER_SYM", text: "@top-left-corner"},
+    { name: "TOPLEFT_SYM", text: "@top-left"},
+    { name: "TOPCENTER_SYM", text: "@top-center"},
+    { name: "TOPRIGHT_SYM", text: "@top-right"},
+    { name: "TOPRIGHTCORNER_SYM", text: "@top-right-corner"},
+    { name: "BOTTOMLEFTCORNER_SYM", text: "@bottom-left-corner"},
+    { name: "BOTTOMLEFT_SYM", text: "@bottom-left"},
+    { name: "BOTTOMCENTER_SYM", text: "@bottom-center"},
+    { name: "BOTTOMRIGHT_SYM", text: "@bottom-right"},
+    { name: "BOTTOMRIGHTCORNER_SYM", text: "@bottom-right-corner"},
+    { name: "LEFTTOP_SYM", text: "@left-top"},
+    { name: "LEFTMIDDLE_SYM", text: "@left-middle"},
+    { name: "LEFTBOTTOM_SYM", text: "@left-bottom"},
+    { name: "RIGHTTOP_SYM", text: "@right-top"},
+    { name: "RIGHTMIDDLE_SYM", text: "@right-middle"},
+    { name: "RIGHTBOTTOM_SYM", text: "@right-bottom"},
+
+    /*
+     * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
+     */
+    /*{ name: "MEDIA_ONLY", state: "media"},
+    { name: "MEDIA_NOT", state: "media"},
+    { name: "MEDIA_AND", state: "media"},*/
+    { name: "RESOLUTION", state: "media"},
+
+    /*
+     * The following token names are not defined in any CSS specification but are used by the lexer.
+     */
+    
+    //not a real token, but useful for stupid IE filters
+    { name: "IE_FUNCTION" },
+
+    //part of CSS3 grammar but not the Flex code
+    { name: "CHAR" },
+    
+    //TODO: Needed?
     //Not defined as tokens, but might as well be
+    {
+        name: "PIPE",
+        text: "|"
+    },
     {
         name: "SLASH",
         text: "/"
@@ -2576,17 +3731,10 @@ var Tokens  = [
         text: "-"
     },
     {
-        name: "PLUS",
-        text: "+"
-    },
-    {
         name: "STAR",
         text: "*"
     },
-    {
-        name: "GREATER",
-        text: ">"
-    },
+
     {
         name: "LBRACE",
         text: "{"
@@ -2623,15 +3771,10 @@ var Tokens  = [
     {
         name: "RPAREN",
         text: ")"
-    },   
-  
+    },     
     {
         name: "DOT",
         text: "."
-    },    
-    {
-        name: "COMMA",
-        text: ","
     }
 ];
 
@@ -2655,59 +3798,13 @@ var Tokens  = [
     };
     
     Tokens.type = function(c){
-        return typeMap[c];
+        return typeMap[c] || -1;
     };
 
 })();
 
 
 
-
-
-
-
-var ValueTokens = (function(){
-
-
-    var symbols = {
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return TokenStream.createTokenData(symbols);
-
-});
 
 
 parserlib.css = {
@@ -2716,6 +3813,9 @@ Combinator          :Combinator,
 Parser              :Parser,
 PropertyName        :PropertyName,
 PropertyValue       :PropertyValue,
+PropertyValuePart   :PropertyValuePart,
+MediaFeature        :MediaFeature,
+MediaQuery          :MediaQuery,
 Selector            :Selector,
 SelectorPart        :SelectorPart,
 SelectorSubPart     :SelectorSubPart,
@@ -2723,4 +3823,3 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
-

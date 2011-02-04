@@ -94,8 +94,11 @@ YAHOO.test.CSSTokens = (function(){
         name: "Test for comparison operators",        
         
         patterns: {
-            "~="    :[CSSTokens.INCLUDES],
-            "|="    :[CSSTokens.DASHMATCH]        
+            "~=":   [CSSTokens.INCLUDES],
+            "|=":   [CSSTokens.DASHMATCH],
+            "^=":   [CSSTokens.PREFIXMATCH],
+            "$=":   [CSSTokens.SUFFIXMATCH],
+            "*=":   [CSSTokens.SUBSTRINGMATCH]
         }
     }));
 
@@ -147,49 +150,52 @@ YAHOO.test.CSSTokens = (function(){
         }        
     }));
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @charset",
-        
-        patterns: {
-            "@charset"      : [-1],
-            "@charset "     : [CSSTokens.CHARSET_SYM],
-            "@CHARSET"      : [-1],
-            "@CHARSET "     : [-1]
-        }        
-    }));    
+    //-------------------------------------------------------------------------
+    // Tests for at-rules
+    //-------------------------------------------------------------------------
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @import",
-        
-        patterns: {
-            "@import"      : [CSSTokens.IMPORT_SYM],
-            "@import "     : [CSSTokens.IMPORT_SYM, CSSTokens.S],
-            "@IMPORT"      : [CSSTokens.IMPORT_SYM],
-            "@IMPORT "     : [CSSTokens.IMPORT_SYM, CSSTokens.S]
-        }        
-    }));    
+    (function(){
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @media",
+        var atRules = {
+            "@charset"      : CSSTokens.CHARSET_SYM,
+            "@import"       : CSSTokens.IMPORT_SYM,
+            "@page"         : CSSTokens.PAGE_SYM,
+            "@media"        : CSSTokens.MEDIA_SYM,
+            "@font-face"    : CSSTokens.FONT_FACE_SYM,
+            "@namespace"    : CSSTokens.NAMESPACE_SYM,
+            "@top-left-corner"  : CSSTokens.TOPLEFTCORNER_SYM,
+            "@top-left"     : CSSTokens.TOPLEFT_SYM,
+            "@top-right-corner" : CSSTokens.TOPRIGHTCORNER_SYM,
+            "@top-right"    : CSSTokens.TOPRIGHT_SYM,
+            "@bottom-left-corner"   : CSSTokens.BOTTOMLEFTCORNER_SYM,
+            "@bottom-left" : CSSTokens.BOTTOMLEFT_SYM,
+            "@bottom-right-corner"  : CSSTokens.BOTTOMRIGHTCORNER_SYM,
+            "@bottom-right" : CSSTokens.BOTTOMRIGHT_SYM,
+            "@left-top"     : CSSTokens.LEFTTOP_SYM,
+            "@left-middle"  : CSSTokens.LEFTMIDDLE_SYM,
+            "@left-bottom"  : CSSTokens.LEFTBOTTOM_SYM,
+            "@right-top"    : CSSTokens.RIGHTTOP_SYM,
+            "@right-middle" : CSSTokens.RIGHTMIDDLE_SYM,
+            "@right-bottom" : CSSTokens.RIGHTBOTTOM_SYM
+        };
         
-        patterns: {
-            "@media"      : [CSSTokens.MEDIA_SYM],
-            "@media "     : [CSSTokens.MEDIA_SYM, CSSTokens.S],
-            "@MEDIA"      : [CSSTokens.MEDIA_SYM],
-            "@MEDIA "     : [CSSTokens.MEDIA_SYM, CSSTokens.S]
-        }        
-    }));    
+        var patterns;
+        
+        for (var prop in atRules){
+            patterns = {};
+            
+            patterns[prop] = [atRules[prop]];
+            patterns[prop + " "] = [atRules[prop], CSSTokens.S];
+            patterns[prop.toUpperCase()] = [atRules[prop]];
+            patterns[prop.toUpperCase() + " "] = [atRules[prop], CSSTokens.S];
+            
+            suite.add(new CSSTokenTestCase({
+                name: "Tests for " + prop,                
+                patterns: patterns            
+            }));
+        }
+    })();
     
-    suite.add(new CSSTokenTestCase({
-        name : "Tests for @page",
-        
-        patterns: {
-            "@page"      : [CSSTokens.PAGE_SYM],
-            "@page "     : [CSSTokens.PAGE_SYM, CSSTokens.S],
-            "@PAGE"      : [CSSTokens.PAGE_SYM],
-            "@PAGE "     : [CSSTokens.PAGE_SYM, CSSTokens.S]
-        }        
-    }));    
     
     suite.add(new CSSTokenTestCase({
         name : "Tests for !important",
@@ -205,12 +211,68 @@ YAHOO.test.CSSTokens = (function(){
             "! /*booya*/ IMPORTANT"     : [CSSTokens.IMPORTANT_SYM],
 
             //bogus symbols            
-            "! /*IMPORTANT"     : [-1, CSSTokens.S, CSSTokens.COMMENT],            
-            "! / important"     : [-1, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
-            "!IMPO RTANT"       : [-1, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
+            "! /*IMPORTANT"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.EOF],            
+            "! / important"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
+            "!IMPO RTANT"       : [CSSTokens.CHAR, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
         }        
     }));    
     
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for HTML-style comments",
+        
+        patterns: {
+            "<!--"  : [CSSTokens.CDO],
+            "<!-- " : [CSSTokens.CDO, CSSTokens.S],
+            "-->"   : [CSSTokens.CDC],
+            "--> "  : [CSSTokens.CDC, CSSTokens.S],
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Unicode ranges",
+        
+        patterns: {
+            "U+A5"          : [CSSTokens.UNICODE_RANGE],
+            "U+0-7F"        : [CSSTokens.UNICODE_RANGE],
+            "U+590-5ff"     : [CSSTokens.UNICODE_RANGE],
+            "U+AB-BC"       : [CSSTokens.UNICODE_RANGE],
+            "U+4E00-9FFF"   : [CSSTokens.UNICODE_RANGE],
+            "U+30??"        : [CSSTokens.UNICODE_RANGE],
+            "U+00-FF"       : [CSSTokens.UNICODE_RANGE],
+            "U+??????"      : [CSSTokens.UNICODE_RANGE],
+            "U+0??????"     : [CSSTokens.UNICODE_RANGE, CSSTokens.CHAR],
+            "U+00-??"       : [CSSTokens.UNICODE_RANGE, CSSTokens.MINUS, CSSTokens.CHAR, CSSTokens.CHAR],
+            "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER],
+            "U+"            : [CSSTokens.CHAR, CSSTokens.PLUS],
+            "U+00-J"        : [CSSTokens.UNICODE_RANGE, CSSTokens.IDENT]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for :not",
+        
+        patterns: {
+            ":not("   : [CSSTokens.NOT],
+            ":noT("   : [CSSTokens.NOT],
+            ":nOT("   : [CSSTokens.NOT],
+            ":NOT("   : [CSSTokens.NOT],
+            ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S],
+            "button:not([DISABLED])": [CSSTokens.IDENT, CSSTokens.NOT, CSSTokens.LBRACKET, CSSTokens.IDENT, CSSTokens.RBRACKET, CSSTokens.RPAREN]
+        }        
+    }));
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Media Queries",
+        
+        patterns: {
+            "not"   : [CSSTokens.IDENT],
+            "and"   : [CSSTokens.IDENT],
+            "only"  : [CSSTokens.IDENT],
+            "5dpi"  : [CSSTokens.RESOLUTION],
+            "5.2dPi": [CSSTokens.RESOLUTION],
+            ".5DPI" : [CSSTokens.RESOLUTION]
+        }        
+    }));
    
     suite.add(new CSSTokenTestCase({
         name : "Tests for Numbers",
@@ -324,9 +386,9 @@ YAHOO.test.CSSTokens = (function(){
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
 
             //IE filters - not sure how to handle these yet
-            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FILTER],
-            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FILTER],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR' duration=4)"   : [CSSTokens.IE_FILTER]
+            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
         }        
     }));    
 
@@ -354,7 +416,7 @@ YAHOO.test.CSSTokens = (function(){
             ","     : [CSSTokens.COMMA],
             
             //single characters without tokens
-            "@"     : [CSSTokens.UNKNOWN]
+            "@"     : [CSSTokens.CHAR]
         }
     }));
     
@@ -372,7 +434,7 @@ YAHOO.test.CSSTokens = (function(){
             "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
             "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
             
-            "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FILTER, CSSTokens.SEMICOLON]
+            "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN, CSSTokens.SEMICOLON]
  
         }        
     }));

@@ -23,6 +23,7 @@ THE SOFTWARE.
 var parserlib = {};
 (function(){
 
+
 /**
  * A generic base to inherit from for any object
  * that needs event handling.
@@ -883,6 +884,7 @@ TokenStreamBase.prototype = {
 
 
 
+
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -891,6 +893,7 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
+
 
 /* 
 Copyright (c) 2009 Nicholas C. Zakas. All rights reserved.
@@ -920,6 +923,7 @@ TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
+
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -1407,21 +1411,7 @@ Parser.prototype = function(){
                 this.fire("startstylesheet");
             
                 //try to read character set
-                if (tokenStream.match(Tokens.CHARSET_SYM)){
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.STRING);
-                    
-                    token = tokenStream.token();
-                    charset = token.value;
-                    
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.SEMICOLON);
-                    
-                    this.fire({ 
-                        type:       "charset",
-                        charset:    charset
-                    });
-                }
+                this._charset();
                 
                 this._skipCruft();
 
@@ -1463,6 +1453,26 @@ Parser.prototype = function(){
                                 break;
                             default:                            
                                 if(!this._ruleset()){
+                                
+                                    //error handling for known issues
+                                    switch(tt){
+                                        case Tokens.CHARSET_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._charset(false);
+                                            throw new SyntaxError("@charset not allowed here.", token.startLine, token.startCol);
+                                        case Tokens.IMPORT_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._import(false);
+                                            throw new SyntaxError("@import not allowed here.", token.startLine, token.startCol);
+                                        case Tokens.NAMESPACE_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._namespace(false);
+                                            throw new SyntaxError("@import not allowed here.", token.startLine, token.startCol);
+                                        
+                                        
+                                            
+                                    }
+                                
                                     tokenStream.get();  //get the last token
                                     this._unexpectedToken(tokenStream.token());
                                 }
@@ -1489,6 +1499,27 @@ Parser.prototype = function(){
                 }
             
                 this.fire("endstylesheet");
+            },
+            
+            _charset: function(emit){
+                var tokenStream = this._tokenStream;
+                if (tokenStream.match(Tokens.CHARSET_SYM)){
+                    this._readWhitespace();
+                    tokenStream.mustMatch(Tokens.STRING);
+                    
+                    token = tokenStream.token();
+                    charset = token.value;
+                    
+                    this._readWhitespace();
+                    tokenStream.mustMatch(Tokens.SEMICOLON);
+                    
+                    if (emit === false){
+                        this.fire({ 
+                            type:   "charset",
+                            charset:charset
+                        });
+                    }
+                }            
             },
             
             _import: function(){
@@ -4512,7 +4543,7 @@ var Tokens  = [
 
     //ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/},
-    { name: "COMMENT", comment: true, hide: true},
+    { name: "COMMENT", comment: true },
         
     //attribute equality
     { name: "INCLUDES", text: "~="},
@@ -4701,6 +4732,7 @@ var Tokens  = [
 
 
 
+
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -4719,8 +4751,11 @@ Tokens              :Tokens
 })();
 
 
+
+
 (function(){
 for(var prop in parserlib){
 exports[prop] = parserlib[prop];                 
 }
 })();
+

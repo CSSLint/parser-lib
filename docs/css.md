@@ -15,7 +15,7 @@ The CSS parser is intended for use primarily in command line JavaScript environm
 
 To use the CSS parser in a Node.js script, include it at the beginning:
 
-    var parserlib = require("./node-parserlib.js");
+    var parserlib = require("./node-parserlib");
     
 ### Rhino
 
@@ -303,3 +303,5 @@ The CSS parser's goal is to be on-par with error recovery of CSS parsers in brow
         font: Helvetica;
         text-decoration: underline;
     }
+
+* **@ Rules** - there are certain @ rules that are only valid in certain contexts. The parser will skip over `@charset`, `@namespace`, and `@import` if they're found anywhere other than the beginning of the input.

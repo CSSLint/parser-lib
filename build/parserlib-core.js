@@ -23,6 +23,7 @@ THE SOFTWARE.
 var parserlib = {};
 (function(){
 
+
 /**
  * A generic base to inherit from for any object
  * that needs event handling.
@@ -883,6 +884,7 @@ TokenStreamBase.prototype = {
 
 
 
+
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -891,3 +893,4 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
+

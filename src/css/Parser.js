@@ -53,21 +53,7 @@ Parser.prototype = function(){
                 this.fire("startstylesheet");
             
                 //try to read character set
-                if (tokenStream.match(Tokens.CHARSET_SYM)){
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.STRING);
-                    
-                    token = tokenStream.token();
-                    charset = token.value;
-                    
-                    this._readWhitespace();
-                    tokenStream.mustMatch(Tokens.SEMICOLON);
-                    
-                    this.fire({ 
-                        type:       "charset",
-                        charset:    charset
-                    });
-                }
+                this._charset();
                 
                 this._skipCruft();
 
@@ -109,8 +95,26 @@ Parser.prototype = function(){
                                 break;
                             default:                            
                                 if(!this._ruleset()){
-                                    tokenStream.get();  //get the last token
-                                    this._unexpectedToken(tokenStream.token());
+                                
+                                    //error handling for known issues
+                                    switch(tt){
+                                        case Tokens.CHARSET_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._charset(false);
+                                            throw new SyntaxError("@charset not allowed here.", token.startLine, token.startCol);
+                                        case Tokens.IMPORT_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._import(false);
+                                            throw new SyntaxError("@import not allowed here.", token.startLine, token.startCol);
+                                        case Tokens.NAMESPACE_SYM:
+                                            token = tokenStream.LT(1);
+                                            this._namespace(false);
+                                            throw new SyntaxError("@namespace not allowed here.", token.startLine, token.startCol);
+                                        default:
+                                            tokenStream.get();  //get the last token
+                                            this._unexpectedToken(tokenStream.token());
+                                    }
+                                
                                 }
                         }
                     } catch(ex) {
@@ -137,7 +141,28 @@ Parser.prototype = function(){
                 this.fire("endstylesheet");
             },
             
-            _import: function(){
+            _charset: function(emit){
+                var tokenStream = this._tokenStream;
+                if (tokenStream.match(Tokens.CHARSET_SYM)){
+                    this._readWhitespace();
+                    tokenStream.mustMatch(Tokens.STRING);
+                    
+                    token = tokenStream.token();
+                    charset = token.value;
+                    
+                    this._readWhitespace();
+                    tokenStream.mustMatch(Tokens.SEMICOLON);
+                    
+                    if (emit !== false){
+                        this.fire({ 
+                            type:   "charset",
+                            charset:charset
+                        });
+                    }
+                }            
+            },
+            
+            _import: function(emit){
                 /*
                  * import
                  *   : IMPORT_SYM S*
@@ -166,15 +191,17 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
                 
-                this.fire({
-                    type:   "import",
-                    uri:    uri,
-                    media:  mediaList                
-                });
+                if (emit !== false){
+                    this.fire({
+                        type:   "import",
+                        uri:    uri,
+                        media:  mediaList                
+                    });
+                }
         
             },
             
-            _namespace: function(){
+            _namespace: function(emit){
                 /*
                  * namespace
                  *   : NAMESPACE_SYM S* [namespace_prefix S*]? [STRING|URI] S* ';' S*
@@ -208,11 +235,13 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
                 
-                this.fire({
-                    type:   "namespace",
-                    prefix: prefix,
-                    uri:    uri               
-                });
+                if (emit !== false){
+                    this.fire({
+                        type:   "namespace",
+                        prefix: prefix,
+                        uri:    uri
+                    });
+                }
         
             },            
                        

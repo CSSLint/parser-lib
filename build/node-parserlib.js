@@ -81,6 +81,8 @@ EventTarget.prototype = {
         }
         
         if (this._listeners[event.type]){
+        
+            //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);
@@ -1467,14 +1469,12 @@ Parser.prototype = function(){
                                         case Tokens.NAMESPACE_SYM:
                                             token = tokenStream.LT(1);
                                             this._namespace(false);
-                                            throw new SyntaxError("@import not allowed here.", token.startLine, token.startCol);
-                                        
-                                        
-                                            
+                                            throw new SyntaxError("@namespace not allowed here.", token.startLine, token.startCol);
+                                        default:
+                                            tokenStream.get();  //get the last token
+                                            this._unexpectedToken(tokenStream.token());
                                     }
                                 
-                                    tokenStream.get();  //get the last token
-                                    this._unexpectedToken(tokenStream.token());
                                 }
                         }
                     } catch(ex) {
@@ -1513,7 +1513,7 @@ Parser.prototype = function(){
                     this._readWhitespace();
                     tokenStream.mustMatch(Tokens.SEMICOLON);
                     
-                    if (emit === false){
+                    if (emit !== false){
                         this.fire({ 
                             type:   "charset",
                             charset:charset
@@ -1522,7 +1522,7 @@ Parser.prototype = function(){
                 }            
             },
             
-            _import: function(){
+            _import: function(emit){
                 /*
                  * import
                  *   : IMPORT_SYM S*
@@ -1551,15 +1551,17 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
                 
-                this.fire({
-                    type:   "import",
-                    uri:    uri,
-                    media:  mediaList                
-                });
+                if (emit !== false){
+                    this.fire({
+                        type:   "import",
+                        uri:    uri,
+                        media:  mediaList                
+                    });
+                }
         
             },
             
-            _namespace: function(){
+            _namespace: function(emit){
                 /*
                  * namespace
                  *   : NAMESPACE_SYM S* [namespace_prefix S*]? [STRING|URI] S* ';' S*
@@ -1593,11 +1595,13 @@ Parser.prototype = function(){
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
                 
-                this.fire({
-                    type:   "namespace",
-                    prefix: prefix,
-                    uri:    uri               
-                });
+                if (emit !== false){
+                    this.fire({
+                        type:   "namespace",
+                        prefix: prefix,
+                        uri:    uri
+                    });
+                }
         
             },            
                        
@@ -3879,54 +3883,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         rule = first + ident;
         tt = Tokens.type(rule.toLowerCase());
         
-        /*
-        rule += c = reader.read();
-        
-        switch(c){
-        
-            //might be @import
-            case "i":
-            case "I":
-                rule += reader.readCount(5);
-                valid = /@import/i.test(rule);
-                if (valid){
-                    tt = Tokens.IMPORT_SYM;
-                }
-                break;
-                
-            //might be @page
-            case "p":
-            case "P":
-                rule += reader.readCount(3);
-                valid = /@page/i.test(rule);
-                if (valid){
-                    tt = Tokens.PAGE_SYM;
-                }
-                break;
-                
-            //might be @media
-            case "m":
-            case "M":
-                rule += reader.readCount(4);
-                valid = /@media/i.test(rule);
-                if (valid){
-                    tt = Tokens.MEDIA_SYM;
-                }
-                break;
-                
-            //might be @charset, requires space after
-            case "c":
-                rule += reader.readCount(7);
-                valid = (rule == "@charset ");
-                if (valid){
-                    tt = Tokens.CHARSET_SYM;
-                }
-                break;
-
-            //no default
-        }
-        */
-        
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
             tt = Tokens.CHAR;
@@ -4543,7 +4499,7 @@ var Tokens  = [
 
     //ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/},
-    { name: "COMMENT", comment: true },
+    { name: "COMMENT", comment: true, channel: "comment" },
         
     //attribute equality
     { name: "INCLUDES", text: "~="},

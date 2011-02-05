@@ -360,54 +360,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         rule = first + ident;
         tt = Tokens.type(rule.toLowerCase());
         
-        /*
-        rule += c = reader.read();
-        
-        switch(c){
-        
-            //might be @import
-            case "i":
-            case "I":
-                rule += reader.readCount(5);
-                valid = /@import/i.test(rule);
-                if (valid){
-                    tt = Tokens.IMPORT_SYM;
-                }
-                break;
-                
-            //might be @page
-            case "p":
-            case "P":
-                rule += reader.readCount(3);
-                valid = /@page/i.test(rule);
-                if (valid){
-                    tt = Tokens.PAGE_SYM;
-                }
-                break;
-                
-            //might be @media
-            case "m":
-            case "M":
-                rule += reader.readCount(4);
-                valid = /@media/i.test(rule);
-                if (valid){
-                    tt = Tokens.MEDIA_SYM;
-                }
-                break;
-                
-            //might be @charset, requires space after
-            case "c":
-                rule += reader.readCount(7);
-                valid = (rule == "@charset ");
-                if (valid){
-                    tt = Tokens.CHARSET_SYM;
-                }
-                break;
-
-            //no default
-        }
-        */
-        
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
             tt = Tokens.CHAR;

@@ -81,6 +81,8 @@ EventTarget.prototype = {
         }
         
         if (this._listeners[event.type]){
+        
+            //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);

@@ -1260,7 +1260,7 @@ YAHOO.test.CSSParser = (function(){
         
         },
         
-        testIEFilter2: function(){
+        testIEFilter3: function(){
             var parser = new Parser({ieFilters:true});            
             var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png', sizingMethod='image')");
             
@@ -1268,7 +1268,17 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts.length);
             assert.areEqual("unknown", result.parts[0].type);
         
+        },
+        
+        testIEFilter4: function(){
+            var parser = new Parser({ieFilters:true});
+            var result = parser.parsePropertyValue("alpha(opacity=10)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("unknown", result.parts[0].type);
         }
+        
         
         
     

@@ -4499,7 +4499,7 @@ var Tokens  = [
 
     //ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/},
-    { name: "COMMENT", comment: true, channel: "comment" },
+    { name: "COMMENT", comment: true, hide: true, channel: "comment" },
         
     //attribute equality
     { name: "INCLUDES", text: "~="},

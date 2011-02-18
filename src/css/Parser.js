@@ -1459,7 +1459,16 @@ Parser.prototype = function(){
                     
                         //has to be a function
                         if (value === null){
-                            value = this._function();
+                            
+                            /*
+                             * This checks for alpha(opacity=0) style of IE
+                             * functions. IE_FUNCTION only presents progid: style.
+                             */
+                            if (tokenStream.LA(3) == Tokens.EQUALS && this.options.ieFilters){
+                                value = this._ie_function();
+                            } else {
+                                value = this._function();
+                            }
                         }
 
                         /*if (value === null){
@@ -1520,7 +1529,8 @@ Parser.prototype = function(){
                     expr        = null,
                     lt;
                     
-                if (tokenStream.match(Tokens.IE_FUNCTION)){
+                //IE function can begin like a regular function, too
+                if (tokenStream.match([Tokens.IE_FUNCTION, Tokens.FUNCTION])){
                     functionText = tokenStream.token().value;
                     
                     do {

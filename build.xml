@@ -25,7 +25,7 @@
     <target name="build.core">
     
         <concat destfile="${build.dir}/${core.build.file}"  fixlastline="true">
-            <header trimleading="yes">/* 
+            <header trimleading="yes">/*!
             ${license.text}
             */
             var parserlib = {};

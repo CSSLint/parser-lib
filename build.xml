@@ -14,6 +14,12 @@
     
     <loadfile property="license.text" srcfile="LICENSE" />
     
+    <tstamp>
+      <format property="RIGHT_NOW"
+              pattern="d-MMMM-yyyy hh:mm:ss"
+              locale="en,US"/>
+    </tstamp>
+    
     <!-- build the full library -->
     <target name="build.full" depends="build.core,build.css">
         <concat destfile="${build.dir}/${full.build.file}"  fixlastline="true">
@@ -28,6 +34,7 @@
             <header trimleading="yes">/*!
             ${license.text}
             */
+            /* Build time: ${RIGHT_NOW} */
             var parserlib = {};
             (function(){
             </header>
@@ -53,6 +60,7 @@
             <header trimleading="yes">/* 
             ${license.text}
             */
+            /* Build time: ${RIGHT_NOW} */
             (function(){
             var EventTarget = parserlib.util.EventTarget,
 			    TokenStreamBase = parserlib.util.TokenStreamBase,

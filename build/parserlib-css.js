@@ -1,5 +1,6 @@
 /* 
-Copyright (c) 2009 Nicholas C. Zakas. All rights reserved.
+Parser-Lib
+Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
+/* Build time: 22-June-2011 03:37:31 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
-
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -3799,7 +3800,6 @@ var Tokens  = [
 
 
 
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -3816,4 +3816,3 @@ TokenStream         :TokenStream,
 Tokens              :Tokens
 };
 })();
-

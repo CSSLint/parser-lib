@@ -172,10 +172,12 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     tt,
                     uri,
+                    importToken,
                     mediaList   = [];
                 
                 //read import symbol
                 tokenStream.mustMatch(Tokens.IMPORT_SYM);
+                importToken = tokenStream.token();
                 this._readWhitespace();
                 
                 tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
@@ -195,7 +197,9 @@ Parser.prototype = function(){
                     this.fire({
                         type:   "import",
                         uri:    uri,
-                        media:  mediaList                
+                        media:  mediaList,
+                        line:   importToken.startLine,
+                        col:    importToken.startCol
                     });
                 }
         

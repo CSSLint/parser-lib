@@ -886,6 +886,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             c       = reader.peek();
             
         reader.mark();
+        
+        //skip whitespace before
+        while(c && isWhitespace(c)){
+            reader.read();
+            c = reader.peek();
+        }
             
         //it's a string
         if (c == "'" || c == "\""){
@@ -895,7 +901,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
         
         c = reader.peek();
-        
+
+        //skip whitespace after
+        while(c && isWhitespace(c)){
+            reader.read();
+            c = reader.peek();
+        }
+            
         //if there was no inner value or the next character isn't closing paren, it's not a URI
         if (inner == "" || c != ")"){
             uri = first;

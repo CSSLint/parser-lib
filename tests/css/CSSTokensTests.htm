@@ -356,6 +356,9 @@ YAHOO.test.CSSTokens = (function(){
         
         patterns: {
             "url(foo.jpg)"      : [CSSTokens.URI],
+            "url( foo.jpg)"     : [CSSTokens.URI],
+            "url(foo.jpg )"     : [CSSTokens.URI],
+            "url( foo.jpg )"    : [CSSTokens.URI],
             "url('foo.jpg')"    : [CSSTokens.URI],
             "url(\"foo.jpg\")"  : [CSSTokens.URI],
 

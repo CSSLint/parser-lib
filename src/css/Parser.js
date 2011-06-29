@@ -142,8 +142,16 @@ Parser.prototype = function(){
             },
             
             _charset: function(emit){
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    charset,
+                    token,
+                    line,
+                    col;
+                    
                 if (tokenStream.match(Tokens.CHARSET_SYM)){
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
+                
                     this._readWhitespace();
                     tokenStream.mustMatch(Tokens.STRING);
                     
@@ -156,7 +164,9 @@ Parser.prototype = function(){
                     if (emit !== false){
                         this.fire({ 
                             type:   "charset",
-                            charset:charset
+                            charset:charset,
+                            line:   line,
+                            col:    col
                         });
                     }
                 }            
@@ -212,11 +222,15 @@ Parser.prototype = function(){
                  */    
             
                 var tokenStream = this._tokenStream,
+                    line,
+                    col,
                     prefix,
                     uri;
                 
                 //read import symbol
                 tokenStream.mustMatch(Tokens.NAMESPACE_SYM);
+                line = tokenStream.token().startLine;
+                col = tokenStream.token().startCol;
                 this._readWhitespace();
                 
                 //it's a namespace prefix - no _namespace_prefix() method because it's just an IDENT
@@ -243,7 +257,9 @@ Parser.prototype = function(){
                     this.fire({
                         type:   "namespace",
                         prefix: prefix,
-                        uri:    uri
+                        uri:    uri,
+                        line:   line,
+                        col:    col
                     });
                 }
         
@@ -256,10 +272,15 @@ Parser.prototype = function(){
                  *   ;
                  */
                 var tokenStream     = this._tokenStream,
+                    line,
+                    col,
                     mediaList;//       = [];
                 
                 //look for @media
                 tokenStream.mustMatch(Tokens.MEDIA_SYM);
+                line = tokenStream.token().startLine;
+                col = tokenStream.token().startCol;
+                
                 this._readWhitespace();               
 
                 mediaList = this._media_query_list();
@@ -269,7 +290,9 @@ Parser.prototype = function(){
                 
                 this.fire({
                     type:   "startmedia",
-                    media:  mediaList
+                    media:  mediaList,
+                    line:   line,
+                    col:    col
                 });
                 
                 while(this._ruleset()){}
@@ -279,7 +302,9 @@ Parser.prototype = function(){
         
                 this.fire({
                     type:   "endmedia",
-                    media:  mediaList
+                    media:  mediaList,
+                    line:   line,
+                    col:    col
                 });
             },                           
         
@@ -298,7 +323,7 @@ Parser.prototype = function(){
                 this._readWhitespace();
                 
                 if (tokenStream.peek() == Tokens.IDENT){
-                    mediaList.push(this._media_query())
+                    mediaList.push(this._media_query());
                 }
                 
                 while(tokenStream.match(Tokens.COMMA)){
@@ -439,11 +464,16 @@ Parser.prototype = function(){
                  *    ;
                  */            
                 var tokenStream = this._tokenStream,
+                    line,
+                    col,
                     identifier  = null,
                     pseudoPage  = null;
                 
                 //look for @page
                 tokenStream.mustMatch(Tokens.PAGE_SYM);
+                line = tokenStream.token().startLine;
+                col = tokenStream.token().startCol;
+                
                 this._readWhitespace();
                 
                 if (tokenStream.match(Tokens.IDENT)){
@@ -465,7 +495,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "startpage",
                     id:     identifier,
-                    pseudo: pseudoPage
+                    pseudo: pseudoPage,
+                    line:   line,
+                    col:    col
                 });                   
 
                 this._readDeclarations(true, true);                
@@ -473,7 +505,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "endpage",
                     id:     identifier,
-                    pseudo: pseudoPage
+                    pseudo: pseudoPage,
+                    line:   line,
+                    col:    col
                 });             
             
             },
@@ -486,19 +520,28 @@ Parser.prototype = function(){
                  *    ;
                  */
                 var tokenStream = this._tokenStream,
+                    line,
+                    col,
                     marginSym   = this._margin_sym();
 
                 if (marginSym){
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
+                
                     this.fire({
                         type: "startpagemargin",
-                        margin: marginSym
+                        margin: marginSym,
+                        line:   line,
+                        col:    col
                     });    
                     
                     this._readDeclarations(true);
 
                     this.fire({
                         type: "endpagemargin",
-                        margin: marginSym
+                        margin: marginSym,
+                        line:   line,
+                        col:    col
                     });    
                     return true;
                 } else {
@@ -571,20 +614,29 @@ Parser.prototype = function(){
                  *     '{' S* declaration [ ';' S* declaration ]* '}' S*
                  *   ;
                  */     
-                var tokenStream = this._tokenStream;
+                var tokenStream = this._tokenStream,
+                    line,
+                    col;
                 
                 //look for @page
                 tokenStream.mustMatch(Tokens.FONT_FACE_SYM);
+                line = tokenStream.token().startLine;
+                col = tokenStream.token().startCol;
+                
                 this._readWhitespace();
 
                 this.fire({
-                    type:   "startfontface"
+                    type:   "startfontface",
+                    line:   line,
+                    col:    col
                 });                    
                 
                 this._readDeclarations(true);
                 
                 this.fire({
-                    type:   "endfontface"
+                    type:   "endfontface",
+                    line:   line,
+                    col:    col
                 });              
             },
 
@@ -697,6 +749,7 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
+                tt,
                     selectors;
 
 
@@ -741,14 +794,18 @@ Parser.prototype = function(){
                                     
                     this.fire({
                         type:       "startrule",
-                        selectors:  selectors
+                        selectors:  selectors,
+                        line:       selectors[0].line,
+                        col:        selectors[0].col
                     });                
                     
                     this._readDeclarations(true);                
                     
                     this.fire({
                         type:       "endrule",
-                        selectors:  selectors
+                        selectors:  selectors,
+                        line:       selectors[0].line,
+                        col:        selectors[0].col
                     });  
                     
                 }
@@ -1317,7 +1374,7 @@ Parser.prototype = function(){
                 
                 property = this._property();
                 if (property !== null){
-                    
+
                     tokenStream.mustMatch(Tokens.COLON);
                     this._readWhitespace();
                     
@@ -1334,7 +1391,9 @@ Parser.prototype = function(){
                         type:       "property",
                         property:   property,
                         value:      expr,
-                        important:  prio
+                        important:  prio,
+                        line:       property.line,
+                        col:        property.col
                     });                      
                     
                     return true;
@@ -1513,7 +1572,7 @@ Parser.prototype = function(){
                     expr = this._expr();
                     
                     tokenStream.match(Tokens.RPAREN);    
-                    functionText += expr + ")"
+                    functionText += expr + ")";
                     this._readWhitespace();
                 }                
                 
@@ -1564,7 +1623,7 @@ Parser.prototype = function(){
                     } while(tokenStream.match([Tokens.COMMA, Tokens.S]));                    
                     
                     tokenStream.match(Tokens.RPAREN);    
-                    functionText += ")"
+                    functionText += ")";
                     this._readWhitespace();
                 }                
                 

@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:03:52 */
+/* Build time: 5-July-2011 03:12:40 */
 var parserlib = {};
 (function(){
 
@@ -917,7 +917,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:03:52 */
+/* Build time: 5-July-2011 03:12:40 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -4233,11 +4233,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             ident = this.readName(reader.read());
             value += ident;            
 
-            if (/em/i.test(ident)){
-                tt = Tokens.EMS;
-            } else if (/ex/i.test(ident)){
-                tt = Tokens.EXS;
-            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
+            if (/em|ex|px|gd|rem|vw|vh|vm|ch|cm|mm|in|pt|pc/i.test(ident)){
                 tt = Tokens.LENGTH;
             } else if (/deg|rad|grad/i.test(ident)){
                 tt = Tokens.ANGLE;

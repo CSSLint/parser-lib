@@ -641,11 +641,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             ident = this.readName(reader.read());
             value += ident;            
 
-            if (/em/i.test(ident)){
-                tt = Tokens.EMS;
-            } else if (/ex/i.test(ident)){
-                tt = Tokens.EXS;
-            } else if (/px|cm|mm|in|pt|pc/i.test(ident)){
+            if (/em|ex|px|gd|rem|vw|vh|vm|ch|cm|mm|in|pt|pc/i.test(ident)){
                 tt = Tokens.LENGTH;
             } else if (/deg|rad|grad/i.test(ident)){
                 tt = Tokens.ANGLE;

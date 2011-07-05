@@ -328,7 +328,7 @@ Parser.prototype = function(){
                 
                 this._readWhitespace();
                 
-                if (tokenStream.peek() == Tokens.IDENT){
+                if (tokenStream.peek() == Tokens.IDENT || tokenStream.peek() == Tokens.LPAREN){
                     mediaList.push(this._media_query());
                 }
                 

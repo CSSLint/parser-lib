@@ -1291,7 +1291,32 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media { @page {} }");
             assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithTypeOnly: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media print { }");
+            assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithTypesOnly: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media print, screen { }");
+            assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithSimpleExpression: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media (max-width:400px) { }");
+            assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithComplexExpression: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media all and (max-width:400px) { }");
+            assert.isTrue(true);  //just don't want an error
         }
+        
     }));        
  
     

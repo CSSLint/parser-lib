@@ -295,7 +295,13 @@ Parser.prototype = function(){
                     col:    col
                 });
                 
-                while(this._ruleset()){}
+                while(true) {
+                    if (tokenStream.peek() == Tokens.PAGE_SYM){
+                        this._page();
+                    } else if (!this._ruleset()){
+                        break;
+                    }                
+                }
                 
                 tokenStream.mustMatch(Tokens.RBRACE);
                 this._readWhitespace();

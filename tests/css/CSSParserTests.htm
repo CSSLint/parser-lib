@@ -1278,14 +1278,22 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(1, result.parts.length);
             assert.areEqual("unknown", result.parts[0].type);
         }
-        
-        
+     
+    
+    }));      
         
     
-        
+    suite.add(new YAHOO.tool.TestCase({
     
+        name: "General Parsing Tests",    
     
-    }));
+        testMediaWithPage: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media { @page {} }");
+            assert.isTrue(true);  //just don't want an error
+        }
+    }));        
+ 
     
     //return it
     return suite;

@@ -224,7 +224,7 @@ YAHOO.test.CSSTokens = (function(){
             "<!--"  : [CSSTokens.CDO],
             "<!-- " : [CSSTokens.CDO, CSSTokens.S],
             "-->"   : [CSSTokens.CDC],
-            "--> "  : [CSSTokens.CDC, CSSTokens.S],
+            "--> "  : [CSSTokens.CDC, CSSTokens.S]
         }        
     }));    
     
@@ -413,7 +413,7 @@ YAHOO.test.CSSTokens = (function(){
             //IE filters - not sure how to handle these yet
             "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
             "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN]
         }        
     }));    
 

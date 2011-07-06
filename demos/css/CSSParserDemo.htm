@@ -162,7 +162,7 @@ function parse(){
     });    
 
     try {
-        parser.parse(document.getElementById("input").value)
+        parser.parse(document.getElementById("input").value);
     } catch (ex){
         log("Parse error: " + ex.message, "error");
     }

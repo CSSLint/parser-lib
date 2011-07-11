@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 5-July-2011 03:12:40 */
+/* Build time: 11-July-2011 03:17:48 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3701,13 +3701,14 @@ var Tokens  = [
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
     //{ name: "ATKEYWORD"},
+    
+    //CSS3 animations
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},
 
     //measurements
-    { name: "EMS"},
-    { name: "EXS"},
     { name: "LENGTH"},
     { name: "ANGLE"},
     { name: "TIME"},
@@ -3850,7 +3851,13 @@ var Tokens  = [
         nameMap.push(Tokens[i].name);
         Tokens[Tokens[i].name] = i;
         if (Tokens[i].text){
-            typeMap[Tokens[i].text] = i;
+            if (Tokens[i].text instanceof Array){
+                for (var j=0; j < Tokens[i].text.length; j++){
+                    typeMap[Tokens[i].text[j]] = i;
+                }
+            } else {
+                typeMap[Tokens[i].text] = i;
+            }
         }
     }
     

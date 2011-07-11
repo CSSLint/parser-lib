@@ -1667,6 +1667,38 @@ Parser.prototype = function(){
             },
             
             //-----------------------------------------------------------------
+            // Animations methods
+            //-----------------------------------------------------------------
+            
+            
+            _key: function(){
+                /*
+                 * There is a restriction that IDENT can be only "from" or "to".
+                 *
+                 * key
+                 *   : PERCENTAGE
+                 *   | IDENT
+                 *   ;
+                 */
+                 
+                var tokenStream = this._tokenStream,
+                    token;
+                    
+                if (tokenStream.match(Tokens.PERCENTAGE)){
+                    return tokenStream.token();
+                } else if (tokenStream.match(Tokens.IDENT)){
+                    token = tokenStream.token();                    
+                    
+                    if (/from|to/i.test(token.value)){
+                        return token;
+                    }
+                }
+                
+                //if it gets here, there wasn't a valid token, so time to explode
+                
+            },
+            
+            //-----------------------------------------------------------------
             // Helper methods
             //-----------------------------------------------------------------
             

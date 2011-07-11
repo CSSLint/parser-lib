@@ -19,6 +19,19 @@
 @namespace "http://www.w3.org/1999/xhtml";
 @namespace svg "http://www.w3.org/2000/svg";
 
+@keyframes 'diagonal-slide' {
+
+    from {
+        left: 0;
+        top: 0;
+    }
+
+    to {
+        left: 100px;
+        top: 100px;
+    }
+}
+
 li.inline {
   background: url("something.png");
   display: inline;
@@ -87,6 +100,29 @@ function parse(){
     
     parser.addListener("endfontface", function(event){
         log("Ending font face");
+    });
+    
+    parser.addListener("startkeyframes", function(event){
+        log("Starting keyframes with name=" + event.name);
+    });
+    
+    parser.addListener("startkeyframerule", function(event){
+        log("Starting keyframe rule with " + event.keys.length + " keys(s)");
+        
+        for (var i=0,len=event.keys.length; i < len; i++){
+            var key = event.keys[i];
+            
+            log("  " + key + " (" + key.line + "," + key.col + ")");            
+        }
+
+    });
+    
+    parser.addListener("endkeyframerule", function(event){
+        log("Ending keyframe rule with keys [" + event.keys + "]");
+    });    
+    
+    parser.addListener("endkeyframes", function(event){
+        log("Ending keyframes with name=" + event.name);
     });
     
     parser.addListener("startpage", function(event){

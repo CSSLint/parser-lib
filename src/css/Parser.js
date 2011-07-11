@@ -41,7 +41,7 @@ Parser.prototype = function(){
                  *  : [ CHARSET_SYM S* STRING S* ';' ]?
                  *    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
                  *    [ namespace [S|CDO|CDC]* ]*
-                 *    [ [ ruleset | media | page | font_face ] [S|CDO|CDC]* ]*
+                 *    [ [ ruleset | media | page | font_face | keyframes ] [S|CDO|CDC]* ]*
                  *  ;
                  */ 
                
@@ -88,6 +88,10 @@ Parser.prototype = function(){
                                 break;                   
                             case Tokens.FONT_FACE_SYM:
                                 this._font_face(); 
+                                this._skipCruft();
+                                break;  
+                            case Tokens.KEYFRAMES_SYM:
+                                this._keyframes(); 
                                 this._skipCruft();
                                 break;  
                             case Tokens.S:
@@ -755,7 +759,7 @@ Parser.prototype = function(){
                  */    
                  
                 var tokenStream = this._tokenStream,
-                tt,
+                    tt,
                     selectors;
 
 
@@ -1267,7 +1271,7 @@ Parser.prototype = function(){
                     
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
-                        Tokens.FREQ, Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
                         Tokens.RESOLUTION])){
                     
                     value += tokenStream.token().value;
@@ -1475,7 +1479,7 @@ Parser.prototype = function(){
                 /*
                  * term
                  *   : unary_operator?
-                 *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | EMS S* | EXS S* | ANGLE S* |
+                 *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | ANGLE S* |
                  *       TIME S* | FREQ S* | function | ie_function ]
                  *   | STRING S* | IDENT S* | URI S* | UNICODERANGE S* | hexcolor
                  *   ;
@@ -1505,7 +1509,7 @@ Parser.prototype = function(){
                 
                 //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
-                        Tokens.EMS, Tokens.EXS, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.ANGLE, Tokens.TIME,
                         Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])){
                  
                     value = tokenStream.token().value;
@@ -1670,7 +1674,125 @@ Parser.prototype = function(){
             // Animations methods
             //-----------------------------------------------------------------
             
+            _keyframes: function(){
             
+                /*
+                 * keyframes:
+                 *   : KEYFRAMES_SYM S* keyframe_name S* '{' S* keyframe_rule* '}' {
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    tt,
+                    name;            
+                    
+                tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
+                this._readWhitespace();
+                name = this._keyframe_name();
+                
+                this._readWhitespace();
+                tokenStream.mustMatch(Tokens.LBRACE);
+                    
+                this.fire({
+                    type:   "startkeyframes",
+                    name:   name,
+                    line:   name.line,
+                    col:    name.col
+                });                
+                
+                this._readWhitespace();
+                tt = tokenStream.peek();
+                
+                //check for key
+                while(tt == Tokens.IDENT || tt == Tokens.PERCENTAGE) {
+                    this._keyframe_rule();
+                    this._readWhitespace();
+                    tt = tokenStream.peek();
+                }           
+                
+                this.fire({
+                    type:   "endkeyframes",
+                    name:   name,
+                    line:   name.line,
+                    col:    name.col
+                });                      
+                    
+                this._readWhitespace();
+                tokenStream.mustMatch(Tokens.RBRACE);                    
+                
+            },
+            
+            _keyframe_name: function(){
+            
+                /*
+                 * keyframe_name:
+                 *   : IDENT
+                 *   | STRING
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token;
+
+                tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
+                return SyntaxUnit.fromToken(tokenStream.token());            
+            },
+            
+            _keyframe_rule: function(){
+            
+                /*
+                 * keyframe_rule:
+                 *   : key_list S* 
+                 *     '{' S* declaration [ ';' S* declaration ]* '}' S*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    keyList = this._key_list();
+                                    
+                this.fire({
+                    type:   "startkeyframerule",
+                    keys:   keyList,
+                    line:   keyList[0].line,
+                    col:    keyList[0].col
+                });                
+                
+                this._readDeclarations(true);                
+                
+                this.fire({
+                    type:   "endkeyframerule",
+                    keys:   keyList,
+                    line:   keyList[0].line,
+                    col:    keyList[0].col
+                });  
+                
+            },
+            
+            _key_list: function(){
+            
+                /*
+                 * key_list:
+                 *   : key [ S* ',' S* key]*
+                 *   ;
+                 */
+                var tokenStream = this._tokenStream,
+                    token,
+                    key,
+                    keyList = [];
+                    
+                //must be least one key
+                keyList.push(this._key());
+                    
+                this._readWhitespace();
+                    
+                while(tokenStream.match(Tokens.COMMA)){
+                    this._readWhitespace();
+                    keyList.push(this._key());
+                    this._readWhitespace();
+                }
+
+                return keyList;
+            },
+                        
             _key: function(){
                 /*
                  * There is a restriction that IDENT can be only "from" or "to".
@@ -1685,17 +1807,19 @@ Parser.prototype = function(){
                     token;
                     
                 if (tokenStream.match(Tokens.PERCENTAGE)){
-                    return tokenStream.token();
+                    return SyntaxUnit.fromToken(tokenStream.token());
                 } else if (tokenStream.match(Tokens.IDENT)){
                     token = tokenStream.token();                    
                     
                     if (/from|to/i.test(token.value)){
-                        return token;
+                        return SyntaxUnit.fromToken(token);
                     }
+                    
+                    tokenStream.unget();
                 }
                 
                 //if it gets here, there wasn't a valid token, so time to explode
-                
+                this._unexpectedToken(tokenStream.LT(1));
             },
             
             //-----------------------------------------------------------------

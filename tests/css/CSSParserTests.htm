@@ -1288,7 +1288,7 @@ YAHOO.test.CSSParser = (function(){
         
         testWebKitKeyFrames: function(){
             var parser = new Parser({strict:true});
-            var result = parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            var result = parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
             assert.isTrue(true);  //just don't want an error
         },
         
@@ -1308,9 +1308,15 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({strict:true});
             var result = parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
             assert.isTrue(true);  //just don't want an error
+        },
+        
+        testKeyFramesWithWhitespace: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
+            assert.isTrue(true);
         }
         
-    });
+    }));
     
     suite.add(new YAHOO.tool.TestCase({
     

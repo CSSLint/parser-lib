@@ -1662,7 +1662,7 @@ Parser.prototype = function(){
                     token = tokenStream.token();
                     color = token.value;
                     if (!/#[a-f0-9]{3,6}/i.test(color)){
-                        throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
+                        throw new SyntaxError("Expected a hex color but found '" + color + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
                     }
                     this._readWhitespace();
                 }
@@ -1958,7 +1958,7 @@ Parser.prototype = function(){
              * @private
              */
             _unexpectedToken: function(token){
-                throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", char " + token.startCol + ".", token.startLine, token.startCol);
+                throw new SyntaxError("Unexpected token '" + token.value + "' at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
             },
             
             /**

@@ -1238,7 +1238,7 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
             assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
             assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
-            assert.areEqual(3, result.parts.length, "Should be three parts.");            
+            assert.areEqual(3, result.parts.length, "Should be three parts.");
         },
     
         testIEFilter: function(){
@@ -1350,6 +1350,16 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media all and (max-width:400px) { }");
             assert.isTrue(true);  //just don't want an error
+        },
+        
+        testClassesWithEscapes: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parseSelector("#\\31 a2b3c");
+            
+            assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual("#\\31 a2b3c", result.parts[0].toString(), "Selector should be correct.");
+            assert.areEqual(1, result.parts.length, "Should be one part.");            
         }
         
     }));        

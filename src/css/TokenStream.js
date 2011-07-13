@@ -30,11 +30,11 @@ function isNameStart(c){
 }
 
 function isNameChar(c){
-    return c != null && (isNameStart(c) || /[0-9\-]/.test(c));
+    return c != null && (isNameStart(c) || /[0-9\-\\]/.test(c));
 }
 
 function isIdentStart(c){
-    return c != null && (isNameStart(c) || c == "-");
+    return c != null && (isNameStart(c) || /\-\\/.test(c));
 }
 
 function mix(receiver, supplier){
@@ -933,14 +933,44 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             ident   = first || "",
             c       = reader.peek();
 
-
-        while(c && isNameChar(c)){
-            ident += reader.read();
-            c = reader.peek();
+        while(true){
+            if (c == "\\"){
+                ident += this.readEscape(reader.read());
+                c = reader.peek();
+            } else if(c && isNameChar(c)){
+                ident += reader.read();
+                c = reader.peek();
+            } else {
+                break;
+            }
         }
 
         return ident;
     },
+    
+    readEscape: function(first){
+        var reader  = this._reader,
+            cssEscape = first || "",
+            i       = 0,
+            c       = reader.peek();    
+    
+        if (isHexDigit(c)){
+            do {
+                cssEscape += reader.read();
+                c = reader.peek();
+            } while(c && isHexDigit(c) && ++i < 6);
+        }
+        
+        if (cssEscape.length == 3 && /\s/.test(c) ||
+            cssEscape.length == 7 || cssEscape.length == 1){
+                reader.read();
+        } else {
+            c = "";
+        }
+        
+        return cssEscape + c;
+    },
+    
     readComment: function(first){
         var reader  = this._reader,
             comment = first || "",

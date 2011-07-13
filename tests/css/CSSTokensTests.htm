@@ -140,13 +140,16 @@ YAHOO.test.CSSTokens = (function(){
     suite.add(new CSSTokenTestCase({
         name : "Tests for hashes",
         
+        // need to use double \\ to represent a single \ due to escaping
         patterns: {
             "#identifier"       : [CSSTokens.HASH],
             "#_identifer"       : [CSSTokens.HASH],
             "#0-9_"             : [CSSTokens.HASH],
             "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
             "#h\\0fllo"         : [CSSTokens.HASH],
-            "#ffeeff"           : [CSSTokens.HASH]
+            "#ffeeff"           : [CSSTokens.HASH],
+            "#\\31 a2b3c"        : [CSSTokens.HASH],
+            "#r0\\.5"            : [CSSTokens.HASH]
         }        
     }));
     

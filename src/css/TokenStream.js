@@ -641,15 +641,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             ident = this.readName(reader.read());
             value += ident;
 
-            if (/em|ex|px|gd|rem|vw|vh|vm|ch|cm|mm|in|pt|pc/i.test(ident)){
+            if (/^em$|^ex$|^px$|^gd$|^rem$|^vw$|^vh$|^vm$|^ch$|^cm$|^mm$|^in$|^pt$|^pc$/i.test(ident)){
                 tt = Tokens.LENGTH;
-            } else if (/deg|rad|grad/i.test(ident)){
+            } else if (/^deg|^rad$|^grad$/i.test(ident)){
                 tt = Tokens.ANGLE;
-            } else if (/ms|s/i.test(ident)){
+            } else if (/^ms$|^s$/i.test(ident)){
                 tt = Tokens.TIME;
-            } else if (/hz|khz/i.test(ident)){
+            } else if (/^hz$|^khz$/i.test(ident)){
                 tt = Tokens.FREQ;
-            } else if (/dpi|dpcm/i.test(ident)){
+            } else if (/^dpi$|^dpcm$/i.test(ident)){
                 tt = Tokens.RESOLUTION;
             } else {
                 tt = Tokens.DIMENSION;

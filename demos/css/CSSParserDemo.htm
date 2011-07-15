@@ -183,6 +183,9 @@ function parse(){
     
     parser.addListener("property", function(event){
         log("Property '" + event.property + "' has a value of '" + event.value + "' and " + (event.important ? "is" : "isn't") + " important. (" + event.property.line + "," + event.property.col + ")");
+        if (!event.valid){
+            log("    Not valid: " + event.error.message);
+        }
     });
     
     parser.addListener("startmedia", function(event){

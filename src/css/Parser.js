@@ -1380,7 +1380,9 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     property    = null,
                     expr        = null,
-                    prio        = null;
+                    prio        = null,
+                    error       = null,
+                    valid       = true;
                 
                 property = this._property();
                 if (property !== null){
@@ -1397,13 +1399,22 @@ Parser.prototype = function(){
                     
                     prio = this._prio();
                     
+                    try {
+                        this._validateProperty(property, expr);
+                    } catch (ex) {
+                        valid = false;
+                        error = ex;
+                    }
+                    
                     this.fire({
                         type:       "property",
                         property:   property,
                         value:      expr,
                         important:  prio,
                         line:       property.line,
-                        col:        property.col
+                        col:        property.col,
+                        valid:      valid,
+                        error:      error
                     });                      
                     
                     return true;
@@ -1971,6 +1982,41 @@ Parser.prototype = function(){
                 if (this._tokenStream.LA(1) != Tokens.EOF){
                     this._unexpectedToken(this._tokenStream.LT(1));
                 }            
+            },
+            
+            //-----------------------------------------------------------------
+            // Validation methods
+            //-----------------------------------------------------------------
+            _validateProperty: function(property, value){
+                var name = property.text.toLowerCase(),
+                    validation,
+                    i, len;
+                
+                if (Properties[name]){
+                    validation = Properties[name];
+                    if (typeof validation == "object"){
+                        for (i=0, len=validation.parts.length; i < len; i++){
+                            if (!validation.parts[i]){
+                                throw new ValidationError("Unexpected value. Expected only " + validation.parts.length + " values for property '" + property + "'.",
+                                    value.line, value.col);
+                            } else if ((new RegExp("^("+validation.parts[i].types.join("|")+")$")).test(value.parts[i].type)){
+                                if (validation.parts[i][RegExp.$1]){
+                                    if (!validation.parts[i][RegExp.$1].test(value.parts[i])){
+                                        throw new ValidationError("Unexpected value '" + value.parts[i] + 
+                                            "'.", value.parts[i].line, value.parts[i].col);
+                                    }
+                                }
+                            } else {
+                                throw new ValidationError("Unexpected value type " + value.parts[i].type + 
+                                    ". Expected " + validation.parts[i].types + ".", value.parts[i].line, value.parts[i].col);
+                            }
+                        }
+                    }
+                    
+                    //otherwise, no validation available yet
+                } else if (name.indexOf("-") !== 0){    //vendor prefixed are ok
+                    throw new ValidationError("Property '" + property + "' isn't recognized.", property.line, property.col);
+                }
             },
             
             //-----------------------------------------------------------------

@@ -84,7 +84,8 @@
                 SelectorPart        :SelectorPart,
                 SelectorSubPart     :SelectorSubPart,
                 TokenStream         :TokenStream,
-                Tokens              :Tokens
+                Tokens              :Tokens,
+                ValidationError     :ValidationError
             };
             })();
             </footer>

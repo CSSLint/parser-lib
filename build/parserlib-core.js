@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 15-July-2011 01:18:57 */
+/* Build time: 15-July-2011 01:21:36 */
 var parserlib = {};
 (function(){
 
@@ -646,7 +646,7 @@ TokenStreamBase.prototype = {
         if (!this.match.apply(this, arguments)){    
             token = this.LT(1);
             throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
-                " at line " + token.startLine + ", character " + token.startCol + ".", token.startLine, token.startCol);
+                " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
     

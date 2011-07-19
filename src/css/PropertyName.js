@@ -11,7 +11,7 @@
  */
 function PropertyName(text, hack, line, col){
     
-    SyntaxUnit.call(this, (hack||"") + text, line, col);
+    SyntaxUnit.call(this, text, line, col);
 
     /**
      * The type of IE hack applied ("*", "_", or null).
@@ -24,4 +24,6 @@ function PropertyName(text, hack, line, col){
 
 PropertyName.prototype = new SyntaxUnit();
 PropertyName.prototype.constructor = PropertyName;
-
+PropertyName.prototype.toString = function(){
+    return (this.hack ? this.hack : "") + this.text;
+};

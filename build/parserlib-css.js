@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 15-July-2011 01:21:36 */
+/* Build time: 19-July-2011 01:46:47 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2949,7 +2949,7 @@ var Properties = {
  */
 function PropertyName(text, hack, line, col){
     
-    SyntaxUnit.call(this, (hack||"") + text, line, col);
+    SyntaxUnit.call(this, text, line, col);
 
     /**
      * The type of IE hack applied ("*", "_", or null).
@@ -2962,7 +2962,9 @@ function PropertyName(text, hack, line, col){
 
 PropertyName.prototype = new SyntaxUnit();
 PropertyName.prototype.constructor = PropertyName;
-
+PropertyName.prototype.toString = function(){
+    return (this.hack ? this.hack : "") + this.text;
+};
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just everything single part between ":" and ";". If there are multiple values

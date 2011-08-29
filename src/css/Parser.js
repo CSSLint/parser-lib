@@ -21,6 +21,18 @@ function Parser(options){
     this._tokenStream = null;
 }
 
+Parser.DEFAULT_TYPE = 0;
+Parser.COMBINATOR_TYPE = 1;
+Parser.MEDIA_FEATURE_TYPE = 2;
+Parser.MEDIA_QUERY_TYPE = 3;
+Parser.PROPERTY_NAME_TYPE = 4;
+Parser.PROPERTY_VALUE_TYPE = 5;
+Parser.PROPERTY_VALUE_PART_TYPE = 6;
+Parser.SELECTOR_TYPE = 7;
+Parser.SELECTOR_PART_TYPE = 8;
+Parser.SELECTOR_SUB_PART_TYPE = 9;
+
+
 Parser.prototype = function(){
 
     var proto = new EventTarget(),  //new prototype

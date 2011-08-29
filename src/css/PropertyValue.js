@@ -12,7 +12,7 @@
  */
 function PropertyValue(parts, line, col){
 
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
     
     /**
      * The parts that make up the selector.

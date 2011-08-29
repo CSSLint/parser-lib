@@ -40,10 +40,12 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("li");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(Parser.SELECTOR_TYPE, result.type);
             assert.areEqual(1, result.line, "Line start should be 1");
             assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");
             assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            assert.areEqual(Parser.SELECTOR_PART_TYPE, result.parts[0].type);
             assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
             assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
         },
@@ -53,6 +55,7 @@ YAHOO.test.CSSParser = (function(){
             var result = parser.parseSelector("svg|rect");
             
             assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            assert.areEqual(Parser.SELECTOR_TYPE, result.type);
             assert.areEqual(1, result.line, "Line start should be 1");
             assert.areEqual(1, result.col, "Column start should be 1");
             assert.areEqual(1, result.parts.length, "Selector should have three parts.");

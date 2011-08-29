@@ -9,7 +9,7 @@
  */
 function MediaFeature(name, value){
     
-    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol);
+    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
 
     /**
      * The name of the media feature

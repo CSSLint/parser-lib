@@ -11,7 +11,7 @@
  */
 function Selector(parts, line, col){
     
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
     
     /**
      * The parts that make up the selector.

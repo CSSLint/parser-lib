@@ -11,7 +11,7 @@
  */
 function PropertyName(text, hack, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
 
     /**
      * The type of IE hack applied ("*", "_", or null).

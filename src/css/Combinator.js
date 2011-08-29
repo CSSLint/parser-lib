@@ -10,7 +10,7 @@
  */
 function Combinator(text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
     /**
      * The type of modifier.

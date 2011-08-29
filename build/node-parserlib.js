@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-July-2011 01:46:47 */
+/* Build time: 29-August-2011 11:18:44 */
 var parserlib = {};
 (function(){
 
@@ -424,7 +424,7 @@ SyntaxError.prototype = new Error();
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col){
+function SyntaxUnit(text, line, col, type){
 
 
     /**
@@ -448,6 +448,12 @@ function SyntaxUnit(text, line, col){
      */
     this.text = text;
 
+    /**
+     * The type of syntax unit.
+     * @type int
+     * @property type
+     */
+    this.type = type;
 }
 
 /**
@@ -917,7 +923,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-July-2011 01:46:47 */
+/* Build time: 29-August-2011 11:18:44 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1079,7 +1085,7 @@ var Colors = {
  */
 function Combinator(text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
     /**
      * The type of modifier.
@@ -1291,7 +1297,7 @@ var Level2Properties = {
  */
 function MediaFeature(name, value){
     
-    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol);
+    SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
 
     /**
      * The name of the media feature
@@ -1325,7 +1331,7 @@ MediaFeature.prototype.constructor = MediaFeature;
  */
 function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")
@@ -1375,6 +1381,18 @@ function Parser(options){
 
     this._tokenStream = null;
 }
+
+Parser.DEFAULT_TYPE = 0;
+Parser.COMBINATOR_TYPE = 1;
+Parser.MEDIA_FEATURE_TYPE = 2;
+Parser.MEDIA_QUERY_TYPE = 3;
+Parser.PROPERTY_NAME_TYPE = 4;
+Parser.PROPERTY_VALUE_TYPE = 5;
+Parser.PROPERTY_VALUE_PART_TYPE = 6;
+Parser.SELECTOR_TYPE = 7;
+Parser.SELECTOR_PART_TYPE = 8;
+Parser.SELECTOR_SUB_PART_TYPE = 9;
+
 
 Parser.prototype = function(){
 
@@ -3528,6 +3546,7 @@ var Properties = {
     "animation-delay": 1,
     "animation-direction": 1,
     "animation-duration": 1,
+    "animation-fill-mode": 1,
     "animation-iteration-count": 1,
     "animation-name": 1,
     "animation-play-state": 1,
@@ -3791,6 +3810,8 @@ var Properties = {
     "transition-property": 1,
     "transition-timing-function": 1,
     "unicode-bidi": 1,
+    "user-modify": 1,
+    "user-select": 1,
     "vertical-align": 1,
     "visibility": 1,
     "voice-balance": 1,
@@ -3845,7 +3866,7 @@ var Properties = {
  */
 function PropertyName(text, hack, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
 
     /**
      * The type of IE hack applied ("*", "_", or null).
@@ -3875,7 +3896,7 @@ PropertyName.prototype.toString = function(){
  */
 function PropertyValue(parts, line, col){
 
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
     
     /**
      * The parts that make up the selector.
@@ -3902,7 +3923,7 @@ PropertyValue.prototype.constructor = PropertyValue;
  */
 function PropertyValuePart(text, line, col){
 
-    SyntaxUnit.apply(this,arguments);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
     
     /**
      * Indicates the type of value unit.
@@ -4046,7 +4067,7 @@ PropertyValuePart.fromToken = function(token){
  */
 function Selector(parts, line, col){
     
-    SyntaxUnit.call(this, parts.join(" "), line, col);
+    SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
     
     /**
      * The parts that make up the selector.
@@ -4078,7 +4099,7 @@ Selector.prototype.constructor = Selector;
  */
 function SelectorPart(elementName, modifiers, text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 
     /**
      * The tag name of the element to which this part
@@ -4115,7 +4136,7 @@ SelectorPart.prototype.constructor = SelectorPart;
  */
 function SelectorSubPart(text, type, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 
     /**
      * The type of modifier.

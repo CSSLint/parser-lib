@@ -16,7 +16,7 @@
  */
 function SelectorPart(elementName, modifiers, text, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 
     /**
      * The tag name of the element to which this part

@@ -7,7 +7,7 @@
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col){
+function SyntaxUnit(text, line, col, type){
 
 
     /**
@@ -31,6 +31,12 @@ function SyntaxUnit(text, line, col){
      */
     this.text = text;
 
+    /**
+     * The type of syntax unit.
+     * @type int
+     * @property type
+     */
+    this.type = type;
 }
 
 /**

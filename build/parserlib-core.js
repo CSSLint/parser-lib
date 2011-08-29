@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-July-2011 01:46:47 */
+/* Build time: 29-August-2011 11:18:44 */
 var parserlib = {};
 (function(){
 
@@ -424,7 +424,7 @@ SyntaxError.prototype = new Error();
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col){
+function SyntaxUnit(text, line, col, type){
 
 
     /**
@@ -448,6 +448,12 @@ function SyntaxUnit(text, line, col){
      */
     this.text = text;
 
+    /**
+     * The type of syntax unit.
+     * @type int
+     * @property type
+     */
+    this.type = type;
 }
 
 /**

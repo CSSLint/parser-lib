@@ -12,7 +12,7 @@
  */
 function SelectorSubPart(text, type, line, col){
     
-    SyntaxUnit.call(this, text, line, col);
+    SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 
     /**
      * The type of modifier.

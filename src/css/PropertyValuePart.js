@@ -11,7 +11,7 @@
  */
 function PropertyValuePart(text, line, col){
 
-    SyntaxUnit.apply(this,arguments);
+    SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
     
     /**
      * Indicates the type of value unit.

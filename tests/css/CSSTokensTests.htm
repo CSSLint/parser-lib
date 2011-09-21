@@ -86,7 +86,9 @@ YAHOO.test.CSSTokens = (function(){
         patterns: {
             "/* booya */"     : [],
             "/*\n booya */"   : [],
-            "/*\n booya \n*/" : []     
+            "/*\n booya \n*/" : [],
+            "/*/*/"           : [],
+            "/*/hello*/abc"   : [CSSTokens.IDENT]
         }        
     }));
     

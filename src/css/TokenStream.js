@@ -981,7 +981,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 comment += c;
 
                 //look for end of comment
-                if (c == "*" && reader.peek() == "/"){
+                if (comment.length > 2 && c == "*" && reader.peek() == "/"){
                     comment += reader.read();
                     break;
                 }

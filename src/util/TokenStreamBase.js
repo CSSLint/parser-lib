@@ -63,14 +63,14 @@ function TokenStreamBase(input, tokenData){
  */
 TokenStreamBase.createTokenData = function(tokens){
 
-    var nameMap 	= [],
-        typeMap 	= {},
-		tokenData 	= tokens.concat([]),
-		i			= 0,
-		len			= tokenData.length+1;
+    var nameMap     = [],
+        typeMap     = {},
+        tokenData     = tokens.concat([]),
+        i            = 0,
+        len            = tokenData.length+1;
     
     tokenData.UNKNOWN = -1;
-	tokenData.unshift({name:"EOF"});
+    tokenData.unshift({name:"EOF"});
 
     for (; i < len; i++){
         nameMap.push(tokenData[i].name);
@@ -87,8 +87,8 @@ TokenStreamBase.createTokenData = function(tokens){
     tokenData.type = function(c){
         return typeMap[c];
     };
-	
-	return tokenData;
+    
+    return tokenData;
 };
 
 TokenStreamBase.prototype = {
@@ -148,6 +148,8 @@ TokenStreamBase.prototype = {
      * @method mustMatch
      */    
     mustMatch: function(tokenTypes, channel){
+
+        var token;
 
         //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)){
@@ -225,7 +227,7 @@ TokenStreamBase.prototype = {
         }
         
         //call token retriever method
-		token = this._getToken();
+        token = this._getToken();
 
         //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide){

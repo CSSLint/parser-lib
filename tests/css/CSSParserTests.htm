@@ -1201,6 +1201,12 @@ YAHOO.test.CSSParser = (function(){
     suite.add(new YAHOO.tool.TestCase({
     
         name: "Special Cases",
+        
+        _should: {
+            error: {
+                testIEFilter5: "Unexpected token '=' at line 1, col 14."
+            } 
+        },
                 
         testWithCommentAndSpaces: function(){
             var parser = new Parser();
@@ -1279,8 +1285,18 @@ YAHOO.test.CSSParser = (function(){
             
             assert.isInstanceOf(parserlib.css.PropertyValue, result);
             assert.areEqual(1, result.parts.length);
+            assert.areEqual("alpha(opacity=10)", result.text);
             assert.areEqual("unknown", result.parts[0].type);
+        },
+        
+        testIEFilter5: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("alpha(opacity=10)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
         }
+        
+        
      
     
     }));      

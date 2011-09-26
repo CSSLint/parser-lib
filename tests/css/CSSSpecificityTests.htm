@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>CSS Specificity Tests</title>
+<!-- Combo-handled YUI CSS files: -->
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
+<!-- Combo-handled YUI JS files: -->
+<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
+<script type="text/javascript" src="../../build/parserlib.js"></script>
+
+
+</head>
+<body>
+<h1>CSS Specificity Tests</h1>
+<script type="text/javascript">
+
+YAHOO.namespace("test");
+
+YAHOO.test.CSSSpecificity = (function(){
+    
+    var assert = YAHOO.util.Assert,
+        Parser = parserlib.css.Parser,
+        Specificity = parserlib.css.Specificity,
+        suite;
+        
+    suite = new YAHOO.tool.TestSuite("CSS Specificity Tests");
+    
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Specificity Tests",
+        
+        testSpecificity1: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("*"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(0, specificity.valueOf());
+            assert.areEqual("0,0,0,0", specificity.toString());
+        },
+        
+        testSpecificity2: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(1, specificity.valueOf());
+            assert.areEqual("0,0,0,1", specificity.toString());
+        },
+        
+        testSpecificity3: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li:first-line"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(2, specificity.valueOf());
+            assert.areEqual("0,0,0,2", specificity.toString());
+        },
+        
+        testSpecificity4: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul li"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(2, specificity.valueOf());
+            assert.areEqual("0,0,0,2", specificity.toString());
+        
+        },
+        
+        testSpecificity5: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul ol+li"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(3, specificity.valueOf());
+            assert.areEqual("0,0,0,3", specificity.toString());
+        
+        },
+        
+        testSpecificity6: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("h1 + *[rel=up]"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(11, specificity.valueOf());
+            assert.areEqual("0,0,1,1", specificity.toString());
+        
+        },
+        
+        testSpecificity7: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul ol li.red"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(13, specificity.valueOf());
+            assert.areEqual("0,0,1,3", specificity.toString());
+        
+        },
+        
+        testSpecificity8: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li.red.level"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(21, specificity.valueOf());
+            assert.areEqual("0,0,2,1", specificity.toString());
+        
+        },
+        
+        testSpecificity9: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector(".f00"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(10, specificity.valueOf());
+            assert.areEqual("0,0,1,0", specificity.toString());
+        
+        },
+        
+        testSpecificity10: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("div p.foo"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(12, specificity.valueOf());
+            assert.areEqual("0,0,1,2", specificity.toString());
+        
+        },
+        
+        testSpecificity11: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("#foo"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(100, specificity.valueOf());
+            assert.areEqual("0,1,0,0", specificity.toString());
+        
+        },
+        
+        testSpecificity12: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("body #foo .foo p"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(112, specificity.valueOf());
+            assert.areEqual("0,1,1,2", specificity.toString());
+        
+        },
+        
+        testSpecificity13: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("#s12:not(FOO)"),
+                specificity = Specificity.calculate(selector);
+                
+            assert.areEqual(101, specificity.valueOf());
+            assert.areEqual("0,1,0,1", specificity.toString());
+        
+        }        
+        
+    
+    }));
+
+    
+
+
+   
+    
+    //return it
+    return suite;
+
+})();
+
+(function (){
+    //create the logger
+    var logger = new YAHOO.tool.TestLogger();
+    
+    //add the tests
+    YAHOO.tool.TestRunner.add(YAHOO.test.CSSSpecificity);
+    YAHOO.tool.TestRunner.run();
+
+})();
+
+
+</script>
+</body>
+</html>

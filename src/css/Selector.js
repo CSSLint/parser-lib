@@ -19,6 +19,13 @@ function Selector(parts, line, col){
      * @property parts
      */
     this.parts = parts;
+    
+    /**
+     * The specificity of the selector.
+     * @type parserlib.css.Specificity
+     * @property specificity
+     */
+    this.specificity = Specificity.calculate(this);
 
 }
 

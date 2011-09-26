@@ -83,6 +83,7 @@
                 Selector            :Selector,
                 SelectorPart        :SelectorPart,
                 SelectorSubPart     :SelectorSubPart,
+                Specificity         :Specificity,
                 TokenStream         :TokenStream,
                 Tokens              :Tokens,
                 ValidationError     :ValidationError

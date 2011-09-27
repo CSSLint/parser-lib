@@ -21,6 +21,7 @@ function Parser(options){
     this._tokenStream = null;
 }
 
+//Static constants
 Parser.DEFAULT_TYPE = 0;
 Parser.COMBINATOR_TYPE = 1;
 Parser.MEDIA_FEATURE_TYPE = 2;
@@ -32,7 +33,6 @@ Parser.SELECTOR_TYPE = 7;
 Parser.SELECTOR_PART_TYPE = 8;
 Parser.SELECTOR_SUB_PART_TYPE = 9;
 
-
 Parser.prototype = function(){
 
     var proto = new EventTarget(),  //new prototype
@@ -41,6 +41,18 @@ Parser.prototype = function(){
         
             //restore constructor
             constructor: Parser,
+                        
+            //instance constants - yuck
+            DEFAULT_TYPE : 0,
+            COMBINATOR_TYPE : 1,
+            MEDIA_FEATURE_TYPE : 2,
+            MEDIA_QUERY_TYPE : 3,
+            PROPERTY_NAME_TYPE : 4,
+            PROPERTY_VALUE_TYPE : 5,
+            PROPERTY_VALUE_PART_TYPE : 6,
+            SELECTOR_TYPE : 7,
+            SELECTOR_PART_TYPE : 8,
+            SELECTOR_SUB_PART_TYPE : 9,            
         
             //-----------------------------------------------------------------
             // Grammar

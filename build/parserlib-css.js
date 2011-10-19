@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-October-2011 04:46:22 */
+/* Build time: 19-October-2011 04:54:46 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3060,6 +3060,7 @@ var Properties = {
         Validation.oneIdentifier(value, "code,none,inherit");
     },
     "speech-rate": 1,
+    "src" : 1,
     "stress": 1,
     "string-set": 1,
     "table-layout": 1,

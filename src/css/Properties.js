@@ -423,6 +423,7 @@ var Properties = {
         Validation.oneIdentifier(value, "code,none,inherit");
     },
     "speech-rate": 1,
+    "src" : 1,
     "stress": 1,
     "string-set": 1,
     "table-layout": 1,

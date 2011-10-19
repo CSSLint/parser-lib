@@ -1400,6 +1400,213 @@ YAHOO.test.CSSParser = (function(){
         }
         
     }));        
+
+    suite.add(new YAHOO.tool.TestCase({
+    
+        name: "Validation Tests",    
+    
+        testInvalidColor: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected a color but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { color: foo; }");
+            
+        },
+        
+        testInvalidColor2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected a color but found 'invert'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { color: invert; }");
+            
+        },
+        
+        testInvalidColor3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected a color but found 'transparent'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { color: transparent; }");
+            
+        },
+        
+        testValidColor: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: red; }");
+            
+        },
+        
+        testValidColor2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: #ff0000; }");
+            
+        },
+        
+        testValidColor3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: inherit; }");
+            
+        },
+        
+        testValidColor4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-color: transparent; }");
+            
+        },
+        
+        testBackgroundAttachment1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: scroll; }");
+            
+        },
+        
+        testBackgroundAttachment2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: fixed; }");
+            
+        },
+
+        testBackgroundAttachment3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: inherit; }");
+            
+        },
+        
+        testInvalidBackgroundAttachment: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected one of (scroll,fixed,inherit) but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { background-attachment: foo; }");            
+        },
+        
+        testInvalidZIndex: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected an integer or one of 'auto,inherit' but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { z-index: foo; }");            
+        },
+        
+        testZIndex1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: 1 }");
+            
+        },
+        
+        testZIndex2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: auto }");            
+        },
+
+        testZIndex3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: inherit }");
+            
+        },
+        
+        testBorderWidth1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px }");
+            
+        },
+                
+        testBorderWidth2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px 1px }");
+            
+        },
+                
+        testBorderWidth3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px  1px 1px}");
+            
+        },
+                
+        testBorderWidth4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px  1px 1px 1px}");
+            
+        },
+
+        testInvalidBorderWidth1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected a max of 4 property values but found 5.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { border-width: 1px 1px 1px 1px 1px}");
+            
+        },
+                
+        testInvalidBorderWidth2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected a border width but found 'foo'.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { border-width: foo}");
+            
+        },
+                
+                
+        
+        
+                
+        
+        
+        
+        
+    }));        
  
     
     //return it

@@ -2048,11 +2048,14 @@ Parser.prototype = function(){
                     i, len;
                 
                 if (Properties[name]){
-                    Properties[name](value);                    
+                
+                    if (typeof Properties[name] == "function"){
+                        Properties[name](value);                   
+                    } 
                     
                     //otherwise, no validation available yet
                 } else if (name.indexOf("-") !== 0){    //vendor prefixed are ok
-                    throw new ValidationError("Property '" + property + "' isn't recognized.", property.line, property.col);
+                    throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
                 }
             },
             

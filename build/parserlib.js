@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-October-2011 04:54:46 */
+/* Build time: 19-October-2011 04:58:41 */
 var parserlib = {};
 (function(){
 
@@ -930,7 +930,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-October-2011 04:54:46 */
+/* Build time: 19-October-2011 04:58:41 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3420,11 +3420,14 @@ Parser.prototype = function(){
                     i, len;
                 
                 if (Properties[name]){
-                    Properties[name](value);                    
+                
+                    if (typeof Properties[name] == "function"){
+                        Properties[name](value);                   
+                    } 
                     
                     //otherwise, no validation available yet
                 } else if (name.indexOf("-") !== 0){    //vendor prefixed are ok
-                    throw new ValidationError("Property '" + property + "' isn't recognized.", property.line, property.col);
+                    throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
                 }
             },
             

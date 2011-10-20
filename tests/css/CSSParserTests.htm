@@ -1409,7 +1409,7 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 assert.isNotNull(event.invalid);
-                assert.areEqual("Expected a color but found 'foo'.", event.invalid.message);
+                assert.areEqual("Expected color or one of (inherit) but found 'foo'.", event.invalid.message);
             });
             var result = parser.parse(".foo { color: foo; }");
             
@@ -1419,19 +1419,9 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 assert.isNotNull(event.invalid);
-                assert.areEqual("Expected a color but found 'invert'.", event.invalid.message);
+                assert.areEqual("Expected color or one of (inherit) but found 'invert'.", event.invalid.message);
             });
             var result = parser.parse(".foo { color: invert; }");
-            
-        },
-        
-        testInvalidColor3: function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
-                assert.isNotNull(event.invalid);
-                assert.areEqual("Expected a color but found 'transparent'.", event.invalid.message);
-            });
-            var result = parser.parse(".foo { color: transparent; }");
             
         },
         

@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 20-October-2011 12:57:45 */
+/* Build time: 20-October-2011 02:53:22 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2594,12 +2594,73 @@ var Validation = {
 };
 
 var ValidationType = {
-    "integer":  Validation.isInteger,
-    "uri":      Validation.isURI,
-    "color":    Validation.isColor,
-    "length":   Validation.isLength,
-    "percentage":   Validation.isPercentage,
-    "measurement":  Validation.isMeasurement
+
+    "absolute-size": function(part){
+        return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+    },
+    
+    "relative-size": function(part){
+        return this.identifier(part, "smaller | larger");
+    },
+    
+    "identifier": function(part, options){
+        var text = part.text.toString().toLowerCase(),
+            args = options.split(" | "),
+            i, len, found = false;
+
+        
+        for (i=0,len=args.length; i < len && !found; i++){
+            if (text == args[i]){
+                found = true;
+            }
+        }
+        
+        return found;
+    },
+    
+    "length": function(part){
+        return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+    },
+    
+    "color": function(part){
+        return part.type == "color" || part == "transparent";
+    },
+    
+    "integer": function(part){
+        return part.type == "integer";
+    },
+    
+    "angle": function(part){
+        return part.type == "angle";
+    },        
+    
+    "uri": function(part){
+        return part.type == "uri";
+    },
+    
+    "image": function(part){
+        return this.uri(part);
+    },
+    
+    "percentage": function(part){
+        return part.type == "percentage" || part == "0";
+    },
+
+    "border-width": function(part){
+        return Validation.isLength(part) || Validation.isIdentifier(part, "thin | medium | thick");
+    },
+    
+    "border-style": function(part){
+        return Validation.isIdentifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+    },
+    
+    "margin-width": function(part){
+        return this.length(part) || this.percentage(part) || this.identifier(part, "auto");
+    },
+    
+    "padding-width": function(part){
+        return this.length(part) || this.percentage(part);
+    }
 };
 
     
@@ -2631,7 +2692,7 @@ var Properties = {
     "background-attachment":        [ "scroll | fixed | inherit" ],
     "background-break": 1,
     "background-clip": 1,
-    "background-color":             Validation.oneColorOrTransparent,
+    "background-color":             [ "color", "inherit" ],
     "background-image": 1,
     "background-origin": 1,
     "background-position": 1,
@@ -2649,25 +2710,25 @@ var Properties = {
     "border-bottom-color": 1,
     "border-bottom-left-radius":    Validation.oneBorderSideRadius,
     "border-bottom-right-radius":   Validation.oneBorderSideRadius,
-    "border-bottom-style":          Validation.oneBorderStyle,
-    "border-bottom-width":          Validation.oneBorderWidth,
+    "border-bottom-style":          [ "border-style" ],
+    "border-bottom-width":          [ "border-width" ],
     "border-collapse":              [ "collapse | separate | inherit" ],
-    "border-color":                 Validation.oneColorOrTransparent,
+    "border-color":                 [ "color", "inherit" ],
     "border-image": 1,
     "border-image-outset": 1,
     "border-image-repeat": 1,
     "border-image-slice": 1,
-    "border-image-source": 1,
+    "border-image-source":          [ "image", "none" ],
     "border-image-width": 1,
     "border-left": 1,
-    "border-left-color":            Validation.oneColorOrTransparent,
-    "border-left-style":            Validation.oneBorderStyle,
-    "border-left-width":            Validation.oneBorderWidth,
+    "border-left-color":            [ "color", "inherit" ],
+    "border-left-style":            [ "border-style" ],
+    "border-left-width":            [ "border-width" ],
     "border-radius": 1,
     "border-right": 1,
-    "border-right-color":           Validation.oneColorOrTransparent,
-    "border-right-style":           Validation.oneBorderStyle,
-    "border-right-width":           Validation.oneBorderWidth,
+    "border-right-color":           [ "color", "inherit" ],
+    "border-right-style":           [ "border-style" ],
+    "border-right-width":           [ "border-width" ],
     "border-spacing": 1,
     "border-style": function(value){
         Validation.maxValues(value, 4);
@@ -2678,11 +2739,11 @@ var Properties = {
         }        
     },
     "border-top": 1,
-    "border-top-color":             Validation.oneColorOrTransparent,
+    "border-top-color":             [ "color", "inherit" ],
     "border-top-left-radius":       Validation.oneBorderSideRadius,
     "border-top-right-radius":      Validation.oneBorderSideRadius,
-    "border-top-style":             Validation.oneBorderStyle,
-    "border-top-width":             Validation.oneBorderWidth,
+    "border-top-style":             [ "border-style" ],
+    "border-top-width":             [ "border-width" ],
     "border-width": function(value){
         Validation.maxValues(value, 4);
         for (var i=0, len=Math.min(4,value.parts.length); i < len; i++){
@@ -2691,37 +2752,37 @@ var Properties = {
             }
         }        
     },
-    "bottom":                       Validation.oneMeasurement, 
-    "box-align": 1,
+    "bottom":                       [ "margin-width", "inherit" ], 
+    "box-align":                    [ "start | end | center | baseline | stretch" ],        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
     "box-decoration-break":         [ "slice |clone" ],
-    "box-direction": 1,
-    "box-flex": 1,
-    "box-flex-group": 1,
-    "box-lines": 1,
-    "box-ordinal-group": 1,
-    "box-orient": 1,
-    "box-pack": 1,
+    "box-direction":                [ "normal | reverse | inherit" ],
+    "box-flex":                     [ "number" ],
+    "box-flex-group":               [ "integer" ],
+    "box-lines":                    [ "single | multiple" ],
+    "box-ordinal-group":            [ "integer" ],
+    "box-orient":                   [ "horizontal | vertical | inline-axis | block-axis | inherit" ],
+    "box-pack":                     [ "start | end | center | justify" ],
     "box-shadow": 1,
     "box-sizing":                   [ "content-box | border-box | inherit" ],
-    "break-after": 1,
-    "break-before": 1,
-    "break-inside": 1,
+    "break-after":                  [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
+    "break-before":                 [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
+    "break-inside":                 [ "auto | avoid | avoid-page | avoid-column" ],
     
     //C
     "caption-side":                 [ "top | bottom | inherit" ],
     "clear":                        [ "none | right | left | both | inherit" ],
     "clip": 1,
-    "color":                        Validation.oneColor,
+    "color":                        [ "color", "inherit" ],
     "color-profile": 1,
-    "column-count": 1,
-    "column-fill": 1,
-    "column-gap": 1,
+    "column-count":                 [ "integer", "auto" ],                      //http://www.w3.org/TR/css3-multicol/
+    "column-fill":                  [ "auto | balance" ],
+    "column-gap":                   [ "length", "normal" ],
     "column-rule": 1,
-    "column-rule-color": 1,
-    "column-rule-style": 1,
-    "column-rule-width": 1,
-    "column-span": 1,
-    "column-width": 1,
+    "column-rule-color":            [ "color" ],
+    "column-rule-style":            [ "border-style" ],
+    "column-rule-width":            [ "border-width" ],
+    "column-span":                  [ "none | all" ],
+    "column-width":                 [ "length", "auto" ],
     "columns": 1,
     "content": 1,
     "counter-increment": 1,
@@ -2734,7 +2795,7 @@ var Properties = {
     
     //D
     "direction":                    [ "ltr | rtl | inherit" ],
-    "display":                      [ "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | none | inherit" ],
+    "display":                      [ "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid", "none | inherit" ],
     "dominant-baseline": 1,
     "drop-initial-after-adjust": 1,
     "drop-initial-after-align": 1,
@@ -2749,14 +2810,13 @@ var Properties = {
     
     //F
     "filter": 1,
-    "fit": 1,
+    "fit":                          [ "fill | hidden | meet | slice" ],
     "fit-position": 1,
-    "float":                        [ "left | right | none | inherit" ],
-    
+    "float":                        [ "left | right | none | inherit" ],    
     "float-offset": 1,
     "font": 1,
     "font-family": 1,
-    "font-size": 1,
+    "font-size":                    [ "absolute-size", "relative-size", "length", "percentage", "inherit" ],
     "font-size-adjust": 1,
     "font-stretch": 1,
     "font-style":                   [ "normal | italic | oblique | inherit" ],
@@ -2764,12 +2824,23 @@ var Properties = {
     "font-weight":                  [ "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit" ],
     
     //G
+    "grid-cell-stacking":           [ "columns | rows | layer" ],
+    "grid-column": 1,
     "grid-columns": 1,
+    "grid-column-align":            [ "start | end | center | stretch" ],
+    "grid-column-sizing": 1,
+    "grid-column-span":             [ "integer" ],
+    "grid-flow":                    [ "none | rows | columns" ],
+    "grid-layer":                   [ "integer" ],
+    "grid-row": 1,
     "grid-rows": 1,
+    "grid-row-align":               [ "start | end | center | stretch" ],
+    "grid-row-span":                [ "integer" ],
+    "grid-row-sizing": 1,
     
     //H
     "hanging-punctuation": 1,
-    "height":                       Validation.oneMeasurement,
+    "height":                       [ "margin-width", "inherit" ],
     "hyphenate-after": 1,
     "hyphenate-before": 1,
     "hyphenate-character": 1,
@@ -2779,13 +2850,13 @@ var Properties = {
     
     //I
     "icon": 1,
-    "image-orientation": 1,
+    "image-orientation":            [ "angle", "auto" ],
     "image-rendering": 1,
     "image-resolution": 1,
     "inline-box-align": 1,
     
     //L
-    "left":                         Validation.oneMeasurement,
+    "left":                         [ "margin-width", "inherit" ],
     "letter-spacing":               [ "length", "normal | inherit" ],
     "line-height":                  [ "number", "length", "percentage", "normal | inherit"],
     "line-stacking": 1,
@@ -2799,10 +2870,10 @@ var Properties = {
     
     //M
     "margin": 1,
-    "margin-bottom":                [ "length", "percentage", "auto | inherit" ],
-    "margin-left":                  [ "length", "percentage", "auto | inherit" ],
-    "margin-right":                 [ "length", "percentage", "auto | inherit" ],
-    "margin-top":                   [ "length", "percentage", "auto | inherit" ],
+    "margin-bottom":                [ "margin-width", "inherit" ],
+    "margin-left":                  [ "margin-width", "inherit" ],
+    "margin-right":                 [ "margin-width", "inherit" ],
+    "margin-top":                   [ "margin-width", "inherit" ],
     "mark": 1,
     "mark-after": 1,
     "mark-before": 1,
@@ -2814,7 +2885,7 @@ var Properties = {
     "max-height":                   [ "length", "percentage", "none | inherit" ],
     "max-width":                    [ "length", "percentage", "none | inherit" ],
     "min-height":                   [ "length", "percentage", "inherit" ],
-    "min-width": 1,
+    "min-width":                    [ "length", "percentage", "inherit" ],
     "move-to": 1,
     
     //N
@@ -2825,15 +2896,13 @@ var Properties = {
     "nav-up": 1,
     
     //O
-    "opacity": 1,
-    "orphans": 1,
+    "opacity":                      [ "number", "inherit" ],
+    "orphans":                      [ "integer", "inherit" ],
     "outline": 1,
-    "outline-color":    function(value){
-                            Validation.oneColor(value, "invert");
-                        },
+    "outline-color":                [ "color", "invert | inherit" ],
     "outline-offset": 1,
-    "outline-style": 1,
-    "outline-width": 1,
+    "outline-style":                [ "border-style", "inherit" ],
+    "outline-width":                [ "border-width", "inherit" ],
     "overflow":                     [ "visible | hidden | scroll | auto | inherit" ],
     "overflow-style": 1,
     "overflow-x": 1,
@@ -2841,10 +2910,10 @@ var Properties = {
     
     //P
     "padding": 1,
-    "padding-bottom": 1,
-    "padding-left": 1,
-    "padding-right": 1,
-    "padding-top": 1,
+    "padding-bottom":               [ "padding-width", "inherit" ],
+    "padding-left":                 [ "padding-width", "inherit" ],
+    "padding-right":                [ "padding-width", "inherit" ],
+    "padding-top":                  [ "padding-width", "inherit" ],
     "page": 1,
     "page-break-after":             [ "auto | always | avoid | left | right | inherit" ],
     "page-break-before":            [ "auto | always | avoid | left | right | inherit" ],
@@ -2873,7 +2942,7 @@ var Properties = {
     "rest-after": 1,
     "rest-before": 1,
     "richness": 1,
-    "right":                        Validation.oneMeasurement,
+    "right":                        [ "margin-width", "inherit" ],
     "rotation": 1,
     "rotation-point": 1,
     "ruby-align": 1,
@@ -2902,13 +2971,13 @@ var Properties = {
     "text-decoration": 1,
     "text-emphasis": 1,
     "text-height": 1,
-    "text-indent": 1,
+    "text-indent":                  [ "length", "percentage", "inherit" ],
     "text-justify": 1,
     "text-outline": 1,
     "text-shadow": 1,
     "text-transform":               [ "capitalize | uppercase | lowercase | none | inherit" ],
     "text-wrap": 1,
-    "top":                          Validation.oneMeasurement,
+    "top":                          [ "margin-width", "inherit" ],
     "transform": 1,
     "transform-origin": 1,
     "transform-style": 1,
@@ -2924,7 +2993,7 @@ var Properties = {
     "user-select":                  [ "none | text | toggle | element | elements | all | inherit" ],
     
     //V
-    "vertical-align": 1,
+    "vertical-align":               [ "percentage", "length", "baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit" ],
     "visibility":                   [ "visible | hidden | collapse | inherit" ],
     "voice-balance": 1,
     "voice-duration": 1,
@@ -2939,8 +3008,8 @@ var Properties = {
     //W
     "white-space":                  [ "normal | pre | nowrap | pre-wrap | pre-line | inherit" ],
     "white-space-collapse": 1,
-    "widows": 1,
-    "width":                        [ "measurement" ],
+    "widows":                       [ "integer", "inherit" ],
+    "width":                        [ "length", "percentage", "auto", "inherit" ],
     "word-break": 1,
     "word-spacing":                 [ "length", "normal | inherit" ],
     "word-wrap": 1,
@@ -2966,7 +3035,7 @@ var Properties = {
                         
                         for (var i=0, len=values.length; i < len && !valid; i++){
                             if (typeof ValidationType[values[i]] == "undefined"){
-                                valid = valid || Validation.isIdentifier(part, values[i]);
+                                valid = valid || ValidationType.identifier(part, values[i]);
                                 msg.push("one of (" + values[i] + ")");
                             } else {
                                 valid = valid || ValidationType[values[i]](part);

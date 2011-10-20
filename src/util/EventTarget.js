@@ -47,11 +47,11 @@ EventTarget.prototype = {
         if (typeof event == "string"){
             event = { type: event };
         }
-        if (!event.target){
+        if (typeof event.target != "undefined"){
             event.target = this;
         }
         
-        if (!event.type){
+        if (typeof event.type == "undefined"){
             throw new Error("Event object missing 'type' property.");
         }
         

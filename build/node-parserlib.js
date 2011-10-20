@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-October-2011 05:20:53 */
+/* Build time: 20-October-2011 11:56:31 */
 var parserlib = {};
 (function(){
 
@@ -74,11 +74,11 @@ EventTarget.prototype = {
         if (typeof event == "string"){
             event = { type: event };
         }
-        if (!event.target){
+        if (typeof event.target != "undefined"){
             event.target = this;
         }
         
-        if (!event.type){
+        if (typeof event.type == "undefined"){
             throw new Error("Event object missing 'type' property.");
         }
         
@@ -930,7 +930,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 19-October-2011 05:20:53 */
+/* Build time: 20-October-2011 11:56:31 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,

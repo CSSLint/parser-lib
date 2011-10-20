@@ -1502,7 +1502,7 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 assert.isNotNull(event.invalid);
-                assert.areEqual("Expected one of (scroll,fixed,inherit) but found 'foo'.", event.invalid.message);
+                assert.areEqual("Expected one of (scroll | fixed | inherit) but found 'foo'.", event.invalid.message);
             });
             var result = parser.parse(".foo { background-attachment: foo; }");            
         },
@@ -1511,7 +1511,7 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 assert.isNotNull(event.invalid);
-                assert.areEqual("Expected an integer or one of 'auto,inherit' but found 'foo'.", event.invalid.message);
+                assert.areEqual("Expected integer or one of (auto | inherit) but found 'foo'.", event.invalid.message);
             });
             var result = parser.parse(".foo { z-index: foo; }");            
         },
@@ -1598,9 +1598,42 @@ YAHOO.test.CSSParser = (function(){
             
         },
                 
-                
+        testMinHeight1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: 1px; }");
+            
+        },                
         
+        testMinHeight2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: 1%; }");
+            
+        },                
         
+        testMinHeight3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: inherit; }");
+            
+        },                
+        
+        testInvalidMinHeight: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected length or percentage or one of (inherit) but found 'foo'.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { min-height: foo}");
+            
+        }        
                 
         
         

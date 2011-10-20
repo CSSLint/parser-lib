@@ -230,7 +230,9 @@ var Properties = {
     "box-orient": 1,
     "box-pack": 1,
     "box-shadow": 1,
-    "box-sizing": 1,
+    "box-sizing": function(value){
+        Validation.oneIdentifier(value, "content-box,border-box,inherit");
+    },
     "break-after": 1,
     "break-before": 1,
     "break-inside": 1,
@@ -266,7 +268,9 @@ var Properties = {
     "direction": function(value){
         Validation.oneIdentifier(value, "ltr,rtl,inherit");
     },
-    "display": 1,
+    "display": function(value){
+        Validation.oneIdentifier(value, "inline,block,list-item,inline-block,table,inline-table,table-row-group,table-header-group,table-footer-group,table-row,table-column-group,table-column,table-cell,table-caption,none,inherit");
+    },
     "dominant-baseline": 1,
     "drop-initial-after-adjust": 1,
     "drop-initial-after-align": 1,
@@ -278,6 +282,7 @@ var Properties = {
     "empty-cells": function(value){
         Validation.oneIdentifier(value, "show,hide,inherit");
     },
+    "filter": 1,
     "fit": 1,
     "fit-position": 1,
     "float":  function(value){
@@ -458,8 +463,12 @@ var Properties = {
     "unicode-bidi": function(value){
         Validation.oneIdentifier(value, "normal,embed,bidi-override,inherit");
     },
-    "user-modify": 1,
-    "user-select": 1,
+    "user-modify": function(value){
+        Validation.oneIdentifier(value, "read-only,read-write,write-only,inherit");
+    },
+    "user-select": function(value){
+        Validation.oneIdentifier(value, "none,text,toggle,element,elements,all,inherit");
+    },
     "vertical-align": 1,
     "visibility": function(value){
         Validation.oneIdentifier(value, "visible,hidden,collapse,inherit");
@@ -493,7 +502,6 @@ var Properties = {
         if (!Validation.isInteger(value.parts[0]) && !Validation.isIdentifier(value.parts[0], "auto,inherit")){
             throw new ValidationError("Expected an integer or one of 'auto,inherit' but found '" + value + "'.", value.line, value.col);
         }
-    }
-
-    
+    },
+    "zoom": 1
 };

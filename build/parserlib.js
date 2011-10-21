@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 20-October-2011 02:53:22 */
+/* Build time: 21-October-2011 04:48:14 */
 var parserlib = {};
 (function(){
 
@@ -930,7 +930,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 20-October-2011 02:53:22 */
+/* Build time: 21-October-2011 04:48:14 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3371,137 +3371,6 @@ nth
          ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
 */
-var Validation = {
-
-    isColor: function(part, other){
-        var text = part.text.toString().toLowerCase(),
-            pattern = "^(?:inherit" + (other ? "|" + other : "") + ")$";
-        
-        if (part.type != "color"){
-            if (part.type != "identifier" || !(new RegExp(pattern)).test(text)){
-                return false;
-            }
-        }
-        
-        return true;
-    },
-    
-    isIdentifier: function(part, options){
-        var text = part.text.toString().toLowerCase(),
-            args = options.split(" | "),
-            i, len, found = false;
-
-        
-        for (i=0,len=args.length; i < len && !found; i++){
-            if (text == args[i]){
-                found = true;
-            }
-        }
-        
-        return found;
-    },
-    
-    isLength: function(part){
-        return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
-    },
-    
-    isInteger: function(part){
-        return part.type == "integer";
-    },
-    
-    isURI: function(part){
-        return part.type == "uri";
-    },
-    
-    isPercentage: function(part){
-        return part.type == "percentage" || part == "0";
-    },
-    
-    isMeasurement: function(part){
-        return Validation.isLength(part) || Validation.isPercentage(part) || Validation.isIdentifier(part, "auto | inherit");
-    },
-    
-    isBorderWidth: function(part){
-        return Validation.isLength(part) || Validation.isIdentifier(part, "thin | medium | thick");
-    },
-    
-    isBorderStyle: function(part){
-        return Validation.isIdentifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
-    },
-    
-    isBorderSideRadius: function(part){
-        return Validation.isLength(part) || Validation.isPercentage(part);
-    },
-    
-    oneValue: function(value){
-        var parts = value.parts;
-        if (parts.length != 1){
-            throw new ValidationError("Expected one property value but found " + parts.length + ".", value.line, value.col);
-        }
-    },
-    
-    maxValues: function(value, max){
-        var parts = value.parts;
-        if (parts.length > max){
-            throw new ValidationError("Expected a max of " + max + " property values but found " + parts.length + ".", value.line, value.col);
-        }
-    },
-    
-    oneColor: function(value, other){
-        var part = value.parts[0],
-            text = part.text.toString().toLowerCase();
-            
-        Validation.oneValue(value);
-        
-        if (!Validation.isColor(part, other)){
-            throw new ValidationError("Expected a color but found '" + part + "'.", value.line, value.col);            
-        }
-    },
-    
-    oneColorOrTransparent: function(value){
-        Validation.oneColor(value, "transparent");
-    },
-    
-    oneIdentifier: function(value, options){
-            
-        Validation.oneValue(value);
-        
-        if (!Validation.isIdentifier.call(Validation, value.parts[0], options)){
-            throw new ValidationError("Expected one of (" + options + ") but found '" + value.parts[0] + "'.", value.line, value.col);            
-        }
-    },
-    
-    oneMeasurement: function(value){
-        Validation.oneValue(value);
-        if (!Validation.isMeasurement(value.parts[0])){
-            throw new ValidationError("Expected a measurement but found '" + value + "'.", value.line, value.col);
-        }
-    },
-    
-    oneBorderWidth: function(value){
-        Validation.oneValue(value);
-        if (!Validation.isBorderWidth(value.parts[0])){
-            throw new ValidationError("Expected a border width but found '" + value + "'.", value.line, value.col);
-        }
-    },
-    
-    oneBorderStyle: function(value){
-        Validation.oneValue(value);
-        if (!Validation.isBorderStyle(value.parts[0])){
-            throw new ValidationError("Expected a border style but found '" + value + "'.", value.line, value.col);
-        }
-    },
-    
-    oneBorderSideRadius: function(value){
-        Validation.maxValues(value, 2);
-        for (var i=0, len= value.parts.length; i < len; i++){
-            if (!Validation.isBorderSideRadius(value.parts[i])){
-                throw new ValidationError("Expected a border radius but found '" + value + "'.", value.line, value.col);
-            }
-        }
-    }
-};
-
 var ValidationType = {
 
     "absolute-size": function(part){
@@ -3556,11 +3425,11 @@ var ValidationType = {
     },
 
     "border-width": function(part){
-        return Validation.isLength(part) || Validation.isIdentifier(part, "thin | medium | thick");
+        return this.length(part) || this.identifier(part, "thin | medium | thick");
     },
     
     "border-style": function(part){
-        return Validation.isIdentifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        return this.identifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
     },
     
     "margin-width": function(part){
@@ -3617,8 +3486,8 @@ var Properties = {
     "border": 1,
     "border-bottom": 1,
     "border-bottom-color": 1,
-    "border-bottom-left-radius":    Validation.oneBorderSideRadius,
-    "border-bottom-right-radius":   Validation.oneBorderSideRadius,
+    "border-bottom-left-radius":    1,
+    "border-bottom-right-radius":   1,
     "border-bottom-style":          [ "border-style" ],
     "border-bottom-width":          [ "border-width" ],
     "border-collapse":              [ "collapse | separate | inherit" ],
@@ -3639,28 +3508,14 @@ var Properties = {
     "border-right-style":           [ "border-style" ],
     "border-right-width":           [ "border-width" ],
     "border-spacing": 1,
-    "border-style": function(value){
-        Validation.maxValues(value, 4);
-        for (var i=0, len=Math.min(4,value.parts.length); i < len; i++){
-            if (!Validation.isBorderStyle(value.parts[i])){
-                throw new ValidationError("Expected a border style but found '" + value.parts[i] + "'.", value.parts[i].line, value.parts[i].col);
-            }
-        }        
-    },
+    "border-style": 1,
     "border-top": 1,
     "border-top-color":             [ "color", "inherit" ],
-    "border-top-left-radius":       Validation.oneBorderSideRadius,
-    "border-top-right-radius":      Validation.oneBorderSideRadius,
+    "border-top-left-radius": 1,
+    "border-top-right-radius": 1,
     "border-top-style":             [ "border-style" ],
     "border-top-width":             [ "border-width" ],
-    "border-width": function(value){
-        Validation.maxValues(value, 4);
-        for (var i=0, len=Math.min(4,value.parts.length); i < len; i++){
-            if (!Validation.isBorderWidth(value.parts[i])){
-                throw new ValidationError("Expected a border width but found '" + value.parts[i] + "'.", value.parts[i].line, value.parts[i].col);
-            }
-        }        
-    },
+    "border-width": 1,
     "bottom":                       [ "margin-width", "inherit" ], 
     "box-align":                    [ "start | end | center | baseline | stretch" ],        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
     "box-decoration-break":         [ "slice |clone" ],
@@ -3752,10 +3607,10 @@ var Properties = {
     "height":                       [ "margin-width", "inherit" ],
     "hyphenate-after": 1,
     "hyphenate-before": 1,
-    "hyphenate-character": 1,
+    "hyphenate-character":          [ "string", "auto" ],
     "hyphenate-lines": 1,
     "hyphenate-resource": 1,
-    "hyphens": 1,
+    "hyphens":                      [ "none | manual | auto" ],
     
     //I
     "icon": 1,
@@ -3768,6 +3623,7 @@ var Properties = {
     "left":                         [ "margin-width", "inherit" ],
     "letter-spacing":               [ "length", "normal | inherit" ],
     "line-height":                  [ "number", "length", "percentage", "normal | inherit"],
+    "line-break":                   [ "auto | loose | normal | strict" ],
     "line-stacking": 1,
     "line-stacking-ruby": 1,
     "line-stacking-shift": 1,
@@ -3871,6 +3727,7 @@ var Properties = {
     "string-set": 1,
     
     "table-layout":                 [ "auto | fixed | inherit" ],
+    "tab-size":                     [ "integer", "length" ],
     "target": 1,
     "target-name": 1,
     "target-new": 1,
@@ -3881,11 +3738,11 @@ var Properties = {
     "text-emphasis": 1,
     "text-height": 1,
     "text-indent":                  [ "length", "percentage", "inherit" ],
-    "text-justify": 1,
+    "text-justify":                 [ "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida" ],
     "text-outline": 1,
     "text-shadow": 1,
     "text-transform":               [ "capitalize | uppercase | lowercase | none | inherit" ],
-    "text-wrap": 1,
+    "text-wrap":                    [ "normal | none | avoid" ],
     "top":                          [ "margin-width", "inherit" ],
     "transform": 1,
     "transform-origin": 1,
@@ -3919,13 +3776,13 @@ var Properties = {
     "white-space-collapse": 1,
     "widows":                       [ "integer", "inherit" ],
     "width":                        [ "length", "percentage", "auto", "inherit" ],
-    "word-break": 1,
+    "word-break":                   [ "normal | keep-all | break-all" ],
     "word-spacing":                 [ "length", "normal | inherit" ],
     "word-wrap": 1,
     
     //Z
     "z-index":                      [ "integer", "auto | inherit" ],
-    "zoom": 1
+    "zoom":                         [ "number", "percentage", "normal" ]
 };
 
 //Create validation functions for strings
@@ -3940,7 +3797,9 @@ var Properties = {
                             msg     = [],
                             part    = value.parts[0];
                         
-                        Validation.oneValue(value);
+                        if (value.parts.length != 1){
+                            throw new ValidationError("Expected 1 value but found " + value.parts.length + ".", value.line, value.col);
+                        }
                         
                         for (var i=0, len=values.length; i < len && !valid; i++){
                             if (typeof ValidationType[values[i]] == "undefined"){

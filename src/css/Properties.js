@@ -31,6 +31,10 @@ var ValidationType = {
         return part.type == "color" || part == "transparent";
     },
     
+    "number": function(part){
+        return part.type == "number" || this.integer(part);
+    },
+    
     "integer": function(part){
         return part.type == "integer";
     },

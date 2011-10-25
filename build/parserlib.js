@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-October-2011 04:48:14 */
+/* Build time: 25-October-2011 08:30:50 */
 var parserlib = {};
 (function(){
 
@@ -930,7 +930,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-October-2011 04:48:14 */
+/* Build time: 25-October-2011 08:30:50 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3402,6 +3402,10 @@ var ValidationType = {
     
     "color": function(part){
         return part.type == "color" || part == "transparent";
+    },
+    
+    "number": function(part){
+        return part.type == "number" || this.integer(part);
     },
     
     "integer": function(part){

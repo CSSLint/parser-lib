@@ -1623,7 +1623,17 @@ YAHOO.test.CSSParser = (function(){
             });
             var result = parser.parse(".foo { min-height: foo}");
             
+        },
+
+        testOpacity: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { opacity: 1}");
+            
         }        
+                 
                 
         
         

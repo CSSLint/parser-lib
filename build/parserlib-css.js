@@ -21,14 +21,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 25-October-2011 09:11:57 */
+/* Build time: 31-October-2011 11:46:10 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
-
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -209,7 +208,6 @@ function Combinator(text, line, col){
 Combinator.prototype = new SyntaxUnit();
 Combinator.prototype.constructor = Combinator;
 
-
 /**
  * Represents a media feature, such as max-width:500.
  * @namespace parserlib.css
@@ -240,7 +238,6 @@ function MediaFeature(name, value){
 
 MediaFeature.prototype = new SyntaxUnit();
 MediaFeature.prototype.constructor = MediaFeature;
-
 
 /**
  * Represents an individual media query.
@@ -283,7 +280,6 @@ function MediaQuery(modifier, mediaType, features, line, col){
 
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
-
 
 /**
  * A CSS3 parser.
@@ -2989,7 +2985,6 @@ PropertyName.prototype.constructor = PropertyName;
 PropertyName.prototype.toString = function(){
     return (this.hack ? this.hack : "") + this.text;
 };
-
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just everything single part between ":" and ";". If there are multiple values
@@ -3017,7 +3012,6 @@ function PropertyValue(parts, line, col){
 
 PropertyValue.prototype = new SyntaxUnit();
 PropertyValue.prototype.constructor = PropertyValue;
-
 
 /**
  * Represents a single part of a CSS property value, meaning that it represents
@@ -3126,6 +3120,29 @@ function PropertyValuePart(text, line, col){
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
+    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with absolute numbers
+        this.type   = "color";
+        this.red    = +RegExp.$1;
+        this.green  = +RegExp.$2;
+        this.blue   = +RegExp.$3;
+        this.alpha  = +RegExp.$4;
+    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with percentages
+        this.type   = "color";
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+        this.alpha  = +RegExp.$4;        
+    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //hsl()
+        this.type   = "color";
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;        
+    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //hsla() color with percentages
+        this.type   = "color";
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;        
+        this.alpha  = +RegExp.$4;        
     } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
         this.type   = "uri";
         this.uri    = RegExp.$1;
@@ -3210,7 +3227,6 @@ function Selector(parts, line, col){
 Selector.prototype = new SyntaxUnit();
 Selector.prototype.constructor = Selector;
 
-
 /**
  * Represents a single part of a selector string, meaning a single set of
  * element name and modifiers. This does not include combinators such as
@@ -3252,7 +3268,6 @@ function SelectorPart(elementName, modifiers, text, line, col){
 SelectorPart.prototype = new SyntaxUnit();
 SelectorPart.prototype.constructor = SelectorPart;
 
-
 /**
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.
@@ -3287,7 +3302,6 @@ function SelectorSubPart(text, type, line, col){
 
 SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
-
 
 /**
  * Represents a selector's specificity.
@@ -3409,7 +3423,6 @@ Specificity.calculate = function(selector){
     
     return new Specificity(0, b, c, d);
 };
-
 
 
 var h = /^[0-9a-fA-F]$/,
@@ -4409,7 +4422,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     }
 });
 
-
 var Tokens  = [
 
     /*
@@ -4616,7 +4628,6 @@ var Tokens  = [
 
 
 
-
 /**
  * Type to use when a validation error occurs.
  * @class ValidationError
@@ -4654,7 +4665,6 @@ function ValidationError(message, line, col){
 //inherit from Error
 ValidationError.prototype = new Error();
 
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -4673,4 +4683,3 @@ Tokens              :Tokens,
 ValidationError     :ValidationError
 };
 })();
-

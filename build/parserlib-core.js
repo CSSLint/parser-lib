@@ -21,10 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 25-October-2011 09:11:57 */
+/* Build time: 31-October-2011 11:46:10 */
 var parserlib = {};
 (function(){
-
 
 /**
  * A generic base to inherit from for any object
@@ -895,8 +894,6 @@ TokenStreamBase.prototype = {
 };
 
 
-
-
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -905,4 +902,3 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
-

@@ -1055,6 +1055,57 @@ YAHOO.test.CSSParser = (function(){
             assert.areEqual(191.25, result.parts[0].blue);
         },
         
+        testRGBAColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgba(255, 238 , 221, 0.3)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("color", result.parts[0].type);            
+            assert.areEqual(255, result.parts[0].red);
+            assert.areEqual(238, result.parts[0].green);
+            assert.areEqual(221, result.parts[0].blue);
+            assert.areEqual(0.3, result.parts[0].alpha);
+        },
+        
+        testRGBAColorValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgba(100%,50%, 75%, 0.5)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("color", result.parts[0].type);            
+            assert.areEqual(255, result.parts[0].red);
+            assert.areEqual(127.5, result.parts[0].green);
+            assert.areEqual(191.25, result.parts[0].blue);
+            assert.areEqual(0.5, result.parts[0].alpha);
+        },
+        
+        testHSLColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("hsl(100,50%, 75%)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("color", result.parts[0].type);            
+            assert.areEqual(100, result.parts[0].hue);
+            assert.areEqual(0.5, result.parts[0].saturation);
+            assert.areEqual(0.75, result.parts[0].lightness);
+        },
+        
+        testHSLAColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("hsla(100,50%, 75%, 0.5)");
+            
+            assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            assert.areEqual(1, result.parts.length);
+            assert.areEqual("color", result.parts[0].type);            
+            assert.areEqual(100, result.parts[0].hue);
+            assert.areEqual(0.5, result.parts[0].saturation);
+            assert.areEqual(0.75, result.parts[0].lightness);
+            assert.areEqual(0.5, result.parts[0].alpha);
+        },        
+        
         testColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("red");

@@ -1535,7 +1535,7 @@ YAHOO.test.CSSParser = (function(){
             parser.addListener("property", function(event){
                 assert.isNull(event.invalid);
             });
-            var result = parser.parse(".foo { background-attachment: inherit; }");
+            var result = parser.parse(".foo { background-attachment: local; }");
             
         },
         
@@ -1543,7 +1543,7 @@ YAHOO.test.CSSParser = (function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 assert.isNotNull(event.invalid);
-                assert.areEqual("Expected one of (scroll | fixed | inherit) but found 'foo'.", event.invalid.message);
+                assert.areEqual("Expected attachment but found 'foo'.", event.invalid.message);
             });
             var result = parser.parse(".foo { background-attachment: foo; }");            
         },
@@ -1683,7 +1683,48 @@ YAHOO.test.CSSParser = (function(){
             });
             var result = parser.parse(".foo { opacity: 1}");
             
-        }        
+        },
+        
+        testBackgroundImage1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: none}");        
+        },
+                 
+        testBackgroundImage2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png)}");        
+        },
+                 
+        testBackgroundImage3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png), none}");        
+        },
+                 
+        testBackgroundImage4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png), url(bar.png)}");        
+        },
+                 
+        testBackgroundImage5: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected end of line but found ','.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png),}");        
+        }
                  
                 
         

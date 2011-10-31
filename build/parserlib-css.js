@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 31-October-2011 11:46:10 */
+/* Build time: 31-October-2011 12:28:42 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2458,10 +2458,20 @@ nth
          ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
 */
+//This file will likely change a lot! Very experimental!
+
 var ValidationType = {
 
     "absolute-size": function(part){
         return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+    },
+    
+    "attachment": function(part){
+        return this.identifier(part, "scroll | fixed | local");
+    },
+    
+    "box": function(part){
+        return this.identifier(part, "padding-box | border-box | content-box");
     },
     
     "relative-size": function(part){
@@ -2511,6 +2521,10 @@ var ValidationType = {
         return this.uri(part);
     },
     
+    "bg-image": function(part){
+        return this.image(part) || part == "none";
+    },
+    
     "percentage": function(part){
         return part.type == "percentage" || part == "0";
     },
@@ -2558,12 +2572,12 @@ var Properties = {
     //B
     "backface-visibility": 1,
     "background": 1,
-    "background-attachment":        [ "scroll | fixed | inherit" ],
+    "background-attachment":        { multi: [ "attachment" ], separator: "," },
     "background-break": 1,
-    "background-clip": 1,
+    "background-clip":              { multi: [ "box" ], separator: "," },
     "background-color":             [ "color", "inherit" ],
-    "background-image": 1,
-    "background-origin": 1,
+    "background-image":             { multi: [ "bg-image" ], separator: "," },
+    "background-origin":            { multi: [ "box" ], separator: "," },
     "background-position": 1,
     "background-repeat":            [ "repeat | repeat-x | repeat-y | no-repeat | inherit" ],
     "background-size": 1,
@@ -2831,6 +2845,7 @@ var Properties = {
     "text-indent":                  [ "length", "percentage", "inherit" ],
     "text-justify":                 [ "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida" ],
     "text-outline": 1,
+    "text-overflow": 1,
     "text-shadow": 1,
     "text-transform":               [ "capitalize | uppercase | lowercase | none | inherit" ],
     "text-wrap":                    [ "normal | none | avoid" ],
@@ -2914,8 +2929,10 @@ var Properties = {
                             i, len, j, count,
                             msg,
                             values,
+                            last,
                             parts   = value.parts;
                         
+                        //if there's a maximum set, use it (max can't be 0)
                         if (spec.max) {
                             if (parts.length > spec.max){
                                 throw new ValidationError("Expected a max of " + spec.max + " property values but found " + parts.length + ".", value.line, value.col);
@@ -2929,25 +2946,45 @@ var Properties = {
                         for (i=0, len=parts.length; i < len; i++){
                             msg = [];
                             valid = false;
-                            for (j=0, count=values.length; j < count; j++){
-                                if (typeof ValidationType[values[j]] == "undefined"){
-                                    if(ValidationType.identifier(parts[i], values[j])){
-                                        valid = true;
-                                        break;
-                                    }
-                                    msg.push("one of (" + values[j] + ")");
+                            
+                            if (spec.separator && parts[i].type == "operator"){
+                                
+                                //two operators in a row - not allowed?
+                                if ((last && last.type == "operator")){
+                                    msg = msg.concat(values);
+                                } else if (i == len-1){
+                                    msg = msg.concat("end of line");
+                                } else if (parts[i] != spec.separator){
+                                    msg.push("'" + spec.separator + "'");
                                 } else {
-                                    if (ValidationType[values[j]](parts[i])){
-                                        valid = true;
-                                        break;
-                                    }
-                                    msg.push(values[j]);
-                                }                                   
+                                    valid = true;
+                                }
+                            } else {
+
+                                for (j=0, count=values.length; j < count; j++){
+                                    if (typeof ValidationType[values[j]] == "undefined"){
+                                        if(ValidationType.identifier(parts[i], values[j])){
+                                            valid = true;
+                                            break;
+                                        }
+                                        msg.push("one of (" + values[j] + ")");
+                                    } else {
+                                        if (ValidationType[values[j]](parts[i])){
+                                            valid = true;
+                                            break;
+                                        }
+                                        msg.push(values[j]);
+                                    }                                   
+                                }
                             }
+
                             
                             if (!valid) {
                                 throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
                             }
+                            
+                            
+                            last = parts[i];
                         }                
 
                     };

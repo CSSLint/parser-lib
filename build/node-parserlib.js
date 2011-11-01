@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 1-November-2011 11:39:02 */
+/* Build time: 1-November-2011 12:11:55 */
 var parserlib = {};
 (function(){
 
@@ -925,7 +925,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 1-November-2011 11:39:02 */
+/* Build time: 1-November-2011 12:11:55 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3463,12 +3463,12 @@ var Properties = {
     "alignment-baseline": 1,
     "animation": 1,
     "animation-delay": 1,
-    "animation-direction": 1,
+    "animation-direction":          { multi: [ "normal | alternate" ], separator: "," },
     "animation-duration": 1,
     "animation-fill-mode": 1,
-    "animation-iteration-count": 1,
+    "animation-iteration-count":    { multi: [ "number", "infinite"], separator: "," },
     "animation-name": 1,
-    "animation-play-state": 1,
+    "animation-play-state":         { multi: [ "running | paused" ], separator: "," },
     "animation-timing-function": 1,
     "appearance": 1,
     "azimuth": 1,

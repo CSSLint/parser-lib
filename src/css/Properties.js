@@ -275,7 +275,7 @@ var Properties = {
     "line-stacking-strategy": 1,
     "list-style": 1,
     "list-style-image":             [ "uri", "none | inherit" ],
-    "list-style-position":          [ "inside | outsider | inherit" ],
+    "list-style-position":          [ "inside | outside | inherit" ],
     "list-style-type":              [ "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit" ],
     
     //M

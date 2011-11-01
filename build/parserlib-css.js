@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 31-October-2011 12:28:42 */
+/* Build time: 1-November-2011 11:39:02 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2735,7 +2735,7 @@ var Properties = {
     "line-stacking-strategy": 1,
     "list-style": 1,
     "list-style-image":             [ "uri", "none | inherit" ],
-    "list-style-position":          [ "inside | outsider | inherit" ],
+    "list-style-position":          [ "inside | outside | inherit" ],
     "list-style-type":              [ "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit" ],
     
     //M

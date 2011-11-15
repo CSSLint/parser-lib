@@ -2156,8 +2156,20 @@ Parser.prototype = function(){
                 
                 //otherwise return result
                 return result;
+            },
+
+            /**
+             * Parses an HTML style attribute: a set of CSS declarations 
+             * separated by semicolons.
+             * @param {String} input The text to parse as a style attribute
+             * @return {void} 
+             * @method parseStyleAttribute
+             */
+            parseStyleAttribute: function(input){
+                input += "}"; // for error recovery in _readDeclarations()
+                this._tokenStream = new TokenStream(input, Tokens);
+                this._readDeclarations();
             }
-            
         };
         
     //copy over onto prototype

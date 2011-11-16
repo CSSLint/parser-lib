@@ -71,6 +71,7 @@ Parser.prototype = function(){
                
                 var tokenStream = this._tokenStream,
                     charset     = null,
+                    count,
                     token,
                     tt;
                     
@@ -117,7 +118,36 @@ Parser.prototype = function(){
                             case Tokens.KEYFRAMES_SYM:
                                 this._keyframes(); 
                                 this._skipCruft();
-                                break;  
+                                break;                                
+                            case Tokens.UNKNOWN_SYM:  //unknown @ rule
+                                tokenStream.get();
+                                if (!this.options.strict){
+                                
+                                    //fire error event
+                                    this.fire({
+                                        type:       "error",
+                                        error:      null,
+                                        message:    "Unknown @ rule: " + tokenStream.LT(0).value + ".",
+                                        line:       tokenStream.LT(0).startLine,
+                                        col:        tokenStream.LT(0).startCol
+                                    });                          
+                                    
+                                    //skip braces
+                                    count=0;
+                                    while (tokenStream.advance([Tokens.LBRACE, Tokens.RBRACE]) == Tokens.LBRACE){
+                                        count++;    //keep track of nesting depth
+                                    }
+                                    
+                                    while(count){
+                                        tokenStream.advance([Tokens.RBRACE]);
+                                        count--;
+                                    }
+                                    
+                                } else {
+                                    //not a syntax error, rethrow it
+                                    throw new SyntaxError("Unknown @ rule.", tokenStream.LT(0).startLine, tokenStream.LT(0).startCol);;
+                                }                                
+                                break;
                             case Tokens.S:
                                 this._readWhitespace();
                                 break;

@@ -31,6 +31,7 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
+    { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
     
     //CSS3 animations

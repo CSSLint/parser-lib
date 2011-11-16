@@ -362,9 +362,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
-            tt = Tokens.CHAR;
-            rule = first;
-            reader.reset();
+            if (rule.length > 1){
+                tt = Tokens.UNKNOWN_SYM;                
+            } else {
+                tt = Tokens.CHAR;
+                rule = first;
+                reader.reset();
+            }
         }
 
         return this.createToken(tt, rule, startLine, startCol);

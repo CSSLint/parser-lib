@@ -79,13 +79,14 @@
     
     <!-- run tests on the command line -->
     <target name="test" depends="lint,build.all">       
-        <exec executable="java" failonerror="true">
+        <apply executable="java" failonerror="true">
+            <fileset dir="${tests.dir}" includes="**/*.js"/>
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
             <arg path="${lib.dir}/yuitest-rhino-cli.js" />
             <arg path="${build.dir}/${full.build.file}" />
-            <arg path="${build.dir}/${tests.build.file}" />
-        </exec>              
+            <srcfile/>
+        </apply>              
     </target>    
     
     <!-- build the full library -->
@@ -211,7 +212,7 @@
     <!-- build the tests into a single file -->
     <target name="build.tests">    
         <concat destfile="${build.dir}/${tests.build.file}"  fixlastline="true">
-            <fileset dir="${tests.dir}/" includes="**/*.js" excludes="all-rules.js" />           
+            <fileset dir="${tests.dir}/" includes="**/*.js" />           
         </concat>        
     </target>       
     
@@ -228,6 +229,6 @@
     </target>    
     
     <!-- Build all files -->
-    <target name="build.all" depends="build.full,build.node"/>
+    <target name="build.all" depends="build.full,build.node,build.tests"/>
 
 </project>

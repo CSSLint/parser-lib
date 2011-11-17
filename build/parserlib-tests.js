@@ -1,0 +1,2337 @@
+(function(){
+    
+    var Assert = YUITest.Assert,
+        MediaQuery = parserlib.css.MediaQuery,
+        Selector = parserlib.css.Selector,
+        Combinator = parserlib.css.Combinator,
+        SelectorPart = parserlib.css.SelectorPart,
+        Parser = parserlib.css.Parser;
+    
+    //-------------------------------------------------------------------------
+    // Base Test Suite
+    //-------------------------------------------------------------------------
+    
+    var suite = new YUITest.TestSuite("Selector Parsing");
+   
+    suite.add(new YUITest.TestCase({
+    
+        name: "Type Selector Tests",
+        
+        testSimpleTypeSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(Parser.SELECTOR_TYPE, result.type);
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual(Parser.SELECTOR_PART_TYPE, result.parts[0].type);
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+            Assert.areEqual(1, result.specificity.valueOf());
+        },
+        
+        testSimpleTypeSelectorPlusNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("svg|rect");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(Parser.SELECTOR_TYPE, result.type);
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("svg|rect", result.parts[0].elementName, "Element name should be 'svg|rect'.");
+            Assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+            Assert.areEqual(1, result.specificity.valueOf());
+        },
+        
+        testSimpleTypeSelectorPlusBlankNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("|rect");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("|rect", result.parts[0].elementName, "Element name should be '|rect'.");
+            Assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+            Assert.areEqual(1, result.specificity.valueOf());
+        },
+        
+        testSimpleTypeSelectorPlusUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*|rect");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("*|rect", result.parts[0].elementName, "Element name should be '*|rect'.");
+            Assert.areEqual(0, result.parts[0].modifiers, "Element should have zero modifiers.");
+            Assert.areEqual(1, result.specificity.valueOf());
+        }    
+    }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Universal Selector Tests",    
+    
+        testSimpleUniversalSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("*", result.parts[0].elementName, "Element name should be '*'.");
+            Assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+            Assert.areEqual(0, result.specificity.valueOf());
+        },
+        
+        testSimpleUniversalSelectorPlusNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("svg|*");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("svg|*", result.parts[0].elementName, "Element name should be 'svg|*'.");
+            Assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+            Assert.areEqual(0, result.specificity.valueOf());
+        },
+        
+        testSimpleUniversalSelectorPlusBlankNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("|*");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("|*", result.parts[0].elementName, "Element name should be '|*'.");
+            Assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+            Assert.areEqual(0, result.specificity.valueOf());
+        },
+        
+        testSimpleUniversalSelectorPlusUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("*|*");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("*|*", result.parts[0].elementName, "Element name should be '*|*'.");
+            Assert.areEqual(0, result.parts[0].modifiers.length, "Element should have zero modifiers.");
+            Assert.areEqual(0, result.specificity.valueOf());
+        }    
+    
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Attribute Selector Tests",    
+    
+        testAttributePresenceSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[class]", result.parts[0].modifiers[0].text, "Modifier text should be '[class]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+        
+        testAttributeEquivalenceSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class=\"selected\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[class=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=\"selected\"]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+        },
+        
+        testAttributeEquivalenceSelectorNoString: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class=selected]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[class=selected]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+        
+        testAttributeContainsSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class~=\"selected\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[class~=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class~=\"selected\"]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+        
+        testAttributeDashMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[class|=\"selected\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[class|=\"selected\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[class|=\"selected\"]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+
+        testAttributeStartMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("object[type^=\"image/\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("object", result.parts[0].elementName, "Element name should be 'object'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[type^=\"image/\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[type^=\"image/\"]'.");            
+            Assert.areEqual(7, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+        },
+
+        testAttributeEndMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("a[href$=\".html\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("a", result.parts[0].elementName, "Element name should be 'a'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[href$=\".html\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[href$=\".html\"]'.");            
+            Assert.areEqual(2, result.parts[0].modifiers[0].col, "Modifier column should be 2.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+        },
+
+        testAttributeContainsMatchSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("p[title*=\"hello\"]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("p", result.parts[0].elementName, "Element name should be 'p'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[title*=\"hello\"]", result.parts[0].modifiers[0].text, "Modifier text should be '[title*=\"hello\"]'.");            
+            Assert.areEqual(2, result.parts[0].modifiers[0].col, "Modifier column should be 2.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+        },
+
+        testAttributeEquivalenceSelectorNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[html|class=selected]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[html|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[html|class=selected]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+        
+        testAttributeEquivalenceSelectorUniversalNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[*|class=selected]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[*|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[*|class=selected]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        },
+        
+        testAttributeEquivalenceSelectorDefaultNamespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li[|class=selected]");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be 'li'.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("attribute", result.parts[0].modifiers[0].type, "Modifier type should be 'attribute'.");
+            Assert.areEqual("[|class=selected]", result.parts[0].modifiers[0].text, "Modifier text should be '[|class=selected]'.");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Modifier column should be 3.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line should be 1.");
+            Assert.areEqual(11, result.specificity.valueOf());
+            
+        }
+    }));
+    
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Class Selector Tests",    
+    
+        testSimpleClassSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector(".selected");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual(1, result.parts[0].line, "Line start should be 1");
+            Assert.areEqual(1, result.parts[0].col, "Column start should be 1");
+            Assert.isNull(result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            
+        },
+        
+        testCompoundClassSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector(".selected.foo");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.line, "Line start should be 1");
+            Assert.areEqual(1, result.col, "Column start should be 1");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isNull(result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual(2, result.parts[0].modifiers.length, "Element should have two modifiers.");
+            Assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            Assert.areEqual("class", result.parts[0].modifiers[1].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".foo", result.parts[0].modifiers[1].text, "Modifier text should be '.foo'.");            
+        },
+        
+        testSimpleClassSelectorWithElementName: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.selected");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li",result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line start should be 1");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Column start should be 3");
+            
+        },
+        
+        testCompoundClassSelectorWithElementName: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.selected.foo");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual(2, result.parts[0].modifiers.length, "Element should have two modifiers.");
+            Assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "Line start should be 1");
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "Column start should be 3");
+            Assert.areEqual("class", result.parts[0].modifiers[1].type, "Modifier type should be 'class'.");
+            Assert.areEqual(".foo", result.parts[0].modifiers[1].text, "Modifier text should be '.foo'.");            
+            Assert.areEqual(1, result.parts[0].modifiers[1].line, "Line start should be 1");
+            Assert.areEqual(12, result.parts[0].modifiers[1].col, "Column start should be 12");
+        }
+        
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "ID Selector Tests",    
+    
+        testSimpleIDSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("#header");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isNull(result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("id", result.parts[0].modifiers[0].type, "Modifier type should be 'id'.");
+            Assert.areEqual("#header", result.parts[0].modifiers[0].text, "Modifier text should be '#header'.");            
+        },
+        
+        testSimpleIDSelectorWithElementName: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("div#header");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("div", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("id", result.parts[0].modifiers[0].type, "Modifier type should be 'id'.");
+            Assert.areEqual("#header", result.parts[0].modifiers[0].text, "Modifier text should be '#header'.");            
+        }
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Pseudo Class Selector Tests",    
+    
+        testSimplePseudoClassSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("a:hover");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("a", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":hover", result.parts[0].modifiers[0].text, "Modifier text should be ':hover'.");            
+        },
+        
+        testMultiplePseudoClassSelectors: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("a:focus:hover");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("a", result.parts[0].elementName);
+            Assert.areEqual(2, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":focus", result.parts[0].modifiers[0].text, "Modifier text should be ':focus'.");            
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text, "Modifier text should be ':hover'.");            
+        },
+        
+        testPseudoClassFunctionSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("html:lang(fr-be)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("html", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":lang(fr-be)", result.parts[0].modifiers[0].text, "Modifier text should be ':lang(fr-be)'.");            
+        },
+        
+        testPseudoClassNthSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-child(2n+1)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("tr", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":nth-child(2n+1)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(2n+1)'.");            
+        },
+        
+        testPseudoClassNthSelector2: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-child(even)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("tr", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":nth-child(even)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(even)'.");            
+        },
+        
+        testPseudoClassNthSelector3: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-child(5)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("tr", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":nth-child(5)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(5)'.");            
+        },
+        
+        testPseudoClassNthSelector4: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-of-type(5)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("tr", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":nth-of-type(5)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-of-type(5)'.");            
+        },
+        
+        testPseudoClassLastChildSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:last-child");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("tr", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":last-child", result.parts[0].modifiers[0].text, "Modifier text should be ':last-child'.");            
+        },
+        
+        testPseudoClassNotSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("button:not([DISABLED])");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("button", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":not([DISABLED])", result.parts[0].modifiers[0].text, "Modifier text should be ':not([DISABLED])'.");            
+            Assert.areEqual(1, result.parts[0].modifiers[0].args.length, "Modifier should have one argument.");
+            
+            var arg = result.parts[0].modifiers[0].args[0];
+            
+            Assert.isInstanceOf(SelectorPart, arg, "Result should be an instance of Selector.");
+            Assert.areEqual("[DISABLED]", arg.toString());
+            Assert.isNull(arg.elementName);
+            Assert.areEqual(1, arg.modifiers.length);
+            Assert.areEqual("attribute", arg.modifiers[0].type);
+        },
+        
+        testPseudoClassNotSelector2: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("button:not(foo)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("button", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("not", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual(":not(foo)", result.parts[0].modifiers[0].text, "Modifier text should be ':not(foo)'.");            
+            Assert.areEqual(1, result.parts[0].modifiers[0].args.length, "Modifier should have one argument.");
+
+
+            var arg = result.parts[0].modifiers[0].args[0];
+            
+            Assert.isInstanceOf(SelectorPart, arg, "Result should be an instance of Selector.");
+            Assert.areEqual("foo", arg.toString());
+            Assert.areEqual("foo", arg.elementName, "Element name should be 'foo'.");
+            Assert.areEqual(0, arg.modifiers.length);
+
+        }       
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Pseudo Element Selector Tests",    
+    
+        testSimplePseudoElementSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("p::first-line");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("p", result.parts[0].elementName);
+            Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
+            Assert.areEqual("pseudo", result.parts[0].modifiers[0].type, "Modifier type should be 'pseudo'.");
+            Assert.areEqual("::first-line", result.parts[0].modifiers[0].text, "Modifier text should be '::first-line'.");            
+        }
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Combinators",
+                
+                
+        testChildCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover > p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(">", result.parts[1].text);
+            Assert.areEqual("child", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testChildCombinatorNoSpaces: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover>p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(">", result.parts[1].text);
+            Assert.areEqual("child", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testChildCombinatorOneSpaceBefore: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover >p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(">", result.parts[1].text);
+            Assert.areEqual("child", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testChildCombinatorOneSpaceAfter: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover> p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(">", result.parts[1].text);
+            Assert.areEqual("child", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testAdjacentSiblingCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover + p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual("+", result.parts[1].text);
+            Assert.areEqual("adjacent-sibling", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testGeneralSiblingCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover ~ p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual("~", result.parts[1].text);
+            Assert.areEqual("sibling", result.parts[1].type);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testDescendantCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);   
+            Assert.areEqual(1, result.parts[0].modifiers[0].line, "The line should be 1.");   
+            Assert.areEqual(3, result.parts[0].modifiers[0].col, "The column should be 3.");
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);  
+            Assert.areEqual(1, result.parts[0].modifiers[1].line, "The line should be 1.");   
+            Assert.areEqual(10, result.parts[0].modifiers[1].col, "The column should be 10.");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(" ", result.parts[1].text);
+            Assert.areEqual("descendant", result.parts[1].type);
+            Assert.areEqual(1, result.parts[1].line, "Line should be 1.");
+            Assert.areEqual(16, result.parts[1].col, "Column should be 16.");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+            Assert.areEqual(1, result.parts[2].elementName.line, "Line should be 1.");
+            Assert.areEqual(17, result.parts[2].elementName.col, "Column should be 17.");            
+        },
+        
+        testDescendantCombinatorWithTrailingWhitespace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover p ");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].elementName);
+            Assert.areEqual(".inline", result.parts[0].modifiers[0].text);
+            Assert.areEqual("class", result.parts[0].modifiers[0].type);            
+            Assert.areEqual(":hover", result.parts[0].modifiers[1].text);
+            Assert.areEqual("pseudo", result.parts[0].modifiers[1].type);            
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(" ", result.parts[1].text);
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+            Assert.areEqual("p", result.parts[2].elementName);
+        },
+        
+        testWithCombinator: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li.inline:hover > p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(1, result.parts[1].line, "Line should be 1.");
+            Assert.areEqual(17, result.parts[1].col, "Column should be 17.");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");            
+        },
+        
+        testWithNthChild: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("tr:nth-child(2n+1) a");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+        
+        }
+        
+        
+        //body > h2:nth-of-type(n+2):nth-last-of-type(n+2)
+        //body > h2:not(:first-of-type):not(:last-of-type)        
+        //html|*:not(:link):not(:visited)
+    }));
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Complex Cases",
+                
+        testWithComplexSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("body > h2:nth-of-type(n+2):nth-last-of-type(n+2)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");   
+                 
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual(1, result.parts[1].line, "Line should be 1.");
+            Assert.areEqual(6, result.parts[1].col, "Column should be 6.");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            Assert.areEqual(1, result.parts[2].line, "Line should be 1.");
+            Assert.areEqual(8, result.parts[2].col, "Column should be 8.");
+        },
+        
+        testWithComplexSelector2: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("body > h2:not(:first-of-type):not(:last-of-type)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");   
+                 
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        },
+        
+        testWithComplexSelector3: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("html|*:not(:link):not(:visited)");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(1, result.parts.length, "Should be one part.");   
+                 
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            //Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            //Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+        },
+        
+        testWithMultipartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("ul li a span");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.areEqual(7, result.parts.length, "Should be four parts.");   
+            
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "Part should be a SelectorPart.");
+            Assert.areEqual("ul", result.parts[0].elementName);
+            
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[2].elementName);
+
+            Assert.isInstanceOf(SelectorPart, result.parts[4], "Part should be a SelectorPart.");
+            Assert.areEqual("a", result.parts[4].elementName);
+
+            Assert.isInstanceOf(SelectorPart, result.parts[6], "Part should be a SelectorPart.");
+            Assert.areEqual("span", result.parts[6].elementName);
+            
+        }
+        
+        
+        
+    }));
+    
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Media Queries",
+                
+                
+        testSimpleMediaQuery: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("print");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.isNull(result.modifier);
+            Assert.areEqual("print", result.mediaType);
+            Assert.areEqual(0, result.features.length, "Should be zero parts.");
+        },
+        
+        testSimpleMediaQueryNot: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("not print");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.areEqual("not", result.modifier);
+            Assert.areEqual("print", result.mediaType);
+            Assert.areEqual(0, result.features.length, "Should be zero parts.");
+        },
+        
+        testSimpleMediaQueryOnly: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only print");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.areEqual("only", result.modifier);
+            Assert.areEqual("print", result.mediaType);
+            Assert.areEqual(0, result.features.length, "Should be zero parts.");
+        },
+        
+        testComplexMediaQuery: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("screen and (max-weight: 3kg) and (color)");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.isNull(result.modifier);
+            Assert.areEqual("screen", result.mediaType);
+            Assert.areEqual(2, result.features.length, "Should be two features.");
+            Assert.areEqual("max-weight", result.features[0].name);
+            Assert.areEqual(25, result.features[0].value.col);
+            Assert.areEqual("3kg", result.features[0].value);
+            Assert.areEqual("color", result.features[1].name);
+            Assert.isNull(result.features[1].value);
+            Assert.areEqual(35, result.features[1].name.col);
+            
+        },
+        
+        testComplexMediaQuery2: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only screen and (max-device-width: 768px) and (orientation:portrait)");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.areEqual("only", result.modifier);
+            Assert.areEqual("screen", result.mediaType);
+            Assert.areEqual(2, result.features.length, "Should be two features.");
+            Assert.areEqual("max-device-width", result.features[0].name);
+            Assert.areEqual("768px", result.features[0].value);
+            Assert.areEqual("orientation", result.features[1].name);
+            Assert.areEqual("portrait", result.features[1].value);
+        }
+      
+        
+    }));
+
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Property Values",
+                
+        testDimensionValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("1px");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type); 
+            Assert.areEqual(1, result.parts[0].value);
+            Assert.areEqual("px", result.parts[0].units);
+        },
+        
+        testPercentageValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("25.4%");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("percentage", result.parts[0].type);            
+            Assert.areEqual(25.4, result.parts[0].value);
+        },
+        
+        testIntegerValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("25");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("integer", result.parts[0].type);            
+            Assert.areEqual(25, result.parts[0].value);
+        },
+        
+        testNumberValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("25.0");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("number", result.parts[0].type);            
+            Assert.areEqual(25, result.parts[0].value);
+        },
+        
+        testHexColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("#ffeedd");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(238, result.parts[0].green);
+            Assert.areEqual(221, result.parts[0].blue);
+        },
+        
+        testRGBColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgb(255, 238 , 221)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(238, result.parts[0].green);
+            Assert.areEqual(221, result.parts[0].blue);
+        },
+        
+        testRGBColorValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgb(100%,50%, 75%)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(127.5, result.parts[0].green);
+            Assert.areEqual(191.25, result.parts[0].blue);
+        },
+        
+        testRGBAColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgba(255, 238 , 221, 0.3)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(238, result.parts[0].green);
+            Assert.areEqual(221, result.parts[0].blue);
+            Assert.areEqual(0.3, result.parts[0].alpha);
+        },
+        
+        testRGBAColorValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("rgba(100%,50%, 75%, 0.5)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(127.5, result.parts[0].green);
+            Assert.areEqual(191.25, result.parts[0].blue);
+            Assert.areEqual(0.5, result.parts[0].alpha);
+        },
+        
+        testHSLColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("hsl(100,50%, 75%)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(100, result.parts[0].hue);
+            Assert.areEqual(0.5, result.parts[0].saturation);
+            Assert.areEqual(0.75, result.parts[0].lightness);
+        },
+        
+        testHSLAColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("hsla(100,50%, 75%, 0.5)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(100, result.parts[0].hue);
+            Assert.areEqual(0.5, result.parts[0].saturation);
+            Assert.areEqual(0.75, result.parts[0].lightness);
+            Assert.areEqual(0.5, result.parts[0].alpha);
+        },        
+        
+        testColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("red");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);            
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(0, result.parts[0].green);
+            Assert.areEqual(0, result.parts[0].blue);
+        },
+        
+        testURIValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(http://www.yahoo.com)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);            
+            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testURIValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url('http://www.yahoo.com')");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);            
+            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testURIValue3: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(\"http://www.yahoo.com\")");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);            
+            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+        
+        testStringValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("'Hello world!'");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);            
+            Assert.areEqual("Hello world!", result.parts[0].value);
+        },
+        
+        testStringValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\"Hello world!\"");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);            
+            Assert.areEqual("Hello world!", result.parts[0].value);
+        },
+        
+        testValueWithOperators: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("10px / 1em");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(3, result.parts.length);
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
+            Assert.areEqual("length", result.parts[0].type); 
+            Assert.areEqual(10, result.parts[0].value);
+            Assert.areEqual("px", result.parts[0].units);
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[1]);   
+            Assert.areEqual("operator", result.parts[1].type);
+            Assert.areEqual("/", result.parts[1].text); 
+            Assert.areEqual(1, result.parts[1].line, "Line should be 1.");
+            Assert.areEqual(6, result.parts[1].col, "Column should be 6.");
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
+            Assert.areEqual("length", result.parts[2].type); 
+            Assert.areEqual(1, result.parts[2].value);
+            Assert.areEqual("em", result.parts[2].units);            
+        },
+        
+        testValueWithOperators2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("1em/1.5em \"Times New Roman\", Times, serif");
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(8, result.parts.length);
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[0]);            
+            Assert.areEqual("length", result.parts[0].type); 
+            Assert.areEqual(1, result.parts[0].value);
+            Assert.areEqual("em", result.parts[0].units);
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[1]);   
+            Assert.areEqual("operator", result.parts[1].type);
+            Assert.areEqual("/", result.parts[1].value); 
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[2]);            
+            Assert.areEqual("length", result.parts[2].type); 
+            Assert.areEqual(1.5, result.parts[2].value);
+            Assert.areEqual("em", result.parts[2].units); 
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[3]);            
+            Assert.areEqual("string", result.parts[3].type); 
+            Assert.areEqual("Times New Roman", result.parts[3].value);
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[4]);   
+            Assert.areEqual("operator", result.parts[4].type);
+            Assert.areEqual(",", result.parts[4].value); 
+
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[5]);            
+            Assert.areEqual("identifier", result.parts[5].type); 
+            Assert.areEqual("Times", result.parts[5].value);
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[6]);   
+            Assert.areEqual("operator", result.parts[6].type);
+            Assert.areEqual(",", result.parts[6].value); 
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValuePart, result.parts[7]);            
+            Assert.areEqual("identifier", result.parts[7].type); 
+            Assert.areEqual("serif", result.parts[7].value);            
+        }
+        
+        
+        
+    }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Rules",
+                
+        testRuleWithOnePartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p { color: red; }");
+            
+            Assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithTwoPartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li { color: red; }");
+            
+            Assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithThreePartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li a{ color: red; }");
+            
+            Assert.isObject(result, "Parse should have completed.");
+        },
+        
+        testRuleWithFourPartSelector: function(){
+            var parser = new Parser();
+            var result = parser.parseRule("p li a span { color: red; }");
+            
+            Assert.isObject(result, "Parse should have completed.");
+        }        
+    }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Special Cases",
+        
+        _should: {
+            error: {
+                testIEFilter5: "Unexpected token '=' at line 1, col 14."
+            } 
+        },
+                
+        testWithCommentAndSpaces: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li /*booya*/ p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            Assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        },
+    
+        testWithCommentAndTrailingSpace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li/*booya*/ p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            Assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");            
+        },
+        
+        testWithCommentAndLeadingSpace: function(){
+            var parser = new Parser();
+            var result = parser.parseSelector("li /*booya*/p");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("li", result.parts[0].toString(), "First part should be 'li'");
+            Assert.isInstanceOf(Combinator, result.parts[1], "Second part should be a Combinator.");
+            Assert.areEqual("descendant", result.parts[1].type, "Second part should be a 'descendant'");
+            Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
+            Assert.areEqual("p", result.parts[2].toString(), "First part should be 'p'");
+            Assert.areEqual(3, result.parts.length, "Should be three parts.");
+        },
+    
+        testIEFilter: function(){
+            var parser = new Parser({ieFilters:true});
+            var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.Wave(strength=100)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("unknown", result.parts[0].type);
+        },
+        
+        testIEFilter2: function(){
+            var parser = new Parser({ieFilters:true});            
+            var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, src=http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png, sizingMethod=image)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("unknown", result.parts[0].type);
+        
+        },
+        
+        testIEFilter3: function(){
+            var parser = new Parser({ieFilters:true});            
+            var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png', sizingMethod='image')");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("unknown", result.parts[0].type);
+        
+        },
+        
+        testIEFilter4: function(){
+            var parser = new Parser({ieFilters:true});
+            var result = parser.parsePropertyValue("alpha(opacity=10)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("alpha(opacity=10)", result.text);
+            Assert.areEqual("unknown", result.parts[0].type);
+        },
+        
+        testIEFilter5: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("alpha(opacity=10)");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+        }
+        
+        
+     
+    
+    }));      
+        
+    suite.add(new YUITest.TestCase({
+        
+        name: "Animation Parsing Tests",
+        
+        testWebKitKeyFrames: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMozKeyFrames: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@-moz-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            Assert.isTrue(true);  //just don't want an error
+        },        
+        
+        testKeyFrames: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testKeyFramesFromTo: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testKeyFramesWithWhitespace: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
+            Assert.isTrue(true);
+        }
+        
+    }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "General Parsing Tests",    
+    
+        testMediaWithPage: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media { @page {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithTypeOnly: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media print { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithTypesOnly: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media print, screen { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithSimpleExpression: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media (max-width:400px) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testMediaWithComplexExpression: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media all and (max-width:400px) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+        
+        testClassesWithEscapes: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parseSelector("#\\31 a2b3c");
+            
+            Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
+            Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
+            Assert.areEqual("#\\31 a2b3c", result.parts[0].toString(), "Selector should be correct.");
+            Assert.areEqual(1, result.parts.length, "Should be one part.");            
+        }
+        
+    }));        
+
+    suite.add(new YUITest.TestCase({
+    
+        name: "Validation Tests",    
+    
+        testInvalidColor: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected color or one of (inherit) but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { color: foo; }");
+            
+        },
+        
+        testInvalidColor2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected color or one of (inherit) but found 'invert'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { color: invert; }");
+            
+        },
+        
+        testValidColor: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: red; }");
+            
+        },
+        
+        testValidColor2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: #ff0000; }");
+            
+        },
+        
+        testValidColor3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { color: inherit; }");
+            
+        },
+        
+        testValidColor4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-color: transparent; }");
+            
+        },
+        
+        testBackgroundAttachment1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: scroll; }");
+            
+        },
+        
+        testBackgroundAttachment2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: fixed; }");
+            
+        },
+
+        testBackgroundAttachment3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-attachment: local; }");
+            
+        },
+        
+        testInvalidBackgroundAttachment: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected attachment but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { background-attachment: foo; }");            
+        },
+        
+        testInvalidZIndex: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected integer or one of (auto | inherit) but found 'foo'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { z-index: foo; }");            
+        },
+        
+        testZIndex1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: 1 }");
+            
+        },
+        
+        testZIndex2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: auto }");            
+        },
+
+        testZIndex3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { z-index: inherit }");
+            
+        },
+        
+        testBorderWidth1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px }");
+            
+        },
+                
+        testBorderWidth2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px 1px }");
+            
+        },
+                
+        testBorderWidth3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px  1px 1px}");
+            
+        },
+                
+        testBorderWidth4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { border-width: 1px  1px 1px 1px}");
+            
+        },
+
+        testInvalidBorderWidth1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected a max of 4 property values but found 5.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { border-width: 1px 1px 1px 1px 1px}");
+            
+        },
+                
+        testInvalidBorderWidth2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected border-width but found 'foo'.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { border-width: foo}");
+            
+        },
+             
+        testMinHeight1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: 1px; }");
+            
+        },                
+        
+        testMinHeight2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: 1%; }");
+            
+        },                
+        
+        testMinHeight3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { min-height: inherit; }");
+            
+        },                
+        
+        testInvalidMinHeight: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected length or percentage or one of (inherit) but found 'foo'.", event.invalid.message);                
+            });
+            var result = parser.parse(".foo { min-height: foo}");
+            
+        },
+
+        testOpacity: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { opacity: 1}");
+            
+        },
+        
+        testBackgroundImage1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: none}");        
+        },
+                 
+        testBackgroundImage2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png)}");        
+        },
+                 
+        testBackgroundImage3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png), none}");        
+        },
+                 
+        testBackgroundImage4: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png), url(bar.png)}");        
+        },
+                 
+        testBackgroundImage5: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.isNotNull(event.invalid);
+                Assert.areEqual("Expected end of line but found ','.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { background-image: url(foo.png),}");        
+        }
+
+    }));        
+ 
+    
+    YUITest.TestRunner.add(suite);
+
+})();
+(function(){
+
+    var Assert = YUITest.Assert, 
+        Parser = parserlib.css.Parser,
+        Specificity = parserlib.css.Specificity;
+        
+    YUITest.TestRunner.add(new YUITest.TestCase({
+    
+        name: "Specificity Tests",
+        
+        testSpecificity1: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("*"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(0, specificity.valueOf());
+            Assert.areEqual("0,0,0,0", specificity.toString());
+        },
+        
+        testSpecificity2: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(1, specificity.valueOf());
+            Assert.areEqual("0,0,0,1", specificity.toString());
+        },
+        
+        testSpecificity3: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li:first-line"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(2, specificity.valueOf());
+            Assert.areEqual("0,0,0,2", specificity.toString());
+        },
+        
+        testSpecificity4: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul li"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(2, specificity.valueOf());
+            Assert.areEqual("0,0,0,2", specificity.toString());
+        
+        },
+        
+        testSpecificity5: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul ol+li"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(3, specificity.valueOf());
+            Assert.areEqual("0,0,0,3", specificity.toString());
+        
+        },
+        
+        testSpecificity6: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("h1 + *[rel=up]"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(11, specificity.valueOf());
+            Assert.areEqual("0,0,1,1", specificity.toString());
+        
+        },
+        
+        testSpecificity7: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("ul ol li.red"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(13, specificity.valueOf());
+            Assert.areEqual("0,0,1,3", specificity.toString());
+        
+        },
+        
+        testSpecificity8: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("li.red.level"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(21, specificity.valueOf());
+            Assert.areEqual("0,0,2,1", specificity.toString());
+        
+        },
+        
+        testSpecificity9: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector(".f00"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(10, specificity.valueOf());
+            Assert.areEqual("0,0,1,0", specificity.toString());
+        
+        },
+        
+        testSpecificity10: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("div p.foo"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(12, specificity.valueOf());
+            Assert.areEqual("0,0,1,2", specificity.toString());
+        
+        },
+        
+        testSpecificity11: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("#foo"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(100, specificity.valueOf());
+            Assert.areEqual("0,1,0,0", specificity.toString());
+        
+        },
+        
+        testSpecificity12: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("body #foo .foo p"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(112, specificity.valueOf());
+            Assert.areEqual("0,1,1,2", specificity.toString());
+        
+        },
+        
+        testSpecificity13: function(){
+            var parser = new Parser(),
+                selector = parser.parseSelector("#s12:not(FOO)"),
+                specificity = Specificity.calculate(selector);
+                
+            Assert.areEqual(101, specificity.valueOf());
+            Assert.areEqual("0,1,0,1", specificity.toString());
+        
+        }        
+        
+    
+    }));
+
+
+})();
+(function(){
+
+    var Assert = YUITest.Assert,    
+        TokenStream = parserlib.css.TokenStream,
+        CSSTokens = parserlib.css.Tokens;
+
+    //-------------------------------------------------------------------------
+    // New testcase type to make it easier to test patterns
+    //-------------------------------------------------------------------------
+    
+    function CSSTokenTestCase(info){    
+    
+        YUITest.TestCase.call(this, info);
+        this.patterns = info.patterns;    
+        
+        for (var prop in this.patterns){
+            if (this.patterns.hasOwnProperty(prop)){
+                this["testPattern: " + prop] = function(prop){
+                    return function(){
+                        this._testPattern(prop, this.patterns[prop]);
+                    };
+                }(prop);
+            }
+        }
+    }
+    
+    CSSTokenTestCase.prototype = new YUITest.TestCase();
+    
+    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs){
+        var tokenStream = new TokenStream(pattern, CSSTokens);
+        var tt;
+    
+        for (var i=0, len=outputs.length; i < len; i++){
+            tt = tokenStream.get((outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined));
+            Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");           
+        }
+
+        //if there was an invalid token, stop here
+        if (tt > -1){
+            tt = tokenStream.get();
+            Assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+        }
+    };
+
+
+
+    
+    
+    //-------------------------------------------------------------------------
+    // Simple CSS token tests
+    //-------------------------------------------------------------------------
+    
+    var suite = new YUITest.TestSuite("CSS Tokens");
+   
+   
+    //note: \r\n is normalized to just \n by StringReader
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Whitespace",
+        
+        patterns: {
+            " "     : [CSSTokens.S],
+            "\n"    : [CSSTokens.S],
+            "\n \t" : [CSSTokens.S],
+            "\f \n" : [CSSTokens.S]        
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for comments",
+        
+        patterns: {
+            //"/* booya */"     : [],
+            //"/*\n booya */"   : [],
+            //"/*\n booya \n*/" : [],
+            //"/*/*/"           : [],
+            "/*/hello*/abc"   : [CSSTokens.IDENT]
+        }        
+    }));
+    
+    suite.add(new CSSTokenTestCase({
+        name: "Test for comparison operators",        
+        
+        patterns: {
+            "~=":   [CSSTokens.INCLUDES],
+            "|=":   [CSSTokens.DASHMATCH],
+            "^=":   [CSSTokens.PREFIXMATCH],
+            "$=":   [CSSTokens.SUFFIXMATCH],
+            "*=":   [CSSTokens.SUBSTRINGMATCH]
+        }
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name: "Test for identifiers",        
+        
+        patterns: {
+            "a":        [CSSTokens.IDENT],
+            "ab":       [CSSTokens.IDENT],
+            "a1":       [CSSTokens.IDENT],
+            "a_c":      [CSSTokens.IDENT],
+            "a-c":      [CSSTokens.IDENT],
+            "a90":      [CSSTokens.IDENT],
+            "a\\09":    [CSSTokens.IDENT],
+            "\\sa":     [CSSTokens.IDENT],
+            
+            //not identifiers
+            "9a":       [CSSTokens.DIMENSION]
+        }
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for strings",
+        
+        patterns: {
+            "'hello'"       : [CSSTokens.STRING],
+            "\"hello\""     : [CSSTokens.STRING],
+            "''"            : [CSSTokens.STRING],
+            "\"\""          : [CSSTokens.STRING],
+            "'hello\""      : [CSSTokens.INVALID],
+            "\"hello'"      : [CSSTokens.INVALID],
+            "'hello"        : [CSSTokens.INVALID],
+            "'hel\\\'lo'"   : [CSSTokens.STRING],
+            "\"hel\\\"lo\"" : [CSSTokens.STRING]
+        }        
+    }));
+
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for hashes",
+        
+        // need to use double \\ to represent a single \ due to escaping
+        patterns: {
+            "#identifier"       : [CSSTokens.HASH],
+            "#_identifer"       : [CSSTokens.HASH],
+            "#0-9_"             : [CSSTokens.HASH],
+            "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
+            "#h\\0fllo"         : [CSSTokens.HASH],
+            "#ffeeff"           : [CSSTokens.HASH],
+            "#\\31 a2b3c"        : [CSSTokens.HASH],
+            "#r0\\.5"            : [CSSTokens.HASH]
+        }        
+    }));
+    
+    //-------------------------------------------------------------------------
+    // Tests for at-rules
+    //-------------------------------------------------------------------------
+    
+    (function(){
+    
+        var atRules = {
+            "@charset"      : CSSTokens.CHARSET_SYM,
+            "@import"       : CSSTokens.IMPORT_SYM,
+            "@page"         : CSSTokens.PAGE_SYM,
+            "@media"        : CSSTokens.MEDIA_SYM,
+            "@font-face"    : CSSTokens.FONT_FACE_SYM,
+            "@namespace"    : CSSTokens.NAMESPACE_SYM,
+            "@top-left-corner"  : CSSTokens.TOPLEFTCORNER_SYM,
+            "@top-left"     : CSSTokens.TOPLEFT_SYM,
+            "@top-right-corner" : CSSTokens.TOPRIGHTCORNER_SYM,
+            "@top-right"    : CSSTokens.TOPRIGHT_SYM,
+            "@bottom-left-corner"   : CSSTokens.BOTTOMLEFTCORNER_SYM,
+            "@bottom-left" : CSSTokens.BOTTOMLEFT_SYM,
+            "@bottom-right-corner"  : CSSTokens.BOTTOMRIGHTCORNER_SYM,
+            "@bottom-right" : CSSTokens.BOTTOMRIGHT_SYM,
+            "@left-top"     : CSSTokens.LEFTTOP_SYM,
+            "@left-middle"  : CSSTokens.LEFTMIDDLE_SYM,
+            "@left-bottom"  : CSSTokens.LEFTBOTTOM_SYM,
+            "@right-top"    : CSSTokens.RIGHTTOP_SYM,
+            "@right-middle" : CSSTokens.RIGHTMIDDLE_SYM,
+            "@right-bottom" : CSSTokens.RIGHTBOTTOM_SYM,
+            
+            //animation
+            "@-webkit-keyframes":   CSSTokens.KEYFRAMES_SYM,
+            "@-moz-keyframes"   : CSSTokens.KEYFRAMES_SYM,
+            "@keyframes"        : CSSTokens.KEYFRAMES_SYM,
+            
+            //errors
+            "@foo"              : CSSTokens.UNKNOWN_SYM,
+            "@bar"              : CSSTokens.UNKNOWN_SYM
+        };
+        
+        var patterns;
+        
+        for (var prop in atRules){
+            patterns = {};
+            
+            patterns[prop] = [atRules[prop]];
+            patterns[prop + " "] = [atRules[prop], CSSTokens.S];
+            patterns[prop.toUpperCase()] = [atRules[prop]];
+            patterns[prop.toUpperCase() + " "] = [atRules[prop], CSSTokens.S];
+            
+            suite.add(new CSSTokenTestCase({
+                name: "Tests for " + prop,                
+                patterns: patterns            
+            }));
+        }
+    })();
+    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for !important",
+        
+        patterns: {
+            "!important"        : [CSSTokens.IMPORTANT_SYM],
+            "!IMPORTANT"        : [CSSTokens.IMPORTANT_SYM],
+            "!  important"      : [CSSTokens.IMPORTANT_SYM],
+            "!  IMPORTANT"      : [CSSTokens.IMPORTANT_SYM],
+            "!/*booya*/important"       : [CSSTokens.IMPORTANT_SYM],
+            "!/*booya*/IMPORTANT"       : [CSSTokens.IMPORTANT_SYM],
+            "! /*booya*/ important"     : [CSSTokens.IMPORTANT_SYM],
+            "! /*booya*/ IMPORTANT"     : [CSSTokens.IMPORTANT_SYM],
+
+            //bogus symbols            
+            "! /*IMPORTANT"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.EOF],            
+            "! / important"     : [CSSTokens.CHAR, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.IDENT],            
+            "!IMPO RTANT"       : [CSSTokens.CHAR, CSSTokens.IDENT, CSSTokens.S, CSSTokens.IDENT]            
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for HTML-style comments",
+        
+        patterns: {
+            "<!--"  : [CSSTokens.CDO],
+            "<!-- " : [CSSTokens.CDO, CSSTokens.S],
+            "-->"   : [CSSTokens.CDC],
+            "--> "  : [CSSTokens.CDC, CSSTokens.S]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Unicode ranges",
+        
+        patterns: {
+            "U+A5"          : [CSSTokens.UNICODE_RANGE],
+            "U+0-7F"        : [CSSTokens.UNICODE_RANGE],
+            "U+590-5ff"     : [CSSTokens.UNICODE_RANGE],
+            "U+AB-BC"       : [CSSTokens.UNICODE_RANGE],
+            "U+4E00-9FFF"   : [CSSTokens.UNICODE_RANGE],
+            "U+30??"        : [CSSTokens.UNICODE_RANGE],
+            "U+00-FF"       : [CSSTokens.UNICODE_RANGE],
+            "U+??????"      : [CSSTokens.UNICODE_RANGE],
+            "U+0??????"     : [CSSTokens.UNICODE_RANGE, CSSTokens.CHAR],
+            "U+00-??"       : [CSSTokens.UNICODE_RANGE, CSSTokens.MINUS, CSSTokens.CHAR, CSSTokens.CHAR],
+            "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER],
+            "U+"            : [CSSTokens.CHAR, CSSTokens.PLUS],
+            "U+00-J"        : [CSSTokens.UNICODE_RANGE, CSSTokens.IDENT]
+        }        
+    }));    
+    
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for :not",
+        
+        patterns: {
+            ":not("   : [CSSTokens.NOT],
+            ":noT("   : [CSSTokens.NOT],
+            ":nOT("   : [CSSTokens.NOT],
+            ":NOT("   : [CSSTokens.NOT],
+            ":not "   : [CSSTokens.COLON, CSSTokens.IDENT, CSSTokens.S],
+            "button:not([DISABLED])": [CSSTokens.IDENT, CSSTokens.NOT, CSSTokens.LBRACKET, CSSTokens.IDENT, CSSTokens.RBRACKET, CSSTokens.RPAREN]
+        }        
+    }));
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Media Queries",
+        
+        patterns: {
+            "not"   : [CSSTokens.IDENT],
+            "and"   : [CSSTokens.IDENT],
+            "only"  : [CSSTokens.IDENT],
+            "5dpi"  : [CSSTokens.RESOLUTION],
+            "5.2dPi": [CSSTokens.RESOLUTION],
+            ".5DPI" : [CSSTokens.RESOLUTION]
+        }        
+    }));
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Numbers",
+        
+        patterns: {
+        
+            
+            //pixels
+            "4px"       : [CSSTokens.LENGTH],
+            "50.0PX"    : [CSSTokens.LENGTH],
+            ".6Px"      : [CSSTokens.LENGTH],
+            
+            
+            "7cm"       : [CSSTokens.LENGTH],
+            "7CM"       : [CSSTokens.LENGTH],
+            "7cM"       : [CSSTokens.LENGTH],
+            "8.0mm"     : [CSSTokens.LENGTH],
+            ".9in"      : [CSSTokens.LENGTH],
+            "7pc"       : [CSSTokens.LENGTH],
+            "8.0pt"     : [CSSTokens.LENGTH],
+            
+            "5em"       : [CSSTokens.LENGTH],
+            "50.0EM"    : [CSSTokens.LENGTH],
+            ".5eM"      : [CSSTokens.LENGTH],
+            
+            "5ex"       : [CSSTokens.LENGTH],
+            "50.0EX"    : [CSSTokens.LENGTH],
+            ".5eX"      : [CSSTokens.LENGTH],
+
+            "5vw"       : [CSSTokens.LENGTH],
+            "50.0VW"    : [CSSTokens.LENGTH],
+            ".5vW"      : [CSSTokens.LENGTH],
+
+            "5vh"       : [CSSTokens.LENGTH],
+            "50.0VH"    : [CSSTokens.LENGTH],
+            ".5vH"      : [CSSTokens.LENGTH],
+
+            "5rem"       : [CSSTokens.LENGTH],
+            "50.0REM"    : [CSSTokens.LENGTH],
+            ".5rEm"      : [CSSTokens.LENGTH],
+
+            "5vm"       : [CSSTokens.LENGTH],
+            "50.0VM"    : [CSSTokens.LENGTH],
+            ".5vM"      : [CSSTokens.LENGTH],
+
+            "5ch"       : [CSSTokens.LENGTH],
+            "50.0CH"    : [CSSTokens.LENGTH],
+            ".5cH"      : [CSSTokens.LENGTH],
+
+
+
+            "5deg"       : [CSSTokens.ANGLE],
+            "50.0DEG"    : [CSSTokens.ANGLE],
+            ".5Deg"      : [CSSTokens.ANGLE],
+            
+            "5rad"       : [CSSTokens.ANGLE],
+            "50.0RAD"    : [CSSTokens.ANGLE],
+            ".5Rad"      : [CSSTokens.ANGLE],
+            
+            "5grad"      : [CSSTokens.ANGLE],
+            "50.0GRAD"   : [CSSTokens.ANGLE],
+            ".5Grad"     : [CSSTokens.ANGLE],
+            
+            "5ms"           : [CSSTokens.TIME],
+            "50.0MS"        : [CSSTokens.TIME],
+            ".5Ms"          : [CSSTokens.TIME],
+  
+            "5s"            : [CSSTokens.TIME],
+            "50.0S"         : [CSSTokens.TIME],
+            
+            "5hz"           : [CSSTokens.FREQ],
+            "50.0HZ"        : [CSSTokens.FREQ],
+            ".5Hz"          : [CSSTokens.FREQ],
+  
+            "5khz"          : [CSSTokens.FREQ],
+            "50.0KHZ"       : [CSSTokens.FREQ],
+            ".5kHz"         : [CSSTokens.FREQ],
+  
+            "5ncz"          : [CSSTokens.DIMENSION],
+            "50.0NCZ"       : [CSSTokens.DIMENSION],
+            ".5nCz"         : [CSSTokens.DIMENSION],
+  
+            "3%"        : [CSSTokens.PERCENTAGE],
+            "45.05%"    : [CSSTokens.PERCENTAGE],
+            ".9%"       : [CSSTokens.PERCENTAGE],
+            
+            //regular numbers
+            "1"         : [CSSTokens.NUMBER],
+            "20.0"      : [CSSTokens.NUMBER],
+            ".3"        : [CSSTokens.NUMBER],  
+            
+            //invalid numbers
+            "-.3"       : [CSSTokens.MINUS, CSSTokens.NUMBER],
+            "+0"        : [CSSTokens.PLUS, CSSTokens.NUMBER],
+            "-name"     : [CSSTokens.IDENT],
+            "+name"     : [CSSTokens.PLUS, CSSTokens.IDENT]
+  
+        }        
+    }));   
+   
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for URLs",
+        
+        patterns: {
+            "url(foo.jpg)"      : [CSSTokens.URI],
+            "url( foo.jpg)"     : [CSSTokens.URI],
+            "url(foo.jpg )"     : [CSSTokens.URI],
+            "url( foo.jpg )"    : [CSSTokens.URI],
+            "url('foo.jpg')"    : [CSSTokens.URI],
+            "url(\"foo.jpg\")"  : [CSSTokens.URI],
+
+            "url(http://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
+            "url('http://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
+            "url(\"http://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
+            
+            "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
+            "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
+            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
+            
+            //invalid URLs
+            "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],
+            "url('booya'"       : [CSSTokens.FUNCTION, CSSTokens.STRING]
+        }        
+    }));   
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Functions",
+        
+        patterns: {
+        
+            //regular CSS functions
+            "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
+
+            //old-style IE filters - interpreted as bunch of tokens
+            "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+
+            //IE filters - not sure how to handle these yet
+            "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN]
+        }        
+    }));    
+
+    suite.add(new CSSTokenTestCase({
+        name: "Test for single-character tokens",
+        
+        patterns: {
+            
+            //single characters with defined tokens
+            "/"     : [CSSTokens.SLASH],
+            "-"     : [CSSTokens.MINUS],
+            "+"     : [CSSTokens.PLUS],
+            "*"     : [CSSTokens.STAR],
+            ">"     : [CSSTokens.GREATER],
+            "{"     : [CSSTokens.LBRACE],
+            "}"     : [CSSTokens.RBRACE],
+            "["     : [CSSTokens.LBRACKET],
+            "]"     : [CSSTokens.RBRACKET],
+            "="     : [CSSTokens.EQUALS],
+            ":"     : [CSSTokens.COLON],
+            ";"     : [CSSTokens.SEMICOLON],
+            "("     : [CSSTokens.LPAREN],
+            ")"     : [CSSTokens.RPAREN],
+            "."     : [CSSTokens.DOT],
+            ","     : [CSSTokens.COMMA],
+            
+            //single characters without tokens
+            "@"     : [CSSTokens.CHAR]
+        }
+    }));
+    
+    //-------------------------------------------------------------------------
+    // More complex testing patterns
+    //-------------------------------------------------------------------------
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for Properties",
+        
+        patterns: {
+        
+            //regular CSS functions
+            "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+            
+            "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN, CSSTokens.SEMICOLON]
+ 
+        }        
+    }));
+
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for odd cases",
+        
+        patterns: {
+        
+            //regular CSS functions
+            ".name"       : [CSSTokens.DOT, CSSTokens.IDENT],
+            "-name"       : [CSSTokens.IDENT]
+            
+        }        
+    }));
+
+    YUITest.TestRunner.add(suite);
+
+})();

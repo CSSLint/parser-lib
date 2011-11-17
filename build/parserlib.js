@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 17-November-2011 10:39:21 */
+/* Version v@VERSION@, Build time: 17-November-2011 10:55:53 */
 var parserlib = {};
 (function(){
 
@@ -926,7 +926,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 17-November-2011 10:39:21 */
+/* Version v@VERSION@, Build time: 17-November-2011 10:55:53 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3380,8 +3380,20 @@ Parser.prototype = function(){
                 
                 //otherwise return result
                 return result;
+            },
+
+            /**
+             * Parses an HTML style attribute: a set of CSS declarations 
+             * separated by semicolons.
+             * @param {String} input The text to parse as a style attribute
+             * @return {void} 
+             * @method parseStyleAttribute
+             */
+            parseStyleAttribute: function(input){
+                input += "}"; // for error recovery in _readDeclarations()
+                this._tokenStream = new TokenStream(input, Tokens);
+                this._readDeclarations();
             }
-            
         };
         
     //copy over onto prototype
@@ -4368,9 +4380,10 @@ Specificity.calculate = function(selector){
     function updateValues(part){
     
         var i, j, len, num,
+            elementName = part.elementName ? part.elementName.text : "",
             modifier;
     
-        if (part.elementName && part.text.charAt(part.text.length-1) != "*") {
+        if (elementName && elementName.charAt(elementName.length-1) != "*") {
             d++;
         }    
     

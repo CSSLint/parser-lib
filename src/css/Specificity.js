@@ -76,9 +76,10 @@ Specificity.calculate = function(selector){
     function updateValues(part){
     
         var i, j, len, num,
+            elementName = part.elementName ? part.elementName.text : "",
             modifier;
     
-        if (part.elementName && part.text.charAt(part.text.length-1) != "*") {
+        if (elementName && elementName.charAt(elementName.length-1) != "*") {
             d++;
         }    
     

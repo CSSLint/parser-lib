@@ -1,36 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>String Reader Tests</title>
-<!-- Combo-handled YUI CSS files: -->
-<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.7.0/build/logger/assets/logger.css&2.7.0/build/yuitest/assets/testlogger.css">
-<!-- Combo-handled YUI JS files: -->
-<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.7.0/build/yahoo-dom-event/yahoo-dom-event.js&2.7.0/build/logger/logger-min.js&2.7.0/build/yuitest/yuitest-min.js"></script>
-<script type="text/javascript" src="StringReader.js"></script>
-
-
-</head>
-<body>
-<h1>String Reader Tests</h1>
-<script type="text/javascript">
-
-YAHOO.namespace("test");
-
-YAHOO.test.StringReader = (function(){
+(function(){
     
-    var assert = YAHOO.util.Assert;
+    var Assert = YUITest.Assert
+        StringReader = parserlib.util.StringReader;
     
     //-------------------------------------------------------------------------
     // Base Test Suite
     //-------------------------------------------------------------------------
     
-    var suite = new YAHOO.tool.TestSuite("StringReader");
+    var suite = new YUITest.TestSuite("StringReader");
     
     //-------------------------------------------------------------------------
     // Test Case for adding
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "read() Tests",
 
@@ -47,18 +30,18 @@ YAHOO.test.StringReader = (function(){
                 i = 0,
                 c;
                 
-            assert.areEqual(1, reader.getCol(), "Column should be 1.");
+            Assert.areEqual(1, reader.getCol(), "Column should be 1.");
             c = reader.read();
             
             while(c){
-                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
-                assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
+                Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
+                Assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
                 c = reader.read();
                 i++;
             }
             
-            assert.areEqual(testString.length, i, "All characters should be read.");
-            assert.isNull(c, "Last character read should be null.");                 
+            Assert.areEqual(testString.length, i, "All characters should be read.");
+            Assert.isNull(c, "Last character read should be null.");                 
         },
         
         /*
@@ -71,16 +54,16 @@ YAHOO.test.StringReader = (function(){
                 c = reader.read();
                 
             while(c){
-                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect."); 
+                Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect."); 
                 if (c == "\n"){
-                    assert.areEqual(2, reader.getLine(), "Should now be on second row.");
-                    assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
+                    Assert.areEqual(2, reader.getLine(), "Should now be on second row.");
+                    Assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
                 } 
                 c = reader.read();
                 i++;
             }
             
-            assert.isNull(c, "Last character read should be null.");                 
+            Assert.isNull(c, "Last character read should be null.");                 
         },
 
         
@@ -94,8 +77,8 @@ YAHOO.test.StringReader = (function(){
             reader.readTo("!");
             reader.read();
             
-            assert.areEqual(1, reader.getCol());
-            assert.areEqual(2, reader.getLine());
+            Assert.areEqual(1, reader.getCol());
+            Assert.areEqual(2, reader.getLine());
             
         },
         
@@ -109,12 +92,12 @@ YAHOO.test.StringReader = (function(){
                 c = reader.read();
                 
             while(c){
-                assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
+                Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");  
                 c = reader.read();
                 i++;
             }
             
-            assert.isNull(c, "Last character read should be null.");                 
+            Assert.isNull(c, "Last character read should be null.");                 
         }        
         
         
@@ -126,7 +109,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for readTo
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "readTo() Tests",
 
@@ -143,8 +126,8 @@ YAHOO.test.StringReader = (function(){
                 reader = new StringReader(testString);
                 
                 
-            assert.areEqual("Hello ", reader.readTo(" "));    
-            assert.areEqual("w", reader.read());
+            Assert.areEqual("Hello ", reader.readTo(" "));    
+            Assert.areEqual("w", reader.read());
         },
         
         /*
@@ -155,9 +138,9 @@ YAHOO.test.StringReader = (function(){
                 reader = new StringReader(testString);
                 
                 
-            assert.areEqual("Hello world!\nN", reader.readTo("N"));  
-            assert.areEqual(2, reader.getLine());
-            assert.areEqual(2, reader.getCol());
+            Assert.areEqual("Hello world!\nN", reader.readTo("N"));  
+            Assert.areEqual(2, reader.getLine());
+            Assert.areEqual(2, reader.getCol());
         }
                 
     }));    
@@ -166,7 +149,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for readWhile()
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "readWhile() Tests",
 
@@ -186,9 +169,9 @@ YAHOO.test.StringReader = (function(){
                 return true;
             });
 
-            assert.areEqual(testString, result);
-            assert.areEqual(1, reader.getLine());
-            assert.areEqual(13, reader.getCol());
+            Assert.areEqual(testString, result);
+            Assert.areEqual(1, reader.getLine());
+            Assert.areEqual(13, reader.getCol());
         }
     }));      
     
@@ -196,7 +179,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for readCount()
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "readCount() Tests",
 
@@ -214,10 +197,10 @@ YAHOO.test.StringReader = (function(){
                 
             var result = reader.readCount(6);
 
-            assert.areEqual("Hello ", result);
+            Assert.areEqual("Hello ", result);
             
             result = reader.readCount(2);
-            assert.areEqual("wo", result);
+            Assert.areEqual("wo", result);
         }
     }));      
     
@@ -225,7 +208,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for readMatch()
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "readMatch() Tests",
 
@@ -243,7 +226,7 @@ YAHOO.test.StringReader = (function(){
                 
             var result = reader.readMatch("Hello");
 
-            assert.areEqual("Hello", result);
+            Assert.areEqual("Hello", result);
         },
         
         /*
@@ -255,7 +238,7 @@ YAHOO.test.StringReader = (function(){
                 
             var result = reader.readMatch(/^Hello/);
 
-            assert.areEqual("Hello", result);
+            Assert.areEqual("Hello", result);
         }
         
         
@@ -267,7 +250,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for eof()
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "eof() Tests",
 
@@ -284,7 +267,7 @@ YAHOO.test.StringReader = (function(){
                 reader = new StringReader(testString);
                 
             reader.readTo("!");
-            assert.isTrue(reader.eof());
+            Assert.isTrue(reader.eof());
         }     
         
         
@@ -294,7 +277,7 @@ YAHOO.test.StringReader = (function(){
     // Test Case for mark() and reset()
     //-------------------------------------------------------------------------
     
-    suite.add(new YAHOO.tool.TestCase({
+    suite.add(new YUITest.TestCase({
     
         name : "mark() and reset() Tests",
 
@@ -314,29 +297,13 @@ YAHOO.test.StringReader = (function(){
             reader.readTo("!");
             reader.reset();
             
-            assert.areEqual(1, reader.getLine(), "Row should be 1");
-            assert.areEqual(1, reader.getCol(), "Column should be 1");
+            Assert.areEqual(1, reader.getLine(), "Row should be 1");
+            Assert.areEqual(1, reader.getCol(), "Column should be 1");
         }     
         
         
     }));         
     
-    //return it
-    return suite;
+    YUITest.TestRunner.add(suite);
 
 })();
-
-(function (){
-    //create the logger
-    var logger = new YAHOO.tool.TestLogger();
-    
-    //add the tests
-    YAHOO.tool.TestRunner.add(YAHOO.test.StringReader);
-    YAHOO.tool.TestRunner.run();
-
-})();
-
-
-</script>
-</body>
-</html>

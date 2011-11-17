@@ -1,3 +1,5 @@
+/*global StringReader, SyntaxError*/
+
 /**
  * Generic TokenStream providing base functionality.
  * @class TokenStreamBase
@@ -14,7 +16,6 @@ function TokenStreamBase(input, tokenData){
      * @property _reader
      * @private
      */
-    //this._reader = (typeof input == "string") ? new StringReader(input) : input;
     this._reader = input ? new StringReader(input.toString()) : null;
     
     /**
@@ -180,7 +181,7 @@ TokenStreamBase.prototype = {
      */
     advance: function(tokenTypes, channel){
         
-        while(this.LA(0) != 0 && !this.match(tokenTypes, channel)){
+        while(this.LA(0) !== 0 && !this.match(tokenTypes, channel)){
             this.get();
         }
 

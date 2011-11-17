@@ -1,3 +1,7 @@
+/*global Tokens, TokenStream, SyntaxError, Properties, ValidationError, SyntaxUnit,
+    PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
+    PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
+
 /**
  * A CSS3 parser.
  * @namespace parserlib.css
@@ -145,7 +149,7 @@ Parser.prototype = function(){
                                     
                                 } else {
                                     //not a syntax error, rethrow it
-                                    throw new SyntaxError("Unknown @ rule.", tokenStream.LT(0).startLine, tokenStream.LT(0).startCol);;
+                                    throw new SyntaxError("Unknown @ rule.", tokenStream.LT(0).startLine, tokenStream.LT(0).startCol);
                                 }                                
                                 break;
                             case Tokens.S:
@@ -2008,10 +2012,9 @@ Parser.prototype = function(){
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
                         if (tt == Tokens.SEMICOLON){
                             //if there's a semicolon, then there might be another declaration
-                            this._readDeclarations(false, readMargins);
-                        } else if (tt == Tokens.RBRACE){
+                            this._readDeclarations(false, readMargins);                            
+                        } else if (tt != Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
-                        } else {
                             //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
                         }                        
@@ -2192,7 +2195,9 @@ Parser.prototype = function(){
         
     //copy over onto prototype
     for (prop in additions){
-        proto[prop] = additions[prop];
+        if (additions.hasOwnProperty(prop)){
+            proto[prop] = additions[prop];
+        }
     }   
     
     return proto;

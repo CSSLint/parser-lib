@@ -1,4 +1,4 @@
-
+/*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
@@ -10,31 +10,31 @@ var h = /^[0-9a-fA-F]$/,
 
 
 function isHexDigit(c){
-    return c != null && h.test(c);
+    return c !== null && h.test(c);
 }
 
 function isDigit(c){
-    return c != null && /\d/.test(c);
+    return c !== null && /\d/.test(c);
 }
 
 function isWhitespace(c){
-    return c != null && /\s/.test(c);
+    return c !== null && /\s/.test(c);
 }
 
 function isNewLine(c){
-    return c != null && nl.test(c);
+    return c !== null && nl.test(c);
 }
 
 function isNameStart(c){
-    return c != null && (/[a-z_\u0080-\uFFFF\\]/i.test(c));
+    return c !== null && (/[a-z_\u0080-\uFFFF\\]/i.test(c));
 }
 
 function isNameChar(c){
-    return c != null && (isNameStart(c) || /[0-9\-\\]/.test(c));
+    return c !== null && (isNameStart(c) || /[0-9\-\\]/.test(c));
 }
 
 function isIdentStart(c){
-    return c != null && (isNameStart(c) || /\-\\/.test(c));
+    return c !== null && (isNameStart(c) || /\-\\/.test(c));
 }
 
 function mix(receiver, supplier){
@@ -225,8 +225,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         token = this.unicodeRangeToken(c, startLine, startCol);
                         break;
                     }
-                    /*falls through*/
-
+                    /* falls through */
                 default:
 
                     /*
@@ -279,11 +278,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             //make sure this token is wanted
             //TODO: check channel
             break;
-
-            c = reader.read();
         }
 
-        if (!token && c == null){
+        if (!token && c === null){
             token = this.createToken(Tokens.EOF,null,startLine,startCol);
         }
 
@@ -567,7 +564,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     break;
                 } else {
                     temp = this.readComment(c);
-                    if (temp == ""){    //broken!
+                    if (temp === ""){    //broken!
                         break;
                     }
                 }
@@ -708,7 +705,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
 
         //if c is null, that means we're out of input and the string was never closed
-        if (c == null){
+        if (c === null){
             tt = Tokens.INVALID;
         }
 
@@ -873,7 +870,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
 
         //if c is null, that means we're out of input and the string was never closed
-        if (c == null){
+        if (c === null){
             string = "";
         }
 
@@ -909,7 +906,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
 
         //if there was no inner value or the next character isn't closing paren, it's not a URI
-        if (inner == "" || c != ")"){
+        if (inner === "" || c != ")"){
             uri = first;
             reader.reset();
         } else {

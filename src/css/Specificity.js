@@ -1,3 +1,4 @@
+/*global Pseudos, SelectorPart*/
 /**
  * Represents a selector's specificity.
  * @namespace parserlib.css
@@ -69,6 +70,7 @@ Specificity.prototype = {
 Specificity.calculate = function(selector){
 
     var i, len,
+        part,
         b=0, c=0, d=0;
         
     function updateValues(part){

@@ -1,4 +1,5 @@
 //This file will likely change a lot! Very experimental!
+/*global ValidationError*/
 
 var ValidationType = {
 

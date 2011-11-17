@@ -1,17 +1,27 @@
-<project name="Parser Lib" default="all">
+<project name="parserlib" default="build.all">
+
+    <!-- version number -->
+    <property name="parserlib.version" value="0.1.0" />
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
+    <property name="tests.dir" value="./tests" />
+    
+    <!-- the directories and files to output to -->
+    <property name="lib.dir" value="./lib" />
     
     <!-- the directories and files to output to -->
     <property name="build.dir" value="./build" />
+    <property name="release.dir" value="./release" />
     
     <!-- output filenames -->
     <property name="full.build.file" value="parserlib.js"/>
     <property name="core.build.file" value="parserlib-core.js"/>
     <property name="css.build.file" value="parserlib-css.js"/>
+    <property name="tests.build.file" value="parserlib-tests.js"/>
     <property name="node.build.file" value="node-parserlib.js"/>
     
+    <!-- license information -->
     <loadfile property="license.text" srcfile="LICENSE" />
     
     <tstamp>
@@ -19,6 +29,64 @@
               pattern="d-MMMM-yyyy hh:mm:ss"
               locale="en,US"/>
     </tstamp>
+    
+    <!-- clean -->
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+    
+    <target name="changelog.update">
+        <exec executable="git" failonerror="true" outputproperty="git.tag">
+            <arg line="tag"/>
+        </exec>      
+        <script language="javascript"><![CDATA[
+            //get the most recent tag to get the diff
+            var tags = csslint.getProperty("git.tag").replace("\r", "").split("\n"),
+                lastTag = tags[tags.length-1];
+            csslint.setProperty("git.log.range", lastTag + "..HEAD");
+        ]]></script>
+        
+        <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
+        <exec executable="git" failonerror="true" outputproperty="git.changelog">
+            <arg line="log --pretty=format:'* %s (%an)' ${git.log.range}"/>
+        </exec>      
+        
+        <concat destfile="CHANGELOG.tmp"  fixlastline="true">
+            <header trimleading="yes">${SIMPLE_DATE} - v${csslint.version}
+            
+            ${git.changelog}
+            
+            </header>
+            <fileset dir="." includes="CHANGELOG" />
+        </concat>
+        
+        <delete file="CHANGELOG"/>
+        <move file="CHANGELOG.tmp" tofile="CHANGELOG"/>
+        
+    </target>
+    
+    <!-- validate JS files with JSHint -->
+    <target name="lint">       
+        <fileset dir="${src.dir}" includes="**/*.js" id="jsfiles.raw"/>
+        <pathconvert pathsep=" " property="jsfiles.clean" refid="jsfiles.raw" />
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg path="${lib.dir}/jshint.js" />        
+            <arg line="${jsfiles.clean} curly=true,forin=true,latedef=true,evil=true,loopfunc=true,undef=true,rhino=false" />
+        </exec>        
+    </target>    
+    
+    <!-- run tests on the command line -->
+    <target name="test" depends="lint,build.all">       
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg path="${lib.dir}/yuitest-rhino-cli.js" />
+            <arg path="${build.dir}/${full.build.file}" />
+            <arg path="${build.dir}/${tests.build.file}" />
+        </exec>              
+    </target>    
     
     <!-- build the full library -->
     <target name="build.full" depends="build.core,build.css">
@@ -34,7 +102,7 @@
             <header trimleading="yes">/*!
             ${license.text}
             */
-            /* Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
             var parserlib = {};
             (function(){
             </header>
@@ -60,7 +128,7 @@
             <header trimleading="yes">/* 
             ${license.text}
             */
-            /* Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
             (function(){
             var EventTarget = parserlib.util.EventTarget,
 			    TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -139,9 +207,27 @@
             </footer>
         </concat>
     </target>
+        
+    <!-- build the tests into a single file -->
+    <target name="build.tests">    
+        <concat destfile="${build.dir}/${tests.build.file}"  fixlastline="true">
+            <fileset dir="${tests.dir}/" includes="**/*.js" excludes="all-rules.js" />           
+        </concat>        
+    </target>       
     
+    <!-- Create a release with version number embedded -->
+    <target name="release" depends="test,build.all,changelog.update">
+        <delete dir="${release.dir}" />
+        <mkdir dir="${release.dir}"/>
+        <copy todir="${release.dir}">
+            <fileset dir="${build.dir}" includes="**/*" />
+        </copy>
+        <replaceregexp match="@VERSION@" replace="${parserlib.version}" flags="g" byline="true">
+            <fileset dir="${release.dir}" includes="**/*"/>
+        </replaceregexp>    
+    </target>    
     
     <!-- Build all files -->
-    <target name="all" depends="build.full,build.node"/>
+    <target name="build.all" depends="build.full,build.node"/>
 
 </project>

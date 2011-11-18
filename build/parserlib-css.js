@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 17-November-2011 10:55:53 */
+/* Version v@VERSION@, Build time: 18-November-2011 08:17:14 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -284,7 +284,7 @@ function MediaQuery(modifier, mediaType, features, line, col){
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
 
-/*global Tokens, TokenStream, SyntaxError, Properties, ValidationError, SyntaxUnit,
+/*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
     PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
     PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
 
@@ -2362,20 +2362,7 @@ Parser.prototype = function(){
             // Validation methods
             //-----------------------------------------------------------------
             _validateProperty: function(property, value){
-                var name = property.text.toLowerCase(),
-                    validation,
-                    i, len;
-                
-                if (Properties[name]){
-                
-                    if (typeof Properties[name] == "function"){
-                        Properties[name](value);                   
-                    } 
-                    
-                    //otherwise, no validation available yet
-                } else if (name.indexOf("-") !== 0){    //vendor prefixed are ok
-                    throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
-                }
+                Validation.validate(property, value);
             },
             
             //-----------------------------------------------------------------
@@ -2508,101 +2495,6 @@ nth
          ['-'|'+']? INTEGER | {O}{D}{D} | {E}{V}{E}{N} ] S*
   ;
 */
-//This file will likely change a lot! Very experimental!
-/*global ValidationError*/
-
-var ValidationType = {
-
-    "absolute-size": function(part){
-        return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
-    },
-    
-    "attachment": function(part){
-        return this.identifier(part, "scroll | fixed | local");
-    },
-    
-    "box": function(part){
-        return this.identifier(part, "padding-box | border-box | content-box");
-    },
-    
-    "relative-size": function(part){
-        return this.identifier(part, "smaller | larger");
-    },
-    
-    "identifier": function(part, options){
-        var text = part.text.toString().toLowerCase(),
-            args = options.split(" | "),
-            i, len, found = false;
-
-        
-        for (i=0,len=args.length; i < len && !found; i++){
-            if (text == args[i]){
-                found = true;
-            }
-        }
-        
-        return found;
-    },
-    
-    "length": function(part){
-        return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
-    },
-    
-    "color": function(part){
-        return part.type == "color" || part == "transparent";
-    },
-    
-    "number": function(part){
-        return part.type == "number" || this.integer(part);
-    },
-    
-    "integer": function(part){
-        return part.type == "integer";
-    },
-    
-    "angle": function(part){
-        return part.type == "angle";
-    },        
-    
-    "uri": function(part){
-        return part.type == "uri";
-    },
-    
-    "image": function(part){
-        return this.uri(part);
-    },
-    
-    "bg-image": function(part){
-        return this.image(part) || part == "none";
-    },
-    
-    "percentage": function(part){
-        return part.type == "percentage" || part == "0";
-    },
-
-    "border-width": function(part){
-        return this.length(part) || this.identifier(part, "thin | medium | thick");
-    },
-    
-    "border-style": function(part){
-        return this.identifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
-    },
-    
-    "margin-width": function(part){
-        return this.length(part) || this.percentage(part) || this.identifier(part, "auto");
-    },
-    
-    "padding-width": function(part){
-        return this.length(part) || this.percentage(part);
-    }
-};
-
-    
-       
-
-
-
-
 var Properties = {
 
     //A
@@ -2941,109 +2833,6 @@ var Properties = {
     "z-index":                      [ "integer", "auto | inherit" ],
     "zoom":                         [ "number", "percentage", "normal" ]
 };
-
-//Create validation functions for strings
-(function(){
-    var prop;
-    for (prop in Properties){
-        if (Properties.hasOwnProperty(prop)){
-            if (Properties[prop] instanceof Array){
-                Properties[prop] = (function(values){
-                    return function(value){
-                        var valid   = false,
-                            msg     = [],
-                            part    = value.parts[0];
-                        
-                        if (value.parts.length != 1){
-                            throw new ValidationError("Expected 1 value but found " + value.parts.length + ".", value.line, value.col);
-                        }
-                        
-                        for (var i=0, len=values.length; i < len && !valid; i++){
-                            if (typeof ValidationType[values[i]] == "undefined"){
-                                valid = valid || ValidationType.identifier(part, values[i]);
-                                msg.push("one of (" + values[i] + ")");
-                            } else {
-                                valid = valid || ValidationType[values[i]](part);
-                                msg.push(values[i]);
-                            }
-                        }
-                        
-                        if (!valid){
-                            throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + value + "'.", value.line, value.col);
-                        }
-                    };
-                })(Properties[prop]);
-            } else if (typeof Properties[prop] == "object"){
-                Properties[prop] = (function(spec){
-                    return function(value){
-                        var valid,
-                            i, len, j, count,
-                            msg,
-                            values,
-                            last,
-                            parts   = value.parts;
-                        
-                        //if there's a maximum set, use it (max can't be 0)
-                        if (spec.max) {
-                            if (parts.length > spec.max){
-                                throw new ValidationError("Expected a max of " + spec.max + " property values but found " + parts.length + ".", value.line, value.col);
-                            }
-                        }
-                        
-                        if (spec.multi){
-                            values = spec.multi;                            
-                        }
-                        
-                        for (i=0, len=parts.length; i < len; i++){
-                            msg = [];
-                            valid = false;
-                            
-                            if (spec.separator && parts[i].type == "operator"){
-                                
-                                //two operators in a row - not allowed?
-                                if ((last && last.type == "operator")){
-                                    msg = msg.concat(values);
-                                } else if (i == len-1){
-                                    msg = msg.concat("end of line");
-                                } else if (parts[i] != spec.separator){
-                                    msg.push("'" + spec.separator + "'");
-                                } else {
-                                    valid = true;
-                                }
-                            } else {
-
-                                for (j=0, count=values.length; j < count; j++){
-                                    if (typeof ValidationType[values[j]] == "undefined"){
-                                        if(ValidationType.identifier(parts[i], values[j])){
-                                            valid = true;
-                                            break;
-                                        }
-                                        msg.push("one of (" + values[j] + ")");
-                                    } else {
-                                        if (ValidationType[values[j]](parts[i])){
-                                            valid = true;
-                                            break;
-                                        }
-                                        msg.push(values[j]);
-                                    }                                   
-                                }
-                            }
-
-                            
-                            if (!valid) {
-                                throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
-                            }
-                            
-                            
-                            last = parts[i];
-                        }                
-
-                    };
-                })(Properties[prop]);                
-            }
-        }
-    }
-})();
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a selector combinator (whitespace, +, >).
@@ -4727,6 +4516,183 @@ var Tokens  = [
 
 
 
+//This file will likely change a lot! Very experimental!
+/*global Properties, ValidationError*/
+var Validation = {
+
+    validate: function(property, value){
+    
+        //normalize name
+        var name = property.toString().toLowerCase(),
+            valid,
+            spec    = Properties[name],
+            i, len, j, count,
+            msg,
+            types,
+            last,
+            max, multi,
+            parts   = value.parts;
+            
+        if (!spec) {
+            if (name.indexOf("-") !== 0){    //vendor prefixed are ok
+                throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
+            }        
+        } else if (typeof spec != "number"){
+        
+            //initialization
+            if (spec instanceof Array){
+                types = spec;
+                max = 1;
+            } else if (spec.multi) {
+                types = spec.multi;
+                max = spec.max;
+            }
+
+            //Start validation----
+
+            //if there's a maximum set, use it (max can't be 0)
+            if (max) {
+                if (parts.length > max){
+                    throw new ValidationError("Expected a max of " + max + " property value(s) but found " + parts.length + ".", value.line, value.col);
+                }
+            }            
+
+            for (i=0, len=parts.length; i < len; i++){
+                msg = [];
+                valid = false;
+                
+                if (spec.separator && parts[i].type == "operator"){
+                    
+                    //two operators in a row - not allowed?
+                    if ((last && last.type == "operator")){
+                        msg = msg.concat(types);
+                    } else if (i == len-1){
+                        msg = msg.concat("end of line");
+                    } else if (parts[i] != spec.separator){
+                        msg.push("'" + spec.separator + "'");
+                    } else {
+                        valid = true;
+                    }
+                } else {
+
+                    for (j=0, count=types.length; j < count; j++){
+                        if (typeof Validation.types[types[j]] == "undefined"){
+                            if(Validation.types.identifier(parts[i], types[j])){
+                                valid = true;
+                                break;
+                            }
+                            msg.push("one of (" + types[j] + ")");
+                        } else {
+                            if (Validation.types[types[j]](parts[i])){
+                                valid = true;
+                                break;
+                            }
+                            msg.push(types[j]);
+                        }                                   
+                    }
+                }
+
+                
+                if (!valid) {
+                    throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
+                }
+                
+                
+                last = parts[i];
+            }                          
+            
+            
+        
+        }
+    },
+
+    types: {
+
+        "absolute-size": function(part){
+            return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+        },
+        
+        "attachment": function(part){
+            return this.identifier(part, "scroll | fixed | local");
+        },
+        
+        "box": function(part){
+            return this.identifier(part, "padding-box | border-box | content-box");
+        },
+        
+        "relative-size": function(part){
+            return this.identifier(part, "smaller | larger");
+        },
+        
+        "identifier": function(part, options){
+            var text = part.text.toString().toLowerCase(),
+                args = options.split(" | "),
+                i, len, found = false;
+
+            
+            for (i=0,len=args.length; i < len && !found; i++){
+                if (text == args[i]){
+                    found = true;
+                }
+            }
+            
+            return found;
+        },
+        
+        "length": function(part){
+            return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+        },
+        
+        "color": function(part){
+            return part.type == "color" || part == "transparent";
+        },
+        
+        "number": function(part){
+            return part.type == "number" || this.integer(part);
+        },
+        
+        "integer": function(part){
+            return part.type == "integer";
+        },
+        
+        "angle": function(part){
+            return part.type == "angle";
+        },        
+        
+        "uri": function(part){
+            return part.type == "uri";
+        },
+        
+        "image": function(part){
+            return this.uri(part);
+        },
+        
+        "bg-image": function(part){
+            return this.image(part) || part == "none";
+        },
+        
+        "percentage": function(part){
+            return part.type == "percentage" || part == "0";
+        },
+
+        "border-width": function(part){
+            return this.length(part) || this.identifier(part, "thin | medium | thick");
+        },
+        
+        "border-style": function(part){
+            return this.identifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        },
+        
+        "margin-width": function(part){
+            return this.length(part) || this.percentage(part) || this.identifier(part, "auto");
+        },
+        
+        "padding-width": function(part){
+            return this.length(part) || this.percentage(part);
+        }
+    }
+
+};
 /**
  * Type to use when a validation error occurs.
  * @class ValidationError

@@ -1,4 +1,4 @@
-/*global Tokens, TokenStream, SyntaxError, Properties, ValidationError, SyntaxUnit,
+/*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
     PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
     PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
 
@@ -2076,20 +2076,7 @@ Parser.prototype = function(){
             // Validation methods
             //-----------------------------------------------------------------
             _validateProperty: function(property, value){
-                var name = property.text.toLowerCase(),
-                    validation,
-                    i, len;
-                
-                if (Properties[name]){
-                
-                    if (typeof Properties[name] == "function"){
-                        Properties[name](value);                   
-                    } 
-                    
-                    //otherwise, no validation available yet
-                } else if (name.indexOf("-") !== 0){    //vendor prefixed are ok
-                    throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
-                }
+                Validation.validate(property, value);
             },
             
             //-----------------------------------------------------------------

@@ -1605,7 +1605,7 @@
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
                 Assert.isNotNull(event.invalid);
-                Assert.areEqual("Expected a max of 4 property values but found 5.", event.invalid.message);                
+                Assert.areEqual("Expected a max of 4 property value(s) but found 5.", event.invalid.message);                
             });
             var result = parser.parse(".foo { border-width: 1px 1px 1px 1px 1px}");
             

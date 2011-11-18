@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 18-November-2011 09:56:13 */
+/* Version v@VERSION@, Build time: 18-November-2011 12:31:14 */
 var parserlib = {};
 (function(){
 
@@ -926,7 +926,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 18-November-2011 09:56:13 */
+/* Version v@VERSION@, Build time: 18-November-2011 12:31:14 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3403,188 +3403,185 @@ nth
 var Properties = {
 
     //A
-    "alignment-adjust": 1,
-    "alignment-baseline": 1,
-    "animation": 1,
-    "animation-delay": 1,
-    "animation-direction":          { multi: [ "normal | alternate" ], separator: "," },
-    "animation-duration": 1,
-    "animation-fill-mode": 1,
-    "animation-iteration-count":    { multi: [ "number", "infinite"], separator: "," },
-    "animation-name": 1,
-    "animation-play-state":         { multi: [ "running | paused" ], separator: "," },
-    "animation-timing-function": 1,
-    "appearance": 1,
-    "azimuth": 1,
+    "alignment-adjust"              : [ "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical", "percentage", "length" ],
+    "alignment-baseline"            : [ "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
+    "animation"                     : 1,
+    "animation-delay"               : { multi: [ "time" ], separator: "," },
+    "animation-direction"           : { multi: [ "normal | alternate" ], separator: "," },
+    "animation-duration"            : { multi: [ "time" ], separator: "," },
+    "animation-iteration-count"     : { multi: [ "number", "infinite"], separator: "," },
+    "animation-name"                : { multi: [ "none", "ident" ], separator: "," },
+    "animation-play-state"          : { multi: [ "running | paused" ], separator: "," },
+    "animation-timing-function"     : 1,
+    "appearance"                    : [ "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password", "normal | inherit" ],
+    "azimuth"                       : 1,
     
     //B
-    "backface-visibility": 1,
-    "background": 1,
-    "background-attachment":        { multi: [ "attachment" ], separator: "," },
-    "background-break": 1,
-    "background-clip":              { multi: [ "box" ], separator: "," },
-    "background-color":             [ "color", "inherit" ],
-    "background-image":             { multi: [ "bg-image" ], separator: "," },
-    "background-origin":            { multi: [ "box" ], separator: "," },
-    "background-position": 1,
-    "background-repeat":            [ "repeat | repeat-x | repeat-y | no-repeat | inherit" ],
-    "background-size": 1,
-    "baseline-shift": 1,
-    "binding": 1,
-    "bleed": 1,
-    "bookmark-label": 1,
-    "bookmark-level": 1,
-    "bookmark-state": 1,
-    "bookmark-target": 1,
-    "border":                       { group: [ "border-width", "border-style", "color" ] },
-    "border-bottom": 1,
-    "border-bottom-color": 1,
-    "border-bottom-left-radius":    1,
-    "border-bottom-right-radius":   1,
-    "border-bottom-style":          [ "border-style" ],
-    "border-bottom-width":          [ "border-width" ],
-    "border-collapse":              [ "collapse | separate | inherit" ],
-    "border-color":                 { multi: [ "color", "inherit" ], max: 4 },
-    "border-image": 1,
-    "border-image-outset":          { multi: [ "length", "number" ], max: 4 },
-    "border-image-repeat":          { multi: [ "stretch | repeat | round" ], max: 2 },
-    "border-image-slice": 1,
-    "border-image-source":          [ "image", "none" ],
-    "border-image-width":           { multi: [ "length", "percentage", "number", "auto" ], max: 4 },
-    "border-left": 1,
-    "border-left-color":            [ "color", "inherit" ],
-    "border-left-style":            [ "border-style" ],
-    "border-left-width":            [ "border-width" ],
-    "border-radius": 1,
-    "border-right": 1,
-    "border-right-color":           [ "color", "inherit" ],
-    "border-right-style":           [ "border-style" ],
-    "border-right-width":           [ "border-width" ],
-    "border-spacing": 1,
-    "border-style":                 { multi: [ "border-style" ], max: 4 },
-    "border-top": 1,
+    "backface-visibility"           : [ "visible | hidden" ],
+    "background"                    : 1,
+    "background-attachment"         : { multi: [ "attachment" ], separator: "," },
+    "background-clip"               : { multi: [ "box" ], separator: "," },
+    "background-color"              : [ "color", "inherit" ],
+    "background-image"              : { multi: [ "bg-image" ], separator: "," },
+    "background-origin"             : { multi: [ "box" ], separator: "," },
+    "background-position"           : 1,
+    "background-repeat"             : [ "repeat | repeat-x | repeat-y | no-repeat | inherit" ],
+    "background-size"               : 1,
+    "baseline-shift"                : [ "baseline | sub | super", "percentage", "length" ],
+    "binding"                       : 1,
+    "bleed"                         : [ "bleed" ],
+    "bookmark-label"                : [ "content", "attr", "string" ],
+    "bookmark-level"                : [ "none", "integer" ],
+    "bookmark-state"                : [ "open | closed" ],
+    "bookmark-target"               : [ "none", "uri", "attr" ],
+    "border"                        : { group: [ "border-width", "border-style", "color" ] },
+    "border-bottom"                 : { group: [ "border-width", "border-style", "color" ] },
+    "border-bottom-color"           : [ "color" ],
+    "border-bottom-left-radius"     :    1,
+    "border-bottom-right-radius"    :   1,
+    "border-bottom-style"           : [ "border-style" ],
+    "border-bottom-width"           : [ "border-width" ],
+    "border-collapse"               : [ "collapse | separate | inherit" ],
+    "border-color"                  : { multi: [ "color", "inherit" ], max: 4 },
+    "border-image"                  : 1,
+    "border-image-outset"           : { multi: [ "length", "number" ], max: 4 },
+    "border-image-repeat"           : { multi: [ "stretch | repeat | round" ], max: 2 },
+    "border-image-slice"            : 1,
+    "border-image-source"           : [ "image", "none" ],
+    "border-image-width"            : { multi: [ "length", "percentage", "number", "auto" ], max: 4 },
+    "border-left"                   : { group: [ "border-width", "border-style", "color" ] },
+    "border-left-color"             : [ "color", "inherit" ],
+    "border-left-style"             : [ "border-style" ],
+    "border-left-width"             : [ "border-width" ],
+    "border-radius"                 : 1,
+    "border-right"                  : { group: [ "border-width", "border-style", "color" ] },
+    "border-right-color"            : [ "color", "inherit" ],
+    "border-right-style"            : [ "border-style" ],
+    "border-right-width"            : [ "border-width" ],
+    "border-style"                  : { multi: [ "border-style" ], max: 4 },
+    "border-top"                    : { group: [ "border-width", "border-style", "color" ] },
     "border-top-color":             [ "color", "inherit" ],
-    "border-top-left-radius": 1,
-    "border-top-right-radius": 1,
-    "border-top-style":             [ "border-style" ],
-    "border-top-width":             [ "border-width" ],
-    "border-width":                 { multi: [ "border-width" ], max: 4 },
-    "bottom":                       [ "margin-width", "inherit" ], 
-    "box-align":                    [ "start | end | center | baseline | stretch" ],        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
-    "box-decoration-break":         [ "slice |clone" ],
-    "box-direction":                [ "normal | reverse | inherit" ],
-    "box-flex":                     [ "number" ],
-    "box-flex-group":               [ "integer" ],
-    "box-lines":                    [ "single | multiple" ],
-    "box-ordinal-group":            [ "integer" ],
-    "box-orient":                   [ "horizontal | vertical | inline-axis | block-axis | inherit" ],
-    "box-pack":                     [ "start | end | center | justify" ],
-    "box-shadow": 1,
-    "box-sizing":                   [ "content-box | border-box | inherit" ],
-    "break-after":                  [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
-    "break-before":                 [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
-    "break-inside":                 [ "auto | avoid | avoid-page | avoid-column" ],
+    "border-top-left-radius"        : 1,
+    "border-top-right-radius"       : 1,
+    "border-top-style"              : [ "border-style" ],
+    "border-top-width"              : [ "border-width" ],
+    "border-width"                  : { multi: [ "border-width" ], max: 4 },
+    "bottom"                        : [ "margin-width", "inherit" ], 
+    "box-align"                     : [ "start | end | center | baseline | stretch" ],        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
+    "box-decoration-break"          : [ "slice |clone" ],
+    "box-direction"                 : [ "normal | reverse | inherit" ],
+    "box-flex"                      : [ "number" ],
+    "box-flex-group"                : [ "integer" ],
+    "box-lines"                     : [ "single | multiple" ],
+    "box-ordinal-group"             : [ "integer" ],
+    "box-orient"                    : [ "horizontal | vertical | inline-axis | block-axis | inherit" ],
+    "box-pack"                      : [ "start | end | center | justify" ],
+    "box-shadow"                    : 1,
+    "box-sizing"                    : [ "content-box | border-box | inherit" ],
+    "break-after"                   : [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
+    "break-before"                  : [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
+    "break-inside"                  : [ "auto | avoid | avoid-page | avoid-column" ],
     
     //C
-    "caption-side":                 [ "top | bottom | inherit" ],
-    "clear":                        [ "none | right | left | both | inherit" ],
-    "clip": 1,
-    "color":                        [ "color", "inherit" ],
-    "color-profile": 1,
-    "column-count":                 [ "integer", "auto" ],                      //http://www.w3.org/TR/css3-multicol/
-    "column-fill":                  [ "auto | balance" ],
-    "column-gap":                   [ "length", "normal" ],
-    "column-rule": 1,
-    "column-rule-color":            [ "color" ],
-    "column-rule-style":            [ "border-style" ],
-    "column-rule-width":            [ "border-width" ],
-    "column-span":                  [ "none | all" ],
-    "column-width":                 [ "length", "auto" ],
-    "columns": 1,
-    "content": 1,
-    "counter-increment": 1,
-    "counter-reset": 1,
-    "crop": 1,
-    "cue":                          [ "cue-after | cue-before | inherit" ],
-    "cue-after": 1,
-    "cue-before": 1,
-    "cursor": 1,
+    "caption-side"                  : [ "top | bottom | inherit" ],
+    "clear"                         : [ "none | right | left | both | inherit" ],
+    "clip"                          : 1,
+    "color"                         : [ "color", "inherit" ],
+    "color-profile"                 : 1,
+    "column-count"                  : [ "integer", "auto" ],                      //http://www.w3.org/TR/css3-multicol/
+    "column-fill"                   : [ "auto | balance" ],
+    "column-gap"                    : [ "length", "normal" ],
+    "column-rule"                   : { group: [ "color", "border-style", "border-width" ] },
+    "column-rule-color"             : [ "color" ],
+    "column-rule-style"             : [ "border-style" ],
+    "column-rule-width"             : [ "border-width" ],
+    "column-span"                   : [ "none | all" ],
+    "column-width"                  : [ "length", "auto" ],
+    "columns"                       : 1,
+    "content"                       : 1,
+    "counter-increment"             : 1,
+    "counter-reset"                 : 1,
+    "crop"                          : [ "shape", "auto" ],
+    "cue"                           : [ "cue-after | cue-before | inherit" ],
+    "cue-after"                     : 1,
+    "cue-before"                    : 1,
+    "cursor"                        : 1,
     
     //D
-    "direction":                    [ "ltr | rtl | inherit" ],
-    "display":                      [ "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid", "none | inherit" ],
-    "dominant-baseline": 1,
-    "drop-initial-after-adjust": 1,
-    "drop-initial-after-align": 1,
-    "drop-initial-before-adjust": 1,
-    "drop-initial-before-align": 1,
-    "drop-initial-size": 1,
-    "drop-initial-value": 1,
+    "direction"                     : [ "ltr | rtl | inherit" ],
+    "display"                       : [ "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid", "none | inherit" ],
+    "dominant-baseline"             : 1,
+    "drop-initial-after-adjust"     : [ "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical", "percentage", "length" ],
+    "drop-initial-after-align"      : [ "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
+    "drop-initial-before-adjust"    : [ "before-edge | text-before-edge | central | middle | hanging | mathematical", "percentage", "length" ],
+    "drop-initial-before-align"     : [ "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
+    "drop-initial-size"             : [ "auto", "line", "length", "percentage" ],
+    "drop-initial-value"            : [ "initial", "integer" ],
     
     //E
-    "elevation": 1,
-    "empty-cells":                  [ "show | hide | inherit" ],
+    "elevation"                     : [ "angle", "below | level | above | higher | lower | inherit" ],
+    "empty-cells"                   : [ "show | hide | inherit" ],
     
     //F
-    "filter": 1,
-    "fit":                          [ "fill | hidden | meet | slice" ],
-    "fit-position": 1,
-    "float":                        [ "left | right | none | inherit" ],    
-    "float-offset": 1,
-    "font": 1,
-    "font-family": 1,
-    "font-size":                    [ "absolute-size", "relative-size", "length", "percentage", "inherit" ],
-    "font-size-adjust": 1,
-    "font-stretch": 1,
-    "font-style":                   [ "normal | italic | oblique | inherit" ],
-    "font-variant":                 [ "normal | small-caps | inherit" ],
-    "font-weight":                  [ "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit" ],
+    "filter"                        : 1,
+    "fit"                           : [ "fill | hidden | meet | slice" ],
+    "fit-position"                  : 1,
+    "float"                         : [ "left | right | none | inherit" ],    
+    "float-offset"                  : 1,
+    "font"                          : 1,
+    "font-family"                   : 1,
+    "font-size"                     : [ "absolute-size", "relative-size", "length", "percentage", "inherit" ],
+    "font-size-adjust"              : [ "number", "none | inherit" ],
+    "font-stretch"                  : [ "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit" ],
+    "font-style"                    : [ "normal | italic | oblique | inherit" ],
+    "font-variant"                  : [ "normal | small-caps | inherit" ],
+    "font-weight"                   : [ "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit" ],
     
     //G
-    "grid-cell-stacking":           [ "columns | rows | layer" ],
-    "grid-column": 1,
-    "grid-columns": 1,
-    "grid-column-align":            [ "start | end | center | stretch" ],
-    "grid-column-sizing": 1,
-    "grid-column-span":             [ "integer" ],
-    "grid-flow":                    [ "none | rows | columns" ],
-    "grid-layer":                   [ "integer" ],
-    "grid-row": 1,
-    "grid-rows": 1,
-    "grid-row-align":               [ "start | end | center | stretch" ],
-    "grid-row-span":                [ "integer" ],
-    "grid-row-sizing": 1,
+    "grid-cell-stacking"            : [ "columns | rows | layer" ],
+    "grid-column"                   : 1,
+    "grid-columns"                  : 1,
+    "grid-column-align"             : [ "start | end | center | stretch" ],
+    "grid-column-sizing"            : 1,
+    "grid-column-span"              : [ "integer" ],
+    "grid-flow"                     : [ "none | rows | columns" ],
+    "grid-layer"                    : [ "integer" ],
+    "grid-row"                      : 1,
+    "grid-rows"                     : 1,
+    "grid-row-align"                : [ "start | end | center | stretch" ],
+    "grid-row-span"                 : [ "integer" ],
+    "grid-row-sizing"               : 1,
     
     //H
-    "hanging-punctuation": 1,
-    "height":                       [ "margin-width", "inherit" ],
-    "hyphenate-after": 1,
-    "hyphenate-before": 1,
-    "hyphenate-character":          [ "string", "auto" ],
-    "hyphenate-lines": 1,
-    "hyphenate-resource": 1,
-    "hyphens":                      [ "none | manual | auto" ],
+    "hanging-punctuation"           : 1,
+    "height"                        : [ "margin-width", "inherit" ],
+    "hyphenate-after"               : [ "integer", "auto" ],
+    "hyphenate-before"              : [ "integer", "auto" ],
+    "hyphenate-character"           : [ "string", "auto" ],
+    "hyphenate-lines"               : [ "no-limit", "integer" ],
+    "hyphenate-resource"            : 1,
+    "hyphens"                       : [ "none | manual | auto" ],
     
     //I
-    "icon": 1,
-    "image-orientation":            [ "angle", "auto" ],
-    "image-rendering": 1,
-    "image-resolution": 1,
-    "inline-box-align": 1,
+    "icon"                          : 1,
+    "image-orientation"             : [ "angle", "auto" ],
+    "image-rendering"               : 1,
+    "image-resolution"              : 1,
+    "inline-box-align"              : [ "initial | last", "integer" ],
     
     //L
-    "left":                         [ "margin-width", "inherit" ],
-    "letter-spacing":               [ "length", "normal | inherit" ],
-    "line-height":                  [ "number", "length", "percentage", "normal | inherit"],
-    "line-break":                   [ "auto | loose | normal | strict" ],
-    "line-stacking": 1,
-    "line-stacking-ruby": 1,
-    "line-stacking-shift": 1,
-    "line-stacking-strategy": 1,
-    "list-style": 1,
-    "list-style-image":             [ "uri", "none | inherit" ],
-    "list-style-position":          [ "inside | outside | inherit" ],
-    "list-style-type":              [ "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit" ],
+    "left"                          : [ "margin-width", "inherit" ],
+    "letter-spacing"                : [ "length", "normal | inherit" ],
+    "line-height"                   : [ "number", "length", "percentage", "normal | inherit"],
+    "line-break"                    : [ "auto | loose | normal | strict" ],
+    "line-stacking"                 : 1,
+    "line-stacking-ruby"            : [ "exclude-ruby | include-ruby" ],
+    "line-stacking-shift"           : [ "consider-shifts | disregard-shifts" ],
+    "line-stacking-strategy"        : [ "inline-line-height | block-line-height | max-height | grid-height" ],
+    "list-style"                    : 1,
+    "list-style-image"              : [ "uri", "none | inherit" ],
+    "list-style-position"           : [ "inside | outside | inherit" ],
+    "list-style-type"               : [ "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit" ],
     
     //M
     "margin":                       { multi: [ "margin-width", "inherit" ], max: 4 },
@@ -3931,6 +3928,10 @@ function PropertyValuePart(text, line, col){
     } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
         this.type   = "uri";
         this.uri    = RegExp.$1;
+    } else if (/^([^\(]+)\(/i.test(text)){
+        this.type   = "function";
+        this.name   = RegExp.$1;
+        this.value  = text;
     } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
         this.value  = eval(text);
@@ -5425,11 +5426,6 @@ var Tokens  = [
 /*global Properties, ValidationError*/
 var Validation = {
 
-    _isValueType: function(value, types){
-    
-    },
-    
-
     validate: function(property, value){
     
         //normalize name
@@ -5440,7 +5436,6 @@ var Validation = {
             msg,
             types,
             last,
-            vtype,
             max, multi, group,
             parts   = value.parts;
             
@@ -5502,19 +5497,18 @@ var Validation = {
                         }
                     
                         if (typeof Validation.types[types[j]] == "undefined"){
-                            vtype = Validation.types.identifier(parts[i], types[j]);
+                            valid = Validation.types.identifier(parts[i], types[j]);
                             msg.push("one of (" + types[j] + ")");
                         } else {
-                            vtype = Validation.types[types[j]](parts[i]);
+                            valid = Validation.types[types[j]](parts[i]);
                             msg.push(types[j]);
                         }
 
-                        if (vtype) {
+                        if (valid) {
                             if (group){
                                 group[types[j]] = 1;
                                 group.total++;
                             }
-                            valid = true;
                             break;  
                         }
                     }
@@ -5547,14 +5541,28 @@ var Validation = {
             return this.identifier(part, "scroll | fixed | local");
         },
         
+        "attr": function(part){
+            return part.type == "function" && part.name == "attr";
+        },
+        
         "box": function(part){
             return this.identifier(part, "padding-box | border-box | content-box");
         },
+        
+        "content": function(part){
+            return part.type == "function" && part.name == "attr";
+        },        
         
         "relative-size": function(part){
             return this.identifier(part, "smaller | larger");
         },
         
+        //any identifier
+        "ident": function(part){
+            return part.type == "identifier";
+        },
+        
+        //specific identifiers
         "identifier": function(part, options){
             var text = part.text.toString().toLowerCase(),
                 args = options.split(" | "),
@@ -5583,6 +5591,10 @@ var Validation = {
         },
         
         "integer": function(part){
+            return part.type == "integer";
+        },
+        
+        "line": function(part){
             return part.type == "integer";
         },
         
@@ -5620,6 +5632,10 @@ var Validation = {
         
         "padding-width": function(part){
             return this.length(part) || this.percentage(part);
+        },
+        
+        "shape": function(part){
+            return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         }
     }
 

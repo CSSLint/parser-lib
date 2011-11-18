@@ -1307,7 +1307,7 @@
             
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
-            Assert.areEqual("unknown", result.parts[0].type);
+            Assert.areEqual("function", result.parts[0].type);
         },
         
         testIEFilter2: function(){
@@ -1316,7 +1316,7 @@
             
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
-            Assert.areEqual("unknown", result.parts[0].type);
+            Assert.areEqual("function", result.parts[0].type);
         
         },
         
@@ -1326,7 +1326,7 @@
             
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
-            Assert.areEqual("unknown", result.parts[0].type);
+            Assert.areEqual("function", result.parts[0].type);
         
         },
         
@@ -1337,7 +1337,7 @@
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("alpha(opacity=10)", result.text);
-            Assert.areEqual("unknown", result.parts[0].type);
+            Assert.areEqual("function", result.parts[0].type);
         },
         
         testIEFilter5: function(){
@@ -2121,6 +2121,22 @@
     //-------------------------------------------------------------------------
     
     var suite = new YUITest.TestSuite("Validation Tests");
+    
+    suite.add(new ValidationTestCase({
+        property: "animation-name",
+        
+        valid: [
+            "none",
+            "foo",
+            "foo, bar",
+            "none, none",
+            "none, foo"
+        ],
+        
+        invalid: {
+            "1px" : "Expected one of (none) or ident but found '1px'."
+        }   
+    }));    
     
     suite.add(new ValidationTestCase({
         property: "background-attachment",

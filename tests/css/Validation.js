@@ -62,6 +62,22 @@
     var suite = new YUITest.TestSuite("Validation Tests");
     
     suite.add(new ValidationTestCase({
+        property: "animation-name",
+        
+        valid: [
+            "none",
+            "foo",
+            "foo, bar",
+            "none, none",
+            "none, foo"
+        ],
+        
+        invalid: {
+            "1px" : "Expected one of (none) or ident but found '1px'."
+        }   
+    }));    
+    
+    suite.add(new ValidationTestCase({
         property: "background-attachment",
         
         valid: [

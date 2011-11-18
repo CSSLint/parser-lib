@@ -132,6 +132,10 @@ function PropertyValuePart(text, line, col){
     } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
         this.type   = "uri";
         this.uri    = RegExp.$1;
+    } else if (/^([^\(]+)\(/i.test(text)){
+        this.type   = "function";
+        this.name   = RegExp.$1;
+        this.value  = text;
     } else if (/^["'][^"']*["']/.test(text)){    //string
         this.type   = "string";
         this.value  = eval(text);

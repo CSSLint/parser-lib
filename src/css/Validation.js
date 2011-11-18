@@ -2,11 +2,6 @@
 /*global Properties, ValidationError*/
 var Validation = {
 
-    _isValueType: function(value, types){
-    
-    },
-    
-
     validate: function(property, value){
     
         //normalize name
@@ -17,7 +12,6 @@ var Validation = {
             msg,
             types,
             last,
-            vtype,
             max, multi, group,
             parts   = value.parts;
             
@@ -79,19 +73,18 @@ var Validation = {
                         }
                     
                         if (typeof Validation.types[types[j]] == "undefined"){
-                            vtype = Validation.types.identifier(parts[i], types[j]);
+                            valid = Validation.types.identifier(parts[i], types[j]);
                             msg.push("one of (" + types[j] + ")");
                         } else {
-                            vtype = Validation.types[types[j]](parts[i]);
+                            valid = Validation.types[types[j]](parts[i]);
                             msg.push(types[j]);
                         }
 
-                        if (vtype) {
+                        if (valid) {
                             if (group){
                                 group[types[j]] = 1;
                                 group.total++;
                             }
-                            valid = true;
                             break;  
                         }
                     }
@@ -124,14 +117,28 @@ var Validation = {
             return this.identifier(part, "scroll | fixed | local");
         },
         
+        "attr": function(part){
+            return part.type == "function" && part.name == "attr";
+        },
+        
         "box": function(part){
             return this.identifier(part, "padding-box | border-box | content-box");
         },
+        
+        "content": function(part){
+            return part.type == "function" && part.name == "attr";
+        },        
         
         "relative-size": function(part){
             return this.identifier(part, "smaller | larger");
         },
         
+        //any identifier
+        "ident": function(part){
+            return part.type == "identifier";
+        },
+        
+        //specific identifiers
         "identifier": function(part, options){
             var text = part.text.toString().toLowerCase(),
                 args = options.split(" | "),
@@ -160,6 +167,10 @@ var Validation = {
         },
         
         "integer": function(part){
+            return part.type == "integer";
+        },
+        
+        "line": function(part){
             return part.type == "integer";
         },
         
@@ -197,6 +208,10 @@ var Validation = {
         
         "padding-width": function(part){
             return this.length(part) || this.percentage(part);
+        },
+        
+        "shape": function(part){
+            return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         }
     }
 

@@ -34,7 +34,7 @@ var Properties = {
     "bookmark-level": 1,
     "bookmark-state": 1,
     "bookmark-target": 1,
-    "border": 1,
+    "border":                       { group: [ "border-width", "border-style", "color" ] },
     "border-bottom": 1,
     "border-bottom-color": 1,
     "border-bottom-left-radius":    1,

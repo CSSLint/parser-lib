@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 18-November-2011 08:17:14 */
+/* Version v@VERSION@, Build time: 18-November-2011 09:56:13 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2531,7 +2531,7 @@ var Properties = {
     "bookmark-level": 1,
     "bookmark-state": 1,
     "bookmark-target": 1,
-    "border": 1,
+    "border":                       { group: [ "border-width", "border-style", "color" ] },
     "border-bottom": 1,
     "border-bottom-color": 1,
     "border-bottom-left-radius":    1,
@@ -4520,6 +4520,11 @@ var Tokens  = [
 /*global Properties, ValidationError*/
 var Validation = {
 
+    _isValueType: function(value, types){
+    
+    },
+    
+
     validate: function(property, value){
     
         //normalize name
@@ -4530,13 +4535,14 @@ var Validation = {
             msg,
             types,
             last,
-            max, multi,
+            vtype,
+            max, multi, group,
             parts   = value.parts;
             
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
-            }        
+            }
         } else if (typeof spec != "number"){
         
             //initialization
@@ -4546,6 +4552,9 @@ var Validation = {
             } else if (spec.multi) {
                 types = spec.multi;
                 max = spec.max;
+            } else if (spec.group){
+                types = spec.group;
+                group = { total: 0 };
             }
 
             //Start validation----
@@ -4572,23 +4581,37 @@ var Validation = {
                         msg.push("'" + spec.separator + "'");
                     } else {
                         valid = true;
+                        
+                        //if it's a group, reset the tracker
+                        if (group) {
+                            group = { total: 0 };
+                        }
                     }
                 } else {
 
                     for (j=0, count=types.length; j < count; j++){
+                    
+                        //if it's a group and one of the values has been found, skip it
+                        if (group && group[types[j]]){
+                            continue;
+                        }
+                    
                         if (typeof Validation.types[types[j]] == "undefined"){
-                            if(Validation.types.identifier(parts[i], types[j])){
-                                valid = true;
-                                break;
-                            }
+                            vtype = Validation.types.identifier(parts[i], types[j]);
                             msg.push("one of (" + types[j] + ")");
                         } else {
-                            if (Validation.types[types[j]](parts[i])){
-                                valid = true;
-                                break;
-                            }
+                            vtype = Validation.types[types[j]](parts[i]);
                             msg.push(types[j]);
-                        }                                   
+                        }
+
+                        if (vtype) {
+                            if (group){
+                                group[types[j]] = 1;
+                                group.total++;
+                            }
+                            valid = true;
+                            break;  
+                        }
                     }
                 }
 
@@ -4601,7 +4624,10 @@ var Validation = {
                 last = parts[i];
             }                          
             
-            
+            //for groups, make sure all items are there
+            if (group && group.total != types.length){
+                throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
+            }
         
         }
     },

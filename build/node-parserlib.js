@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:01:17 */
+/* Version v@VERSION@, Build time: 28-November-2011 12:16:03 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:01:17 */
+/* Version v@VERSION@, Build time: 28-November-2011 12:16:03 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2755,6 +2755,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     unary       = null,
                     value       = null,
+                    token,
                     line,
                     col;
                     
@@ -2788,8 +2789,8 @@ Parser.prototype = function(){
                 } else {
                 
                     //see if it's a color
-                    value = this._hexcolor();
-                    if (value === null){
+                    token = this._hexcolor();
+                    if (token === null){
                     
                         //if there's no unary, get the start of the next token for line/col info
                         if (unary === null){
@@ -2817,9 +2818,10 @@ Parser.prototype = function(){
                         }*/
                     
                     } else {
+                        value = token.value;
                         if (unary === null){
-                            line = tokenStream.token().startLine;
-                            col = tokenStream.token().startCol;
+                            line = token.startLine;
+                            col = token.startCol;
                         }                    
                     }
                 
@@ -2952,9 +2954,9 @@ Parser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    token,
-                    color = null;
-                
+                    token = null,
+                    color;
+                    
                 if(tokenStream.match(Tokens.HASH)){
                 
                     //need to do some validation here
@@ -2967,7 +2969,7 @@ Parser.prototype = function(){
                     this._readWhitespace();
                 }
                 
-                return color;
+                return token;
             },
             
             //-----------------------------------------------------------------

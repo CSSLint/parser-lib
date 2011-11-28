@@ -1555,6 +1555,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     unary       = null,
                     value       = null,
+                    token,
                     line,
                     col;
                     
@@ -1588,8 +1589,8 @@ Parser.prototype = function(){
                 } else {
                 
                     //see if it's a color
-                    value = this._hexcolor();
-                    if (value === null){
+                    token = this._hexcolor();
+                    if (token === null){
                     
                         //if there's no unary, get the start of the next token for line/col info
                         if (unary === null){
@@ -1617,9 +1618,10 @@ Parser.prototype = function(){
                         }*/
                     
                     } else {
+                        value = token.value;
                         if (unary === null){
-                            line = tokenStream.token().startLine;
-                            col = tokenStream.token().startCol;
+                            line = token.startLine;
+                            col = token.startCol;
                         }                    
                     }
                 
@@ -1752,9 +1754,9 @@ Parser.prototype = function(){
                  */
                  
                 var tokenStream = this._tokenStream,
-                    token,
-                    color = null;
-                
+                    token = null,
+                    color;
+                    
                 if(tokenStream.match(Tokens.HASH)){
                 
                     //need to do some validation here
@@ -1767,7 +1769,7 @@ Parser.prototype = function(){
                     this._readWhitespace();
                 }
                 
-                return color;
+                return token;
             },
             
             //-----------------------------------------------------------------

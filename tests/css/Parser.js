@@ -1466,6 +1466,21 @@
             var result = parser.parse(".foo {\n    color: #fff;\n}");
         },    
     
+        "Test rule with space after property name": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("color", event.property.toString());
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(13, event.value.parts[0].col, "First part column should be 12.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");                
+            });
+            var result = parser.parse(".foo {\n    color : #fff;\n}");
+        },    
+    
         "Test rule with one property and !important": function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){

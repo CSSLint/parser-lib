@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:21:44 */
+/* Version v0.1.0, Build time: 28-November-2011 12:21:44 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:21:44 */
+/* Version v0.1.0, Build time: 28-November-2011 12:21:44 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -5716,4 +5716,12 @@ ValidationError     :ValidationError
 };
 })();
 
+
+
+
+(function(){
+for(var prop in parserlib){
+exports[prop] = parserlib[prop];                 
+}
+})();
 

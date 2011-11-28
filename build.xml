@@ -29,6 +29,11 @@
               pattern="d-MMMM-yyyy hh:mm:ss"
               locale="en,US"/>
     </tstamp>
+    <tstamp>
+      <format property="SIMPLE_DATE"
+              pattern="MMMM d, yyyy"
+              locale="en,US"/>
+    </tstamp>     
     
     <!-- clean -->
     <target name="clean">
@@ -41,9 +46,9 @@
         </exec>      
         <script language="javascript"><![CDATA[
             //get the most recent tag to get the diff
-            var tags = csslint.getProperty("git.tag").replace("\r", "").split("\n"),
+            var tags = parserlib.getProperty("git.tag").replace("\r", "").split("\n"),
                 lastTag = tags[tags.length-1];
-            csslint.setProperty("git.log.range", lastTag + "..HEAD");
+            parserlib.setProperty("git.log.range", lastTag + "..HEAD");
         ]]></script>
         
         <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
@@ -52,7 +57,7 @@
         </exec>      
         
         <concat destfile="CHANGELOG.tmp"  fixlastline="true">
-            <header trimleading="yes">${SIMPLE_DATE} - v${csslint.version}
+            <header trimleading="yes">${SIMPLE_DATE} - v${parserlib.version}
             
             ${git.changelog}
             

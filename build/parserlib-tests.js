@@ -1433,11 +1433,61 @@
         }
         
     })); 
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Rule Parsing Tests",    
+        
+        "Test parsing property-value pair": function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parsePropertyValue("#fff");
+            
+            Assert.areEqual("#fff", result.toString());
+            Assert.areEqual(1, result.col);
+            Assert.areEqual(1, result.line);
+            Assert.areEqual("#fff", result.parts[0].toString());
+            Assert.areEqual(1, result.parts[0].col);
+            Assert.areEqual(1, result.parts[0].line);    
+            Assert.areEqual("color", result.parts[0].type);
+        },
+    
+        "Test rule with one property": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("color", event.property.toString());
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");                
+            });
+            var result = parser.parse(".foo {\n    color: #fff;\n}");
+        },    
+    
+        "Test rule with one property and !important": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("color", event.property.toString());
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");                
+                Assert.isTrue(event.important, "Important should be true.");
+            });
+            var result = parser.parse(".foo {\n    color: #fff !important;\n}");
+        }
+    }));
 
     
     YUITest.TestRunner.add(suite);
 
 })();
+
 (function(){
 
     var Assert = YUITest.Assert, 
@@ -2059,6 +2109,7 @@
     YUITest.TestRunner.add(suite);
 
 })();
+
 (function(){
 
     var Assert = YUITest.Assert,    
@@ -2279,6 +2330,7 @@
     YUITest.TestRunner.add(suite);
 
 })();
+
 (function(){
     
     var Assert = YUITest.Assert
@@ -2588,3 +2640,4 @@
     YUITest.TestRunner.add(suite);
 
 })();
+

@@ -1538,7 +1538,7 @@ Parser.prototype = function(){
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }*/
         
-                return values.length > 0 ? new PropertyValue(values, values[0].startLine, values[0].startCol) : null;
+                return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
             },
             
             _term: function(){                       

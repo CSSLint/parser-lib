@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 1-December-2011 11:20:57 */
+/* Version v@VERSION@, Build time: 1-December-2011 12:14:15 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 1-December-2011 11:20:57 */
+/* Version v@VERSION@, Build time: 1-December-2011 12:14:15 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3435,7 +3435,7 @@ var Properties = {
     "background-color"              : "<color> | inherit",
     "background-image"              : { multi: "<bg-image>", separator: "," },
     "background-origin"             : { multi: "<box>", separator: "," },
-    "background-position"           : 1,
+    "background-position"           : "<bg-position>",
     "background-repeat"             : "repeat | repeat-x | repeat-y | no-repeat | inherit",
     "background-size"               : 1,
     "baseline-shift"                : "baseline | sub | super | <percentage> <length>",
@@ -5445,39 +5445,6 @@ var Tokens  = [
 /*global Properties, ValidationError*/
 var Validation = {
 
-    isType: function( value, spec ) {
-        
-    },
-
-    validateSingleOrMulti: function(property, value){
-        
-        var name    = property.toString().toLowerCase(),
-            spec    = Properties[name],
-            parts   = value.parts,
-            multi   = false,
-            max     = 1,
-            types;
-         
-        //if the property is unknown, check for vendor prefix
-        if (!spec) {
-            if (name.indexOf("-") !== 0){    //vendor prefixed are ok
-                throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
-            }        
-        } else if (typeof spec == "string") {
-            types = spec.split(/\s\|\s/g);
-        } else if (spec.multi) {
-            multi = true;
-            max = spec.max || Infinity;
-            types = spec.multi(/\s\|\s/g);
-        } else {   //valid name but no value validation yet
-            return;
-        }
-        
-        
-    
-    
-    },
-
     validate: function(property, value){
     
         //normalize name
@@ -5510,86 +5477,110 @@ var Validation = {
                 group = { total: 0 };
             }
 
-            //Start validation----
-
-            //if there's a maximum set, use it (max can't be 0)
-            if (max) {
-                if (parts.length > max){
-                    throw new ValidationError("Expected a max of " + max + " property value(s) but found " + parts.length + ".", value.line, value.col);
-                }
-            }            
-
-            for (i=0, len=parts.length; i < len; i++){
-                msg = [];
-                valid = false;
-                
-                if (spec.separator && parts[i].type == "operator"){
-                    
-                    //two operators in a row - not allowed?
-                    if ((last && last.type == "operator")){
-                        msg = msg.concat(types);
-                    } else if (i == len-1){
-                        msg = msg.concat("end of line");
-                    } else if (parts[i] != spec.separator){
-                        msg.push("'" + spec.separator + "'");
-                    } else {
-                        valid = true;
-                        
-                        //if it's a group, reset the tracker
-                        if (group) {
-                            group = { total: 0 };
-                        }
-                    }
-                } else {
-
-                    literals = [];
-
-                    for (j=0, count=types.length; j < count; j++){
-                    
-                        //if it's a group and one of the values has been found, skip it
-                        if (group && group[types[j]]){
-                            continue;
-                        }
-                    
-                        if (typeof Validation.types[types[j]] == "undefined"){
-                            valid = Validation.types.literal(parts[i], types[j]);
-                            literals.push(types[j]);
-                        } else {
-                            valid = Validation.types[types[j]](parts[i]);
-                            msg.push(types[j]);
-                        }
-
-                        if (valid) {
-                            if (group){
-                                group[types[j]] = 1;
-                                group.total++;
-                            }
-                            break;  
-                        }
-                    }
-                }
-
-                
-                if (!valid) {
-                    if (literals.length) {
-                        msg.push("one of (" + literals.join(" | ") + ")");
-                    }
-                    throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
-                }
-                
-                
-                last = parts[i];
-            }                          
+            //Start validation----        
             
-            //for groups, make sure all items are there
-            if (group && group.total != types.length){
-                throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
+            //Check for complex validations first
+            if (types.length == 1 && Validation.complex[types[0]]){
+                if (!Validation.complex[types[0]](value)){
+                    throw new ValidationError("Expected " + types[0] + " but found '" + value + "'.", value.line, value.col);
+                }
+            } else {
+                
+                //if there's a maximum set, use it (max can't be 0)
+                if (max) {
+                    if (parts.length > max){
+                        throw new ValidationError("Expected a max of " + max + " property value(s) but found " + parts.length + ".", value.line, value.col);
+                    }
+                }                
+
+                for (i=0, len=parts.length; i < len; i++){
+                    msg = [];
+                    valid = false;
+                    
+                    if (spec.separator && parts[i].type == "operator"){
+                        
+                        //two operators in a row - not allowed?
+                        if ((last && last.type == "operator")){
+                            msg = msg.concat(types);
+                        } else if (i == len-1){
+                            msg = msg.concat("end of line");
+                        } else if (parts[i] != spec.separator){
+                            msg.push("'" + spec.separator + "'");
+                        } else {
+                            valid = true;
+                            
+                            //if it's a group, reset the tracker
+                            if (group) {
+                                group = { total: 0 };
+                            }
+                        }
+                    } else {
+
+                        literals = [];
+
+                        for (j=0, count=types.length; j < count; j++){
+                        
+                            //if it's a group and one of the values has been found, skip it
+                            if (group && group[types[j]]){
+                                continue;
+                            }
+                        
+                            if (typeof Validation.types[types[j]] == "undefined"){
+                                valid = Validation.types.literal(parts[i], types[j]);
+                                literals.push(types[j]);
+                            } else {
+                                valid = Validation.types[types[j]](parts[i]);
+                                msg.push(types[j]);
+                            }
+
+                            if (valid) {
+                                if (group){
+                                    group[types[j]] = 1;
+                                    group.total++;
+                                }
+                                break;  
+                            }
+                        }
+                    }
+
+                    
+                    if (!valid) {
+                        if (literals.length) {
+                            msg.push("one of (" + literals.join(" | ") + ")");
+                        }
+                        throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
+                    }
+                    
+                    
+                    last = parts[i];
+                }                          
+                
+                //for groups, make sure all items are there
+                if (group && group.total != types.length){
+                    throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
+                }
             }
         
         }
     },
 
     types: {
+    
+        any: function(part, spec) {
+            var types = spec.split(/\s\|\s/g),
+                result = false,
+                i, len;
+                
+            for (i=0, len=types.length; i < len && !result; i++){
+                if (this[types[i]]){
+                    result = this[types[i]](part);
+                } else {
+                    result = this.literal(part, types[i]);
+                }
+            }
+            
+            return result;
+        },
 
         "<absolute-size>": function(part){
             return this.literal(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
@@ -5602,6 +5593,10 @@ var Validation = {
         "<attr>": function(part){
             return part.type == "function" && part.name == "attr";
         },
+                
+        "<bg-image>": function(part){
+            return this["<image>"](part) || part == "none";
+        },        
         
         "<box>": function(part){
             return this.literal(part, "padding-box | border-box | content-box");
@@ -5668,10 +5663,6 @@ var Validation = {
             return this["<uri>"](part);
         },
         
-        "<bg-image>": function(part){
-            return this["<image>"](part) || part == "none";
-        },
-        
         "<percentage>": function(part){
             return part.type == "percentage" || part == "0";
         },
@@ -5695,6 +5686,44 @@ var Validation = {
         "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         }
+    },
+    
+    complex: {
+        "<bg-position>": function(value){
+            var parts   = value.parts,
+                types   = Validation.types,
+                result  = false,
+                numeric = "<percentage> | <length>",
+                xDir    = "left | center | right",
+                yDir    = "top | center | bottom",
+                i, len;
+            
+            if (parts.length == 1 && types.literal(parts[0], "top | bottom")){
+                result = true;
+            } else if (parts.length <= 2) {
+                result = types.any(parts[0], numeric + " | " + xDir);
+                if (result && parts.length > 1) {
+                    result = types.any(parts[1], numeric + " | " + yDir);
+                }
+            } else if (parts.length >= 2 && parts.length <= 4) {
+                result = types.any(parts[0], xDir);
+                if (result) {
+                    if (types.any(parts[1], numeric)){
+                        result = types.any(parts[2], yDir);
+                        if (result && parts.length == 4) {
+                            result = types.any(parts[3], numeric);
+                        }
+                    } else if (types.any(parts[1], yDir)) {
+                        result = types.any(parts[2], numeric);
+                    } else {
+                        result = false;
+                    }
+                }
+            }
+            
+            return result;
+        }
+    
     }
 
 };

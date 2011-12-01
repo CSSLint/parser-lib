@@ -2234,6 +2234,28 @@
         }  
     }));   
     
+    suite.add(new ValidationTestCase({
+        property: "background-position",
+        
+        valid: [
+            "top",
+            "bottom",
+            "left center",
+            "left 10px",
+            "center bottom",
+            "10% top",
+            "left 10px bottom",
+            "right top 5%",
+            "center 3em center 10%"
+        ],
+        
+        invalid: {
+            "foo"               : "Expected <bg-position> but found 'foo'.",
+            "left center right" : "Expected <bg-position> but found 'left center right'."
+            
+        }  
+    }));   
+    
 
     suite.add(new ValidationTestCase({
         property: "border",

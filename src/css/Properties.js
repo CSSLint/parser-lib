@@ -22,7 +22,7 @@ var Properties = {
     "background-color"              : "<color> | inherit",
     "background-image"              : { multi: "<bg-image>", separator: "," },
     "background-origin"             : { multi: "<box>", separator: "," },
-    "background-position"           : 1,
+    "background-position"           : "<bg-position>",
     "background-repeat"             : "repeat | repeat-x | repeat-y | no-repeat | inherit",
     "background-size"               : 1,
     "baseline-shift"                : "baseline | sub | super | <percentage> <length>",

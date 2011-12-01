@@ -5,15 +5,16 @@ var Validation = {
     validate: function(property, value){
     
         //normalize name
-        var name = property.toString().toLowerCase(),
-            valid,
+        var name    = property.toString().toLowerCase(),
+            parts   = value.parts,
             spec    = Properties[name],
+            valid,            
             i, len, j, count,
             msg,
             types,
             last,
-            max, multi, group,
-            parts   = value.parts;
+            literals,
+            max, multi, group;
             
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
@@ -22,14 +23,14 @@ var Validation = {
         } else if (typeof spec != "number"){
         
             //initialization
-            if (spec instanceof Array){
-                types = spec;
+            if (typeof spec == "string"){
+                types = spec.split(/\s\|\s/g);
                 max = 1;
             } else if (spec.multi) {
-                types = spec.multi;
+                types = spec.multi.split(/\s\|\s/g);
                 max = spec.max;
             } else if (spec.group){
-                types = spec.group;
+                types = spec.group.split(/\s\|\|\s/g);
                 group = { total: 0 };
             }
 
@@ -65,6 +66,8 @@ var Validation = {
                     }
                 } else {
 
+                    literals = [];
+
                     for (j=0, count=types.length; j < count; j++){
                     
                         //if it's a group and one of the values has been found, skip it
@@ -73,8 +76,8 @@ var Validation = {
                         }
                     
                         if (typeof Validation.types[types[j]] == "undefined"){
-                            valid = Validation.types.identifier(parts[i], types[j]);
-                            msg.push("one of (" + types[j] + ")");
+                            valid = Validation.types.literal(parts[i], types[j]);
+                            literals.push(types[j]);
                         } else {
                             valid = Validation.types[types[j]](parts[i]);
                             msg.push(types[j]);
@@ -92,6 +95,9 @@ var Validation = {
 
                 
                 if (!valid) {
+                    if (literals.length) {
+                        msg.push("one of (" + literals.join(" | ") + ")");
+                    }
                     throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
                 }
                 
@@ -109,37 +115,37 @@ var Validation = {
 
     types: {
 
-        "absolute-size": function(part){
-            return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+        "<absolute-size>": function(part){
+            return this.literal(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
         },
         
-        "attachment": function(part){
-            return this.identifier(part, "scroll | fixed | local");
+        "<attachment>": function(part){
+            return this.literal(part, "scroll | fixed | local");
         },
         
-        "attr": function(part){
+        "<attr>": function(part){
             return part.type == "function" && part.name == "attr";
         },
         
-        "box": function(part){
-            return this.identifier(part, "padding-box | border-box | content-box");
+        "<box>": function(part){
+            return this.literal(part, "padding-box | border-box | content-box");
         },
         
-        "content": function(part){
-            return part.type == "function" && part.name == "attr";
+        "<content>": function(part){
+            return part.type == "function" && part.name == "content";
         },        
         
-        "relative-size": function(part){
-            return this.identifier(part, "smaller | larger");
+        "<relative-size>": function(part){
+            return this.literal(part, "smaller | larger");
         },
         
         //any identifier
-        "ident": function(part){
+        "<ident>": function(part){
             return part.type == "identifier";
         },
         
         //specific identifiers
-        "identifier": function(part, options){
+        "literal": function(part, options){
             var text = part.text.toString().toLowerCase(),
                 args = options.split(" | "),
                 i, len, found = false;
@@ -154,63 +160,63 @@ var Validation = {
             return found;
         },
         
-        "length": function(part){
+        "<length>": function(part){
             return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
         },
         
-        "color": function(part){
+        "<color>": function(part){
             return part.type == "color" || part == "transparent";
         },
         
-        "number": function(part){
-            return part.type == "number" || this.integer(part);
+        "<number>": function(part){
+            return part.type == "number" || this["<integer>"](part);
         },
         
-        "integer": function(part){
+        "<integer>": function(part){
             return part.type == "integer";
         },
         
-        "line": function(part){
+        "<line>": function(part){
             return part.type == "integer";
         },
         
-        "angle": function(part){
+        "<angle>": function(part){
             return part.type == "angle";
         },        
         
-        "uri": function(part){
+        "<uri>": function(part){
             return part.type == "uri";
         },
         
-        "image": function(part){
-            return this.uri(part);
+        "<image>": function(part){
+            return this["<uri>"](part);
         },
         
-        "bg-image": function(part){
-            return this.image(part) || part == "none";
+        "<bg-image>": function(part){
+            return this["<image>"](part) || part == "none";
         },
         
-        "percentage": function(part){
+        "<percentage>": function(part){
             return part.type == "percentage" || part == "0";
         },
 
-        "border-width": function(part){
-            return this.length(part) || this.identifier(part, "thin | medium | thick");
+        "<border-width>": function(part){
+            return this["<length>"](part) || this.literal(part, "thin | medium | thick");
         },
         
-        "border-style": function(part){
-            return this.identifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        "<border-style>": function(part){
+            return this.literal(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
         },
         
-        "margin-width": function(part){
-            return this.length(part) || this.percentage(part) || this.identifier(part, "auto");
+        "<margin-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part) || this.literal(part, "auto");
         },
         
-        "padding-width": function(part){
-            return this.length(part) || this.percentage(part);
+        "<padding-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part);
         },
         
-        "shape": function(part){
+        "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         }
     }

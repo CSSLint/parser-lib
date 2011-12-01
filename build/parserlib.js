@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:21:44 */
+/* Version v@VERSION@, Build time: 1-December-2011 11:20:57 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 28-November-2011 12:21:44 */
+/* Version v@VERSION@, Build time: 1-December-2011 11:20:57 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3414,337 +3414,337 @@ nth
 var Properties = {
 
     //A
-    "alignment-adjust"              : [ "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical", "percentage", "length" ],
-    "alignment-baseline"            : [ "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
+    "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
+    "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "animation"                     : 1,
-    "animation-delay"               : { multi: [ "time" ], separator: "," },
-    "animation-direction"           : { multi: [ "normal | alternate" ], separator: "," },
-    "animation-duration"            : { multi: [ "time" ], separator: "," },
-    "animation-iteration-count"     : { multi: [ "number", "infinite"], separator: "," },
-    "animation-name"                : { multi: [ "none", "ident" ], separator: "," },
-    "animation-play-state"          : { multi: [ "running | paused" ], separator: "," },
+    "animation-delay"               : { multi: "<time>", separator: "," },
+    "animation-direction"           : { multi: "normal | alternate", separator: "," },
+    "animation-duration"            : { multi: "<time>", separator: "," },
+    "animation-iteration-count"     : { multi: "<number> | infinite", separator: "," },
+    "animation-name"                : { multi: "none | <ident>", separator: "," },
+    "animation-play-state"          : { multi: "running | paused", separator: "," },
     "animation-timing-function"     : 1,
-    "appearance"                    : [ "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password", "normal | inherit" ],
+    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
     "azimuth"                       : 1,
     
     //B
-    "backface-visibility"           : [ "visible | hidden" ],
+    "backface-visibility"           : "visible | hidden",
     "background"                    : 1,
-    "background-attachment"         : { multi: [ "attachment" ], separator: "," },
-    "background-clip"               : { multi: [ "box" ], separator: "," },
-    "background-color"              : [ "color", "inherit" ],
-    "background-image"              : { multi: [ "bg-image" ], separator: "," },
-    "background-origin"             : { multi: [ "box" ], separator: "," },
+    "background-attachment"         : { multi: "<attachment>", separator: "," },
+    "background-clip"               : { multi: "<box>", separator: "," },
+    "background-color"              : "<color> | inherit",
+    "background-image"              : { multi: "<bg-image>", separator: "," },
+    "background-origin"             : { multi: "<box>", separator: "," },
     "background-position"           : 1,
-    "background-repeat"             : [ "repeat | repeat-x | repeat-y | no-repeat | inherit" ],
+    "background-repeat"             : "repeat | repeat-x | repeat-y | no-repeat | inherit",
     "background-size"               : 1,
-    "baseline-shift"                : [ "baseline | sub | super", "percentage", "length" ],
+    "baseline-shift"                : "baseline | sub | super | <percentage> <length>",
     "binding"                       : 1,
-    "bleed"                         : [ "bleed" ],
-    "bookmark-label"                : [ "content", "attr", "string" ],
-    "bookmark-level"                : [ "none", "integer" ],
-    "bookmark-state"                : [ "open | closed" ],
-    "bookmark-target"               : [ "none", "uri", "attr" ],
-    "border"                        : { group: [ "border-width", "border-style", "color" ] },
-    "border-bottom"                 : { group: [ "border-width", "border-style", "color" ] },
-    "border-bottom-color"           : [ "color" ],
-    "border-bottom-left-radius"     :    1,
-    "border-bottom-right-radius"    :   1,
-    "border-bottom-style"           : [ "border-style" ],
-    "border-bottom-width"           : [ "border-width" ],
-    "border-collapse"               : [ "collapse | separate | inherit" ],
-    "border-color"                  : { multi: [ "color", "inherit" ], max: 4 },
+    "bleed"                         : "<length>",
+    "bookmark-label"                : "<content> | <attr> | <string>",
+    "bookmark-level"                : "none | <integer>",
+    "bookmark-state"                : "open | closed",
+    "bookmark-target"               : "none | <uri> | <attr>",
+    "border"                        : { group: "<border-width> || <border-style> || <color>" },
+    "border-bottom"                 : { group: "<border-width> || <border-style> || <color>" },
+    "border-bottom-color"           : "<color>",
+    "border-bottom-left-radius"     :  1,
+    "border-bottom-right-radius"    :  1,
+    "border-bottom-style"           : "border-style",
+    "border-bottom-width"           : "border-width",
+    "border-collapse"               : "collapse | separate | inherit",
+    "border-color"                  : { multi: "<color> | inherit", max: 4 },
     "border-image"                  : 1,
-    "border-image-outset"           : { multi: [ "length", "number" ], max: 4 },
-    "border-image-repeat"           : { multi: [ "stretch | repeat | round" ], max: 2 },
+    "border-image-outset"           : { multi: "<length> | <number>", max: 4 },
+    "border-image-repeat"           : { multi: "stretch | repeat | round", max: 2 },
     "border-image-slice"            : 1,
-    "border-image-source"           : [ "image", "none" ],
-    "border-image-width"            : { multi: [ "length", "percentage", "number", "auto" ], max: 4 },
-    "border-left"                   : { group: [ "border-width", "border-style", "color" ] },
-    "border-left-color"             : [ "color", "inherit" ],
-    "border-left-style"             : [ "border-style" ],
-    "border-left-width"             : [ "border-width" ],
+    "border-image-source"           : "<image> | none",
+    "border-image-width"            : { multi: "<length> | <percentage> | <number> | auto", max: 4 },
+    "border-left"                   : { group: "<border-width> || <border-style> || <color>" },
+    "border-left-color"             : "<color> | inherit",
+    "border-left-style"             : "<border-style>",
+    "border-left-width"             : "<border-width>",
     "border-radius"                 : 1,
-    "border-right"                  : { group: [ "border-width", "border-style", "color" ] },
-    "border-right-color"            : [ "color", "inherit" ],
-    "border-right-style"            : [ "border-style" ],
-    "border-right-width"            : [ "border-width" ],
-    "border-style"                  : { multi: [ "border-style" ], max: 4 },
-    "border-top"                    : { group: [ "border-width", "border-style", "color" ] },
-    "border-top-color":             [ "color", "inherit" ],
+    "border-right"                  : { group: "<border-width> || <border-style> || <color>" },
+    "border-right-color"            : "<color> | inherit",
+    "border-right-style"            : "<border-style>",
+    "border-right-width"            : "<border-width>",
+    "border-style"                  : { multi: "<border-style>", max: 4 },
+    "border-top"                    : { group: "<border-width> || <border-style> || <color>" },
+    "border-top-color"              : "<color> | inherit",
     "border-top-left-radius"        : 1,
     "border-top-right-radius"       : 1,
-    "border-top-style"              : [ "border-style" ],
-    "border-top-width"              : [ "border-width" ],
-    "border-width"                  : { multi: [ "border-width" ], max: 4 },
-    "bottom"                        : [ "margin-width", "inherit" ], 
-    "box-align"                     : [ "start | end | center | baseline | stretch" ],        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
-    "box-decoration-break"          : [ "slice |clone" ],
-    "box-direction"                 : [ "normal | reverse | inherit" ],
-    "box-flex"                      : [ "number" ],
-    "box-flex-group"                : [ "integer" ],
-    "box-lines"                     : [ "single | multiple" ],
-    "box-ordinal-group"             : [ "integer" ],
-    "box-orient"                    : [ "horizontal | vertical | inline-axis | block-axis | inherit" ],
-    "box-pack"                      : [ "start | end | center | justify" ],
+    "border-top-style"              : "<border-style>",
+    "border-top-width"              : "<border-width>",
+    "border-width"                  : { multi: "<border-width>", max: 4 },
+    "bottom"                        : "<margin-width> | inherit", 
+    "box-align"                     : "start | end | center | baseline | stretch",        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
+    "box-decoration-break"          : "slice |clone",
+    "box-direction"                 : "normal | reverse | inherit",
+    "box-flex"                      : "<number>",
+    "box-flex-group"                : "<integer>",
+    "box-lines"                     : "single | multiple",
+    "box-ordinal-group"             : "<integer>",
+    "box-orient"                    : "horizontal | vertical | inline-axis | block-axis | inherit",
+    "box-pack"                      : "start | end | center | justify",
     "box-shadow"                    : 1,
-    "box-sizing"                    : [ "content-box | border-box | inherit" ],
-    "break-after"                   : [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
-    "break-before"                  : [ "auto | always | avoid | left | right | page | column | avoid-page | avoid-column" ],
-    "break-inside"                  : [ "auto | avoid | avoid-page | avoid-column" ],
+    "box-sizing"                    : "content-box | border-box | inherit",
+    "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-inside"                  : "auto | avoid | avoid-page | avoid-column",
     
     //C
-    "caption-side"                  : [ "top | bottom | inherit" ],
-    "clear"                         : [ "none | right | left | both | inherit" ],
+    "caption-side"                  : "top | bottom | inherit",
+    "clear"                         : "none | right | left | both | inherit",
     "clip"                          : 1,
-    "color"                         : [ "color", "inherit" ],
+    "color"                         : "<color> | inherit",
     "color-profile"                 : 1,
-    "column-count"                  : [ "integer", "auto" ],                      //http://www.w3.org/TR/css3-multicol/
-    "column-fill"                   : [ "auto | balance" ],
-    "column-gap"                    : [ "length", "normal" ],
-    "column-rule"                   : { group: [ "color", "border-style", "border-width" ] },
-    "column-rule-color"             : [ "color" ],
-    "column-rule-style"             : [ "border-style" ],
-    "column-rule-width"             : [ "border-width" ],
-    "column-span"                   : [ "none | all" ],
-    "column-width"                  : [ "length", "auto" ],
+    "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
+    "column-fill"                   : "auto | balance",
+    "column-gap"                    : "<length> | normal",
+    "column-rule"                   : { group: "<border-width> || <border-style> || <color>" },
+    "column-rule-color"             : "<color>",
+    "column-rule-style"             : "<border-style>",
+    "column-rule-width"             : "<border-width>",
+    "column-span"                   : "none | all",
+    "column-width"                  : "<length> | auto",
     "columns"                       : 1,
     "content"                       : 1,
     "counter-increment"             : 1,
     "counter-reset"                 : 1,
-    "crop"                          : [ "shape", "auto" ],
-    "cue"                           : [ "cue-after | cue-before | inherit" ],
+    "crop"                          : "<shape> | auto",
+    "cue"                           : "cue-after | cue-before | inherit",
     "cue-after"                     : 1,
     "cue-before"                    : 1,
     "cursor"                        : 1,
     
     //D
-    "direction"                     : [ "ltr | rtl | inherit" ],
-    "display"                       : [ "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid", "none | inherit" ],
+    "direction"                     : "ltr | rtl | inherit",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit",
     "dominant-baseline"             : 1,
-    "drop-initial-after-adjust"     : [ "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical", "percentage", "length" ],
-    "drop-initial-after-align"      : [ "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
-    "drop-initial-before-adjust"    : [ "before-edge | text-before-edge | central | middle | hanging | mathematical", "percentage", "length" ],
-    "drop-initial-before-align"     : [ "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical" ],
-    "drop-initial-size"             : [ "auto", "line", "length", "percentage" ],
-    "drop-initial-value"            : [ "initial", "integer" ],
+    "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
+    "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
+    "drop-initial-before-align"     : "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-size"             : "auto | line | <length> | <percentage>",
+    "drop-initial-value"            : "initial | <integer>",
     
     //E
-    "elevation"                     : [ "angle", "below | level | above | higher | lower | inherit" ],
-    "empty-cells"                   : [ "show | hide | inherit" ],
+    "elevation"                     : "<angle> | below | level | above | higher | lower | inherit",
+    "empty-cells"                   : "show | hide | inherit",
     
     //F
     "filter"                        : 1,
-    "fit"                           : [ "fill | hidden | meet | slice" ],
+    "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
-    "float"                         : [ "left | right | none | inherit" ],    
+    "float"                         : "left | right | none | inherit",    
     "float-offset"                  : 1,
     "font"                          : 1,
     "font-family"                   : 1,
-    "font-size"                     : [ "absolute-size", "relative-size", "length", "percentage", "inherit" ],
-    "font-size-adjust"              : [ "number", "none | inherit" ],
-    "font-stretch"                  : [ "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit" ],
-    "font-style"                    : [ "normal | italic | oblique | inherit" ],
-    "font-variant"                  : [ "normal | small-caps | inherit" ],
-    "font-weight"                   : [ "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit" ],
+    "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
+    "font-size-adjust"              : "<number> | none | inherit",
+    "font-stretch"                  : "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit",
+    "font-style"                    : "normal | italic | oblique | inherit",
+    "font-variant"                  : "normal | small-caps | inherit",
+    "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
     
     //G
-    "grid-cell-stacking"            : [ "columns | rows | layer" ],
+    "grid-cell-stacking"            : "columns | rows | layer",
     "grid-column"                   : 1,
     "grid-columns"                  : 1,
-    "grid-column-align"             : [ "start | end | center | stretch" ],
+    "grid-column-align"             : "start | end | center | stretch",
     "grid-column-sizing"            : 1,
-    "grid-column-span"              : [ "integer" ],
-    "grid-flow"                     : [ "none | rows | columns" ],
-    "grid-layer"                    : [ "integer" ],
+    "grid-column-span"              : "<integer>",
+    "grid-flow"                     : "none | rows | columns",
+    "grid-layer"                    : "<integer>",
     "grid-row"                      : 1,
     "grid-rows"                     : 1,
-    "grid-row-align"                : [ "start | end | center | stretch" ],
-    "grid-row-span"                 : [ "integer" ],
+    "grid-row-align"                : "start | end | center | stretch",
+    "grid-row-span"                 : "<integer>",
     "grid-row-sizing"               : 1,
     
     //H
     "hanging-punctuation"           : 1,
-    "height"                        : [ "margin-width", "inherit" ],
-    "hyphenate-after"               : [ "integer", "auto" ],
-    "hyphenate-before"              : [ "integer", "auto" ],
-    "hyphenate-character"           : [ "string", "auto" ],
-    "hyphenate-lines"               : [ "no-limit", "integer" ],
+    "height"                        : "<margin-width> | inherit",
+    "hyphenate-after"               : "<integer> | auto",
+    "hyphenate-before"              : "<integer> | auto",
+    "hyphenate-character"           : "<string> | auto",
+    "hyphenate-lines"               : "no-limit | <integer>",
     "hyphenate-resource"            : 1,
-    "hyphens"                       : [ "none | manual | auto" ],
+    "hyphens"                       : "none | manual | auto",
     
     //I
     "icon"                          : 1,
-    "image-orientation"             : [ "angle", "auto" ],
+    "image-orientation"             : "angle | auto",
     "image-rendering"               : 1,
     "image-resolution"              : 1,
-    "inline-box-align"              : [ "initial | last", "integer" ],
+    "inline-box-align"              : "initial | last | <integer>",
     
     //L
-    "left"                          : [ "margin-width", "inherit" ],
-    "letter-spacing"                : [ "length", "normal | inherit" ],
-    "line-height"                   : [ "number", "length", "percentage", "normal | inherit"],
-    "line-break"                    : [ "auto | loose | normal | strict" ],
+    "left"                          : "<margin-width> | inherit",
+    "letter-spacing"                : "<length> | normal | inherit",
+    "line-height"                   : "<number> | <length> | <percentage> | normal | inherit",
+    "line-break"                    : "auto | loose | normal | strict",
     "line-stacking"                 : 1,
-    "line-stacking-ruby"            : [ "exclude-ruby | include-ruby" ],
-    "line-stacking-shift"           : [ "consider-shifts | disregard-shifts" ],
-    "line-stacking-strategy"        : [ "inline-line-height | block-line-height | max-height | grid-height" ],
+    "line-stacking-ruby"            : "exclude-ruby | include-ruby",
+    "line-stacking-shift"           : "consider-shifts | disregard-shifts",
+    "line-stacking-strategy"        : "inline-line-height | block-line-height | max-height | grid-height",
     "list-style"                    : 1,
-    "list-style-image"              : [ "uri", "none | inherit" ],
-    "list-style-position"           : [ "inside | outside | inherit" ],
-    "list-style-type"               : [ "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit" ],
+    "list-style-image"              : "<uri> | none | inherit",
+    "list-style-position"           : "inside | outside | inherit",
+    "list-style-type"               : "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit",
     
     //M
-    "margin":                       { multi: [ "margin-width", "inherit" ], max: 4 },
-    "margin-bottom":                [ "margin-width", "inherit" ],
-    "margin-left":                  [ "margin-width", "inherit" ],
-    "margin-right":                 [ "margin-width", "inherit" ],
-    "margin-top":                   [ "margin-width", "inherit" ],
-    "mark": 1,
-    "mark-after": 1,
-    "mark-before": 1,
-    "marks": 1,
-    "marquee-direction": 1,
-    "marquee-play-count": 1,
-    "marquee-speed": 1,
-    "marquee-style": 1,
-    "max-height":                   [ "length", "percentage", "none | inherit" ],
-    "max-width":                    [ "length", "percentage", "none | inherit" ],
-    "min-height":                   [ "length", "percentage", "inherit" ],
-    "min-width":                    [ "length", "percentage", "inherit" ],
-    "move-to": 1,
+    "margin"                        : { multi: "<margin-width> | inherit", max: 4 },
+    "margin-bottom"                 : "<margin-width> | inherit",
+    "margin-left"                   : "<margin-width> | inherit",
+    "margin-right"                  : "<margin-width> | inherit",
+    "margin-top"                    : "<margin-width> | inherit",
+    "mark"                          : 1,
+    "mark-after"                    : 1,
+    "mark-before"                   : 1,
+    "marks"                         : 1,
+    "marquee-direction"             : 1,
+    "marquee-play-count"            : 1,
+    "marquee-speed"                 : 1,
+    "marquee-style"                 : 1,
+    "max-height"                    : "<length> | <percentage> | none | inherit",
+    "max-width"                     : "<length> | <percentage> | none | inherit",
+    "min-height"                    : "<length> | <percentage> | inherit",
+    "min-width"                     : "<length> | <percentage> | inherit",
+    "move-to"                       : 1,
     
     //N
-    "nav-down": 1,
-    "nav-index": 1,
-    "nav-left": 1,
-    "nav-right": 1,
-    "nav-up": 1,
+    "nav-down"                      : 1,
+    "nav-index"                     : 1,
+    "nav-left"                      : 1,
+    "nav-right"                     : 1,
+    "nav-up"                        : 1,
     
     //O
-    "opacity":                      [ "number", "inherit" ],
-    "orphans":                      [ "integer", "inherit" ],
-    "outline": 1,
-    "outline-color":                [ "color", "invert | inherit" ],
-    "outline-offset": 1,
-    "outline-style":                [ "border-style", "inherit" ],
-    "outline-width":                [ "border-width", "inherit" ],
-    "overflow":                     [ "visible | hidden | scroll | auto | inherit" ],
-    "overflow-style": 1,
-    "overflow-x": 1,
-    "overflow-y": 1,
+    "opacity"                       : "<number> | inherit",
+    "orphans"                       : "<integer> | inherit",
+    "outline"                       : 1,
+    "outline-color"                 : "<color> | invert | inherit",
+    "outline-offset"                : 1,
+    "outline-style"                 : "<border-style> | inherit",
+    "outline-width"                 : "<border-width> | inherit",
+    "overflow"                      : "visible | hidden | scroll | auto | inherit",
+    "overflow-style"                : 1,
+    "overflow-x"                    : 1,
+    "overflow-y"                    : 1,
     
     //P
-    "padding":                      { multi: [ "padding-width", "inherit" ], max: 4 },
-    "padding-bottom":               [ "padding-width", "inherit" ],
-    "padding-left":                 [ "padding-width", "inherit" ],
-    "padding-right":                [ "padding-width", "inherit" ],
-    "padding-top":                  [ "padding-width", "inherit" ],
-    "page": 1,
-    "page-break-after":             [ "auto | always | avoid | left | right | inherit" ],
-    "page-break-before":            [ "auto | always | avoid | left | right | inherit" ],
-    "page-break-inside":            [ "auto | avoid | inherit" ],
-    "page-policy": 1,
-    "pause": 1,
-    "pause-after": 1,
-    "pause-before": 1,
-    "perspective": 1,
-    "perspective-origin": 1,
-    "phonemes": 1,
-    "pitch": 1,
-    "pitch-range": 1,
-    "play-during": 1,
-    "position":                     [ "static | relative | absolute | fixed | inherit" ],
-    "presentation-level": 1,
-    "punctuation-trim": 1,
+    "padding"                       : { multi: "<padding-width> | inherit", max: 4 },
+    "padding-bottom"                : "<padding-width> | inherit",
+    "padding-left"                  : "<padding-width> | inherit",
+    "padding-right"                 : "<padding-width> | inherit",
+    "padding-top"                   : "<padding-width> | inherit",
+    "page"                          : 1,
+    "page-break-after"              : "auto | always | avoid | left | right | inherit",
+    "page-break-before"             : "auto | always | avoid | left | right | inherit",
+    "page-break-inside"             : "auto | avoid | inherit",
+    "page-policy"                   : 1,
+    "pause"                         : 1,
+    "pause-after"                   : 1,
+    "pause-before"                  : 1,
+    "perspective"                   : 1,
+    "perspective-origin"            : 1,
+    "phonemes"                      : 1,
+    "pitch"                         : 1,
+    "pitch-range"                   : 1,
+    "play-during"                   : 1,
+    "position"                      : "static | relative | absolute | fixed | inherit",
+    "presentation-level"            : 1,
+    "punctuation-trim"              : 1,
     
     //Q
-    "quotes": 1,
+    "quotes"                        : 1,
     
     //R
-    "rendering-intent": 1,
-    "resize": 1,
-    "rest": 1,
-    "rest-after": 1,
-    "rest-before": 1,
-    "richness": 1,
-    "right":                        [ "margin-width", "inherit" ],
-    "rotation": 1,
-    "rotation-point": 1,
-    "ruby-align": 1,
-    "ruby-overhang": 1,
-    "ruby-position": 1,
-    "ruby-span": 1,
+    "rendering-intent"              : 1,
+    "resize"                        : 1,
+    "rest"                          : 1,
+    "rest-after"                    : 1,
+    "rest-before"                   : 1,
+    "richness"                      : 1,
+    "right"                         : "<margin-width> | inherit",
+    "rotation"                      : 1,
+    "rotation-point"                : 1,
+    "ruby-align"                    : 1,
+    "ruby-overhang"                 : 1,
+    "ruby-position"                 : 1,
+    "ruby-span"                     : 1,
     
     //S
-    "size": 1,
-    "speak":                        [ "normal | none | spell-out | inherit" ],
-    "speak-header":                 [ "once | always | inherit" ],
-    "speak-numeral":                [ "digits | continuous | inherit" ],
-    "speak-punctuation":            [ "code | none | inherit" ],
-    "speech-rate": 1,
-    "src" : 1,
-    "stress": 1,
-    "string-set": 1,
+    "size"                          : 1,
+    "speak"                         : "normal | none | spell-out | inherit",
+    "speak-header"                  : "once | always | inherit",
+    "speak-numeral"                 : "digits | continuous | inherit",
+    "speak-punctuation"             : "code | none | inherit",
+    "speech-rate"                   : 1,
+    "src"                           : 1,
+    "stress"                        : 1,
+    "string-set"                    : 1,
     
-    "table-layout":                 [ "auto | fixed | inherit" ],
-    "tab-size":                     [ "integer", "length" ],
-    "target": 1,
-    "target-name": 1,
-    "target-new": 1,
-    "target-position": 1,
-    "text-align":                   [ "left | right | center | justify | inherit" ],
-    "text-align-last": 1,
-    "text-decoration": 1,
-    "text-emphasis": 1,
-    "text-height": 1,
-    "text-indent":                  [ "length", "percentage", "inherit" ],
-    "text-justify":                 [ "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida" ],
-    "text-outline": 1,
-    "text-overflow": 1,
-    "text-shadow": 1,
-    "text-transform":               [ "capitalize | uppercase | lowercase | none | inherit" ],
-    "text-wrap":                    [ "normal | none | avoid" ],
-    "top":                          [ "margin-width", "inherit" ],
-    "transform": 1,
-    "transform-origin": 1,
-    "transform-style": 1,
-    "transition": 1,
-    "transition-delay": 1,
-    "transition-duration": 1,
-    "transition-property": 1,
-    "transition-timing-function": 1,
+    "table-layout"                  : "auto | fixed | inherit",
+    "tab-size"                      : "<integer> | <length>",
+    "target"                        : 1,
+    "target-name"                   : 1,
+    "target-new"                    : 1,
+    "target-position"               : 1,
+    "text-align"                    : "left | right | center | justify | inherit" ,
+    "text-align-last"               : 1,
+    "text-decoration"               : 1,
+    "text-emphasis"                 : 1,
+    "text-height"                   : 1,
+    "text-indent"                   : "<length> | <percentage> | inherit",
+    "text-justify"                  : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
+    "text-outline"                  : 1,
+    "text-overflow"                 : 1,
+    "text-shadow"                   : 1,
+    "text-transform"                : "capitalize | uppercase | lowercase | none | inherit",
+    "text-wrap"                     : "normal | none | avoid",
+    "top"                           : "<margin-width> | inherit",
+    "transform"                     : 1,
+    "transform-origin"              : 1,
+    "transform-style"               : 1,
+    "transition"                    : 1,
+    "transition-delay"              : 1,
+    "transition-duration"           : 1,
+    "transition-property"           : 1,
+    "transition-timing-function"    : 1,
     
     //U
-    "unicode-bidi":                 [ "normal | embed | bidi-override | inherit" ],
-    "user-modify":                  [ "read-only | read-write | write-only | inherit" ],
-    "user-select":                  [ "none | text | toggle | element | elements | all | inherit" ],
+    "unicode-bidi"                  : "normal | embed | bidi-override | inherit",
+    "user-modify"                   : "read-only | read-write | write-only | inherit",
+    "user-select"                   : "none | text | toggle | element | elements | all | inherit",
     
     //V
-    "vertical-align":               [ "percentage", "length", "baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit" ],
-    "visibility":                   [ "visible | hidden | collapse | inherit" ],
-    "voice-balance": 1,
-    "voice-duration": 1,
-    "voice-family": 1,
-    "voice-pitch": 1,
-    "voice-pitch-range": 1,
-    "voice-rate": 1,
-    "voice-stress": 1,
-    "voice-volume": 1,
-    "volume": 1,
+    "vertical-align"                : "<percentage> | <length> | baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit",
+    "visibility"                    : "visible | hidden | collapse | inherit",
+    "voice-balance"                 : 1,
+    "voice-duration"                : 1,
+    "voice-family"                  : 1,
+    "voice-pitch"                   : 1,
+    "voice-pitch-range"             : 1,
+    "voice-rate"                    : 1,
+    "voice-stress"                  : 1,
+    "voice-volume"                  : 1,
+    "volume"                        : 1,
     
     //W
-    "white-space":                  [ "normal | pre | nowrap | pre-wrap | pre-line | inherit" ],
-    "white-space-collapse": 1,
-    "widows":                       [ "integer", "inherit" ],
-    "width":                        [ "length", "percentage", "auto", "inherit" ],
-    "word-break":                   [ "normal | keep-all | break-all" ],
-    "word-spacing":                 [ "length", "normal | inherit" ],
-    "word-wrap": 1,
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit",
+    "white-space-collapse"          : 1,
+    "widows"                        : "<integer> | inherit",
+    "width"                         : "<length> | <percentage> | auto | inherit" ,
+    "word-break"                    : "normal | keep-all | break-all",
+    "word-spacing"                  : "<length> | normal | inherit",
+    "word-wrap"                     : 1,
     
     //Z
-    "z-index":                      [ "integer", "auto | inherit" ],
-    "zoom":                         [ "number", "percentage", "normal" ]
+    "z-index"                       : "<integer> | auto | inherit",
+    "zoom"                          : "<number> | <percentage> | normal"
 };
 /*global SyntaxUnit, Parser*/
 /**
@@ -5445,18 +5445,52 @@ var Tokens  = [
 /*global Properties, ValidationError*/
 var Validation = {
 
+    isType: function( value, spec ) {
+        
+    },
+
+    validateSingleOrMulti: function(property, value){
+        
+        var name    = property.toString().toLowerCase(),
+            spec    = Properties[name],
+            parts   = value.parts,
+            multi   = false,
+            max     = 1,
+            types;
+         
+        //if the property is unknown, check for vendor prefix
+        if (!spec) {
+            if (name.indexOf("-") !== 0){    //vendor prefixed are ok
+                throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
+            }        
+        } else if (typeof spec == "string") {
+            types = spec.split(/\s\|\s/g);
+        } else if (spec.multi) {
+            multi = true;
+            max = spec.max || Infinity;
+            types = spec.multi(/\s\|\s/g);
+        } else {   //valid name but no value validation yet
+            return;
+        }
+        
+        
+    
+    
+    },
+
     validate: function(property, value){
     
         //normalize name
-        var name = property.toString().toLowerCase(),
-            valid,
+        var name    = property.toString().toLowerCase(),
+            parts   = value.parts,
             spec    = Properties[name],
+            valid,            
             i, len, j, count,
             msg,
             types,
             last,
-            max, multi, group,
-            parts   = value.parts;
+            literals,
+            max, multi, group;
             
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
@@ -5465,14 +5499,14 @@ var Validation = {
         } else if (typeof spec != "number"){
         
             //initialization
-            if (spec instanceof Array){
-                types = spec;
+            if (typeof spec == "string"){
+                types = spec.split(/\s\|\s/g);
                 max = 1;
             } else if (spec.multi) {
-                types = spec.multi;
+                types = spec.multi.split(/\s\|\s/g);
                 max = spec.max;
             } else if (spec.group){
-                types = spec.group;
+                types = spec.group.split(/\s\|\|\s/g);
                 group = { total: 0 };
             }
 
@@ -5508,6 +5542,8 @@ var Validation = {
                     }
                 } else {
 
+                    literals = [];
+
                     for (j=0, count=types.length; j < count; j++){
                     
                         //if it's a group and one of the values has been found, skip it
@@ -5516,8 +5552,8 @@ var Validation = {
                         }
                     
                         if (typeof Validation.types[types[j]] == "undefined"){
-                            valid = Validation.types.identifier(parts[i], types[j]);
-                            msg.push("one of (" + types[j] + ")");
+                            valid = Validation.types.literal(parts[i], types[j]);
+                            literals.push(types[j]);
                         } else {
                             valid = Validation.types[types[j]](parts[i]);
                             msg.push(types[j]);
@@ -5535,6 +5571,9 @@ var Validation = {
 
                 
                 if (!valid) {
+                    if (literals.length) {
+                        msg.push("one of (" + literals.join(" | ") + ")");
+                    }
                     throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
                 }
                 
@@ -5552,37 +5591,37 @@ var Validation = {
 
     types: {
 
-        "absolute-size": function(part){
-            return this.identifier(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+        "<absolute-size>": function(part){
+            return this.literal(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
         },
         
-        "attachment": function(part){
-            return this.identifier(part, "scroll | fixed | local");
+        "<attachment>": function(part){
+            return this.literal(part, "scroll | fixed | local");
         },
         
-        "attr": function(part){
+        "<attr>": function(part){
             return part.type == "function" && part.name == "attr";
         },
         
-        "box": function(part){
-            return this.identifier(part, "padding-box | border-box | content-box");
+        "<box>": function(part){
+            return this.literal(part, "padding-box | border-box | content-box");
         },
         
-        "content": function(part){
-            return part.type == "function" && part.name == "attr";
+        "<content>": function(part){
+            return part.type == "function" && part.name == "content";
         },        
         
-        "relative-size": function(part){
-            return this.identifier(part, "smaller | larger");
+        "<relative-size>": function(part){
+            return this.literal(part, "smaller | larger");
         },
         
         //any identifier
-        "ident": function(part){
+        "<ident>": function(part){
             return part.type == "identifier";
         },
         
         //specific identifiers
-        "identifier": function(part, options){
+        "literal": function(part, options){
             var text = part.text.toString().toLowerCase(),
                 args = options.split(" | "),
                 i, len, found = false;
@@ -5597,63 +5636,63 @@ var Validation = {
             return found;
         },
         
-        "length": function(part){
+        "<length>": function(part){
             return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
         },
         
-        "color": function(part){
+        "<color>": function(part){
             return part.type == "color" || part == "transparent";
         },
         
-        "number": function(part){
-            return part.type == "number" || this.integer(part);
+        "<number>": function(part){
+            return part.type == "number" || this["<integer>"](part);
         },
         
-        "integer": function(part){
+        "<integer>": function(part){
             return part.type == "integer";
         },
         
-        "line": function(part){
+        "<line>": function(part){
             return part.type == "integer";
         },
         
-        "angle": function(part){
+        "<angle>": function(part){
             return part.type == "angle";
         },        
         
-        "uri": function(part){
+        "<uri>": function(part){
             return part.type == "uri";
         },
         
-        "image": function(part){
-            return this.uri(part);
+        "<image>": function(part){
+            return this["<uri>"](part);
         },
         
-        "bg-image": function(part){
-            return this.image(part) || part == "none";
+        "<bg-image>": function(part){
+            return this["<image>"](part) || part == "none";
         },
         
-        "percentage": function(part){
+        "<percentage>": function(part){
             return part.type == "percentage" || part == "0";
         },
 
-        "border-width": function(part){
-            return this.length(part) || this.identifier(part, "thin | medium | thick");
+        "<border-width>": function(part){
+            return this["<length>"](part) || this.literal(part, "thin | medium | thick");
         },
         
-        "border-style": function(part){
-            return this.identifier(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        "<border-style>": function(part){
+            return this.literal(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
         },
         
-        "margin-width": function(part){
-            return this.length(part) || this.percentage(part) || this.identifier(part, "auto");
+        "<margin-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part) || this.literal(part, "auto");
         },
         
-        "padding-width": function(part){
-            return this.length(part) || this.percentage(part);
+        "<padding-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part);
         },
         
-        "shape": function(part){
+        "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         }
     }

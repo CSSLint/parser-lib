@@ -2200,7 +2200,7 @@
         ],
         
         invalid: {
-            "1px" : "Expected one of (none) or ident but found '1px'."
+            "1px" : "Expected <ident> or one of (none) but found '1px'."
         }   
     }));    
     
@@ -2214,7 +2214,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected attachment but found 'foo'."
+            "foo" : "Expected <attachment> but found 'foo'."
         }   
     }));    
     
@@ -2229,7 +2229,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected bg-image but found 'foo'.",
+            "foo" : "Expected <bg-image> but found 'foo'.",
             "url(foo.png)," : "Expected end of line but found ','."
         }  
     }));   
@@ -2245,8 +2245,8 @@
         ],
         
         invalid: {
-            "1px" : "Expected all of (border-width, border-style, color) but found '1px'.",
-            "1px solid" : "Expected all of (border-width, border-style, color) but found '1px solid'."
+            "1px" : "Expected all of (<border-width>, <border-style>, <color>) but found '1px'.",
+            "1px solid" : "Expected all of (<border-width>, <border-style>, <color>) but found '1px solid'."
         }  
     }));    
    
@@ -2261,8 +2261,8 @@
         ],
         
         invalid: {
-            "foo" : "Expected color or one of (inherit) but found 'foo'.",
-            "invert" : "Expected color or one of (inherit) but found 'invert'.",
+            "foo" : "Expected <color> or one of (inherit) but found 'foo'.",
+            "invert" : "Expected <color> or one of (inherit) but found 'invert'.",
         }
     }));
     
@@ -2279,7 +2279,7 @@
         
         invalid: {
             "1px 1px 1px 1px 1px" : "Expected a max of 4 property value(s) but found 5.",
-            "foo" : "Expected border-width but found 'foo'."
+            "foo" : "Expected <border-width> but found 'foo'."
         }  
     }));    
     
@@ -2294,8 +2294,8 @@
         ],
         
         invalid: {
-            "foo" : "Expected color or one of (inherit) but found 'foo'.",
-            "invert" : "Expected color or one of (inherit) but found 'invert'.",
+            "foo" : "Expected <color> or one of (inherit) but found 'foo'.",
+            "invert" : "Expected <color> or one of (inherit) but found 'invert'.",
         }  
     }));
 
@@ -2309,7 +2309,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected length or percentage or one of (inherit) but found 'foo'."
+            "foo" : "Expected <length> or <percentage> or one of (inherit) but found 'foo'."
         }  
     }));
 
@@ -2321,7 +2321,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected number or one of (inherit) but found 'foo'."
+            "foo" : "Expected <number> or one of (inherit) but found 'foo'."
         }  
     }));
 
@@ -2336,7 +2336,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected integer or one of (auto | inherit) but found 'foo'."
+            "foo" : "Expected <integer> or one of (auto | inherit) but found 'foo'."
         }
     }));
 

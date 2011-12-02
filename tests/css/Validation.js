@@ -158,6 +158,28 @@
     }));   
 
     suite.add(new ValidationTestCase({
+        property: "background-repeat",
+        
+        valid: [
+            "repeat-x",
+            "repeat-y",
+            "repeat",
+            "space",
+            "round",
+            "no-repeat",
+            "repeat repeat",
+            "repeat space",
+            "no-repeat round"
+        ],
+        
+        invalid: {
+            "foo"               : "Expected <repeat-style> but found 'foo'.",
+            "no-repeat round 1px" : "Expected end of value but found '1px'."
+            
+        }  
+    }));   
+
+    suite.add(new ValidationTestCase({
         property: "border",
         
         valid: [
@@ -202,6 +224,27 @@
         invalid: {
             "1px 1px 1px 1px 1px" : "Expected a max of 4 property value(s) but found 5.",
             "foo" : "Expected <border-width> but found 'foo'."
+        }  
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "box-shadow",
+        
+        valid: [
+            "none",
+            "5px 5px 5px #ccc",
+            "0 0 10px #000000",
+            "10px 10px",
+            "inset 2px 2px 2px 2px black",
+            "10px 10px #888, -10px -10px #f4f4f4, 0px 0px 5px 5px #cc6600"
+        ],
+        
+        invalid: {
+            "foo"           : "Expected <shadow> but found 'foo'.",
+            "1px"           : "Expected <shadow> but found '1px'.",
+            "1em red"       : "Expected <shadow> but found '1em red'.",
+            "1px 1px redd"  : "Expected end of value but found 'redd'.",
+            "none 1px"      : "Expected end of value but found '1px'."
         }  
     }));    
     

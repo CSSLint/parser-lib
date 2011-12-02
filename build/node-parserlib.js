@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 2-December-2011 11:27:07 */
+/* Version v@VERSION@, Build time: 2-December-2011 12:13:34 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 2-December-2011 11:27:07 */
+/* Version v@VERSION@, Build time: 2-December-2011 12:13:34 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3436,7 +3436,7 @@ var Properties = {
     "background-image"              : { multi: "<bg-image>", separator: "," },
     "background-origin"             : { multi: "<box>", separator: "," },
     "background-position"           : { multi: "<bg-position>", separator: ",", complex: true },
-    "background-repeat"             : "repeat | repeat-x | repeat-y | no-repeat | inherit",
+    "background-repeat"             : { multi: "<repeat-style>", complex: true },
     "background-size"               : { multi: "<bg-size>", separator: ",", complex: true },
     "baseline-shift"                : "baseline | sub | super | <percentage> <length>",
     "binding"                       : 1,
@@ -3487,7 +3487,7 @@ var Properties = {
     "box-ordinal-group"             : "<integer>",
     "box-orient"                    : "horizontal | vertical | inline-axis | block-axis | inherit",
     "box-pack"                      : "start | end | center | justify",
-    "box-shadow"                    : 1,
+    "box-shadow"                    : { property: true },
     "box-sizing"                    : "content-box | border-box | inherit",
     "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
     "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
@@ -5584,7 +5584,8 @@ var Validation = {
             if (spec.complex && spec.multi) {
                 
                 Validation.types.multiProperty(types[0], value);
-            
+            } else if (spec.property) {
+                Validation.properties[name](value);
             } else {
 
                 //if there's a maximum set, use it (max can't be 0)
@@ -5883,13 +5884,74 @@ var Validation = {
             return result;
         },
         
+        "<repeat-style>": function(expression){
+            //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
+            var result  = false,
+                values  = "repeat | space | round | no-repeat",
+                part;
+            
+            if (expression.hasNext()){
+                part = expression.next();
+                
+                if (this.literal(part, "repeat-x | repeat-y")) {
+                    result = true;                    
+                } else if (this.literal(part, values)) {
+                    result = true;
+
+                    if (expression.hasNext() && this.literal(expression.peek(), values)) {
+                        expression.next();
+                    }
+                }
+            }
+            
+            return result;
+            
+        },
+        
+        "<shadow>": function(expression) {
+            //inset? && [ <length>{2,4} && <color>? ]
+            var result  = false,
+                count   = 0,
+                part;
+                
+            if (expression.hasNext()) {            
+                part = expression.peek();
+                
+                if (this.literal(part, "inset")){
+                    expression.next();
+                    part = expression.peek();
+                }
+                
+                while (part && this["<length>"](part) && count < 4) {
+                    count++;
+                    expression.next();                    
+                    part = expression.peek();
+                }
+                
+                
+                if (part) {
+                    if (this["<color>"](part)) {
+                        expression.next();
+                    }
+                }
+                
+                result = (count >= 2 && count <= 4);
+            
+            }
+            
+            return result;
+        },
+        
         //---------------------------------------------------------------------
         // Properties
         //---------------------------------------------------------------------
         
-        multiProperty: function ( type, value, partial ) {
-            var expression  = new PropertyValueIterator(value),
-                result      = false,
+        multiProperty: function ( type, value, expression, partial ) {
+        
+            //so ashamed...
+            expression  = expression || new PropertyValueIterator(value);
+            
+            var result      = false,
                 part;
                 
             while(expression.hasNext() && !result) {
@@ -5914,6 +5976,32 @@ var Validation = {
                 part = expression.next();
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             }           
+        }
+    
+    
+    },
+    
+    properties: {
+    
+        "box-shadow": function (value) {
+            var expression  = new PropertyValueIterator(value),
+                result      = false,
+                part;
+                
+            if (expression.hasNext()){
+                part = expression.peek();
+                
+                if (!Validation.types.literal(part, "none")) {
+                    Validation.types.multiProperty("<shadow>", value, expression);                       
+                } else {
+                    expression.next();
+                    if (expression.hasNext()) {
+                        part = expression.next();
+                        throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+                    }   
+                }
+            }
+            
         }
     
     

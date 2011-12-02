@@ -127,11 +127,35 @@
         
         invalid: {
             "foo"               : "Expected <bg-position> but found 'foo'.",
-            "left center right" : "Expected <bg-position> but found 'right'."
+            "left center right" : "Expected end of value but found 'right'."
             
         }  
     }));   
     
+    suite.add(new ValidationTestCase({
+        property: "background-size",
+        
+        valid: [
+            "cover",
+            "contain",
+            "auto",
+            "auto auto",
+            "1em",
+            "1px 1em",
+            "1px auto",
+            "auto 30%",
+            "10% 50%",
+            "cover, contain",
+            "cover, auto auto",
+            "1px, 20% 30%"
+        ],
+        
+        invalid: {
+            "foo"               : "Expected <bg-size> but found 'foo'.",
+            "1px 1px 1px"       : "Expected end of value but found '1px'."
+            
+        }  
+    }));   
 
     suite.add(new ValidationTestCase({
         property: "border",

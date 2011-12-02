@@ -209,7 +209,66 @@
             "invert" : "Expected <color> or one of (inherit) but found 'invert'.",
         }
     }));
-    
+
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-left-radius",
+        
+        valid: [
+            "5px",
+            "25%",
+            "5px 25%"
+        ],
+        
+        invalid: {
+            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'.",
+        }
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-right-radius",
+        
+        valid: [
+            "5px",
+            "25%",
+            "5px 25%"
+        ],
+        
+        invalid: {
+            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'.",
+        }
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-top-left-radius",
+        
+        valid: [
+            "5px",
+            "25%",
+            "5px 25%"
+        ],
+        
+        invalid: {
+            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'.",
+        }
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-top-right-radius",
+        
+        valid: [
+            "5px",
+            "25%",
+            "5px 25%"
+        ],
+        
+        invalid: {
+            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'.",
+        }
+    }));    
 
     suite.add(new ValidationTestCase({
         property: "border-width",

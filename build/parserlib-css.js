@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 2-December-2011 12:13:34 */
+/* Version v@VERSION@, Build time: 2-December-2011 12:26:24 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2538,8 +2538,8 @@ var Properties = {
     "border"                        : { group: "<border-width> || <border-style> || <color>" },
     "border-bottom"                 : { group: "<border-width> || <border-style> || <color>" },
     "border-bottom-color"           : "<color>",
-    "border-bottom-left-radius"     :  1,
-    "border-bottom-right-radius"    :  1,
+    "border-bottom-left-radius"     :  { single: "<x-one-radius>", complex: true },
+    "border-bottom-right-radius"    :  { single: "<x-one-radius>", complex: true },
     "border-bottom-style"           : "border-style",
     "border-bottom-width"           : "border-width",
     "border-collapse"               : "collapse | separate | inherit",
@@ -2562,8 +2562,8 @@ var Properties = {
     "border-style"                  : { multi: "<border-style>", max: 4 },
     "border-top"                    : { group: "<border-width> || <border-style> || <color>" },
     "border-top-color"              : "<color> | inherit",
-    "border-top-left-radius"        : 1,
-    "border-top-right-radius"       : 1,
+    "border-top-left-radius"        : { single: "<x-one-radius>", complex: true },
+    "border-top-right-radius"       : { single: "<x-one-radius>", complex: true },
     "border-top-style"              : "<border-style>",
     "border-top-width"              : "<border-width>",
     "border-width"                  : { multi: "<border-width>", max: 4 },
@@ -4663,6 +4663,8 @@ var Validation = {
             } else if (spec.multi) {
                 types = spec.multi.split(/\s\|\s/g);
                 max = spec.max;
+            } else if (spec.single) {
+                types = spec.single.split(/\s\|\s/g);
             } else if (spec.group){
                 types = spec.group.split(/\s\|\|\s/g);
                 group = { total: 0 };
@@ -4671,9 +4673,12 @@ var Validation = {
             //Start validation----        
             //TODO: Clean up once I figure out the best way to do this
             //Check for complex validations first
-            if (spec.complex && spec.multi) {
-                
-                Validation.types.multiProperty(types[0], value);
+            if (spec.complex) {
+                if (spec.multi) {
+                    Validation.types.multiProperty(types[0], value);
+                } else {
+                    Validation.types.singleProperty(types[0], value);
+                }
             } else if (spec.property) {
                 Validation.properties[name](value);
             } else {
@@ -5032,9 +5037,55 @@ var Validation = {
             return result;
         },
         
+        "<x-one-radius>": function(expression) {
+            //[ <length> | <percentage> ] [ <length> | <percentage> ]?
+            var result  = false,
+                count   = 0,
+                numeric = "<length> | <percentage>",
+                part;
+                
+            if (expression.hasNext()) {            
+                part = expression.peek();
+                
+                if (this.any(part, numeric)){
+                    result = true;
+                    expression.next();
+                    part = expression.peek();
+                    
+                    if (part && this.any(part, numeric)){
+                        expression.next();
+                    }
+                }                
+            
+            }
+            
+            return result;
+        },        
+        
         //---------------------------------------------------------------------
         // Properties
         //---------------------------------------------------------------------
+        
+        singleProperty: function ( type, value, expression, partial ) {
+            //so ashamed...
+            expression  = expression || new PropertyValueIterator(value);
+            
+            var result      = false,
+                part;
+                
+            if (expression.hasNext()) {
+                if ( this[type](expression) ) {
+                    result = true;
+                } 
+            }
+            
+            if (!result) {
+                throw new ValidationError("Expected " + type + " but found '" + value + "'.", value.line, value.col);
+            } else if (expression.hasNext() && !partial) {
+                part = expression.next();
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            }             
+        },
         
         multiProperty: function ( type, value, expression, partial ) {
         
@@ -5092,6 +5143,10 @@ var Validation = {
                 }
             }
             
+        },
+        
+        "border-one-radius": function (value) {
+            this.singleProperty("<x-one-radius>", value);
         }
     
     

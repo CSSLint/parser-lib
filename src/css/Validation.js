@@ -1,15 +1,17 @@
 //This file will likely change a lot! Very experimental!
-/*global Properties, ValidationError*/
+/*global Properties, ValidationError, PropertyValueIterator */
 var Validation = {
 
     validate: function(property, value){
     
         //normalize name
-        var name    = property.toString().toLowerCase(),
-            parts   = value.parts,
-            spec    = Properties[name],
+        var name        = property.toString().toLowerCase(),
+            parts       = value.parts,
+            expression  = new PropertyValueIterator(value),
+            spec        = Properties[name],
+            part,
             valid,            
-            i, len, j, count,
+            j, count,
             msg,
             types,
             last,
@@ -37,88 +39,90 @@ var Validation = {
             //Start validation----        
             
             //Check for complex validations first
-            if (types.length == 1 && Validation.complex[types[0]]){
-                if (!Validation.complex[types[0]](value)){
-                    throw new ValidationError("Expected " + types[0] + " but found '" + value + "'.", value.line, value.col);
-                }
-            } else {
-                
-                //if there's a maximum set, use it (max can't be 0)
-                if (max) {
-                    if (parts.length > max){
-                        throw new ValidationError("Expected a max of " + max + " property value(s) but found " + parts.length + ".", value.line, value.col);
-                    }
-                }                
 
-                for (i=0, len=parts.length; i < len; i++){
-                    msg = [];
-                    valid = false;
+            //if there's a maximum set, use it (max can't be 0)
+            if (max) {
+                if (parts.length > max){
+                    throw new ValidationError("Expected a max of " + max + " property value(s) but found " + parts.length + ".", value.line, value.col);
+                }
+            }                
+
+            while (expression.hasNext()){
+                part = expression.peek();
+                msg = [];
+                valid = false;
+                
+                if (spec.separator && part.type == "operator"){
                     
-                    if (spec.separator && parts[i].type == "operator"){
-                        
-                        //two operators in a row - not allowed?
-                        if ((last && last.type == "operator")){
-                            msg = msg.concat(types);
-                        } else if (i == len-1){
-                            msg = msg.concat("end of line");
-                        } else if (parts[i] != spec.separator){
-                            msg.push("'" + spec.separator + "'");
-                        } else {
-                            valid = true;
-                            
-                            //if it's a group, reset the tracker
-                            if (group) {
-                                group = { total: 0 };
-                            }
-                        }
+                    //two operators in a row - not allowed?
+                    if ((last && last.type == "operator")){
+                        msg = msg.concat(types);
+                    } else if (!expression.peek(1)){
+                        msg = msg.concat("end of line");
+                    } else if (part != spec.separator){
+                        msg.push("'" + spec.separator + "'");
                     } else {
-
-                        literals = [];
-
-                        for (j=0, count=types.length; j < count; j++){
+                        valid = true;
+                        expression.next();
                         
-                            //if it's a group and one of the values has been found, skip it
-                            if (group && group[types[j]]){
-                                continue;
-                            }
-                        
-                            if (typeof Validation.types[types[j]] == "undefined"){
-                                valid = Validation.types.literal(parts[i], types[j]);
-                                literals.push(types[j]);
-                            } else {
-                                valid = Validation.types[types[j]](parts[i]);
-                                msg.push(types[j]);
-                            }
-
-                            if (valid) {
-                                if (group){
-                                    group[types[j]] = 1;
-                                    group.total++;
-                                }
-                                break;  
-                            }
+                        //if it's a group, reset the tracker
+                        if (group) {
+                            group = { total: 0 };
                         }
                     }
+                } else {
 
+                    literals = [];
+
+                    for (j=0, count=types.length; j < count; j++){
                     
-                    if (!valid) {
-                        if (literals.length) {
-                            msg.push("one of (" + literals.join(" | ") + ")");
+                        //if it's a group and one of the values has been found, skip it
+                        if (group && group[types[j]]){
+                            continue;
+                        }                   
+                        
+                        expression.mark();
+                        if (typeof Validation.complex[types[j]] != "undefined") {
+                            valid = Validation.complex[types[j]](expression);
+                            msg.push(types[j]);                        
+                        } else if (typeof Validation.types[types[j]] == "undefined"){
+                            valid = Validation.types.literal(expression.next(), types[j]);
+                            literals.push(types[j]);
+                        } else {
+                            valid = Validation.types[types[j]](expression.next());
+                            msg.push(types[j]);
                         }
-                        throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + parts[i] + "'.", value.line, value.col);
+
+                        if (valid) {
+                            if (group){
+                                group[types[j]] = 1;
+                                group.total++;
+                            }
+                            break;  
+                        } else {
+                            expression.restore();
+                        }
                     }
-                    
-                    
-                    last = parts[i];
-                }                          
-                
-                //for groups, make sure all items are there
-                if (group && group.total != types.length){
-                    throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
                 }
+
+                
+                if (!valid) {
+                    if (literals.length) {
+                        msg.push("one of (" + literals.join(" | ") + ")");
+                    }
+                    throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + part + "'.", value.line, value.col);
+                }
+                
+                
+                last = part;
+            }                          
+            
+            //for groups, make sure all items are there
+            if (group && group.total != types.length){
+                throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
             }
-        
         }
+
     },
 
     types: {
@@ -246,41 +250,90 @@ var Validation = {
     },
     
     complex: {
-        "<bg-position>": function(value){
-            var parts   = value.parts,
-                types   = Validation.types,
+        "<bg-position>": function(expression){
+            var types   = Validation.types,
                 result  = false,
                 numeric = "<percentage> | <length>",
                 xDir    = "left | center | right",
                 yDir    = "top | center | bottom",
+                part,
                 i, len;
             
-            if (parts.length == 1 && types.literal(parts[0], "top | bottom")){
-                result = true;
-            } else if (parts.length <= 2) {
-                result = types.any(parts[0], numeric + " | " + xDir);
-                if (result && parts.length > 1) {
-                    result = types.any(parts[1], numeric + " | " + yDir);
-                }
-            } else if (parts.length >= 2 && parts.length <= 4) {
-                result = types.any(parts[0], xDir);
-                if (result) {
-                    if (types.any(parts[1], numeric)){
-                        result = types.any(parts[2], yDir);
-                        if (result && parts.length == 4) {
-                            result = types.any(parts[3], numeric);
+            if (expression.hasNext()){
+            
+                part = expression.next();
+                
+                if (types.literal(part, "top | bottom")) {
+                    result = true;
+                } else {
+                    
+                    //must be two-part
+                    if (types.any(part, numeric)){
+                        if (expression.hasNext()){
+                            part = expression.next();                            
+                            result = types.any(part, numeric + " | " + yDir);
                         }
-                    } else if (types.any(parts[1], yDir)) {
-                        result = types.any(parts[2], numeric);
-                    } else {
-                        result = false;
-                    }
-                }
+                    } else if (types.any(part, xDir)){
+                        if (expression.hasNext()){
+                            part = expression.next();
+                            
+                            //two- or three-part
+                            if (types.any(part, yDir)){
+                                 result = true;
+                          
+                                if (expression.hasNext() && types.any(expression.peek(), numeric)) {
+                                    expression.next();
+                                } 
+
+                            } else if (types.any(part, numeric)){
+                            
+                                //could also be two-part, so check the next part
+                                if (expression.hasNext() && types.any(expression.peek(), yDir)){
+                                        expression.next();  //skip, already tested
+                                        part = expression.next();
+                                        
+                                        if (expression.hasNext() && types.any(expression.peek(), numeric)){
+                                            expression.next();
+                                            result = true;
+                                        } else {
+                                            result = true;
+                                        }
+                                   
+                                } else {
+                                    result = true;  //it's two-part
+                                }
+                            }
+                        }
+                    }                                 
+                }            
             }
+            
+            return result;
+        },
+
+        "<bg-size>": function(value){
+            //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
+            
+            var parts   = value.parts,
+                types   = Validation.types,
+                result  = false;
+                
+            if (parts.length == 1 && types.literal(parts[0], "cover | contain")){
+                result = true;
+            } else if (parts.length <= 2){
+                result = types.any(parts[0], "<length> | <percentage> | auto");
+                if (result && parts.length > 1){
+                    result = types.any(parts[1], "<length> | <percentage> | auto");
+                }
+            }            
             
             return result;
         }
     
+
+    
     }
+    
+    
 
 };

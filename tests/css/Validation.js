@@ -119,12 +119,15 @@
             "10% top",
             "left 10px bottom",
             "right top 5%",
-            "center 3em center 10%"
+            "center 3em center 10%",
+            "top, bottom",
+            "left 10px, left 10px",
+            "right top 5%, left 10px bottom"
         ],
         
         invalid: {
             "foo"               : "Expected <bg-position> but found 'foo'.",
-            "left center right" : "Expected <bg-position> but found 'left center right'."
+            "left center right" : "Expected <bg-position> but found 'right'."
             
         }  
     }));   

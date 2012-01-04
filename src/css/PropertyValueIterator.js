@@ -33,6 +33,13 @@ function PropertyValueIterator(value){
      */
     this._marks = [];
     
+    /**
+     * Holds the original property value.
+     * @type parserlib.css.PropertyValue
+     * @property value
+     */
+    this.value = value;
+    
 }
 
 /**

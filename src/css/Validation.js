@@ -136,17 +136,44 @@ var Validation = {
 
     types: {
     
-        any: function(part, spec) {
-            var types = spec.split(/\s\|\s/g),
-                result = false,
+        any: function(expression, spec) {
+            var types   = spec.split(/\s\|\s/g),
+                result  = false,
+                value   = expression.value,
                 i, len;
                 
             for (i=0, len=types.length; i < len && !result; i++){
                 if (this[types[i]]){
-                    result = this[types[i]](part);
+                    result = this.oneType(expression);
                 } else {
-                    result = this.literal(part, types[i]);
+                    result = this.oneLiteral(expression, types[i]);
                 }
+            }
+            
+            if (!result) {                
+                throw new ValidationError("Expected " + spec + " but found '" + value + "'.", value.line, value.col);            
+            }
+            
+            return result;
+        },
+        
+        oneType: function(expression, type) {
+            var part = expression.peek(),
+                result = this[type](part);
+                
+            if (result) {
+                expression.next();
+            }
+            
+            return result;
+        },
+        
+        oneLiteral: function(expression, spec) {
+            var part = expression.peek(),
+                result = this.literal(part, spec);
+                
+            if (result) {
+                expression.next();
             }
             
             return result;
@@ -186,7 +213,7 @@ var Validation = {
         },
         
         //specific identifiers
-        "literal": function(part, options){
+        literal: function(part, options){
             var text = part.text.toString().toLowerCase(),
                 args = options.split(" | "),
                 i, len, found = false;
@@ -434,7 +461,7 @@ var Validation = {
         // Properties
         //---------------------------------------------------------------------
         
-        singleProperty: function ( type, value, expression, partial ) {
+        singleProperty: function ( types, value, expression, partial ) {
             //so ashamed...
             expression  = expression || new PropertyValueIterator(value);
             

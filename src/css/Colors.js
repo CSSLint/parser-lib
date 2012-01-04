@@ -67,7 +67,7 @@ var Colors = {
     lightcoral      :"#f08080",
     lightcyan       :"#e0ffff",
     lightgoldenrodyellow  :"#fafad2",
-    lightgrey       :"#d3d3d3",
+    lightgray       :"#d3d3d3",
     lightgreen      :"#90ee90",
     lightpink       :"#ffb6c1",
     lightsalmon     :"#ffa07a",

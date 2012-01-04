@@ -1,3 +1,14 @@
+January 4, 2012 - v0.1.1
+
+* Changed 'grey' to 'gray' (Nicholas C. Zakas)
+* Added validation for border-*-radius properties (Nicholas C. Zakas)
+* Validation for box-shadow (Nicholas C. Zakas)
+* Complex property validation actually working for background-position and background-size (Nicholas C. Zakas)
+* background-position validation now working 100% (Nicholas C. Zakas)
+* First complex property validated (Nicholas C. Zakas)
+* Refactored validation for easier maintenance (Nicholas C. Zakas)
+
+
 November 28, 2011 - v0.1.0
 
 * Added tests (Nicholas C. Zakas)
@@ -154,6 +165,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

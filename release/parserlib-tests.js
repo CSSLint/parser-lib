@@ -2417,6 +2417,34 @@
     }));    
 
     suite.add(new ValidationTestCase({
+        property: "border-bottom-width",
+        
+        valid: [
+            "1px",
+            "1em"            
+        ],
+        
+        invalid: {
+            "1px 1px 1px 1px 1px" : "Expected a max of 1 property value(s) but found 5.",
+            "foo" : "Expected <border-width> but found 'foo'."
+        }  
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-style",
+        
+        valid: [
+            "solid",
+            "none"            
+        ],
+        
+        invalid: {
+            "1px" : "Expected <border-style> but found '1px'.",
+            "foo" : "Expected <border-style> but found 'foo'."
+        }  
+    }));    
+
+    suite.add(new ValidationTestCase({
         property: "box-shadow",
         
         valid: [
@@ -2426,6 +2454,7 @@
             "10px 10px",
             "inset 2px 2px 2px 2px black",
             "2px 2px 2px 2px black inset",
+            "#ccc 3px 3px 3px inset",
             "10px 10px #888, -10px -10px #f4f4f4, 0px 0px 5px 5px #cc6600"
         ],
         

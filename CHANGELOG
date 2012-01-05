@@ -1,3 +1,9 @@
+January 5, 2012 - v0.1.3
+
+* Fixed some validation issues (Nicholas C. Zakas)
+* Release 0.1.2 fixes validation issues (Nicholas C. Zakas)
+
+
 January 4, 2012 - v0.1.2
 
 
@@ -170,6 +176,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

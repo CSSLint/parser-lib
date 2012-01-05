@@ -375,6 +375,7 @@ var Validation = {
             //inset? && [ <length>{2,4} && <color>? ]
             var result  = false,
                 inset   = false,
+                color   = false,
                 count   = 0,
                 part;
                 
@@ -387,6 +388,14 @@ var Validation = {
                     inset = true;
                 }
                 
+                if (part) {
+                    if (this["<color>"](part)) {
+                        expression.next();
+                        part = expression.peek();
+                        color = true;
+                    }
+                }                
+                
                 while (part && this["<length>"](part) && count < 4) {
                     count++;
                     expression.next();                    
@@ -395,7 +404,7 @@ var Validation = {
                 
                 
                 if (part) {
-                    if (this["<color>"](part)) {
+                    if (this["<color>"](part) && !color) {
                         expression.next();
                         part = expression.peek();
                     }

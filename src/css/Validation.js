@@ -118,7 +118,7 @@ var Validation = {
                         if (literals.length) {
                             msg.push("one of (" + literals.join(" | ") + ")");
                         }
-                        throw new ValidationError("Expected " + msg.join(" or ") + " but found '" + part + "'.", value.line, value.col);
+                        throw new ValidationError("Expected " + (msg.join(" or ") || "end of value") + " but found '" + part + "'.", value.line, value.col);
                     }
                     
                     
@@ -127,9 +127,9 @@ var Validation = {
             }
             
             //for groups, make sure all items are there
-            if (group && group.total != types.length){
-                throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
-            }
+            //if (group && group.total != types.length){
+            //    throw new ValidationError("Expected all of (" + types.join(", ") + ") but found '" + value + "'.", value.line, value.col);
+            //}
         }
 
     },
@@ -374,6 +374,7 @@ var Validation = {
         "<shadow>": function(expression) {
             //inset? && [ <length>{2,4} && <color>? ]
             var result  = false,
+                inset   = false,
                 count   = 0,
                 part;
                 
@@ -383,6 +384,7 @@ var Validation = {
                 if (this.literal(part, "inset")){
                     expression.next();
                     part = expression.peek();
+                    inset = true;
                 }
                 
                 while (part && this["<length>"](part) && count < 4) {
@@ -395,8 +397,13 @@ var Validation = {
                 if (part) {
                     if (this["<color>"](part)) {
                         expression.next();
+                        part = expression.peek();
                     }
                 }
+                
+                if (part && this.literal(part, "inset") && !inset){
+                    expression.next();
+                }                
                 
                 result = (count >= 2 && count <= 4);
             

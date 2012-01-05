@@ -185,12 +185,15 @@
         valid: [
             "1px solid black",
             "black 1px solid",
-            "solid black 1px"
+            "solid black 1px",
+            "none",
+            "1px solid",
+            "solid black"
         ],
-        
+
         invalid: {
-            "1px" : "Expected all of (<border-width>, <border-style>, <color>) but found '1px'.",
-            "1px solid" : "Expected all of (<border-width>, <border-style>, <color>) but found '1px solid'."
+            "foo" : "Expected <border-width> or <border-style> or <color> but found 'foo'.",
+            "1px solid black 1px" : "Expected end of value but found '1px'."
         }  
     }));    
    
@@ -295,6 +298,7 @@
             "0 0 10px #000000",
             "10px 10px",
             "inset 2px 2px 2px 2px black",
+            "2px 2px 2px 2px black inset",
             "10px 10px #888, -10px -10px #f4f4f4, 0px 0px 5px 5px #cc6600"
         ],
         
@@ -303,7 +307,8 @@
             "1px"           : "Expected <shadow> but found '1px'.",
             "1em red"       : "Expected <shadow> but found '1em red'.",
             "1px 1px redd"  : "Expected end of value but found 'redd'.",
-            "none 1px"      : "Expected end of value but found '1px'."
+            "none 1px"      : "Expected end of value but found '1px'.",
+            "inset 2px 2px 2px 2px black inset" : "Expected end of value but found 'inset'."
         }  
     }));    
     

@@ -52,6 +52,15 @@ PropertyValueIterator.prototype.count = function(){
 };
 
 /**
+ * Indicates if the iterator is positioned at the first item.
+ * @return {Boolean} True if positioned at first item, false if not.
+ * @method isFirst
+ */
+PropertyValueIterator.prototype.isFirst = function(){
+    return this._i === 0;
+};
+
+/**
  * Indicates if there are more parts of the property value.
  * @return {Boolean} True if there are more parts, false if not.
  * @method hasNext
@@ -90,6 +99,17 @@ PropertyValueIterator.prototype.peek = function(count){
  */
 PropertyValueIterator.prototype.next = function(){
     return this.hasNext() ? this._parts[this._i++] : null;
+};
+
+/**
+ * Returns the previous part of the property value or null if there is no
+ * previous part.
+ * @return {parserlib.css.PropertyValuePart} The previous part of the 
+ * property value or null if there is no next part.
+ * @method previous
+ */
+PropertyValueIterator.prototype.previous = function(){
+    return this._i > 0 ? this._parts[--this._i] : null;
 };
 
 /**

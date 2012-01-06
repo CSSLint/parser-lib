@@ -2200,7 +2200,7 @@
         ],
         
         invalid: {
-            "1px" : "Expected <ident> or one of (none) but found '1px'."
+            "1px" : "Expected (none | <ident>) but found '1px'."
         }   
     }));    
     
@@ -2214,7 +2214,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected <attachment> but found 'foo'."
+            "foo" : "Expected (<attachment>) but found 'foo'."
         }   
     }));    
     
@@ -2229,8 +2229,8 @@
         ],
         
         invalid: {
-            "foo" : "Expected <bg-image> but found 'foo'.",
-            "url(foo.png)," : "Expected end of line but found ','."
+            "foo" : "Expected (<bg-image>) but found 'foo'.",
+            "url(foo.png)," : "Expected end of value but found ','."
         }  
     }));   
     
@@ -2253,7 +2253,7 @@
         ],
         
         invalid: {
-            "foo"               : "Expected <bg-position> but found 'foo'.",
+            "foo"               : "Expected (<bg-position>) but found 'foo'.",
             "left center right" : "Expected end of value but found 'right'."
             
         }  
@@ -2278,7 +2278,7 @@
         ],
         
         invalid: {
-            "foo"               : "Expected <bg-size> but found 'foo'.",
+            "foo"               : "Expected (<bg-size>) but found 'foo'.",
             "1px 1px 1px"       : "Expected end of value but found '1px'."
             
         }  
@@ -2300,8 +2300,8 @@
         ],
         
         invalid: {
-            "foo"               : "Expected <repeat-style> but found 'foo'.",
-            "no-repeat round 1px" : "Expected end of value but found '1px'."
+            "foo"               : "Expected (<repeat-style>) but found 'foo'.",
+            "no-repeat round 1px" : "Expected (<repeat-style>) but found 'no-repeat round 1px'."
             
         }  
     }));   
@@ -2319,7 +2319,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected <border-width> or <border-style> or <color> but found 'foo'.",
+            "foo" : "Expected (<border-width> || <border-style> || <color>) but found 'foo'.",
             "1px solid black 1px" : "Expected end of value but found '1px'."
         }  
     }));    
@@ -2335,8 +2335,8 @@
         ],
         
         invalid: {
-            "foo" : "Expected <color> or one of (inherit) but found 'foo'.",
-            "invert" : "Expected <color> or one of (inherit) but found 'invert'.",
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
         }
     }));
 
@@ -2350,7 +2350,7 @@
         ],
         
         invalid: {
-            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));    
@@ -2365,7 +2365,7 @@
         ],
         
         invalid: {
-            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));    
@@ -2380,7 +2380,7 @@
         ],
         
         invalid: {
-            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));    
@@ -2395,7 +2395,7 @@
         ],
         
         invalid: {
-            "foo"       : "Expected <x-one-radius> but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));    
@@ -2411,8 +2411,8 @@
         ],
         
         invalid: {
-            "1px 1px 1px 1px 1px" : "Expected a max of 4 property value(s) but found 5.",
-            "foo" : "Expected <border-width> but found 'foo'."
+            "1px 1px 1px 1px 5px" : "Expected end of value but found '5px'.",
+            "foo" : "Expected (<border-width>) but found 'foo'."
         }  
     }));    
 
@@ -2425,8 +2425,8 @@
         ],
         
         invalid: {
-            "1px 1px 1px 1px 1px" : "Expected a max of 1 property value(s) but found 5.",
-            "foo" : "Expected <border-width> but found 'foo'."
+            "1px 1px 1px 1px 1px" : "Expected end of value but found '1px'.",
+            "foo" : "Expected (<border-width>) but found 'foo'."
         }  
     }));    
 
@@ -2439,8 +2439,36 @@
         ],
         
         invalid: {
-            "1px" : "Expected <border-style> but found '1px'.",
-            "foo" : "Expected <border-style> but found 'foo'."
+            "1px" : "Expected (<border-style>) but found '1px'.",
+            "foo" : "Expected (<border-style>) but found 'foo'."
+        }  
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-width",
+        
+        valid: [
+            "1px",
+            "1em"            
+        ],
+        
+        invalid: {
+            "1px 5px 1px 1px 1px" : "Expected end of value but found '5px'.",
+            "foo" : "Expected (<border-width>) but found 'foo'."
+        }  
+    }));    
+
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-style",
+        
+        valid: [
+            "solid",
+            "none"            
+        ],
+        
+        invalid: {
+            "1px" : "Expected (<border-style>) but found '1px'.",
+            "foo" : "Expected (<border-style>) but found 'foo'."
         }  
     }));    
 
@@ -2459,9 +2487,9 @@
         ],
         
         invalid: {
-            "foo"           : "Expected <shadow> but found 'foo'.",
-            "1px"           : "Expected <shadow> but found '1px'.",
-            "1em red"       : "Expected <shadow> but found '1em red'.",
+            "foo"           : "Expected (<shadow>) but found 'foo'.",
+            "1px"           : "Expected (<shadow>) but found '1px'.",
+            "1em red"       : "Expected (<shadow>) but found '1em red'.",
             "1px 1px redd"  : "Expected end of value but found 'redd'.",
             "none 1px"      : "Expected end of value but found '1px'.",
             "inset 2px 2px 2px 2px black inset" : "Expected end of value but found 'inset'."
@@ -2479,8 +2507,8 @@
         ],
         
         invalid: {
-            "foo" : "Expected <color> or one of (inherit) but found 'foo'.",
-            "invert" : "Expected <color> or one of (inherit) but found 'invert'.",
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
         }  
     }));
 
@@ -2494,7 +2522,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected <length> or <percentage> or one of (inherit) but found 'foo'."
+            "foo" : "Expected (<length> | <percentage> | inherit) but found 'foo'."
         }  
     }));
 
@@ -2506,7 +2534,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected <number> or one of (inherit) but found 'foo'."
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
         }  
     }));
 
@@ -2521,7 +2549,7 @@
         ],
         
         invalid: {
-            "foo" : "Expected <integer> or one of (auto | inherit) but found 'foo'."
+            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
         }
     }));
 

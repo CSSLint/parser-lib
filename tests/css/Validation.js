@@ -91,7 +91,7 @@
         
         invalid: {
             "behind behind" : "Expected end of value but found 'behind'.",
-            "foo" : "Expected <'azimuth'> but found 'foo'."
+            "foo" : "Expected (<'azimuth'>) but found 'foo'."
         }   
     }));    
     
@@ -124,6 +124,7 @@
             "url(foo.png)," : "Expected end of value but found ','."
         }  
     }));   
+ 
     
     suite.add(new ValidationTestCase({
         property: "background-position",
@@ -260,6 +261,24 @@
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));    
+    
+    suite.add(new ValidationTestCase({
+        property: "border-image-slice",
+        
+        valid: [
+            "5",
+            "50% 60%",
+            "10 15 20 23",
+            "fill",
+            "10 20 fill",
+            "fill 25% 10"
+        ],
+        
+        invalid: {
+            "foo" : "Expected ([<number> | <percentage>]{1,4} && fill?) but found 'foo'.",
+            "50% 75% 85% 95% 105%" : "Expected end of value but found '105%'."
+        }  
+    }));     
 
     suite.add(new ValidationTestCase({
         property: "border-top-left-radius",

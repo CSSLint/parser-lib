@@ -42,8 +42,7 @@ var Validation = {
 
     },
     
-    
-    singleProperty: function(types, expression, max) {
+    singleProperty: function(types, expression, max, partial) {
 
         var result      = false,
             value       = expression.value,
@@ -51,11 +50,9 @@ var Validation = {
             part;
          
         while (expression.hasNext() && count < max) {
+            result = ValidationTypes.isAny(expression, types);
             if (!result) {
-                result = ValidationTypes.isAny(expression, types);
-                if (!result) {
-                    break;
-                }
+                break;
             }
             count++;
         }
@@ -72,7 +69,7 @@ var Validation = {
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
         }          
                  
-    },
+    },    
     
     multiProperty: function (types, expression, comma, max) {
 

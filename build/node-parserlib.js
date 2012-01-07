@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:24:34 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:44:22 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:24:34 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:44:22 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3452,7 +3452,7 @@ var Properties = {
             if (valid) {
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             } else {
-                throw new ValidationError("Expected <'azimuth'> but found '" + part + "'.", part.line, part.col);
+                throw new ValidationError("Expected (<'azimuth'>) but found '" + part + "'.", part.line, part.col);
             }
         }        
     },
@@ -3487,7 +3487,44 @@ var Properties = {
     "border-image"                  : 1,
     "border-image-outset"           : { multi: "<length> | <number>", max: 4 },
     "border-image-repeat"           : { multi: "stretch | repeat | round", max: 2 },
-    "border-image-slice"            : 1,
+    "border-image-slice"            : function(expression) {
+        
+        var valid   = false,
+            numeric = "<number> | <percentage>",
+            fill    = false,
+            count   = 0,
+            max     = 4,
+            part;
+        
+        if (ValidationTypes.isAny(expression, "fill")) {
+            fill = true;
+            valid = true;
+        }
+        
+        while (expression.hasNext() && count < max) {
+            valid = ValidationTypes.isAny(expression, numeric);
+            if (!valid) {
+                break;
+            }
+            count++;
+        }
+        
+        
+        if (!fill) {
+            ValidationTypes.isAny(expression, "fill");
+        } else {
+            valid = true;
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected ([<number> | <percentage>]{1,4} && fill?) but found '" + part + "'.", part.line, part.col);
+            }
+        }         
+    },
     "border-image-source"           : "<image> | none",
     "border-image-width"            : { multi: "<length> | <percentage> | <number> | auto", max: 4 },
     "border-left"                   : "<border-width> || <border-style> || <color>",
@@ -5653,8 +5690,7 @@ var Validation = {
 
     },
     
-    
-    singleProperty: function(types, expression, max) {
+    singleProperty: function(types, expression, max, partial) {
 
         var result      = false,
             value       = expression.value,
@@ -5662,11 +5698,9 @@ var Validation = {
             part;
          
         while (expression.hasNext() && count < max) {
+            result = ValidationTypes.isAny(expression, types);
             if (!result) {
-                result = ValidationTypes.isAny(expression, types);
-                if (!result) {
-                    break;
-                }
+                break;
             }
             count++;
         }
@@ -5683,7 +5717,7 @@ var Validation = {
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
         }          
                  
-    },
+    },    
     
     multiProperty: function (types, expression, comma, max) {
 

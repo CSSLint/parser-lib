@@ -2205,6 +2205,24 @@
     }));    
     
     suite.add(new ValidationTestCase({
+        property: "azimuth",
+        
+        valid: [
+            "behind",
+            "250deg",
+            "far-right behind",
+            "behind far-right",
+            "rightwards",
+            "leftwards"
+        ],
+        
+        invalid: {
+            "behind behind" : "Expected end of value but found 'behind'.",
+            "foo" : "Expected <'azimuth'> but found 'foo'."
+        }   
+    }));    
+    
+    suite.add(new ValidationTestCase({
         property: "background-attachment",
         
         valid: [

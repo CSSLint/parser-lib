@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 02:54:18 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:24:34 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 02:54:18 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:24:34 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3426,7 +3426,36 @@ var Properties = {
     "animation-play-state"          : { multi: "running | paused", comma: true },
     "animation-timing-function"     : 1,
     "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
-    "azimuth"                       : 1,
+    "azimuth"                       : function (expression) {
+        var simple      = "<angle> | leftwards | rightwards | inherit",
+            direction   = "left-side | far-left | left | center-left | center | center-right | right | far-right | right-side",
+            behind      = false,
+            valid       = false,
+            part;
+        
+        if (!ValidationTypes.isAny(expression, simple)) {
+            if (ValidationTypes.isAny(expression, "behind")) {
+                behind = true;
+                valid = true;
+            }
+            
+            if (ValidationTypes.isAny(expression, direction)) {
+                valid = true;
+                if (!behind) {
+                    ValidationTypes.isAny(expression, "behind");
+                }
+            }
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected <'azimuth'> but found '" + part + "'.", part.line, part.col);
+            }
+        }        
+    },
     
     //B
     "backface-visibility"           : "visible | hidden",
@@ -3436,9 +3465,9 @@ var Properties = {
     "background-color"              : "<color> | inherit",
     "background-image"              : { multi: "<bg-image>", comma: true },
     "background-origin"             : { multi: "<box>", comma: true },
-    "background-position"           : { multi: "<bg-position>", comma: true, complex: true },
-    "background-repeat"             : { multi: "<repeat-style>", complex: true },
-    "background-size"               : { multi: "<bg-size>", comma: true, complex: true },
+    "background-position"           : { multi: "<bg-position>", comma: true },
+    "background-repeat"             : { multi: "<repeat-style>" },
+    "background-size"               : { multi: "<bg-size>", comma: true },
     "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
     "binding"                       : 1,
     "bleed"                         : "<length>",

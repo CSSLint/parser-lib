@@ -281,6 +281,23 @@
     }));     
 
     suite.add(new ValidationTestCase({
+        property: "border-radius",
+        
+        valid: [
+            "5px",
+            "25%",
+            "5px 25%",
+            "5px 25% / 7px 27%",
+            "1px 2px 3px 4px / 5px 6px 7px 8px"
+        ],
+        
+        invalid: {
+            "foo"   : "Expected (<'border-radius'>) but found 'foo'.",
+            "5px x" : "Expected (<'border-radius'>) but found 'x'.",
+        }
+    }));    
+
+    suite.add(new ValidationTestCase({
         property: "border-top-left-radius",
         
         valid: [

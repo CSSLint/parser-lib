@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:44:22 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:54:05 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:44:22 */
+/* Version v@VERSION@, Build time: 6-January-2012 04:54:05 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3531,7 +3531,40 @@ var Properties = {
     "border-left-color"             : "<color> | inherit",
     "border-left-style"             : "<border-style>",
     "border-left-width"             : "<border-width>",
-    "border-radius"                 : 1,
+    "border-radius"                 : function(expression) {
+        
+        var valid   = false,
+            numeric = "<length> | <percentage>",
+            slash   = false,
+            fill    = false,
+            count   = 0,
+            max     = 8,
+            part;
+
+        while (expression.hasNext() && count < max) {
+            valid = ValidationTypes.isAny(expression, numeric);
+            if (!valid) {
+            
+                if (expression.peek() == "/" && count > 1 && !slash) {
+                    slash = true;
+                    max = count + 5;
+                    expression.next();
+                } else {
+                    break;
+                }
+            }
+            count++;
+        }
+        
+        if (expression.hasNext()) {
+            part = expression.next();
+            if (valid) {
+                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+            } else {
+                throw new ValidationError("Expected (<'border-radius'>) but found '" + part + "'.", part.line, part.col);
+            }
+        }         
+    },
     "border-right"                  : "<border-width> || <border-style> || <color>",
     "border-right-color"            : "<color> | inherit",
     "border-right-style"            : "<border-style>",

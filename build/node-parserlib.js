@@ -21,10 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:54:05 */
+/* Version v@VERSION@, Build time: 18-January-2012 05:14:01 */
 var parserlib = {};
 (function(){
-
 
 /**
  * A generic base to inherit from for any object
@@ -896,8 +895,6 @@ TokenStreamBase.prototype = {
 };
 
 
-
-
 parserlib.util = {
 StringReader: StringReader,
 SyntaxError : SyntaxError,
@@ -906,8 +903,6 @@ EventTarget : EventTarget,
 TokenStreamBase : TokenStreamBase
 };
 })();
-
-
 /* 
 Parser-Lib
 Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
@@ -931,14 +926,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:54:05 */
+/* Version v@VERSION@, Build time: 18-January-2012 05:14:01 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
 StringReader = parserlib.util.StringReader,
 SyntaxError = parserlib.util.SyntaxError,
 SyntaxUnit  = parserlib.util.SyntaxUnit;
-
 
 var Colors = {
     aliceblue       :"#f0f8ff",
@@ -1120,7 +1114,6 @@ function Combinator(text, line, col){
 Combinator.prototype = new SyntaxUnit();
 Combinator.prototype.constructor = Combinator;
 
-
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a media feature, such as max-width:500.
@@ -1152,7 +1145,6 @@ function MediaFeature(name, value){
 
 MediaFeature.prototype = new SyntaxUnit();
 MediaFeature.prototype.constructor = MediaFeature;
-
 
 /*global SyntaxUnit, Parser*/
 /**
@@ -1196,7 +1188,6 @@ function MediaQuery(modifier, mediaType, features, line, col){
 
 MediaQuery.prototype = new SyntaxUnit();
 MediaQuery.prototype.constructor = MediaQuery;
-
 
 /*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
     PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
@@ -3569,6 +3560,7 @@ var Properties = {
     "border-right-color"            : "<color> | inherit",
     "border-right-style"            : "<border-style>",
     "border-right-width"            : "<border-width>",
+    "border-spacing"                : { multi: "<length> | inherit", max: 2 },
     "border-style"                  : { multi: "<border-style>", max: 4 },
     "border-top"                    : "<border-width> || <border-style> || <color>",
     "border-top-color"              : "<color> | inherit",
@@ -3888,7 +3880,6 @@ PropertyName.prototype.constructor = PropertyName;
 PropertyName.prototype.toString = function(){
     return (this.hack ? this.hack : "") + this.text;
 };
-
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a CSS property value, meaning that it represents
@@ -3917,7 +3908,6 @@ function PropertyValue(parts, line, col){
 
 PropertyValue.prototype = new SyntaxUnit();
 PropertyValue.prototype.constructor = PropertyValue;
-
 
 /*global SyntaxUnit, Parser*/
 /**
@@ -4043,7 +4033,6 @@ PropertyValueIterator.prototype.restore = function(){
         this._i = this._marks.pop();
     }
 };
-
 
 /*global SyntaxUnit, Parser, Colors*/
 /**
@@ -4265,7 +4254,6 @@ function Selector(parts, line, col){
 Selector.prototype = new SyntaxUnit();
 Selector.prototype.constructor = Selector;
 
-
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a single part of a selector string, meaning a single set of
@@ -4308,7 +4296,6 @@ function SelectorPart(elementName, modifiers, text, line, col){
 SelectorPart.prototype = new SyntaxUnit();
 SelectorPart.prototype.constructor = SelectorPart;
 
-
 /*global SyntaxUnit, Parser*/
 /**
  * Represents a selector modifier string, meaning a class name, element name,
@@ -4344,7 +4331,6 @@ function SelectorSubPart(text, type, line, col){
 
 SelectorSubPart.prototype = new SyntaxUnit();
 SelectorSubPart.prototype.constructor = SelectorSubPart;
-
 
 /*global Pseudos, SelectorPart*/
 /**
@@ -4469,7 +4455,6 @@ Specificity.calculate = function(selector){
     
     return new Specificity(0, b, c, d);
 };
-
 /*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
@@ -5470,7 +5455,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     }
 });
 
-
 var Tokens  = [
 
     /*
@@ -5508,7 +5492,7 @@ var Tokens  = [
     //{ name: "ATKEYWORD"},
     
     //CSS3 animations
-    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes" ] },
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-ms-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},
@@ -5675,7 +5659,6 @@ var Tokens  = [
     };
 
 })();
-
 
 
 
@@ -6205,7 +6188,6 @@ var ValidationTypes = {
     }
 };
 
-
 parserlib.css = {
 Colors              :Colors,    
 Combinator          :Combinator,                
@@ -6225,12 +6207,8 @@ ValidationError     :ValidationError
 };
 })();
 
-
-
-
 (function(){
 for(var prop in parserlib){
 exports[prop] = parserlib[prop];                 
 }
 })();
-

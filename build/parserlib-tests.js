@@ -2420,7 +2420,24 @@
             "foo"   : "Expected (<'border-radius'>) but found 'foo'.",
             "5px x" : "Expected (<'border-radius'>) but found 'x'.",
         }
-    }));    
+    }));
+    
+    suite.add(new ValidationTestCase({
+        property: "border-spacing",
+        
+        valid: [
+            "0",
+            "3px",
+            "2em",
+            "0.4em 12px",
+            "inherit"            
+        ],
+        
+        invalid: {
+            "1px 0.4em 1px" : "Expected end of value but found '1px'.",
+            "foo" : "Expected (<length> | inherit) but found 'foo'."
+        }  
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border-top-left-radius",
@@ -2522,7 +2539,7 @@
             "1px" : "Expected (<border-style>) but found '1px'.",
             "foo" : "Expected (<border-style>) but found 'foo'."
         }  
-    }));    
+    }));
 
     suite.add(new ValidationTestCase({
         property: "box-shadow",

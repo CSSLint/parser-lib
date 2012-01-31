@@ -96,8 +96,12 @@ var ValidationTypes = {
         },
                 
         "<bg-image>": function(part){
-            return this["<image>"](part) || part == "none";
+            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
         },        
+        
+        "<gradient>": function(part) {
+            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial|linear)\-gradient/i.test(part);
+        },
         
         "<box>": function(part){
             return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");

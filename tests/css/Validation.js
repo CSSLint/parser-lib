@@ -116,7 +116,13 @@
             "none",
             "url(foo.png)",
             "url(foo.png), none",
-            "url(foo.png), url(bar.png)"
+            "url(foo.png), url(bar.png)",
+            "linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
+            "radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
+            "repeating-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
+            "repeating-radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
+            "-ms-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%), url(foo.png)"
+            
         ],
         
         invalid: {

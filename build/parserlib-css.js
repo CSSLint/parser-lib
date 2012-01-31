@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 6-January-2012 04:54:05 */
+/* Version v@VERSION@, Build time: 31-January-2012 10:45:03 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -5070,8 +5070,12 @@ var ValidationTypes = {
         },
                 
         "<bg-image>": function(part){
-            return this["<image>"](part) || part == "none";
+            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
         },        
+        
+        "<gradient>": function(part) {
+            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial|linear)\-gradient/i.test(part);
+        },
         
         "<box>": function(part){
             return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");

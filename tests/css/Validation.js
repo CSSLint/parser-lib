@@ -78,6 +78,20 @@
     }));    
     
     suite.add(new ValidationTestCase({
+        property: "animation-duration",
+        
+        valid: [
+            "1s",
+            "1s, 1s"
+        ],
+        
+        invalid: {        
+            "0" : "Expected (<time>) but found '0'.",
+            "1px" : "Expected (<time>) but found '1px'."
+        }   
+    }));    
+    
+    suite.add(new ValidationTestCase({
         property: "azimuth",
         
         valid: [

@@ -174,6 +174,10 @@ var ValidationTypes = {
         
         "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
+        },
+        
+        "<time>": function(part) {
+            return part.type == "time";
         }
     },
     

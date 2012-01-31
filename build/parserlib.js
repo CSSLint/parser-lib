@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 31-January-2012 10:45:03 */
+/* Version v@VERSION@, Build time: 31-January-2012 10:51:02 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 31-January-2012 10:45:03 */
+/* Version v@VERSION@, Build time: 31-January-2012 10:51:02 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3425,6 +3425,36 @@ var Properties = {
     "animation-name"                : { multi: "none | <ident>", comma: true },
     "animation-play-state"          : { multi: "running | paused", comma: true },
     "animation-timing-function"     : 1,
+    
+    //vendor prefixed
+    "-moz-animation-delay"               : { multi: "<time>", comma: true },
+    "-moz-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-moz-animation-duration"            : { multi: "<time>", comma: true },
+    "-moz-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-moz-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-moz-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-ms-animation-delay"               : { multi: "<time>", comma: true },
+    "-ms-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-ms-animation-duration"            : { multi: "<time>", comma: true },
+    "-ms-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-ms-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-ms-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-webkit-animation-delay"               : { multi: "<time>", comma: true },
+    "-webkit-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-webkit-animation-duration"            : { multi: "<time>", comma: true },
+    "-webkit-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-webkit-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-webkit-animation-play-state"          : { multi: "running | paused", comma: true },
+    
+    "-o-animation-delay"               : { multi: "<time>", comma: true },
+    "-o-animation-direction"           : { multi: "normal | alternate", comma: true },
+    "-o-animation-duration"            : { multi: "<time>", comma: true },
+    "-o-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
+    "-o-animation-name"                : { multi: "none | <ident>", comma: true },
+    "-o-animation-play-state"          : { multi: "running | paused", comma: true },        
+    
     "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
     "azimuth"                       : function (expression) {
         var simple      = "<angle> | leftwards | rightwards | inherit",
@@ -6058,6 +6088,10 @@ var ValidationTypes = {
         
         "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
+        },
+        
+        "<time>": function(part) {
+            return part.type == "time";
         }
     },
     

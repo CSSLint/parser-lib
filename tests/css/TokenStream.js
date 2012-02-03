@@ -473,7 +473,87 @@
             
         }        
     }));
+    
+    //-------------------------------------------------------------------------
+    // Test line/column numbers
+    //-------------------------------------------------------------------------
+    var newSuite = new YUITest.TestSuite("Interface Tests");
+    newSuite.add(new YUITest.TestCase({
+    
+        name: "Test line/column numbers",
+        
+        "Two identifiers in a row should have correct line and column numbers": function() {
+            var tokenStream = new TokenStream("foo bar", CSSTokens),
+                tt,
+                token;
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.IDENT, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(1, token.startCol);
+            Assert.areEqual(4, token.endCol);
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.S, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(4, token.startCol);
+            Assert.areEqual(5, token.endCol);
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.IDENT, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(5, token.startCol);
+            Assert.areEqual(8, token.endCol);            
+        },
+        
+        "An identifier followed by a dot and ident should have correct line and column numbers": function() {
+            var tokenStream = new TokenStream("foo .bar", CSSTokens),
+                tt,
+                token;
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.IDENT, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(1, token.startCol);
+            Assert.areEqual(4, token.endCol);
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.S, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(4, token.startCol);
+            Assert.areEqual(5, token.endCol);
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.DOT, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(5, token.startCol);
+            Assert.areEqual(6, token.endCol);
+            
+            tt = tokenStream.get();
+            token = tokenStream.token();
+            Assert.areEqual(CSSTokens.IDENT, tt);
+            Assert.areEqual(1, token.startLine);
+            Assert.areEqual(1, token.endLine);
+            Assert.areEqual(6, token.startCol);
+            Assert.areEqual(9, token.endCol);            
+        }        
+    
+    }));
+    
 
     YUITest.TestRunner.add(suite);
+    YUITest.TestRunner.add(newSuite);
 
 })();

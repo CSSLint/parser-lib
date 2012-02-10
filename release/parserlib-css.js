@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.1.4, Build time: 31-January-2012 10:55:24 */
+/* Version v0.1.5, Build time: 10-February-2012 12:59:26 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2689,6 +2689,7 @@ var Properties = {
     "border-right-color"            : "<color> | inherit",
     "border-right-style"            : "<border-style>",
     "border-right-width"            : "<border-width>",
+    "border-spacing"                : { multi: "<length> | inherit", max: 2 },
     "border-style"                  : { multi: "<border-style>", max: 4 },
     "border-top"                    : "<border-width> || <border-style> || <color>",
     "border-top-color"              : "<color> | inherit",
@@ -4628,7 +4629,7 @@ var Tokens  = [
     //{ name: "ATKEYWORD"},
     
     //CSS3 animations
-    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes" ] },
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-ms-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},

@@ -1,3 +1,14 @@
+February 10, 2012 - v0.1.5
+
+* Cleanup failing test (Nicholas C. Zakas)
+* Merge fixes (Nicholas C. Zakas)
+* Merge fixes (Nicholas C. Zakas)
+* Added creation of npm package (Nicholas C. Zakas)
+* Added some tests (Nicholas C. Zakas)
+* tests for border-spacing (Anders Ytterström)
+* support for border-spacing and -moz-keyframes (Anders Ytterström)
+
+
 January 31, 2012 - v0.1.4
 
 * Ensure time is checked correctly (Nicholas C. Zakas)
@@ -188,6 +199,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

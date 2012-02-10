@@ -186,6 +186,7 @@ var Properties = {
     "border-right-color"            : "<color> | inherit",
     "border-right-style"            : "<border-style>",
     "border-right-width"            : "<border-width>",
+    "border-spacing"                : { multi: "<length> | inherit", max: 2 },
     "border-style"                  : { multi: "<border-style>", max: 4 },
     "border-top"                    : "<border-width> || <border-style> || <color>",
     "border-top-color"              : "<color> | inherit",

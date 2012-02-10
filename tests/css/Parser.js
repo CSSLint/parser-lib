@@ -1495,26 +1495,6 @@
                 Assert.isTrue(event.important, "Important should be true.");
             });
             var result = parser.parse(".foo {\n    color: #fff !important;\n}");
-        },
-        
-        "Test two rules on same line": function() {
-            var parser = new Parser({ strict: true });
-            
-            parser.addListener("startrule", function(event) {
-                var selectors = event.selectors;
-                
-                if (selectors[0].text == "a") {
-                    Assert.areEqual(1, selectors[0].line);
-                    Assert.areEqual(1, selectors[0].col);
-                } else if (selectors[0].text == ".foo") {
-                    Assert.areEqual(1, selectors[0].line);
-                    Assert.areEqual(34, selectors[0].col);
-                } else {
-                    Assert.fail("Unexpected.");
-                }
-            });
-            
-            var result = parser.parse("a {\n  text-decoration: none;\n} .foo {\n  color: red;\n}");
         }
     }));
 

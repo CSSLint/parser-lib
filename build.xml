@@ -6,6 +6,7 @@
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />
     <property name="tests.dir" value="./tests" />
+    <property name="npm.dir" value="./npm" />
     
     <!-- the directories and files to output to -->
     <property name="lib.dir" value="./lib" />
@@ -13,6 +14,7 @@
     <!-- the directories and files to output to -->
     <property name="build.dir" value="./build" />
     <property name="release.dir" value="./release" />
+    <property name="build.npm.dir" value="${build.dir}/npm" />
     
     <!-- output filenames -->
     <property name="full.build.file" value="parserlib.js"/>
@@ -169,39 +171,9 @@
            
     </target>
     
-    <!-- Build the Node version -->
+   <!-- build the Node.js package -->
     <target name="build.node">
-        <!--<concat destfile="${build.dir}/${node.build.file}"  fixlastline="true">
-            <header trimleading="yes">/* 
-            ${license.text}
-            */
-            </header>
-            <fileset dir="${src.dir}/util" includes="*.js" />
-            <fileset dir="${src.dir}/css" includes="*.js" />
-            <footer trimleading="yes">
-            exports.util = {
-                StringReader: StringReader,
-                SyntaxError : SyntaxError,
-                SyntaxUnit  : SyntaxUnit,
-                EventTarget : EventTarget,
-                TokenStreamBase : TokenStreamBase
-            };
-            exports.css = {
-                Colors              :Colors,    
-                Combinator          :Combinator,                
-                Parser              :Parser,
-                PropertyName        :PropertyName,
-                PropertyValue       :PropertyValue,
-                MediaFeature        :MediaFeature,
-                MediaQuery          :MediaQuery,
-                Selector            :Selector,
-                SelectorPart        :SelectorPart,
-                SelectorSubPart     :SelectorSubPart,
-                TokenStream         :TokenStream,
-                Tokens              :Tokens
-            };
-            </footer>
-        </concat>-->
+    
         <concat destfile="${build.dir}/${node.build.file}" fixlastline="true">
             <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
             <footer trimleading="yes">
@@ -212,7 +184,15 @@
             })();
             </footer>
         </concat>
-    </target>
+        
+       <mkdir dir="${build.npm.dir}"/>
+       <mkdir dir="${build.npm.dir}/lib"/>
+       <copy file="${npm.dir}/package.json" todir="${build.npm.dir}"/>
+       <copy file="${build.dir}/${node.build.file}" todir="${build.npm.dir}/lib"/>
+       
+       <!-- CRLF will cause Node version to break -->
+       <fixcrlf srcdir="${build.dir}" includes="**/*" eol="lf" />
+    </target>    
         
     <!-- build the tests into a single file -->
     <target name="build.tests">    

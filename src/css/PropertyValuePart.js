@@ -43,6 +43,7 @@ function PropertyValuePart(text, line, col){
             case "in":
             case "pt":
             case "pc":
+            case "ch":
                 this.type = "length";
                 break;
                 

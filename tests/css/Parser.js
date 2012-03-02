@@ -971,6 +971,17 @@
             Assert.areEqual("px", result.parts[0].units);
         },
         
+        testDimensionValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("1ch");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type); 
+            Assert.areEqual(1, result.parts[0].value);
+            Assert.areEqual("ch", result.parts[0].units);
+        },
+        
         testPercentageValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("25.4%");

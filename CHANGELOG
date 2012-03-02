@@ -1,3 +1,9 @@
+March 2, 2012 - v0.1.6
+
+* Allow leading semicolon in front of properties (Nicholas C. Zakas)
+* Ensure 'ch' is identifier as a length (Nicholas C. Zakas)
+
+
 February 10, 2012 - v0.1.5
 
 * Cleanup failing test (Nicholas C. Zakas)
@@ -199,6 +205,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

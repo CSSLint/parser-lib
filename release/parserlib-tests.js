@@ -971,6 +971,17 @@
             Assert.areEqual("px", result.parts[0].units);
         },
         
+        testDimensionValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("1ch");
+            
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type); 
+            Assert.areEqual(1, result.parts[0].value);
+            Assert.areEqual("ch", result.parts[0].units);
+        },
+        
         testPercentageValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("25.4%");
@@ -1495,7 +1506,22 @@
                 Assert.isTrue(event.important, "Important should be true.");
             });
             var result = parser.parse(".foo {\n    color: #fff !important;\n}");
-        }
+        },
+        
+        "Test rule with leading semicolon": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("color", event.property.toString());
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
+            });
+            var result = parser.parse(".foo {\n;   color: #fff;\n}");
+        }        
     }));
 
     

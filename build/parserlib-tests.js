@@ -1528,6 +1528,7 @@
     YUITest.TestRunner.add(suite);
 
 })();
+
 (function(){
 
     var Assert = YUITest.Assert, 
@@ -2229,6 +2230,7 @@
     YUITest.TestRunner.add(newSuite);
 
 })();
+
 (function(){
 
     var Assert = YUITest.Assert,    
@@ -2753,6 +2755,7 @@
     YUITest.TestRunner.add(suite);
 
 })();
+
 (function(){
     
     var Assert = YUITest.Assert
@@ -3062,3 +3065,4 @@
     YUITest.TestRunner.add(suite);
 
 })();
+

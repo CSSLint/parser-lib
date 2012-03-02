@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 2-March-2012 02:36:35 */
+/* Version v@VERSION@, Build time: 2-March-2012 02:42:45 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2265,7 +2265,7 @@ Parser.prototype = function(){
                     
                     while(true){
                     
-                        if (readMargins && this._margin()){
+                        if (tokenStream.match(Tokens.SEMICOLON) || (readMargins && this._margin())){
                             //noop
                         } else if (this._declaration()){
                             if (!tokenStream.match(Tokens.SEMICOLON)){

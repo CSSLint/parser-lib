@@ -1979,7 +1979,7 @@ Parser.prototype = function(){
                     
                     while(true){
                     
-                        if (readMargins && this._margin()){
+                        if (tokenStream.match(Tokens.SEMICOLON) || (readMargins && this._margin())){
                             //noop
                         } else if (this._declaration()){
                             if (!tokenStream.match(Tokens.SEMICOLON)){

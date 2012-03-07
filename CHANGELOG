@@ -12,7 +12,7 @@ February 10, 2012 - v0.1.5
 * Added creation of npm package (Nicholas C. Zakas)
 * Added some tests (Nicholas C. Zakas)
 * tests for border-spacing (Anders Ytterström)
-* support for border-spacing and -moz-keyframes (Anders Ytterström)
+* support for border-spacing and -ms-keyframes (Anders Ytterström)
 
 
 January 31, 2012 - v0.1.4

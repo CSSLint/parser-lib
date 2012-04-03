@@ -1330,7 +1330,7 @@ Parser.prototype = function(){
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
                         Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
-                        Tokens.RESOLUTION])){
+                        Tokens.RESOLUTION, Tokens.SLASH])){
                     
                     value += tokenStream.token().value;
                     value += this._readWhitespace();                        

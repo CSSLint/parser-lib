@@ -950,6 +950,22 @@
             Assert.areEqual("768px", result.features[0].value);
             Assert.areEqual("orientation", result.features[1].name);
             Assert.areEqual("portrait", result.features[1].value);
+        },
+
+        testComplexMediaQueryWithDevicePixelRatioAsFraction: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only screen and (-o-device-pixel-ratio: 3/2) and (-webkit-device-pixel-ratio: 1.5)");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.areEqual("only", result.modifier);
+            Assert.areEqual("screen", result.mediaType);
+            Assert.areEqual(2, result.features.length, "Should be two features.");
+            Assert.areEqual("-o-device-pixel-ratio", result.features[0].name);
+            Assert.areEqual("3/2", result.features[0].value);
+            Assert.areEqual("-webkit-device-pixel-ratio", result.features[1].name);
+            Assert.areEqual("1.5", result.features[1].value);
         }
       
         

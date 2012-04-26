@@ -1458,7 +1458,7 @@ Parser.prototype = function(){
                     prio = this._prio();
                     
                     try {
-                        this._validateProperty(property, expr);
+                        this._validateProperty(property.text, expr);
                     } catch (ex) {
                         invalid = ex;
                     }

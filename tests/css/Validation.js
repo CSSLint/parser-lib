@@ -38,7 +38,7 @@
     ValidationTestCase.prototype = new YUITest.TestCase();
     
     ValidationTestCase.prototype._testValidValue = function(value){
-        var parser = new Parser({ strict: true});
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.addListener("property", function(event){
             Assert.isNull(event.invalid);
         });
@@ -46,7 +46,7 @@
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message){
-        var parser = new Parser({ strict: true});
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.addListener("property", function(event){
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
@@ -505,6 +505,21 @@
 
     suite.add(new ValidationTestCase({
         property: "z-index",
+        
+        valid: [
+            "1",
+            "auto",
+            "inherit"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+        }
+    }));
+
+    // Test star hack
+    suite.add(new ValidationTestCase({
+        property: "*z-index",
         
         valid: [
             "1",

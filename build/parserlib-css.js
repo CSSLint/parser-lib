@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 2-March-2012 02:44:32 */
+/* Version v@VERSION@, Build time: 26-April-2012 09:26:13 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1748,7 +1748,7 @@ Parser.prototype = function(){
                     prio = this._prio();
                     
                     try {
-                        this._validateProperty(property, expr);
+                        this._validateProperty(property.text, expr);
                     } catch (ex) {
                         invalid = ex;
                     }

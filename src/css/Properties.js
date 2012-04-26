@@ -86,6 +86,7 @@ var Properties = {
     "background-repeat"             : { multi: "<repeat-style>" },
     "background-size"               : { multi: "<bg-size>", comma: true },
     "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "behavior"                      : 1,
     "binding"                       : 1,
     "bleed"                         : "<length>",
     "bookmark-label"                : "<content> | <attr> | <string>",

@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 26-April-2012 09:26:13 */
+/* Version v@VERSION@, Build time: 26-April-2012 09:31:25 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 26-April-2012 09:26:13 */
+/* Version v@VERSION@, Build time: 26-April-2012 09:31:25 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3499,6 +3499,7 @@ var Properties = {
     "background-repeat"             : { multi: "<repeat-style>" },
     "background-size"               : { multi: "<bg-size>", comma: true },
     "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "behavior"                      : 1,
     "binding"                       : 1,
     "bleed"                         : "<length>",
     "bookmark-label"                : "<content> | <attr> | <string>",

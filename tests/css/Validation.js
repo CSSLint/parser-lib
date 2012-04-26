@@ -216,7 +216,10 @@
             "no-repeat round 1px" : "Expected (<repeat-style>) but found 'no-repeat round 1px'."
             
         }  
-    }));   
+    })); 
+ 
+    
+    
 
     suite.add(new ValidationTestCase({
         property: "border",

@@ -135,8 +135,8 @@
             "radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
             "repeating-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
             "repeating-radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
-            "-ms-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%), url(foo.png)"
-            
+            "-ms-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%), url(foo.png)",
+            "-webkit-gradient(linear, left bottom, left top, from(#f2f2f2), to(#cbcbcb))"
         ],
         
         invalid: {

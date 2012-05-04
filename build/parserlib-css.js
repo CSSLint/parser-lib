@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 4-May-2012 03:29:22 */
+/* Version v@VERSION@, Build time: 4-May-2012 03:56:19 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1748,6 +1748,11 @@ Parser.prototype = function(){
                     
                     prio = this._prio();
                     
+                    /*
+                     * If hacks should be allowed, then only check the root
+                     * property. If hacks should not be allowed, treat
+                     * _property or *property as invalid properties.
+                     */
                     propertyName = property.toString();
                     if (this.options.starHack && property.hack == "*" ||
                             this.options.underscoreHack && property.hack == "_") {
@@ -2944,6 +2949,7 @@ var Properties = {
     "text-justify"                  : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
     "text-outline"                  : 1,
     "text-overflow"                 : 1,
+    "text-rendering"                : "auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit",
     "text-shadow"                   : 1,
     "text-transform"                : "capitalize | uppercase | lowercase | none | inherit",
     "text-wrap"                     : "normal | none | avoid",
@@ -5023,7 +5029,7 @@ var ValidationTypes = {
             i, len, found = false;
         
         for (i=0,len=args.length; i < len && !found; i++){
-            if (text == args[i]){
+            if (text == args[i].toLowerCase()){
                 found = true;
             }
         }
@@ -5207,6 +5213,18 @@ var ValidationTypes = {
                 part,
                 i, len;
             
+/*
+<position> = [
+  [ left | center | right | top | bottom | <percentage> | <length> ]
+|
+  [ left | center | right | <percentage> | <length> ]
+  [ top | center | bottom | <percentage> | <length> ]
+|
+  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
+  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
+]
+
+*/            
                 
             if (ValidationTypes.isAny(expression, "top | bottom")) {
                 result = true;

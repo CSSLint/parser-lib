@@ -152,6 +152,7 @@
         valid: [
             "top",
             "bottom",
+            "center",
             "left center",
             "left 10px",
             "center bottom",
@@ -490,6 +491,22 @@
         
         invalid: {
             "foo" : "Expected (<length> | <percentage> | inherit) but found 'foo'."
+        }  
+    }));
+    
+    suite.add(new ValidationTestCase({
+        property: "text-rendering",
+        
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeLegibility",
+            "geometricPrecision",
+            "inherit"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit) but found 'foo'."
         }  
     }));
 

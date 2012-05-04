@@ -8,7 +8,7 @@ var ValidationTypes = {
             i, len, found = false;
         
         for (i=0,len=args.length; i < len && !found; i++){
-            if (text == args[i]){
+            if (text == args[i].toLowerCase()){
                 found = true;
             }
         }
@@ -192,6 +192,18 @@ var ValidationTypes = {
                 part,
                 i, len;
             
+/*
+<position> = [
+  [ left | center | right | top | bottom | <percentage> | <length> ]
+|
+  [ left | center | right | <percentage> | <length> ]
+  [ top | center | bottom | <percentage> | <length> ]
+|
+  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
+  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
+]
+
+*/            
                 
             if (ValidationTypes.isAny(expression, "top | bottom")) {
                 result = true;

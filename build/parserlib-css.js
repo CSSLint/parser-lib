@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 26-April-2012 09:31:25 */
+/* Version v@VERSION@, Build time: 4-May-2012 03:29:22 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1730,7 +1730,8 @@ Parser.prototype = function(){
                     expr        = null,
                     prio        = null,
                     error       = null,
-                    invalid     = null;
+                    invalid     = null,
+                    propertyName= "";
                 
                 property = this._property();
                 if (property !== null){
@@ -1747,8 +1748,15 @@ Parser.prototype = function(){
                     
                     prio = this._prio();
                     
+                    propertyName = property.toString();
+                    if (this.options.starHack && property.hack == "*" ||
+                            this.options.underscoreHack && property.hack == "_") {
+                         
+                        propertyName = property.text;
+                    }
+                    
                     try {
-                        this._validateProperty(property.text, expr);
+                        this._validateProperty(propertyName, expr);
                     } catch (ex) {
                         invalid = ex;
                     }
@@ -5107,7 +5115,7 @@ var ValidationTypes = {
         },        
         
         "<gradient>": function(part) {
-            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial|linear)\-gradient/i.test(part);
+            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
         },
         
         "<box>": function(part){

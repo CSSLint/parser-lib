@@ -1440,7 +1440,8 @@ Parser.prototype = function(){
                     expr        = null,
                     prio        = null,
                     error       = null,
-                    invalid     = null;
+                    invalid     = null,
+                    propertyName= "";
                 
                 property = this._property();
                 if (property !== null){
@@ -1457,8 +1458,20 @@ Parser.prototype = function(){
                     
                     prio = this._prio();
                     
+                    /*
+                     * If hacks should be allowed, then only check the root
+                     * property. If hacks should not be allowed, treat
+                     * _property or *property as invalid properties.
+                     */
+                    propertyName = property.toString();
+                    if (this.options.starHack && property.hack == "*" ||
+                            this.options.underscoreHack && property.hack == "_") {
+                         
+                        propertyName = property.text;
+                    }
+                    
                     try {
-                        this._validateProperty(property.text, expr);
+                        this._validateProperty(propertyName, expr);
                     } catch (ex) {
                         invalid = ex;
                     }

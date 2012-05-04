@@ -1,6 +1,6 @@
 {
     "name": "parserlib",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "CSSLint",
     "author": "Nicholas C. Zakas",
     "os": ["darwin", "linux"],

@@ -1,3 +1,15 @@
+May 4, 2012 - v0.1.7
+
+* Added text-rendering (Nicholas C. Zakas)
+* A little cleanup for validation with hacks (Nicholas C. Zakas)
+* Merge pull request #26 from moddular/webkit-gradient (Nicholas C. Zakas)
+* Updated <gradient> regex to allow -webkit-gradient (Andrew Walker)
+* Add 'behavior' as known property (fixes #25) (Nicholas C. Zakas)
+* Fix bug where star and underscore hacks interfered with validation (fixes #24) (Nicholas C. Zakas)
+* Merge pull request #22 from madr/patch-1 (Nicholas C. Zakas)
+* Update CHANGELOG: "-ms-" instead of "-moz-" (Anders Ytterström)
+
+
 March 2, 2012 - v0.1.6
 
 * Allow leading semicolon in front of properties (Nicholas C. Zakas)
@@ -205,6 +217,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

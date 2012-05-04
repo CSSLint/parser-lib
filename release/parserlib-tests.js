@@ -1477,6 +1477,22 @@
             var result = parser.parse(".foo {\n    color: #fff;\n}");
         },    
     
+       "Test rule with star hack property": function(){
+            var parser = new Parser({ strict: true, starHack: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("*color", event.property.toString());
+                Assert.areEqual("color", event.property.text);
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(13, event.value.parts[0].col, "First part column should be 13.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");                
+            });
+            var result = parser.parse(".foo {\n    *color: #fff;\n}");
+        },    
+    
         "Test rule with space after property name": function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){
@@ -2271,7 +2287,7 @@
     ValidationTestCase.prototype = new YUITest.TestCase();
     
     ValidationTestCase.prototype._testValidValue = function(value){
-        var parser = new Parser({ strict: true});
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.addListener("property", function(event){
             Assert.isNull(event.invalid);
         });
@@ -2279,7 +2295,7 @@
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message){
-        var parser = new Parser({ strict: true});
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.addListener("property", function(event){
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
@@ -2368,8 +2384,8 @@
             "radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
             "repeating-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
             "repeating-radial-gradient(top, #f2f2f2 0%, #cbcbcb 100%)",
-            "-ms-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%), url(foo.png)"
-            
+            "-ms-linear-gradient(top, #f2f2f2 0%, #cbcbcb 100%), url(foo.png)",
+            "-webkit-gradient(linear, left bottom, left top, from(#f2f2f2), to(#cbcbcb))"
         ],
         
         invalid: {
@@ -2385,6 +2401,7 @@
         valid: [
             "top",
             "bottom",
+            "center",
             "left center",
             "left 10px",
             "center bottom",
@@ -2449,7 +2466,10 @@
             "no-repeat round 1px" : "Expected (<repeat-style>) but found 'no-repeat round 1px'."
             
         }  
-    }));   
+    })); 
+ 
+    
+    
 
     suite.add(new ValidationTestCase({
         property: "border",
@@ -2722,6 +2742,22 @@
             "foo" : "Expected (<length> | <percentage> | inherit) but found 'foo'."
         }  
     }));
+    
+    suite.add(new ValidationTestCase({
+        property: "text-rendering",
+        
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeLegibility",
+            "geometricPrecision",
+            "inherit"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit) but found 'foo'."
+        }  
+    }));
 
     suite.add(new ValidationTestCase({
         property: "opacity",
@@ -2738,6 +2774,21 @@
 
     suite.add(new ValidationTestCase({
         property: "z-index",
+        
+        valid: [
+            "1",
+            "auto",
+            "inherit"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+        }
+    }));
+
+    // Test star hack
+    suite.add(new ValidationTestCase({
+        property: "*z-index",
         
         valid: [
             "1",

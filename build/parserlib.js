@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 4-May-2012 03:57:04 */
+/* Version v@VERSION@, Build time: 20-May-2012 01:46:33 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 4-May-2012 03:57:04 */
+/* Version v@VERSION@, Build time: 20-May-2012 01:46:33 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3811,6 +3811,7 @@ var Properties = {
     "pitch"                         : 1,
     "pitch-range"                   : 1,
     "play-during"                   : 1,
+    "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit",
     "position"                      : "static | relative | absolute | fixed | inherit",
     "presentation-level"            : 1,
     "punctuation-trim"              : 1,

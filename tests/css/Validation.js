@@ -522,6 +522,27 @@
         }  
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "pointer-events",
+
+        valid: [
+            "auto",
+            "none",
+            "visiblePainted",
+            "visibleFill",
+            "visibleStroke",
+            "visible",
+            "painted",
+            "fill",
+            "stroke",
+            "all",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "z-index",

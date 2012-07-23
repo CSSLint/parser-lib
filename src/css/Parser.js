@@ -1799,9 +1799,15 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     token,
                     tt,
-                    name;            
+                    name,
+                    prefix = "";            
                     
                 tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
+                token = tokenStream.token();
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
+                    prefix = RegExp.$1;
+                }
+                
                 this._readWhitespace();
                 name = this._keyframe_name();
                 
@@ -1811,8 +1817,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "startkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                
                 
                 this._readWhitespace();
@@ -1828,8 +1835,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "endkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                      
                     
                 this._readWhitespace();

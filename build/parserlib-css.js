@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 23-July-2012 09:55:09 */
+/* Version v@VERSION@, Build time: 23-July-2012 10:50:53 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -2089,9 +2089,15 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     token,
                     tt,
-                    name;            
+                    name,
+                    prefix = "";            
                     
                 tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
+                token = tokenStream.token();
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
+                    prefix = RegExp.$1;
+                }
+                
                 this._readWhitespace();
                 name = this._keyframe_name();
                 
@@ -2101,8 +2107,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "startkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                
                 
                 this._readWhitespace();
@@ -2118,8 +2125,9 @@ Parser.prototype = function(){
                 this.fire({
                     type:   "endkeyframes",
                     name:   name,
-                    line:   name.line,
-                    col:    name.col
+                    prefix: prefix,
+                    line:   token.startLine,
+                    col:    token.startCol
                 });                      
                     
                 this._readWhitespace();
@@ -4646,7 +4654,7 @@ var Tokens  = [
     //{ name: "ATKEYWORD"},
     
     //CSS3 animations
-    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-ms-keyframes" ] },
+    { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-o-keyframes" ] },
 
     //important symbol
     { name: "IMPORTANT_SYM"},

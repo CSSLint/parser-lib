@@ -229,6 +229,19 @@ The `startmedia` event fires when `@media` is encountered and the `endmedia` eve
         console.log("Ending page margin " + event.margin);
     });
 
+### startkeyframes and endkeyframes events
+    
+The `startkeyframes` event fires when `@keyframes` (or any vendor prefixed version) is encountered and the `endkeyframes` event fires just after the closing right brace (`}`) is encountered after `@keyframes`. The `event` object has one property, `name`, which is the name of the animation. Example:
+   
+    parser.addListener("startkeyframes", function(event){
+        console.log("Starting animation definition " + event.name);
+    });
+    
+    
+    parser.addListener("endkeyframes", function(event){
+        console.log("Ending animation definition " + event.name);
+    });
+
 ### startrule and endrule events
     
 The `startrule` event fires just after all selectors on a rule have been parsed and the `endrule` event fires just after the closing right brace (`}`) is encountered for the rule. The `event` object has one additional property, `selectors`, which is an array of `parserlib.css.Selector` objects. Example:    

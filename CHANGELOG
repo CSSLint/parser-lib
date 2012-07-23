@@ -4,16 +4,6 @@ July 23, 2012 - v0.1.8
 * Add travis CI config file (Nicholas C. Zakas)
 * Merge pull request #27 from ztest/master (Nicholas C. Zakas)
 * Add "pointer-events" as a known property. (ztest)
-* Release 0.1.7 (Nicholas C. Zakas)
-* Added text-rendering (Nicholas C. Zakas)
-* A little cleanup for validation with hacks (Nicholas C. Zakas)
-* Merge pull request #26 from moddular/webkit-gradient (Nicholas C. Zakas)
-* Updated <gradient> regex to allow -webkit-gradient (Andrew Walker)
-* Add 'behavior' as known property (fixes #25) (Nicholas C. Zakas)
-* Fix bug where star and underscore hacks interfered with validation (fixes #24) (Nicholas C. Zakas)
-* Merge pull request #22 from madr/patch-1 (Nicholas C. Zakas)
-* Update CHANGELOG: "-ms-" instead of "-moz-" (Anders Ytterström)
-
 
 May 4, 2012 - v0.1.7
 

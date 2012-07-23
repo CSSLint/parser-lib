@@ -1,3 +1,10 @@
+July 23, 2012 - v0.1.9
+
+* Expose vendor prefix for @keyframes (fixes #29) (Nicholas C. Zakas)
+* Add support for o-keyframes and remove ms-keyframes (Nicholas C. Zakas)
+* Fix changelog (Nicholas C. Zakas)
+
+
 July 23, 2012 - v0.1.8
 
 * Merge branch 'master' of github.com:nzakas/parser-lib (Nicholas C. Zakas)
@@ -224,6 +231,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

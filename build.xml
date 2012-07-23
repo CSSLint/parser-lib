@@ -1,7 +1,7 @@
 <project name="parserlib" default="build.all">
 
     <!-- version number -->
-    <property name="parserlib.version" value="0.1.8" />
+    <property name="parserlib.version" value="0.1.9" />
 
     <!-- the directories containing the source files -->
     <property name="src.dir" value="./src" />

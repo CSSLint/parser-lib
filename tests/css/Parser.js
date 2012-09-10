@@ -1548,6 +1548,22 @@
             var result = parser.parse(".foo {\n;   color: #fff;\n}");
         }        
     }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Invalid CSS Parsing Tests",    
+        
+        "Test parsing invalid celector": function(){
+            var error;
+            var parser = new Parser();
+            parser.addListener("error", function(e){error = e});
+            parser.parse("c++{}");
+            
+            Assert.areEqual("error", error.type);
+            Assert.areEqual(1, error.line);
+            Assert.areEqual(3, error.col);
+        }
+    }));
 
     
     YUITest.TestRunner.add(suite);

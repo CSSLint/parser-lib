@@ -153,23 +153,28 @@
             "top",
             "bottom",
             "center",
+            "100%",
             "left center",
+            "bottom left",
             "left 10px",
             "center bottom",
             "10% top",
             "left 10px bottom",
             "right top 5%",
-            "center 3em center 10%",
+            "top 3em center",
+            "center top 3em",
+            "top 3em right 10%",
             "top, bottom",
             "left 10px, left 10px",
             "right top 5%, left 10px bottom"
         ],
         
         invalid: {
-            "foo"               : "Expected (<bg-position>) but found 'foo'.",
-            "left center right" : "Expected end of value but found 'right'."
-            
-        }  
+            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "10% left"            : "Expected end of value but found 'left'.",
+            "left center right"   : "Expected end of value but found 'center'.",
+            "center 3em right 10%": "Expected end of value but found '3em'.",
+        }
     }));   
     
     suite.add(new ValidationTestCase({

@@ -40,7 +40,7 @@ var ValidationTypes = {
     },
     
     /**
-     * Determines if the next part(s) of the given expresion
+     * Determines if the next part(s) of the given expression
      * are one of a group.
      */
     isAnyOfGroup: function(expression, types) {
@@ -187,10 +187,16 @@ var ValidationTypes = {
             var types   = this,
                 result  = false,
                 numeric = "<percentage> | <length>",
-                xDir    = "left | center | right",
-                yDir    = "top | center | bottom",
-                part,
-                i, len;
+                xDir    = "left | right",
+                yDir    = "top | bottom",
+                count = 0,
+                hasNext = function() {
+                    return expression.hasNext() && expression.peek() != ",";
+                };
+
+            while (expression.peek(count) && expression.peek(count) != ",") {
+                count++;
+            }
             
 /*
 <position> = [
@@ -202,40 +208,48 @@ var ValidationTypes = {
   [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
   [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
 ]
+*/
 
-*/            
-                
-            if (ValidationTypes.isAny(expression, "top | bottom")) {
-                result = true;
+            if (count < 3) {
+                if (ValidationTypes.isAny(expression, xDir + " | center | " + numeric)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, yDir + " | center | " + numeric);
+                } else if (ValidationTypes.isAny(expression, yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, xDir + " | center");
+                }
             } else {
-                
-                //must be two-part
-                if (ValidationTypes.isAny(expression, numeric)){
-                    if (expression.hasNext()){
-                        result = ValidationTypes.isAny(expression, numeric + " | " + yDir);
-                    }
-                } else if (ValidationTypes.isAny(expression, xDir)){
-                    if (expression.hasNext()){
-                        
-                        //two- or three-part
-                        if (ValidationTypes.isAny(expression, yDir)){
+                if (ValidationTypes.isAny(expression, xDir)) {
+                    if (ValidationTypes.isAny(expression, yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    } else if (ValidationTypes.isAny(expression, numeric)) {
+                        if (ValidationTypes.isAny(expression, yDir)) {
                             result = true;
-                      
                             ValidationTypes.isAny(expression, numeric);
-                            
-                        } else if (ValidationTypes.isAny(expression, numeric)){
-                        
-                            //could also be two-part, so check the next part
-                            if (ValidationTypes.isAny(expression, yDir)){                                    
-                                ValidationTypes.isAny(expression, numeric);                               
-                            }
-                            
+                        } else if (ValidationTypes.isAny(expression, "center")) {
                             result = true;
                         }
                     }
-                }                                 
-            }            
-
+                } else if (ValidationTypes.isAny(expression, yDir)) {
+                    if (ValidationTypes.isAny(expression, xDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    } else if (ValidationTypes.isAny(expression, numeric)) {
+                        if (ValidationTypes.isAny(expression, xDir)) {
+                                result = true;
+                                ValidationTypes.isAny(expression, numeric);
+                        } else if (ValidationTypes.isAny(expression, "center")) {
+                            result = true;
+                        }
+                    }
+                } else if (ValidationTypes.isAny(expression, "center")) {
+                    if (ValidationTypes.isAny(expression, xDir + " | " + yDir)) {
+                        result = true;
+                        ValidationTypes.isAny(expression, numeric);
+                    }
+                }
+            }
             
             return result;
         },

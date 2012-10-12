@@ -712,14 +712,14 @@ Parser.prototype = function(){
             
                 /*
                  * operator
-                 *  : '/' S* | ',' S* | '*' S* | '-' S* /( empty )/
+                 *  : '/' S* | ',' S* | '+' S* | '*' S* | '-' S* /( empty )/
                  *  ;
                  */    
                  
                 var tokenStream = this._tokenStream,
                     token       = null;
                 
-                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA, Tokens.STAR, Tokens.MINUS])){
+                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA, Tokens.PLUS, Tokens.STAR, Tokens.MINUS])){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 

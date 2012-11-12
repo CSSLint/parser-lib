@@ -163,7 +163,7 @@ var Properties = {
             valid = ValidationTypes.isAny(expression, numeric);
             if (!valid) {
             
-                if (expression.peek() == "/" && count > 1 && !slash) {
+                if (expression.peek() == "/" && count > 0 && !slash) {
                     slash = true;
                     max = count + 5;
                     expression.next();

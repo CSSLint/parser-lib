@@ -1,3 +1,17 @@
+November 13, 2012 - v0.2.0
+
+* Merge pull request #36 from mattiacci/border-radius (Nicholas C. Zakas)
+* Fix validation of border-radius (Michael Mattiacci)
+* Merge pull request #33 from mattiacci/bg-position (Nicholas C. Zakas)
+* Fix validation of background-position (Michael Mattiacci)
+* Merge pull request #31 from nightwing/master (Nicholas C. Zakas)
+* fix typo (nightwing)
+* v0.1.9 (Nicholas C. Zakas)
+* Expose vendor prefix for @keyframes (fixes #29) (Nicholas C. Zakas)
+* Add support for o-keyframes and remove ms-keyframes (Nicholas C. Zakas)
+* Fix changelog (Nicholas C. Zakas)
+
+
 July 23, 2012 - v0.1.9
 
 * Expose vendor prefix for @keyframes (fixes #29) (Nicholas C. Zakas)
@@ -231,6 +245,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

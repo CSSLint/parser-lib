@@ -1548,6 +1548,22 @@
             var result = parser.parse(".foo {\n;   color: #fff;\n}");
         }        
     }));
+    
+    suite.add(new YUITest.TestCase({
+    
+        name: "Invalid CSS Parsing Tests",    
+        
+        "Test parsing invalid celector": function(){
+            var error;
+            var parser = new Parser();
+            parser.addListener("error", function(e){error = e});
+            parser.parse("c++{}");
+            
+            Assert.areEqual("error", error.type);
+            Assert.areEqual(1, error.line);
+            Assert.areEqual(3, error.col);
+        }
+    }));
 
     
     YUITest.TestRunner.add(suite);
@@ -2411,23 +2427,28 @@
             "top",
             "bottom",
             "center",
+            "100%",
             "left center",
+            "bottom left",
             "left 10px",
             "center bottom",
             "10% top",
             "left 10px bottom",
             "right top 5%",
-            "center 3em center 10%",
+            "top 3em center",
+            "center top 3em",
+            "top 3em right 10%",
             "top, bottom",
             "left 10px, left 10px",
             "right top 5%, left 10px bottom"
         ],
         
         invalid: {
-            "foo"               : "Expected (<bg-position>) but found 'foo'.",
-            "left center right" : "Expected end of value but found 'right'."
-            
-        }  
+            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "10% left"            : "Expected end of value but found 'left'.",
+            "left center right"   : "Expected end of value but found 'center'.",
+            "center 3em right 10%": "Expected end of value but found '3em'.",
+        }
     }));   
     
     suite.add(new ValidationTestCase({
@@ -2569,6 +2590,7 @@
             "5px",
             "25%",
             "5px 25%",
+            "5px / 25%",
             "5px 25% / 7px 27%",
             "1px 2px 3px 4px / 5px 6px 7px 8px"
         ],

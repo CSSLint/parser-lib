@@ -708,18 +708,21 @@ Parser.prototype = function(){
                 });              
             },
 
-            _operator: function(){
+            _operator: function(inFunction){
             
                 /*
-                 * operator
+                 * operator (outside function)
                  *  : '/' S* | ',' S* | /( empty )/
+                 * operator (inside function)
+                 *  : '/' S* | '+' S* | '*' S* | '-' S* /( empty )/
                  *  ;
                  */    
                  
                 var tokenStream = this._tokenStream,
                     token       = null;
                 
-                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
+                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA]) ||
+                    (inFunction && tokenStream.match([Tokens.PLUS, Tokens.STAR, Tokens.MINUS]))){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 
@@ -1506,7 +1509,7 @@ Parser.prototype = function(){
                 return result;
             },
             
-            _expr: function(){
+            _expr: function(inFunction){
                 /*
                  * expr
                  *   : term [ operator term ]*
@@ -1525,8 +1528,8 @@ Parser.prototype = function(){
                     values.push(value);
                     
                     do {
-                        operator = this._operator();
-        
+                        operator = this._operator(inFunction);
+
                         //if there's an operator, keep building up the value parts
                         if (operator){
                             values.push(operator);
@@ -1662,7 +1665,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
                     this._readWhitespace();
-                    expr = this._expr();
+                    expr = this._expr(true);
                     functionText += expr;
                     
                     //START: Horrible hack in case it's an IE filter

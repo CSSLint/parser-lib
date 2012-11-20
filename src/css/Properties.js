@@ -467,7 +467,7 @@ var Properties = {
     "volume"                        : 1,
     
     //W
-    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit",
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap", //http://perishablepress.com/wrapping-content/
     "white-space-collapse"          : 1,
     "widows"                        : "<integer> | inherit",
     "width"                         : "<length> | <percentage> | auto | inherit" ,

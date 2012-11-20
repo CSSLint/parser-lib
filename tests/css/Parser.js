@@ -1115,6 +1115,15 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
+		
+        testCSS2SystemColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("InfoText");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);
+        },
 
         testURIValue: function(){
             var parser = new Parser();

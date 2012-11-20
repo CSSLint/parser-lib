@@ -1115,6 +1115,15 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
+		
+        testCSS2SystemColorValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("InfoText");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);
+        },
 
         testURIValue: function(){
             var parser = new Parser();
@@ -2124,6 +2133,7 @@
             //regular CSS functions
             "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
             "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
+            "calc(100% - 5px)"      : [CSSTokens.FUNCTION, CSSTokens.PERCENTAGE, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.LENGTH, CSSTokens.RPAREN],
 
             //old-style IE filters - interpreted as bunch of tokens
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
@@ -2771,6 +2781,10 @@
         valid: [
             "1px",
             "1%",
+            "calc(100% - 5px)",
+            "calc(100% + 1em)",
+            "calc(100%/6)",
+            "calc(10%*6)",
             "inherit"
         ],
         

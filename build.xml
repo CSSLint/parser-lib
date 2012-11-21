@@ -110,7 +110,7 @@
             <header trimleading="yes">/*!
             ${license.text}
             */
-            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: @BUILD_TIME@ */
             var parserlib = {};
             (function(){
             </header>
@@ -136,7 +136,7 @@
             <header trimleading="yes">/*
             ${license.text}
             */
-            /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
+            /* Version v@VERSION@, Build time: @BUILD_TIME@ */
             (function(){
             var EventTarget = parserlib.util.EventTarget,
 			    TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -207,10 +207,13 @@
         <mkdir dir="${release.dir}"/>
         <copy todir="${release.dir}">
             <fileset dir="${build.dir}" includes="**/*" />
+			<filterchain>
+				<replacetokens>
+					<token key="VERSION" value="${parserlib.version}"/>
+					<token key="BUILD_TIME" value="${RIGHT_NOW}"/>
+				</replacetokens>
+			</filterchain>
         </copy>
-        <replaceregexp match="@VERSION@" replace="${parserlib.version}" flags="g" byline="true">
-            <fileset dir="${release.dir}" includes="**/*"/>
-        </replaceregexp>
     </target>
 
     <!-- Build all files -->

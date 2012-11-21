@@ -891,6 +891,8 @@
             Assert.isNull(result.modifier);
             Assert.areEqual("print", result.mediaType);
             Assert.areEqual(0, result.features.length, "Should be zero parts.");
+
+            Assert.areEqual("print", result.text);
         },
         
         testSimpleMediaQueryNot: function(){
@@ -903,6 +905,8 @@
             Assert.areEqual("not", result.modifier);
             Assert.areEqual("print", result.mediaType);
             Assert.areEqual(0, result.features.length, "Should be zero parts.");
+
+            Assert.areEqual("not print", result.text);
         },
         
         testSimpleMediaQueryOnly: function(){
@@ -915,6 +919,8 @@
             Assert.areEqual("only", result.modifier);
             Assert.areEqual("print", result.mediaType);
             Assert.areEqual(0, result.features.length, "Should be zero parts.");
+
+            Assert.areEqual("only print", result.text);
         },
         
         testComplexMediaQuery: function(){
@@ -933,7 +939,9 @@
             Assert.areEqual("color", result.features[1].name);
             Assert.isNull(result.features[1].value);
             Assert.areEqual(35, result.features[1].name.col);
-            
+
+            // The parser removes whitespace in ": 3kg"; I'm OK with that.
+            Assert.areEqual("screen and (max-weight:3kg) and (color)", result.text);
         },
         
         testComplexMediaQuery2: function(){
@@ -950,6 +958,8 @@
             Assert.areEqual("768px", result.features[0].value);
             Assert.areEqual("orientation", result.features[1].name);
             Assert.areEqual("portrait", result.features[1].value);
+
+            Assert.areEqual("only screen and (max-device-width:768px) and (orientation:portrait)", result.text);
         }
       
         

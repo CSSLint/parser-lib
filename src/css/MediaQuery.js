@@ -13,7 +13,8 @@
  */
 function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") +
+                          (mediaType && features.length ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")

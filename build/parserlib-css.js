@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 19-November-2012 10:07:25 */
+/* Version v@VERSION@, Build time: 21-November-2012 04:23:31 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -3010,7 +3010,7 @@ var Properties = {
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
     
     //V
-    "vertical-align"                : "<percentage> | <length> | baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit",
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
     "visibility"                    : "visible | hidden | collapse | inherit",
     "voice-balance"                 : 1,
     "voice-duration"                : 1,

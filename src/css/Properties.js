@@ -95,7 +95,7 @@ var Properties = {
     "bookmark-target"               : "none | <uri> | <attr>",
     "border"                        : "<border-width> || <border-style> || <color>",
     "border-bottom"                 : "<border-width> || <border-style> || <color>",
-    "border-bottom-color"           : "<color>",
+    "border-bottom-color"           : "<color> | inherit",
     "border-bottom-left-radius"     :  "<x-one-radius>",
     "border-bottom-right-radius"    :  "<x-one-radius>",
     "border-bottom-style"           : "<border-style>",

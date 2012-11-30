@@ -474,6 +474,7 @@ var Properties = {
     "word-break"                    : "normal | keep-all | break-all",
     "word-spacing"                  : "<length> | normal | inherit",
     "word-wrap"                     : 1,
+    "writing-mode"                  : "lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb | inherit",
     
     //Z
     "z-index"                       : "<integer> | auto | inherit",

@@ -1,3 +1,40 @@
+December 4, 2012 - v0.2.1
+
+* Merge pull request #46 from nschonni/fix-vertical-align-missing-values (Nicholas C. Zakas)
+* Add missing values from CSS3 vertical-align (Nick Schonning)
+* Merge pull request #42 from nschonni/white-space-vendor-prefixes (Nicholas C. Zakas)
+* Merge pull request #41 from nschonni/more-hack-tests (Nicholas C. Zakas)
+* Add white-space vendor prefixed values (Nick Schonning)
+* Add test for underscore hack (Nick Schonning)
+* Merge pull request #40 from nschonni/fix-#38-CSS2-system-colors (Nicholas C. Zakas)
+* Add CSS2 system colors (Nick Schonning)
+* Merge branch 'master' of github.com:nzakas/parser-lib (Nicholas C. Zakas)
+* Fix readme (Nicholas C. Zakas)
+* Merge pull request #35 from fracmak/calc_support (Nicholas C. Zakas)
+* Add travis build status to readme (Nicholas C. Zakas)
+* Fixed media query tests (Nicholas C. Zakas)
+* Merge pull request #30 from mirceapiturca/master (Nicholas C. Zakas)
+* Merge pull request #37 from Unroll-Me/master (Nicholas C. Zakas)
+* Remove platform restrictions (Schabse Laks)
+* _operator is used for seperating multiple values for a property (ie. box-shadow: 10px 10px 0, 2px 2px 0) as well as for mathematical operators inside functions. Since functions are the only place mathematical operators are allowed, we now pass in a boolean to distinguish which token is acceptable to not accidentally treat -10px -10px as an equation (Jay Merrifield)
+* added support for + operator for calc functions (Merrifield, Jay)
+* added support for calc wherever <length> is expected (Merrifield, Jay)
+* Fixed YUI Test issues, bumped version (Nicholas C. Zakas)
+* Merge pull request #36 from mattiacci/border-radius (Nicholas C. Zakas)
+* Fix validation of border-radius (Michael Mattiacci)
+* Merge pull request #33 from mattiacci/bg-position (Nicholas C. Zakas)
+* Fix validation of background-position (Michael Mattiacci)
+* Update tests/css/Parser.js (mirceapiturca)
+* Merge pull request #31 from nightwing/master (Nicholas C. Zakas)
+* fix typo (nightwing)
+* Update src/css/MediaQuery.js (mirceapiturca)
+* Update build/node-parserlib.js (mirceapiturca)
+* v0.1.9 (Nicholas C. Zakas)
+* Expose vendor prefix for @keyframes (fixes #29) (Nicholas C. Zakas)
+* Add support for o-keyframes and remove ms-keyframes (Nicholas C. Zakas)
+* Fix changelog (Nicholas C. Zakas)
+
+
 November 13, 2012 - v0.2.0
 
 * Merge pull request #36 from mattiacci/border-radius (Nicholas C. Zakas)
@@ -245,6 +282,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

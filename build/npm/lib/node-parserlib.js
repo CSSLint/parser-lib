@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 21-November-2012 04:23:31 */
+/* Version v@VERSION@, Build time: 4-December-2012 11:58:48 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v@VERSION@, Build time: 21-November-2012 04:23:31 */
+/* Version v@VERSION@, Build time: 4-December-2012 11:58:48 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,

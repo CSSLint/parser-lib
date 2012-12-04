@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.0, Build time: 13-November-2012 01:17:54 */
+/* Version v0.2.1, Build time: 4-December-2012 11:58:48 */
 var parserlib = {};
 (function(){
 
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.0, Build time: 13-November-2012 01:17:54 */
+/* Version v0.2.1, Build time: 4-December-2012 11:58:48 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1080,7 +1080,36 @@ var Colors = {
     white           :"#ffffff",
     whitesmoke      :"#f5f5f5",
     yellow          :"#ffff00",
-    yellowgreen     :"#9acd32"
+    yellowgreen     :"#9acd32",
+    //CSS2 system colors http://www.w3.org/TR/css3-color/#css2-system
+    activeBorder        :"Active window border.",
+    activecaption       :"Active window caption.",
+    appworkspace        :"Background color of multiple document interface.",
+    background          :"Desktop background.",
+    buttonface          :"The face background color for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonhighlight     :"The color of the border facing the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonshadow        :"The color of the border away from the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttontext          :"Text on push buttons.",
+    captiontext         :"Text in caption, size box, and scrollbar arrow box.",
+    graytext            :"Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
+    highlight           :"Item(s) selected in a control.",
+    highlighttext       :"Text of item(s) selected in a control.",
+    inactiveborder      :"Inactive window border.",
+    inactivecaption     :"Inactive window caption.",
+    inactivecaptiontext :"Color of text in an inactive caption.",
+    infobackground      :"Background color for tooltip controls.",
+    infotext            :"Text color for tooltip controls.",
+    menu                :"Menu background.",
+    menutext            :"Text in menus.",
+    scrollbar           :"Scroll bar gray area.",
+    threeddarkshadow    :"The color of the darker (generally outer) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedface          :"The face background color for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedhighlight     :"The color of the lighter (generally outer) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedlightshadow   :"The color of the darker (generally inner) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedshadow        :"The color of the lighter (generally inner) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    window              :"Window background.",
+    windowframe         :"Window frame.",
+    windowtext          :"Text in windows."
 };
 /*global SyntaxUnit, Parser*/
 /**
@@ -1169,7 +1198,7 @@ MediaFeature.prototype.constructor = MediaFeature;
  */
 function MediaQuery(modifier, mediaType, features, line, col){
     
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType + " " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE); 
 
     /**
      * The media modifier ("not" or "only")
@@ -1908,18 +1937,21 @@ Parser.prototype = function(){
                 });              
             },
 
-            _operator: function(){
+            _operator: function(inFunction){
             
                 /*
-                 * operator
+                 * operator (outside function)
                  *  : '/' S* | ',' S* | /( empty )/
+                 * operator (inside function)
+                 *  : '/' S* | '+' S* | '*' S* | '-' S* /( empty )/
                  *  ;
                  */    
                  
                 var tokenStream = this._tokenStream,
                     token       = null;
                 
-                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA])){
+                if (tokenStream.match([Tokens.SLASH, Tokens.COMMA]) ||
+                    (inFunction && tokenStream.match([Tokens.PLUS, Tokens.STAR, Tokens.MINUS]))){
                     token =  tokenStream.token();
                     this._readWhitespace();
                 } 
@@ -2706,7 +2738,7 @@ Parser.prototype = function(){
                 return result;
             },
             
-            _expr: function(){
+            _expr: function(inFunction){
                 /*
                  * expr
                  *   : term [ operator term ]*
@@ -2725,8 +2757,8 @@ Parser.prototype = function(){
                     values.push(value);
                     
                     do {
-                        operator = this._operator();
-        
+                        operator = this._operator(inFunction);
+
                         //if there's an operator, keep building up the value parts
                         if (operator){
                             values.push(operator);
@@ -2862,7 +2894,7 @@ Parser.prototype = function(){
                 if (tokenStream.match(Tokens.FUNCTION)){
                     functionText = tokenStream.token().value;
                     this._readWhitespace();
-                    expr = this._expr();
+                    expr = this._expr(true);
                     functionText += expr;
                     
                     //START: Horrible hack in case it's an IE filter
@@ -3888,7 +3920,7 @@ var Properties = {
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
     
     //V
-    "vertical-align"                : "<percentage> | <length> | baseline | sub | super | top | text-top | middle | bottom | text-bottom | inherit",
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
     "visibility"                    : "visible | hidden | collapse | inherit",
     "voice-balance"                 : 1,
     "voice-duration"                : 1,
@@ -3901,7 +3933,7 @@ var Properties = {
     "volume"                        : 1,
     
     //W
-    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit",
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap", //http://perishablepress.com/wrapping-content/
     "white-space-collapse"          : 1,
     "widows"                        : "<integer> | inherit",
     "width"                         : "<length> | <percentage> | auto | inherit" ,
@@ -6061,7 +6093,11 @@ var ValidationTypes = {
         },
         
         "<length>": function(part){
-            return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+            if (part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
+                return true;
+            }else{
+                return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+            }
         },
         
         "<color>": function(part){

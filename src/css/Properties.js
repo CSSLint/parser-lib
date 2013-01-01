@@ -79,7 +79,7 @@ var Properties = {
     "background"                    : 1,
     "background-attachment"         : { multi: "<attachment>", comma: true },
     "background-clip"               : { multi: "<box>", comma: true },
-    "background-color"              : "<color> | inherit",
+    "background-color"              : "<color> | transparent | inherit",
     "background-image"              : { multi: "<bg-image>", comma: true },
     "background-origin"             : { multi: "<box>", comma: true },
     "background-position"           : { multi: "<bg-position>", comma: true },

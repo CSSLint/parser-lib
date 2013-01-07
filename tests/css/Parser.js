@@ -1594,6 +1594,22 @@
                 Assert.areEqual("-moz-pre-wrap", event.value.parts[0].text, "The vendor prefixed value should be intact.");
             });
             var result = parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
+        },
+
+        "Test display -moz-inline-stack": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("display", event.property.toString());
+                Assert.areEqual("-moz-inline-stack", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(14, event.value.parts[0].col, "First part column should be 14.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
+                Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
+            });
+            var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
         }
     }));
 

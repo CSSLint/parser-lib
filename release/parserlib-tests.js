@@ -955,6 +955,22 @@
             Assert.areEqual("orientation", result.features[1].name);
             Assert.areEqual("portrait", result.features[1].value);
             Assert.areEqual("only screen and (max-device-width:768px) and (orientation:portrait)", result.text);
+        },
+        
+        testComplexMediaQueryWithDevicePixelRatioAsFraction: function(){
+            var parser = new Parser();
+            var result = parser.parseMediaQuery("only screen and (-o-device-pixel-ratio: 3/2) and (-webkit-device-pixel-ratio: 1.5)");
+            
+            Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
+            Assert.areEqual(1, result.line, "Line should be 1");
+            Assert.areEqual(1, result.col, "Column should be 1");
+            Assert.areEqual("only", result.modifier);
+            Assert.areEqual("screen", result.mediaType);
+            Assert.areEqual(2, result.features.length, "Should be two features.");
+            Assert.areEqual("-o-device-pixel-ratio", result.features[0].name);
+            Assert.areEqual("3/2", result.features[0].value);
+            Assert.areEqual("-webkit-device-pixel-ratio", result.features[1].name);
+            Assert.areEqual("1.5", result.features[1].value);
         }
 
 
@@ -1115,7 +1131,7 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
-		
+        
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1594,6 +1610,22 @@
                 Assert.areEqual("-moz-pre-wrap", event.value.parts[0].text, "The vendor prefixed value should be intact.");
             });
             var result = parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
+        },
+
+        "Test display -moz-inline-stack": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                Assert.areEqual("display", event.property.toString());
+                Assert.areEqual("-moz-inline-stack", event.value.toString());
+                Assert.areEqual(5, event.property.col, "Property column should be 5.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(5, event.col, "Event column should be 5.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(14, event.value.parts[0].col, "First part column should be 14.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
+                Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
+            });
+            var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
         }
     }));
 

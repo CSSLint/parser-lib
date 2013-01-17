@@ -1,3 +1,16 @@
+January 17, 2013 - v0.2.2
+
+* Merge pull request #57 from nschonni/allow-device-pixel-ratio-gh-23 (Nicholas C. Zakas)
+* Merge pull request #56 from nschonni/appearance-none (Nicholas C. Zakas)
+* Allow pixel ratios in media queries (Nick Schonning)
+* Add none to appearance values (Nick Schonning)
+* Merge pull request #43 from nschonni/display-moz-inline-stack (Nicholas C. Zakas)
+* Add -moz display properties (Nick Schonning)
+* Merge pull request #51 from nschonni/add-gitignore-for-build (Nicholas C. Zakas)
+* Trim default gitconfig (Nick Schonning)
+* Remove build folder and exclude it (Nick Schonning)
+
+
 December 4, 2012 - v0.2.1
 
 * Merge pull request #46 from nschonni/fix-vertical-align-missing-values (Nicholas C. Zakas)
@@ -282,6 +295,8 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
+
+
 
 
 

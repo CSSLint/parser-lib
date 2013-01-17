@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.1, Build time: 4-December-2012 11:58:48 */
+/* Version v0.2.2, Build time: 17-January-2013 10:26:34 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -1652,7 +1652,7 @@ Parser.prototype = function(){
                 while(tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
                         Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
                         Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
-                        Tokens.RESOLUTION])){
+                        Tokens.RESOLUTION, Tokens.SLASH])){
                     
                     value += tokenStream.token().value;
                     value += this._readWhitespace();                        
@@ -2598,7 +2598,7 @@ var Properties = {
     "-o-animation-name"                : { multi: "none | <ident>", comma: true },
     "-o-animation-play-state"          : { multi: "running | paused", comma: true },        
     
-    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | inherit",
+    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | none | inherit",
     "azimuth"                       : function (expression) {
         var simple      = "<angle> | leftwards | rightwards | inherit",
             direction   = "left-side | far-left | left | center-left | center | center-right | right | far-right | right-side",
@@ -2807,7 +2807,7 @@ var Properties = {
     
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker",
     "dominant-baseline"             : 1,
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",

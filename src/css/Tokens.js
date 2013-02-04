@@ -3,7 +3,7 @@ var Tokens  = [
     /*
      * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
      */
-     
+
     //HTML-style comments
     { name: "CDO"},
     { name: "CDC"},
@@ -11,16 +11,16 @@ var Tokens  = [
     //ignorables
     { name: "S", whitespace: true/*, channel: "ws"*/},
     { name: "COMMENT", comment: true, hide: true, channel: "comment" },
-        
+
     //attribute equality
     { name: "INCLUDES", text: "~="},
     { name: "DASHMATCH", text: "|="},
     { name: "PREFIXMATCH", text: "^="},
     { name: "SUFFIXMATCH", text: "$="},
     { name: "SUBSTRINGMATCH", text: "*="},
-        
+
     //identifier types
-    { name: "STRING"},     
+    { name: "STRING"},
     { name: "IDENT"},
     { name: "HASH"},
 
@@ -31,9 +31,10 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
+    { name: "VIEWPORT_SYM", text: "@viewport"},
     { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
-    
+
     //CSS3 animations
     { name: "KEYFRAMES_SYM", text: [ "@keyframes", "@-webkit-keyframes", "@-moz-keyframes", "@-o-keyframes" ] },
 
@@ -48,30 +49,30 @@ var Tokens  = [
     { name: "DIMENSION"},
     { name: "PERCENTAGE"},
     { name: "NUMBER"},
-    
+
     //functions
     { name: "URI"},
     { name: "FUNCTION"},
-    
+
     //Unicode ranges
     { name: "UNICODE_RANGE"},
-    
+
     /*
      * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
-     */    
-    
+     */
+
     //invalid string
     { name: "INVALID"},
-    
+
     //combinators
     { name: "PLUS", text: "+" },
     { name: "GREATER", text: ">"},
     { name: "COMMA", text: ","},
     { name: "TILDE", text: "~"},
-    
+
     //modifier
-    { name: "NOT"},        
-    
+    { name: "NOT"},
+
     /*
      * Defined in CSS3 Paged Media
      */
@@ -103,13 +104,13 @@ var Tokens  = [
     /*
      * The following token names are not defined in any CSS specification but are used by the lexer.
      */
-    
+
     //not a real token, but useful for stupid IE filters
     { name: "IE_FUNCTION" },
 
     //part of CSS3 grammar but not the Flex code
     { name: "CHAR" },
-    
+
     //TODO: Needed?
     //Not defined as tokens, but might as well be
     {
@@ -132,19 +133,19 @@ var Tokens  = [
     {
         name: "LBRACE",
         text: "{"
-    },   
+    },
     {
         name: "RBRACE",
         text: "}"
-    },      
+    },
     {
         name: "LBRACKET",
         text: "["
-    },   
+    },
     {
         name: "RBRACKET",
         text: "]"
-    },    
+    },
     {
         name: "EQUALS",
         text: "="
@@ -152,20 +153,20 @@ var Tokens  = [
     {
         name: "COLON",
         text: ":"
-    },    
+    },
     {
         name: "SEMICOLON",
         text: ";"
-    },    
- 
+    },
+
     {
         name: "LPAREN",
         text: "("
-    },   
+    },
     {
         name: "RPAREN",
         text: ")"
-    },     
+    },
     {
         name: "DOT",
         text: "."
@@ -176,7 +177,7 @@ var Tokens  = [
 
     var nameMap = [],
         typeMap = {};
-    
+
     Tokens.UNKNOWN = -1;
     Tokens.unshift({name:"EOF"});
     for (var i=0, len = Tokens.length; i < len; i++){
@@ -192,11 +193,11 @@ var Tokens  = [
             }
         }
     }
-    
+
     Tokens.name = function(tt){
         return nameMap[tt];
     };
-    
+
     Tokens.type = function(c){
         return typeMap[c] || -1;
     };

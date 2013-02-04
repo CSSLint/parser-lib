@@ -956,11 +956,11 @@
             Assert.areEqual("portrait", result.features[1].value);
             Assert.areEqual("only screen and (max-device-width:768px) and (orientation:portrait)", result.text);
         },
-        
+
         testComplexMediaQueryWithDevicePixelRatioAsFraction: function(){
             var parser = new Parser();
             var result = parser.parseMediaQuery("only screen and (-o-device-pixel-ratio: 3/2) and (-webkit-device-pixel-ratio: 1.5)");
-            
+
             Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
             Assert.areEqual(1, result.line, "Line should be 1");
             Assert.areEqual(1, result.col, "Column should be 1");
@@ -1131,7 +1131,7 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
-        
+
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1469,6 +1469,12 @@
         testMediaWithComplexExpression: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media all and (max-width:400px) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@viewport { width: 397px; }");
             Assert.isTrue(true);  //just don't want an error
         },
 

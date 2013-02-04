@@ -1115,7 +1115,7 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
-		
+
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1453,6 +1453,12 @@
         testMediaWithComplexExpression: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media all and (max-width:400px) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@viewport { width: 397px; }");
             Assert.isTrue(true);  //just don't want an error
         },
 

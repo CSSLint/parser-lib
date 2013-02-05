@@ -965,7 +965,7 @@
 
         name: "Property Values",
 
-        testDimensionValue: function(){
+        testDimensionValuePx: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
 
@@ -1383,7 +1383,7 @@
 
         testWebKitKeyFrames: function(){
             var parser = new Parser({strict:true}),
-                called = true;
+                called = false;
 
             parser.addListener("startkeyframes", function(event) {
                 Assert.areEqual("webkit", event.prefix);
@@ -1460,6 +1460,28 @@
             var parser = new Parser({ strict: true});
             var result = parser.parse("@viewport { width: 397px; }");
             Assert.isTrue(true);  //just don't want an error
+        },
+
+        testViewportEventFires: function(){
+            var parser = new Parser({ strict:true}),
+                calledStart = false,
+                calledEnd = false;
+
+            parser.addListener("startviewport", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledStart = true;
+            });
+
+            parser.addListener("endviewport", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledEnd = true;
+            });
+
+            var result = parser.parse("@viewport { width: 397px; }");
+            Assert.isTrue(calledStart);  //just don't want an error
+            Assert.isTrue(calledEnd);  //just don't want an error
         },
 
         testClassesWithEscapes: function(){
@@ -1610,7 +1632,7 @@
         "Test parsing invalid celector": function(){
             var error;
             var parser = new Parser();
-            parser.addListener("error", function(e){error = e});
+            parser.addListener("error", function(e){error = e;});
             parser.parse("c++{}");
 
             Assert.areEqual("error", error.type);

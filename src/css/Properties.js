@@ -152,7 +152,7 @@ var Properties = {
     "border-radius"                 : function(expression) {
         
         var valid   = false,
-            numeric = "<length> | <percentage>",
+            simple = "<length> | <percentage> | inherit",
             slash   = false,
             fill    = false,
             count   = 0,
@@ -160,7 +160,7 @@ var Properties = {
             part;
 
         while (expression.hasNext() && count < max) {
-            valid = ValidationTypes.isAny(expression, numeric);
+            valid = ValidationTypes.isAny(expression, simple);
             if (!valid) {
             
                 if (expression.peek() == "/" && count > 0 && !slash) {

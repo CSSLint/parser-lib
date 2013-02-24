@@ -3,6 +3,8 @@
     "version": "@VERSION@",
     "description": "CSSLint",
     "author": "Nicholas C. Zakas",
+    "description": "CSS3 SAX-inspired parser",
+    "keywords": [ "parser", "css", "css3", "sax", "style", "stylesheet" ],
     "contributors": [
     ],
     "engines": {
@@ -21,5 +23,9 @@
     "repository": {
         "type":"git",
         "url":"http://github.com/nzakas/parser-lib.git"
+    },
+    "scripts": {
+        "test": "ant -f ../../build.xml test",
+        "prepublish": "npm test"
     }
 }

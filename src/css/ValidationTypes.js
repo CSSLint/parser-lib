@@ -344,14 +344,11 @@ var ValidationTypes = {
         "<x-one-radius>": function(expression) {
             //[ <length> | <percentage> ] [ <length> | <percentage> ]?
             var result  = false,
-                count   = 0,
-                numeric = "<length> | <percentage>",
-                part;
+                simple = "<length> | <percentage> | inherit";
                 
-            if (ValidationTypes.isAny(expression, numeric)){
+            if (ValidationTypes.isAny(expression, simple)){
                 result = true;
-                
-                ValidationTypes.isAny(expression, numeric);
+                ValidationTypes.isAny(expression, simple);
             }                
             
             return result;

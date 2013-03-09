@@ -282,7 +282,8 @@
         valid: [
             "5px",
             "25%",
-            "5px 25%"
+            "5px 25%",
+            "inherit"
         ],
         
         invalid: {
@@ -318,7 +319,8 @@
             "5px 25%",
             "5px / 25%",
             "5px 25% / 7px 27%",
-            "1px 2px 3px 4px / 5px 6px 7px 8px"
+            "1px 2px 3px 4px / 5px 6px 7px 8px",
+            "inherit"
         ],
         
         invalid: {

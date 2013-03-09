@@ -124,7 +124,7 @@ var ValidationTypes = {
             if (part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
             }else{
-                return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+                return part.type == "length" || part == "0";
             }
         },
         

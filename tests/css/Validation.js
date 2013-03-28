@@ -489,6 +489,56 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "display",
+        
+        valid: [
+            "inline",
+            "block",
+            "list-item",
+            "inline-block",
+            "table",
+            "inline-table",
+            "table-row-group",
+            "table-header-group",
+            "table-footer-group",
+            "table-row",
+            "table-column-group",
+            "table-column",
+            "table-cell",
+            "table-caption",
+            "box",
+            "inline-box",
+            "grid",
+            "inline-grid",
+            "none",
+            "inherit",
+            "-moz-box",
+            "-moz-inline-block",
+            "-moz-inline-box",
+            "-moz-inline-grid",
+            "-moz-inline-stack",
+            "-moz-inline-table",
+            "-moz-grid",
+            "-moz-grid-group",
+            "-moz-grid-line",
+            "-moz-groupbox",
+            "-moz-deck",
+            "-moz-popup",
+            "-moz-stack",
+            "-moz-marker",
+            "-webkit-box",
+            "-webkit-inline-box"
+            
+        ],
+        
+        invalid: {
+            "foo" : " Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inine-box) but found '-webkit-box'."
+        }  
+    }));
+    
+   
+
+    suite.add(new ValidationTestCase({
         property: "min-height",
         
         valid: [

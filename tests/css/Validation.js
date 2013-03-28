@@ -527,7 +527,7 @@
             "-moz-stack",
             "-moz-marker",
             "-webkit-box",
-            "-webkit-inine-box"
+            "-webkit-inline-box"
             
         ],
         

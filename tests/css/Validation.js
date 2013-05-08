@@ -260,6 +260,70 @@
             "invert" : "Expected (<color> | inherit) but found 'invert'.",
         }
     }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-top-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-left-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-right-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border-bottom-left-radius",

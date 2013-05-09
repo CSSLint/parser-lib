@@ -1003,6 +1003,39 @@
             Assert.areEqual("ch", result.parts[0].units);
         },
 
+        testViewportRelativeHeightValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vh");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vh", result.parts[0].units);
+        },
+
+        testViewportRelativeWidthValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vw");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vw", result.parts[0].units);
+        },
+
+        testViewportRelativeMinValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vm");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vm", result.parts[0].units);
+        },
+
         testPercentageValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("25.4%");

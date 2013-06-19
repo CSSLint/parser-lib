@@ -956,11 +956,11 @@
             Assert.areEqual("portrait", result.features[1].value);
             Assert.areEqual("only screen and (max-device-width:768px) and (orientation:portrait)", result.text);
         },
-        
+
         testComplexMediaQueryWithDevicePixelRatioAsFraction: function(){
             var parser = new Parser();
             var result = parser.parseMediaQuery("only screen and (-o-device-pixel-ratio: 3/2) and (-webkit-device-pixel-ratio: 1.5)");
-            
+
             Assert.isInstanceOf(MediaQuery, result, "Result should be an instance of MediaQuery.");
             Assert.areEqual(1, result.line, "Line should be 1");
             Assert.areEqual(1, result.col, "Column should be 1");
@@ -981,7 +981,7 @@
 
         name: "Property Values",
 
-        testDimensionValue: function(){
+        testDimensionValuePx: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
 
@@ -1001,6 +1001,39 @@
             Assert.areEqual("length", result.parts[0].type);
             Assert.areEqual(1, result.parts[0].value);
             Assert.areEqual("ch", result.parts[0].units);
+        },
+
+        testViewportRelativeHeightValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vh");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vh", result.parts[0].units);
+        },
+
+        testViewportRelativeWidthValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vw");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vw", result.parts[0].units);
+        },
+
+        testViewportRelativeMinValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vm");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vm", result.parts[0].units);
         },
 
         testPercentageValue: function(){
@@ -1131,7 +1164,7 @@
             Assert.areEqual(0, result.parts[0].green);
             Assert.areEqual(0, result.parts[0].blue);
         },
-        
+
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1399,7 +1432,7 @@
 
         testWebKitKeyFrames: function(){
             var parser = new Parser({strict:true}),
-                called = true;
+                called = false;
 
             parser.addListener("startkeyframes", function(event) {
                 Assert.areEqual("webkit", event.prefix);
@@ -1448,6 +1481,12 @@
             Assert.isTrue(true);  //just don't want an error
         },
 
+        testMediaWithFontFace: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media { @font-face {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
         testMediaWithTypeOnly: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media print { }");
@@ -1470,6 +1509,34 @@
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media all and (max-width:400px) { }");
             Assert.isTrue(true);  //just don't want an error
+        },
+
+        testViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@viewport { width: 397px; }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testViewportEventFires: function(){
+            var parser = new Parser({ strict:true}),
+                calledStart = false,
+                calledEnd = false;
+
+            parser.addListener("startviewport", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledStart = true;
+            });
+
+            parser.addListener("endviewport", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledEnd = true;
+            });
+
+            var result = parser.parse("@viewport { width: 397px; }");
+            Assert.isTrue(calledStart);  //just don't want an error
+            Assert.isTrue(calledEnd);  //just don't want an error
         },
 
         testClassesWithEscapes: function(){
@@ -1636,7 +1703,7 @@
         "Test parsing invalid celector": function(){
             var error;
             var parser = new Parser();
-            parser.addListener("error", function(e){error = e});
+            parser.addListener("error", function(e){error = e;});
             parser.parse("c++{}");
 
             Assert.areEqual("error", error.type);
@@ -2615,6 +2682,70 @@
             "invert" : "Expected (<color> | inherit) but found 'invert'.",
         }
     }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-bottom-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-top-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-left-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+   
+    suite.add(new ValidationTestCase({
+        property: "border-right-color",
+        
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent"
+        ],
+        
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border-bottom-left-radius",
@@ -2637,7 +2768,8 @@
         valid: [
             "5px",
             "25%",
-            "5px 25%"
+            "5px 25%",
+            "inherit"
         ],
         
         invalid: {
@@ -2673,7 +2805,8 @@
             "5px 25%",
             "5px / 25%",
             "5px 25% / 7px 27%",
-            "1px 2px 3px 4px / 5px 6px 7px 8px"
+            "1px 2px 3px 4px / 5px 6px 7px 8px",
+            "inherit"
         ],
         
         invalid: {
@@ -2840,6 +2973,56 @@
             "invert" : "Expected (<color> | inherit) but found 'invert'.",
         }  
     }));
+
+    suite.add(new ValidationTestCase({
+        property: "display",
+        
+        valid: [
+            "inline",
+            "block",
+            "list-item",
+            "inline-block",
+            "table",
+            "inline-table",
+            "table-row-group",
+            "table-header-group",
+            "table-footer-group",
+            "table-row",
+            "table-column-group",
+            "table-column",
+            "table-cell",
+            "table-caption",
+            "box",
+            "inline-box",
+            "grid",
+            "inline-grid",
+            "none",
+            "inherit",
+            "-moz-box",
+            "-moz-inline-block",
+            "-moz-inline-box",
+            "-moz-inline-grid",
+            "-moz-inline-stack",
+            "-moz-inline-table",
+            "-moz-grid",
+            "-moz-grid-group",
+            "-moz-grid-line",
+            "-moz-groupbox",
+            "-moz-deck",
+            "-moz-popup",
+            "-moz-stack",
+            "-moz-marker",
+            "-webkit-box",
+            "-webkit-inline-box"
+            
+        ],
+        
+        invalid: {
+            "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box) but found 'foo'."
+        }  
+    }));
+    
+   
 
     suite.add(new ValidationTestCase({
         property: "min-height",

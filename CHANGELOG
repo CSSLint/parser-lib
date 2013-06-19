@@ -1,3 +1,31 @@
+June 19, 2013 - v0.2.3
+
+* Allow @font-face inside of @media (fixes #75) (Nicholas C. Zakas)
+* Merge pull request #74 from bkw/support-vh-vw-vm (Nicholas C. Zakas)
+* support viewport relative units vh, vw and vm (Bernhard K. Weisshuhn)
+* Merge pull request #73 from nschonni/add-addtional-node-env-for-travis (Nicholas C. Zakas)
+* Merge pull request #72 from nschonni/add-border-bottom-color-gh-71 (Nicholas C. Zakas)
+* CI tests on Node 0.6+ stable versions (Nick Schonning)
+* Add inherit as value for border-bottom-color (Nick Schonning)
+* Merge pull request #70 from nschonni/fix-failing-test-from-68 (Nicholas C. Zakas)
+* Fix display validation test (Nick Schonning)
+* Merge pull request #68 from TooooBug/master (Nicholas C. Zakas)
+* fix spelling. (TooBug)
+* add tests for 'display' (TooBug)
+* add '-webkit-box' and '-webkit-inline-box' (TooBug)
+* Merge pull request #66 from nschonni/patch-1 (Nicholas C. Zakas)
+* GHFM for README code blocks and titles (Nick Schonning)
+* Merge branch 'master' of github.com:nzakas/parser-lib (Nicholas C. Zakas)
+* Adding some tests for the viewport start and end events, and fixing two other existing tests that were broken (Jonathan Klein)
+* Adding support for the @viewport rule along with some tests for it (issue #59) (Jonathan Klein)
+* Merge pull request #62 from nschonni/add-border-inherit-gh-61 (Nicholas C. Zakas)
+* Merge pull request #64 from nschonni/merge-docs-and-readme (Nicholas C. Zakas)
+* Move docs content to README (Nick Schonning)
+* Merge pull request #63 from cistov/npm (Nicholas C. Zakas)
+* Test hooks & keyword data for npm (Artur Cistov)
+* Support inherit for border-radius short and long hand (Nick Schonning)
+
+
 January 17, 2013 - v0.2.2
 
 * Merge pull request #57 from nschonni/allow-device-pixel-ratio-gh-23 (Nicholas C. Zakas)
@@ -295,31 +323,3 @@ November 28, 2011 - v0.1.0
 * Implemented lookahead buffer for tokenstream (Nicholas C. Zakas)
 * Made comments and white space of CSS hidden from tokenstream (Nicholas C. Zakas)
 * Initial commit (Nicholas C. Zakas)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

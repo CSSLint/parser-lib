@@ -188,6 +188,7 @@
        <mkdir dir="${build.npm.dir}"/>
        <mkdir dir="${build.npm.dir}/lib"/>
        <copy file="${npm.dir}/package.json" todir="${build.npm.dir}"/>
+       <copy file="README.md" todir="${build.npm.dir}"/>
        <copy file="${build.dir}/${node.build.file}" todir="${build.npm.dir}/lib"/>
 
        <!-- CRLF will cause Node version to break -->

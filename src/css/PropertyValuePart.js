@@ -78,9 +78,6 @@ function PropertyValuePart(text, line, col){
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
-    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
-        this.type = "percentage";
-        this.value = +RegExp.$1;
     } else if (/^([+\-]?\d+)$/i.test(text)){  //integer
         this.type = "integer";
         this.value = +RegExp.$1;

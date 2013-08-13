@@ -699,7 +699,31 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "writing-mode",
 
+        valid: [
+            "horizontal-tb",
+            "vertical-rl",
+            "vertical-lr",
+            "lr-tb",
+            "rl-tb",
+            "tb-rl",
+            "bt-rl",
+            "tb-lr",
+            "bt-lr",
+            "lr-bt",
+            "rl-bt",
+            "lr",
+            "rl",
+            "tb",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb | inherit) but found 'foo'."
+        }
+    }));
 
     YUITest.TestRunner.add(suite);
 

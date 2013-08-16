@@ -5,12 +5,12 @@
  * @class Combinator
  * @extends parserlib.util.SyntaxUnit
  * @constructor
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function Combinator(text, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
     /**
@@ -19,7 +19,7 @@ function Combinator(text, line, col){
      * @property type
      */
     this.type = "unknown";
-    
+
     //pretty simple
     if (/^\s+$/.test(text)){
         this.type = "descendant";

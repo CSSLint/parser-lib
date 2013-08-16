@@ -725,6 +725,32 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "overflow-wrap",
+
+        valid: [
+            "normal",
+            "break-word"
+        ],
+
+        invalid: {
+            "foo" : "Expected (normal | break-word) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "word-wrap",
+
+        valid: [
+            "normal",
+            "break-word"
+        ],
+
+        invalid: {
+            "foo" : "Expected (normal | break-word) but found 'foo'."
+        }
+    }));
+
     YUITest.TestRunner.add(suite);
 
 })();

@@ -6,13 +6,13 @@
  * @class SelectorSubPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {String} type The type of selector modifier.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function SelectorSubPart(text, type, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 
     /**
@@ -21,7 +21,7 @@ function SelectorSubPart(text, type, line, col){
      * @property type
      */
     this.type = type;
-    
+
     /**
      * Some subparts have arguments, this represents them.
      * @type Array

@@ -9,7 +9,7 @@
  * @param {SyntaxUnit} value The value of the feature or null if none.
  */
 function MediaFeature(name, value){
-    
+
     SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
 
     /**

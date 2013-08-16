@@ -11,12 +11,12 @@
  *      if there is no element name.
  * @param {Array} modifiers Array of individual modifiers for the element.
  *      May be empty if there are none.
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function SelectorPart(elementName, modifiers, text, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 
     /**
@@ -26,7 +26,7 @@ function SelectorPart(elementName, modifiers, text, line, col){
      * @property elementName
      */
     this.elementName = elementName;
-    
+
     /**
      * The parts that come after the element name, such as class names, IDs,
      * pseudo classes/elements, etc.

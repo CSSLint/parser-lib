@@ -14,14 +14,14 @@
 function PropertyValue(parts, line, col){
 
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
-    
+
     /**
      * The parts that make up the selector.
      * @type Array
      * @property parts
      */
     this.parts = parts;
-    
+
 }
 
 PropertyValue.prototype = new SyntaxUnit();

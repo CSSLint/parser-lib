@@ -18,7 +18,7 @@ function Specificity(a, b, c, d){
 
 Specificity.prototype = {
     constructor: Specificity,
-    
+
     /**
      * Compare this specificity to another.
      * @param {Specificity} other The other specificity to compare to.
@@ -28,7 +28,7 @@ Specificity.prototype = {
     compare: function(other){
         var comps = ["a", "b", "c", "d"],
             i, len;
-            
+
         for (i=0, len=comps.length; i < len; i++){
             if (this[comps[i]] < other[comps[i]]){
                 return -1;
@@ -36,10 +36,10 @@ Specificity.prototype = {
                 return 1;
             }
         }
-        
+
         return 0;
     },
-    
+
     /**
      * Creates a numeric value for the specificity.
      * @return {int} The numeric value for the specificity.
@@ -48,7 +48,7 @@ Specificity.prototype = {
     valueOf: function(){
         return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
     },
-    
+
     /**
      * Returns a string representation for specificity.
      * @return {String} The string representation of specificity.
@@ -72,17 +72,17 @@ Specificity.calculate = function(selector){
     var i, len,
         part,
         b=0, c=0, d=0;
-        
+
     function updateValues(part){
-    
+
         var i, j, len, num,
             elementName = part.elementName ? part.elementName.text : "",
             modifier;
-    
+
         if (elementName && elementName.charAt(elementName.length-1) != "*") {
             d++;
-        }    
-    
+        }
+
         for (i=0, len=part.modifiers.length; i < len; i++){
             modifier = part.modifiers[i];
             switch(modifier.type){
@@ -90,34 +90,34 @@ Specificity.calculate = function(selector){
                 case "attribute":
                     c++;
                     break;
-                    
+
                 case "id":
                     b++;
                     break;
-                    
+
                 case "pseudo":
                     if (Pseudos.isElement(modifier.text)){
                         d++;
                     } else {
                         c++;
-                    }                    
+                    }
                     break;
-                    
+
                 case "not":
                     for (j=0, num=modifier.args.length; j < num; j++){
                         updateValues(modifier.args[j]);
                     }
-            }    
+            }
          }
     }
-    
+
     for (i=0, len=selector.parts.length; i < len; i++){
         part = selector.parts[i];
-        
+
         if (part instanceof SelectorPart){
-            updateValues(part);                
+            updateValues(part);
         }
     }
-    
+
     return new Specificity(0, b, c, d);
 };

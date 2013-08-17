@@ -56,7 +56,7 @@ SyntaxUnit.prototype = {
 
     //restore constructor
     constructor: SyntaxUnit,
-    
+
     /**
      * Returns the text representation of the unit.
      * @return {String} The text representation of the unit.
@@ -65,7 +65,7 @@ SyntaxUnit.prototype = {
     valueOf: function(){
         return this.toString();
     },
-    
+
     /**
      * Returns the text representation of the unit.
      * @return {String} The text representation of the unit.

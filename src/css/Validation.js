@@ -3,27 +3,27 @@
 var Validation = {
 
     validate: function(property, value){
-    
+
         //normalize name
         var name        = property.toString().toLowerCase(),
             parts       = value.parts,
             expression  = new PropertyValueIterator(value),
             spec        = Properties[name],
             part,
-            valid,            
+            valid,
             j, count,
             msg,
             types,
             last,
             literals,
             max, multi, group;
-            
+
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
         } else if (typeof spec != "number"){
-        
+
             //initialization
             if (typeof spec == "string"){
                 if (spec.indexOf("||") > -1) {
@@ -41,14 +41,14 @@ var Validation = {
         }
 
     },
-    
+
     singleProperty: function(types, expression, max, partial) {
 
         var result      = false,
             value       = expression.value,
             count       = 0,
             part;
-         
+
         while (expression.hasNext() && count < max) {
             result = ValidationTypes.isAny(expression, types);
             if (!result) {
@@ -56,21 +56,21 @@ var Validation = {
             }
             count++;
         }
-        
+
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
                 part = expression.peek();
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             } else {
                  throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
-            }        
+            }
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }          
-                 
-    },    
-    
+        }
+
+    },
+
     multiProperty: function (types, expression, comma, max) {
 
         var result      = false,
@@ -78,7 +78,7 @@ var Validation = {
             count       = 0,
             sep         = false,
             part;
-            
+
         while(expression.hasNext() && !result && count < max) {
             if (ValidationTypes.isAny(expression, types)) {
                 count++;
@@ -97,7 +97,7 @@ var Validation = {
 
             }
         }
-        
+
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
                 part = expression.peek();
@@ -105,19 +105,19 @@ var Validation = {
             } else {
                 part = expression.previous();
                 if (comma && part == ",") {
-                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col); 
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
                 } else {
                     throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
                 }
             }
-        
+
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }  
+        }
 
     },
-    
+
     groupProperty: function (types, expression, comma) {
 
         var result      = false,
@@ -127,11 +127,11 @@ var Validation = {
             partial     = false,
             name,
             part;
-            
+
         while(expression.hasNext() && !result) {
             name = ValidationTypes.isAnyOfGroup(expression, types);
             if (name) {
-            
+
                 //no dupes
                 if (groups[name]) {
                     break;
@@ -139,7 +139,7 @@ var Validation = {
                     groups[name] = 1;
                     groups.count++;
                     partial = true;
-                    
+
                     if (groups.count == typeCount || !expression.hasNext()) {
                         result = true;
                     }
@@ -148,8 +148,8 @@ var Validation = {
                 break;
             }
         }
-        
-        if (!result) {        
+
+        if (!result) {
             if (partial && expression.hasNext()) {
                     part = expression.peek();
                     throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
@@ -159,9 +159,9 @@ var Validation = {
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }           
+        }
     }
 
-    
+
 
 };

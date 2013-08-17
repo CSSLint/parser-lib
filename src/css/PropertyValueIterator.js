@@ -9,14 +9,14 @@
  */
 function PropertyValueIterator(value){
 
-    /** 
+    /**
      * Iterator value
      * @type int
      * @property _i
      * @private
      */
     this._i = 0;
-    
+
     /**
      * The parts that make up the value.
      * @type Array
@@ -24,7 +24,7 @@ function PropertyValueIterator(value){
      * @private
      */
     this._parts = value.parts;
-    
+
     /**
      * Keeps track of bookmarks along the way.
      * @type Array
@@ -32,14 +32,14 @@ function PropertyValueIterator(value){
      * @private
      */
     this._marks = [];
-    
+
     /**
      * Holds the original property value.
      * @type parserlib.css.PropertyValue
      * @property value
      */
     this.value = value;
-    
+
 }
 
 /**
@@ -104,7 +104,7 @@ PropertyValueIterator.prototype.next = function(){
 /**
  * Returns the previous part of the property value or null if there is no
  * previous part.
- * @return {parserlib.css.PropertyValuePart} The previous part of the 
+ * @return {parserlib.css.PropertyValuePart} The previous part of the
  * property value or null if there is no next part.
  * @method previous
  */

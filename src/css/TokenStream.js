@@ -360,7 +360,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
             if (rule.length > 1){
-                tt = Tokens.UNKNOWN_SYM;                
+                tt = Tokens.UNKNOWN_SYM;
             } else {
                 tt = Tokens.CHAR;
                 rule = first;
@@ -948,30 +948,30 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         return ident;
     },
-    
+
     readEscape: function(first){
         var reader  = this._reader,
             cssEscape = first || "",
             i       = 0,
-            c       = reader.peek();    
-    
+            c       = reader.peek();
+
         if (isHexDigit(c)){
             do {
                 cssEscape += reader.read();
                 c = reader.peek();
             } while(c && isHexDigit(c) && ++i < 6);
         }
-        
+
         if (cssEscape.length == 3 && /\s/.test(c) ||
             cssEscape.length == 7 || cssEscape.length == 1){
                 reader.read();
         } else {
             c = "";
         }
-        
+
         return cssEscape + c;
     },
-    
+
     readComment: function(first){
         var reader  = this._reader,
             comment = first || "",

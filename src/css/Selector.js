@@ -11,16 +11,16 @@
  * @param {int} col The column of text on which the unit resides.
  */
 function Selector(parts, line, col){
-    
+
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
-    
+
     /**
      * The parts that make up the selector.
      * @type Array
      * @property parts
      */
     this.parts = parts;
-    
+
     /**
      * The specificity of the selector.
      * @type parserlib.css.Specificity

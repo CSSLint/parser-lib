@@ -19,7 +19,7 @@ To use the CSS parser in a Node.js script, include it at the beginning:
 ```js
 var parserlib = require("./node-parserlib");
 ```
-    
+
 ### Rhino
 
 To use the CSS parser in a Rhino script, include it at the beginning:
@@ -32,7 +32,7 @@ load("parserlib.js");
 To use the CSS parser on an HTML page, you can either include the entire library on your page:
 ```html
 <script src="parserlib.js"></script>
-```    
+```
 Or include it as its component parts, the ParserLib core and the CSS parser:
 ```html
 <script src="parserlib-core.js"></script>
@@ -46,7 +46,7 @@ Basic usage
 You can create a new instance of the parser by using the following code:
 ```js
 var parser = new parserlib.css.Parser();
-```    
+```
 The constructor accepts an options object that specifies additional features the parser should use. The available options are:
 
 * `starHack` - set to true to treat properties with a leading asterisk as if the asterisk wasn't there. Default is false.
@@ -61,7 +61,7 @@ var parser = new parserlib.css.Parser({ starHack: true, underscoreHack: true });
 You can then parse a string of CSS code by passing into the `parse()` method:
 ```js
 parser.parse(someCSSText);
-```    
+```
 The `parse()` method throws an error if a non-recoverable syntax error occurs, otherwise it finishes silently. This method does not return a value nor does it build up an abstract syntax tree (AST) for you, it simply parses the CSS text and fires events at important moments along the parse.
 
 Note: The `parseStyleSheet()` method is provided for compatibility with SAC-based APIs but does the exact same thing as `parse()`.
@@ -87,7 +87,7 @@ The `parserlib.css.MediaQuery` type represents all parts of a media query. Each 
 For example, consider the following media query:
 ```css
 only screen and (max-device-width: 768px) and (orientation:portrait)
-```    
+```
 A corresponding object would have the following values:
 
 * `modifier` = "only"
@@ -126,7 +126,7 @@ li.selected > a:hover
 ```
 This selector has three parts: `li.selected`, `>`, and `a:hover`. The first part is a `SelectorPart`, the second is a `Combinator`, and the third is a `SelectorPart`. Each `SelectorPart` is made up of an optional element name followed by an ID, class, attribute condition, pseudo class, and/or pseudo element.
 
-Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one, and a `modifiers` property, which is an array of `parserlib.css.SelectorSubPart` objects. Each `SelectorSubPart` object represents the smallest individual piece of a selector and has a `type` property indicating the type of subpart, "elementName", "class", "attribute", "pseudo", "id", "not". If the `type` is "not", then the `args` property contains an array of `SelectorPart` arguments that were passed to `not()`. 
+Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one, and a `modifiers` property, which is an array of `parserlib.css.SelectorSubPart` objects. Each `SelectorSubPart` object represents the smallest individual piece of a selector and has a `type` property indicating the type of subpart, "elementName", "class", "attribute", "pseudo", "id", "not". If the `type` is "not", then the `args` property contains an array of `SelectorPart` arguments that were passed to `not()`.
 
 Each instance of `parserlib.css.Combinator` has an additional `type` property that indicates the type of combinator: "descendant", "child", "sibling", or "adjacent-sibling".
 
@@ -195,7 +195,7 @@ parser.addListener("endfontface", function(event){
 });
 ```
 ### `startpage` and `endpage` events
-    
+
 The `startpage` event fires when `@page` is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after `@page`. The `event` object has two properties: `id`, which is the page ID, and `pseudo`, which is the page pseudo class. Example:
 ```js
 parser.addListener("startpage", function(event){
@@ -207,7 +207,7 @@ parser.addListener("endpage", function(event){
 });
 ```
 ### `startpagemargin` and `endpagemargin` events
-    
+
 The `startpagemargin` event fires when a page margin directive (such as `@top-left`) is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after the page margin. The `event` object has a `margin` property, which contains the actual page margin encountered. Example:
 ```js
 parser.addListener("startpagemargin", function(event){
@@ -220,7 +220,7 @@ parser.addListener("endpagemargin", function(event){
 });
 ```
 ### `startmedia` and `endmedia` events
-    
+
 The `startmedia` event fires when `@media` is encountered and the `endmedia` event fires just after the closing right brace (`}`) is encountered after `@media`. The `event` object has one property, `media`, which is an array of `parserlib.css.MediaQuery` objects. Example:
 ```js
 parser.addListener("startpagemargin", function(event){
@@ -233,7 +233,7 @@ parser.addListener("endpagemargin", function(event){
 });
 ```
 ### `startkeyframes` and `endkeyframes` events
-    
+
 The `startkeyframes` event fires when `@keyframes` (or any vendor prefixed version) is encountered and the `endkeyframes` event fires just after the closing right brace (`}`) is encountered after `@keyframes`. The `event` object has one property, `name`, which is the name of the animation. Example:
 ```js
 parser.addListener("startkeyframes", function(event){
@@ -246,23 +246,23 @@ parser.addListener("endkeyframes", function(event){
 });
 ```
 ### `startrule` and `endrule` events
-    
-The `startrule` event fires just after all selectors on a rule have been parsed and the `endrule` event fires just after the closing right brace (`}`) is encountered for the rule. The `event` object has one additional property, `selectors`, which is an array of `parserlib.css.Selector` objects. Example:    
-```js    
+
+The `startrule` event fires just after all selectors on a rule have been parsed and the `endrule` event fires just after the closing right brace (`}`) is encountered for the rule. The `event` object has one additional property, `selectors`, which is an array of `parserlib.css.Selector` objects. Example:
+```js
 parser.addListener("startrule", function(event){
     console.log("Starting rule with " + event.selectors.length + " selector(s)");
-    
+
     for (var i=0,len=event.selectors.length; i < len; i++){
         var selector = event.selectors[i];
-        
+
         console.log("  Selector #1 (" + selector.line + "," + selector.col + ")");
-        
+
         for (var j=0,count=selector.parts.length; j < count; j++){
             console.log("    Unit #" + (j+1));
-            
+
             if (selector.parts[j] instanceof parserlib.css.SelectorPart){
                 console.log("      Element name: " + selector.parts[j].elementName);
-                
+
                 for (var k=0; k < selector.parts[j].modifiers.length; k++){
                     console.log("        Modifier: " + selector.parts[j].modifiers[k]);
                 }

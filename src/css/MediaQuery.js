@@ -12,8 +12,8 @@
  * @param {int} col The column of text on which the unit resides.
  */
 function MediaQuery(modifier, mediaType, features, line, col){
-    
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE); 
+
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")
@@ -27,8 +27,8 @@ function MediaQuery(modifier, mediaType, features, line, col){
      * @type String
      * @property mediaType
      */
-    this.mediaType = mediaType;    
-    
+    this.mediaType = mediaType;
+
     /**
      * The parts that make up the selector.
      * @type Array

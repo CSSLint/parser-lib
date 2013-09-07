@@ -31,7 +31,7 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
-    { name: "VIEWPORT_SYM", text: "@viewport"},
+    { name: "VIEWPORT_SYM", text: ["@viewport", "@-ms-viewport"]},
     { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
 

@@ -263,7 +263,7 @@ var Properties = {
 
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
     "dominant-baseline"             : 1,
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
@@ -287,6 +287,12 @@ var Properties = {
     "flex-grow"                     : "<number>",
     "flex-shrink"                   : "<number>",
     "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
+    "-ms-flex"                      : "[[ <number> <number>? ] || [ <length> || <percentage> || auto ] ] | none",
+    "-ms-flex-align"                : "start | end | center | stretch | baseline",
+    "-ms-flex-direction"            : "row | column | row-reverse | column-reverse | inherit",
+    "-ms-flex-order"                : "<number>",
+    "-ms-flex-pack"                 : "start | end | center | justify",
+    "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
     "float"                         : "left | right | none | inherit",
     "float-offset"                  : 1,
     "font"                          : 1,

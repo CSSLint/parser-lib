@@ -5,6 +5,9 @@ var Properties = {
     "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
     "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
     "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
+    "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
     "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "animation"                     : 1,
@@ -287,6 +290,13 @@ var Properties = {
     "flex-grow"                     : "<number>",
     "flex-shrink"                   : "<number>",
     "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
+    "-webkit-flex"                  : "none | [ <flex-grow> <flex-shrink>? || <flex-basis>",
+    "-webkit-flex-basis"            : "<width>",
+    "-webkit-flex-direction"        : "row | row-reverse | column | column-reverse",
+    "-webkit-flex-flow"             : "<flex-direction> || <flex-wrap>",
+    "-webkit-flex-grow"             : "<number>",
+    "-webkit-flex-shrink"           : "<number>",
+    "-webkit-flex-wrap"             : "nowrap | wrap | wrap-reverse",
     "-ms-flex"                      : "[[ <number> <number>? ] || [ <length> || <percentage> || auto ] ] | none",
     "-ms-flex-align"                : "start | end | center | stretch | baseline",
     "-ms-flex-direction"            : "row | column | row-reverse | column-reverse | inherit",
@@ -338,6 +348,7 @@ var Properties = {
 
     //J
     "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
+    "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
     //L
     "left"                          : "<margin-width> | inherit",
@@ -383,6 +394,7 @@ var Properties = {
     //O
     "opacity"                       : "<number> | inherit",
     "order"                         : "<integer>",
+    "-webkit-order"                 : "<integer>",
     "orphans"                       : "<integer> | inherit",
     "outline"                       : 1,
     "outline-color"                 : "<color> | invert | inherit",

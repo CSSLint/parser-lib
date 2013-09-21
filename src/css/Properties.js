@@ -2,6 +2,9 @@
 var Properties = {
 
     //A
+    "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
+    "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
     "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "animation"                     : 1,
@@ -251,7 +254,7 @@ var Properties = {
 
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
     "dominant-baseline"             : 1,
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
@@ -268,6 +271,13 @@ var Properties = {
     "filter"                        : 1,
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
+    "flex"                          : "none | [ <flex-grow> <flex-shrink>? || <flex-basis>",
+    "flex-basis"                    : "<width>",
+    "flex-direction"                : "row | row-reverse | column | column-reverse",
+    "flex-flow"                     : "<flex-direction> || <flex-wrap>",
+    "flex-grow"                     : "<number>",
+    "flex-shrink"                   : "<number>",
+    "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
     "float"                         : "left | right | none | inherit",
     "float-offset"                  : 1,
     "font"                          : 1,
@@ -310,6 +320,9 @@ var Properties = {
     "image-rendering"               : 1,
     "image-resolution"              : 1,
     "inline-box-align"              : "initial | last | <integer>",
+
+    //J
+    "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
 
     //L
     "left"                          : "<margin-width> | inherit",
@@ -354,6 +367,7 @@ var Properties = {
 
     //O
     "opacity"                       : "<number> | inherit",
+    "order"                         : "<integer>",
     "orphans"                       : "<integer> | inherit",
     "outline"                       : 1,
     "outline-color"                 : "<color> | invert | inherit",

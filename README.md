@@ -196,7 +196,7 @@ parser.addListener("endfontface", function(event){
 ```
 ### `startpage` and `endpage` events
 
-The `startpage` event fires when `@page` is encountered and the `endfontface` event fires just after the closing right brace (`}`) is encountered after `@page`. The `event` object has two properties: `id`, which is the page ID, and `pseudo`, which is the page pseudo class. Example:
+The `startpage` event fires when `@page` is encountered and the `endpage` event fires just after the closing right brace (`}`) is encountered after `@page`. The `event` object has two properties: `id`, which is the page ID, and `pseudo`, which is the page pseudo class. Example:
 ```js
 parser.addListener("startpage", function(event){
     console.log("Starting page with ID=" + event.id + " and pseudo=" + event.pseudo);

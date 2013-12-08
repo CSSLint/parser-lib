@@ -9,7 +9,7 @@ var Properties = {
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
     "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
-    "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical | inherit",
     "animation"                     : 1,
     "animation-delay"               : { multi: "<time>", comma: true },
     "animation-direction"           : { multi: "normal | alternate", comma: true },
@@ -93,7 +93,7 @@ var Properties = {
     "background-position"           : { multi: "<bg-position>", comma: true },
     "background-repeat"             : { multi: "<repeat-style>" },
     "background-size"               : { multi: "<bg-size>", comma: true },
-    "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "baseline-shift"                : "baseline | sub | super | <percentage> | <length> | inherit",
     "behavior"                      : 1,
     "binding"                       : 1,
     "bleed"                         : "<length>",
@@ -245,8 +245,13 @@ var Properties = {
     "caption-side"                  : "top | bottom | inherit",
     "clear"                         : "none | right | left | both | inherit",
     "clip"                          : 1,
+    "clip-path"                     : 1,
+    "clip-rule"                     : "nonzero | evenodd | inherit",
     "color"                         : "<color> | inherit",
+    "color-interpolation"           : "auto | sRGB | linearRGB | inherit",
+    "color-interpolation-filters"   : "auto | sRGB | linearRGB | inherit",
     "color-profile"                 : 1,
+    "color-rendering"               : "auto | optimizeSpeed | optimizeQuality | inherit",
     "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
     "column-gap"                    : "<length> | normal",
@@ -269,7 +274,7 @@ var Properties = {
     //D
     "direction"                     : "ltr | rtl | inherit",
     "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
-    "dominant-baseline"             : 1,
+    "dominant-baseline"             : "auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge | inherit",
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
@@ -280,8 +285,12 @@ var Properties = {
     //E
     "elevation"                     : "<angle> | below | level | above | higher | lower | inherit",
     "empty-cells"                   : "show | hide | inherit",
+    "enable-background"             : 1,
 
     //F
+    "fill"                          : 1,
+    "fill-opacity"                  : "<number> | inherit",
+    "fill-rule"                     : "nonzero | evenodd | inherit",
     "filter"                        : 1,
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
@@ -307,6 +316,8 @@ var Properties = {
     "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
     "float"                         : "left | right | none | inherit",
     "float-offset"                  : 1,
+    "flood-color"                   : 1,
+    "flood-opacity"                 : "<number> | inherit",
     "font"                          : 1,
     "font-family"                   : 1,
     "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
@@ -317,6 +328,8 @@ var Properties = {
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
 
     //G
+    "glyph-orientation-horizontal"  : "<angle> | inherit",
+    "glyph-orientation-vertical"    : "auto | <angle> | inherit",
     "grid-cell-stacking"            : "columns | rows | layer",
     "grid-column"                   : 1,
     "grid-columns"                  : 1,
@@ -344,7 +357,7 @@ var Properties = {
     //I
     "icon"                          : 1,
     "image-orientation"             : "angle | auto",
-    "image-rendering"               : 1,
+    "image-rendering"               : "auto | optimizeSpeed | optimizeQuality | inherit",
     "image-resolution"              : 1,
     "inline-box-align"              : "initial | last | <integer>",
 
@@ -352,9 +365,13 @@ var Properties = {
     "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
     "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
+    //K
+    "kerning"                       : "auto | <length> | inherit",
+
     //L
     "left"                          : "<margin-width> | inherit",
     "letter-spacing"                : "<length> | normal | inherit",
+    "lighting-color"                : 1,
     "line-height"                   : "<number> | <length> | <percentage> | normal | inherit",
     "line-break"                    : "auto | loose | normal | strict",
     "line-stacking"                 : 1,
@@ -375,11 +392,16 @@ var Properties = {
     "mark"                          : 1,
     "mark-after"                    : 1,
     "mark-before"                   : 1,
+    "marker"                        : 1,
+    "marker-end"                    : 1,
+    "marker-mid"                    : 1,
+    "marker-start"                  : 1,
     "marks"                         : 1,
     "marquee-direction"             : 1,
     "marquee-play-count"            : 1,
     "marquee-speed"                 : 1,
     "marquee-style"                 : 1,
+    "mask"                          : 1,
     "max-height"                    : "<length> | <percentage> | <content-sizing> | none | inherit",
     "max-width"                     : "<length> | <percentage> | <content-sizing> | none | inherit",
     "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit",
@@ -453,6 +475,7 @@ var Properties = {
     "ruby-span"                     : 1,
 
     //S
+    "shape-rendering"               : "auto | optimizeSpeed | crispEdges | geometricPrecision | inherit",
     "size"                          : 1,
     "speak"                         : "normal | none | spell-out | inherit",
     "speak-header"                  : "once | always | inherit",
@@ -460,9 +483,20 @@ var Properties = {
     "speak-punctuation"             : "code | none | inherit",
     "speech-rate"                   : 1,
     "src"                           : 1,
+    "stop-color"                    : 1,
+    "stop-opacity"                  : "<number> | inherit",
     "stress"                        : 1,
     "string-set"                    : 1,
+    "stroke"                        : 1,
+    "stroke-dasharray"              : 1,
+    "stroke-dashoffset"             : "<percentage> | <length> | inherit",
+    "stroke-linecap"                : "butt | round | square | inherit",
+    "stroke-linejoin"               : "miter | round | bevel | inherit",
+    "stroke-miterlimit"             : "<number> | inherit",
+    "stroke-opacity"                : "<number> | inherit",
+    "stroke-width"                  : "<percentage> | <length> | inherit",
 
+    //T
     "table-layout"                  : "auto | fixed | inherit",
     "tab-size"                      : "<integer> | <length>",
     "target"                        : 1,
@@ -471,6 +505,7 @@ var Properties = {
     "target-position"               : 1,
     "text-align"                    : "left | right | center | justify | inherit" ,
     "text-align-last"               : 1,
+    "text-anchor"                   : "start | middle | end | inherit",
     "text-decoration"               : 1,
     "text-emphasis"                 : 1,
     "text-height"                   : 1,

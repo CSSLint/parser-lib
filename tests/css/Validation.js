@@ -84,6 +84,30 @@ var YUITest = require("yuitest"),
     var suite = new YUITest.TestSuite("Validation Tests");
 
     suite.add(new ValidationTestCase({
+        property: "alignment-baseline",
+
+        valid: [
+            "auto",
+            "baseline",
+            "use-script",
+            "before-edge",
+            "text-before-edge",
+            "after-edge",
+            "text-after-edge",
+            "central",
+            "middle",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-direction",
 
         valid: [
@@ -312,8 +336,21 @@ var YUITest = require("yuitest"),
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "baseline-shift",
 
+        valid: [
+            "baseline",
+            "sub",
+            "super",
+            "5%",
+            "2px"
+        ],
 
+        invalid: {
+            "foo" : "Expected (baseline | sub | super | <percentage> | <length>) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border",
@@ -684,6 +721,48 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "color-interpolation",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-interpolation-filters",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "display",
 
         valid: [
@@ -738,6 +817,61 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "dominant-baseline",
+
+        valid: [
+            "auto",
+            "use-script",
+            "no-change",
+            "reset-size",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "central",
+            "middle",
+            "text-after-edge",
+            "text-before-edge"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "flood-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
         }
     }));
 
@@ -881,6 +1015,35 @@ var YUITest = require("yuitest"),
             "lining-nums proportional-nums diagonal-fractions ordinal",
             "oldstyle-nums tabular-nums stacked-fractions slashed-zero"
         ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "image-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "kerning",
+
+        valid: [
+            "auto",
+            "0.1em",
+            "1px"
+        ],
+
+        invalid: {
+            "5%" : "Expected (auto | <length>) but found '5%'.",
+            "foo" : "Expected (auto | <length>) but found 'foo'."
+        }
     }));
 
     suite.add(new ValidationTestCase({
@@ -1116,6 +1279,62 @@ var YUITest = require("yuitest"),
         invalid: {
             "70rad" : "Expected (auto | <glyph-angle>) but found '70rad'.",
             "4grad" : "Expected (auto | <glyph-angle>) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "shape-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "crispEdges",
+            "geometricPrecision"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | crispEdges | geometricPrecision) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stop-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-width",
+
+        valid: [
+            "5%",
+            "2px"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<percentage> | <length>) but found 'foo'."
         }
     }));
 

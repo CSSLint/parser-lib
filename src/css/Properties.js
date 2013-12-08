@@ -491,7 +491,7 @@ var Properties = {
     "transition-timing-function"    : 1,
 
     //U
-    "unicode-bidi"                  : "normal | embed | bidi-override | inherit",
+    "unicode-bidi"                  : "normal | embed | isolate | bidi-override | isolate-override | plaintext | inherit",
     "user-modify"                   : "read-only | read-write | write-only | inherit",
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
 

@@ -755,6 +755,24 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "unicode-bidi",
+
+        valid: [
+            "normal",
+            "embed",
+            "isolate",
+            "bidi-override",
+            "isolate-override",
+            "plaintext",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (normal | embed | isolate | bidi-override | isolate-override | plaintext | inherit) but found 'foo'."
+        }
+    }));
+
     YUITest.TestRunner.add(suite);
 
 })();

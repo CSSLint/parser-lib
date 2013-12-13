@@ -675,6 +675,36 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "-ms-touch-action",
+
+        valid: [
+            "auto",
+            "none",
+            "pan-x",
+            "pan-y"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "touch-action",
+
+        valid: [
+            "auto",
+            "none",
+            "pan-x",
+            "pan-y"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "z-index",
 
         valid: [

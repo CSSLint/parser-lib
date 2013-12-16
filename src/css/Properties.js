@@ -481,6 +481,8 @@ var Properties = {
     "text-transform"                : "capitalize | uppercase | lowercase | none | inherit",
     "text-wrap"                     : "normal | none | avoid",
     "top"                           : "<margin-width> | inherit",
+    "-ms-touch-action"              : "auto | none | pan-x | pan-y",
+    "touch-action"                  : "auto | none | pan-x | pan-y",
     "transform"                     : 1,
     "transform-origin"              : 1,
     "transform-style"               : 1,

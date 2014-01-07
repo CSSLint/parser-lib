@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.3, Build time: 19-June-2013 11:16:15 */
+/* Version v0.2.4, Build time: 7-January-2014 07:32:49 */
 var parserlib = {};
 (function(){
 
@@ -40,7 +40,7 @@ function EventTarget(){
      * @property _listeners
      * @private
      */
-    this._listeners = {};    
+    this._listeners = {};
 }
 
 EventTarget.prototype = {
@@ -62,14 +62,14 @@ EventTarget.prototype = {
 
         this._listeners[type].push(listener);
     },
-    
+
     /**
      * Fires an event based on the passed-in object.
      * @param {Object|String} event An object with at least a 'type' attribute
      *      or a string indicating the event name.
      * @return {void}
      * @method fire
-     */    
+     */
     fire: function(event){
         if (typeof event == "string"){
             event = { type: event };
@@ -77,19 +77,19 @@ EventTarget.prototype = {
         if (typeof event.target != "undefined"){
             event.target = this;
         }
-        
+
         if (typeof event.type == "undefined"){
             throw new Error("Event object missing 'type' property.");
         }
-        
+
         if (this._listeners[event.type]){
-        
+
             //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
             for (var i=0, len=listeners.length; i < len; i++){
                 listeners[i].call(this, event);
             }
-        }            
+        }
     },
 
     /**
@@ -108,9 +108,9 @@ EventTarget.prototype = {
                     break;
                 }
             }
-            
-            
-        }            
+
+
+        }
     }
 };
 /**
@@ -474,7 +474,7 @@ SyntaxUnit.prototype = {
 
     //restore constructor
     constructor: SyntaxUnit,
-    
+
     /**
      * Returns the text representation of the unit.
      * @return {String} The text representation of the unit.
@@ -483,7 +483,7 @@ SyntaxUnit.prototype = {
     valueOf: function(){
         return this.toString();
     },
-    
+
     /**
      * Returns the text representation of the unit.
      * @return {String} The text representation of the unit.
@@ -501,7 +501,7 @@ SyntaxUnit.prototype = {
  * @class TokenStreamBase
  * @namespace parserlib.util
  * @constructor
- * @param {String|StringReader} input The text to tokenize or a reader from 
+ * @param {String|StringReader} input The text to tokenize or a reader from
  *      which to read the input.
  */
 function TokenStreamBase(input, tokenData){
@@ -513,15 +513,15 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     this._reader = input ? new StringReader(input.toString()) : null;
-    
+
     /**
      * Token object for the last consumed token.
      * @type Token
      * @property _token
      * @private
      */
-    this._token = null;    
-    
+    this._token = null;
+
     /**
      * The array of token information.
      * @type Array
@@ -529,7 +529,7 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     this._tokenData = tokenData;
-    
+
     /**
      * Lookahead token buffer.
      * @type Array
@@ -537,7 +537,7 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     this._lt = [];
-    
+
     /**
      * Lookahead token buffer index.
      * @type int
@@ -545,7 +545,7 @@ function TokenStreamBase(input, tokenData){
      * @private
      */
     this._ltIndex = 0;
-    
+
     this._ltIndexCache = [];
 }
 
@@ -565,7 +565,7 @@ TokenStreamBase.createTokenData = function(tokens){
         tokenData     = tokens.concat([]),
         i            = 0,
         len            = tokenData.length+1;
-    
+
     tokenData.UNKNOWN = -1;
     tokenData.unshift({name:"EOF"});
 
@@ -576,27 +576,27 @@ TokenStreamBase.createTokenData = function(tokens){
             typeMap[tokenData[i].text] = i;
         }
     }
-    
+
     tokenData.name = function(tt){
         return nameMap[tt];
     };
-    
+
     tokenData.type = function(c){
         return typeMap[c];
     };
-    
+
     return tokenData;
 };
 
 TokenStreamBase.prototype = {
 
     //restore constructor
-    constructor: TokenStreamBase,    
-    
+    constructor: TokenStreamBase,
+
     //-------------------------------------------------------------------------
     // Matching methods
     //-------------------------------------------------------------------------
-    
+
     /**
      * Determines if the next token matches the given token type.
      * If so, that token is consumed; if not, the token is placed
@@ -612,27 +612,27 @@ TokenStreamBase.prototype = {
      * @method match
      */
     match: function(tokenTypes, channel){
-    
+
         //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)){
             tokenTypes = [tokenTypes];
         }
-                
+
         var tt  = this.get(channel),
             i   = 0,
             len = tokenTypes.length;
-            
+
         while(i < len){
             if (tt == tokenTypes[i++]){
                 return true;
             }
         }
-        
+
         //no match found, put the token back
         this.unget();
         return false;
-    },    
-    
+    },
+
     /**
      * Determines if the next token matches the given token type.
      * If so, that token is consumed; if not, an error is thrown.
@@ -643,7 +643,7 @@ TokenStreamBase.prototype = {
      *      provided, reads from the default (unnamed) channel.
      * @return {void}
      * @method mustMatch
-     */    
+     */
     mustMatch: function(tokenTypes, channel){
 
         var token;
@@ -653,17 +653,17 @@ TokenStreamBase.prototype = {
             tokenTypes = [tokenTypes];
         }
 
-        if (!this.match.apply(this, arguments)){    
+        if (!this.match.apply(this, arguments)){
             token = this.LT(1);
-            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name + 
+            throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
         }
     },
-    
+
     //-------------------------------------------------------------------------
     // Consuming methods
     //-------------------------------------------------------------------------
-    
+
     /**
      * Keeps reading from the token stream until either one of the specified
      * token types is found or until the end of the input is reached.
@@ -676,21 +676,21 @@ TokenStreamBase.prototype = {
      * @method advance
      */
     advance: function(tokenTypes, channel){
-        
+
         while(this.LA(0) !== 0 && !this.match(tokenTypes, channel)){
             this.get();
         }
 
-        return this.LA(0);    
+        return this.LA(0);
     },
-    
+
     /**
-     * Consumes the next token from the token stream. 
+     * Consumes the next token from the token stream.
      * @return {int} The token type of the token that was just consumed.
      * @method get
-     */      
+     */
     get: function(channel){
-    
+
         var tokenInfo   = this._tokenData,
             reader      = this._reader,
             value,
@@ -699,14 +699,14 @@ TokenStreamBase.prototype = {
             found       = false,
             token,
             info;
-            
+
         //check the lookahead buffer first
-        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){  
-                           
+        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){
+
             i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
-            
+
             //obey channels logic
             while((info.channel !== undefined && channel !== info.channel) &&
                     this._ltIndex < this._lt.length){
@@ -714,7 +714,7 @@ TokenStreamBase.prototype = {
                 info = tokenInfo[this._token.type];
                 i++;
             }
-            
+
             //here be dragons
             if ((info.channel === undefined || channel === info.channel) &&
                     this._ltIndex <= this._lt.length){
@@ -722,45 +722,45 @@ TokenStreamBase.prototype = {
                 return this._token.type;
             }
         }
-        
+
         //call token retriever method
         token = this._getToken();
 
         //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide){
-                     
+
             //apply token channel
             token.channel = tokenInfo[token.type].channel;
-         
+
             //save for later
             this._token = token;
             this._lt.push(token);
 
             //save space that will be moved (must be done before array is truncated)
-            this._ltIndexCache.push(this._lt.length - this._ltIndex + i);  
-        
+            this._ltIndexCache.push(this._lt.length - this._ltIndex + i);
+
             //keep the buffer under 5 items
             if (this._lt.length > 5){
-                this._lt.shift();                
+                this._lt.shift();
             }
-            
+
             //also keep the shift buffer under 5 items
             if (this._ltIndexCache.length > 5){
                 this._ltIndexCache.shift();
             }
-                
+
             //update lookahead index
             this._ltIndex = this._lt.length;
         }
-            
+
         /*
          * Skip to the next token if:
          * 1. The token type is marked as hidden.
          * 2. The token type has a channel specified and it isn't the current channel.
          */
         info = tokenInfo[token.type];
-        if (info && 
-                (info.hide || 
+        if (info &&
+                (info.hide ||
                 (info.channel !== undefined && channel !== info.channel))){
             return this.get(channel);
         } else {
@@ -768,7 +768,7 @@ TokenStreamBase.prototype = {
             return token.type;
         }
     },
-    
+
     /**
      * Looks ahead a certain number of tokens and returns the token type at
      * that position. This will throw an error if you lookahead past the
@@ -787,34 +787,34 @@ TokenStreamBase.prototype = {
             if (index > 5){
                 throw new Error("Too much lookahead.");
             }
-        
+
             //get all those tokens
             while(total){
-                tt = this.get();   
-                total--;                            
+                tt = this.get();
+                total--;
             }
-            
+
             //unget all those tokens
             while(total < index){
                 this.unget();
                 total++;
             }
         } else if (index < 0){
-        
+
             if(this._lt[this._ltIndex+index]){
                 tt = this._lt[this._ltIndex+index].type;
             } else {
                 throw new Error("Too much lookbehind.");
             }
-        
+
         } else {
             tt = this._token.type;
         }
-        
+
         return tt;
-    
+
     },
-    
+
     /**
      * Looks ahead a certain number of tokens and returns the token at
      * that position. This will throw an error if you lookahead past the
@@ -824,18 +824,18 @@ TokenStreamBase.prototype = {
      *      current token, 1 for the next, -1 for the previous, etc.
      * @return {Object} The token of the token in the given position.
      * @method LA
-     */    
+     */
     LT: function(index){
-    
+
         //lookahead first to prime the token buffer
         this.LA(index);
-        
+
         //now find the token, subtract one because _ltIndex is already at the next index
-        return this._lt[this._ltIndex+index-1];    
+        return this._lt[this._ltIndex+index-1];
     },
-    
+
     /**
-     * Returns the token type for the next token in the stream without 
+     * Returns the token type for the next token in the stream without
      * consuming it.
      * @return {int} The token type of the next token in the stream.
      * @method peek
@@ -843,7 +843,7 @@ TokenStreamBase.prototype = {
     peek: function(){
         return this.LA(1);
     },
-    
+
     /**
      * Returns the actual token object for the last consumed token.
      * @return {Token} The token object for the last consumed token.
@@ -852,7 +852,7 @@ TokenStreamBase.prototype = {
     token: function(){
         return this._token;
     },
-    
+
     /**
      * Returns the name of the token for the given token type.
      * @param {int} tokenType The type of token to get the name of.
@@ -867,22 +867,22 @@ TokenStreamBase.prototype = {
             return this._tokenData[tokenType].name;
         }
     },
-    
+
     /**
      * Returns the token type value for the given token name.
      * @param {String} tokenName The name of the token whose value should be returned.
      * @return {int} The token type value for the given token name or -1
      *      for an unknown token.
      * @method tokenName
-     */    
+     */
     tokenType: function(tokenName){
         return this._tokenData[tokenName] || -1;
     },
-    
+
     /**
      * Returns the last consumed token to the token stream.
      * @method unget
-     */      
+     */
     unget: function(){
         //if (this._ltIndex > -1){
         if (this._ltIndexCache.length){
@@ -931,7 +931,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Version v0.2.3, Build time: 19-June-2013 11:16:15 */
+/* Version v0.2.4, Build time: 7-January-2014 07:32:49 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -966,6 +966,7 @@ var Colors = {
     darkcyan        :"#008b8b",
     darkgoldenrod   :"#b8860b",
     darkgray        :"#a9a9a9",
+    darkgrey        :"#a9a9a9",
     darkgreen       :"#006400",
     darkkhaki       :"#bdb76b",
     darkmagenta     :"#8b008b",
@@ -977,11 +978,13 @@ var Colors = {
     darkseagreen    :"#8fbc8f",
     darkslateblue   :"#483d8b",
     darkslategray   :"#2f4f4f",
+    darkslategrey   :"#2f4f4f",
     darkturquoise   :"#00ced1",
     darkviolet      :"#9400d3",
     deeppink        :"#ff1493",
     deepskyblue     :"#00bfff",
     dimgray         :"#696969",
+    dimgrey         :"#696969",
     dodgerblue      :"#1e90ff",
     firebrick       :"#b22222",
     floralwhite     :"#fffaf0",
@@ -992,6 +995,7 @@ var Colors = {
     gold            :"#ffd700",
     goldenrod       :"#daa520",
     gray            :"#808080",
+    grey            :"#808080",
     green           :"#008000",
     greenyellow     :"#adff2f",
     honeydew        :"#f0fff0",
@@ -1009,12 +1013,14 @@ var Colors = {
     lightcyan       :"#e0ffff",
     lightgoldenrodyellow  :"#fafad2",
     lightgray       :"#d3d3d3",
+    lightgrey       :"#d3d3d3",
     lightgreen      :"#90ee90",
     lightpink       :"#ffb6c1",
     lightsalmon     :"#ffa07a",
     lightseagreen   :"#20b2aa",
     lightskyblue    :"#87cefa",
     lightslategray  :"#778899",
+    lightslategrey  :"#778899",
     lightsteelblue  :"#b0c4de",
     lightyellow     :"#ffffe0",
     lime            :"#00ff00",
@@ -1067,6 +1073,7 @@ var Colors = {
     skyblue         :"#87ceeb",
     slateblue       :"#6a5acd",
     slategray       :"#708090",
+    slategrey       :"#708090",
     snow            :"#fffafa",
     springgreen     :"#00ff7f",
     steelblue       :"#4682b4",
@@ -1092,6 +1099,7 @@ var Colors = {
     buttontext          :"Text on push buttons.",
     captiontext         :"Text in caption, size box, and scrollbar arrow box.",
     graytext            :"Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
+    greytext            :"Greyed (disabled) text. This color is set to #000 if the current display driver does not support a solid grey color.",
     highlight           :"Item(s) selected in a control.",
     highlighttext       :"Text of item(s) selected in a control.",
     inactiveborder      :"Inactive window border.",
@@ -1118,12 +1126,12 @@ var Colors = {
  * @class Combinator
  * @extends parserlib.util.SyntaxUnit
  * @constructor
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function Combinator(text, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
     /**
@@ -1132,7 +1140,7 @@ function Combinator(text, line, col){
      * @property type
      */
     this.type = "unknown";
-    
+
     //pretty simple
     if (/^\s+$/.test(text)){
         this.type = "descendant";
@@ -1161,7 +1169,7 @@ Combinator.prototype.constructor = Combinator;
  * @param {SyntaxUnit} value The value of the feature or null if none.
  */
 function MediaFeature(name, value){
-    
+
     SyntaxUnit.call(this, "(" + name + (value !== null ? ":" + value : "") + ")", name.startLine, name.startCol, Parser.MEDIA_FEATURE_TYPE);
 
     /**
@@ -1197,8 +1205,8 @@ MediaFeature.prototype.constructor = MediaFeature;
  * @param {int} col The column of text on which the unit resides.
  */
 function MediaQuery(modifier, mediaType, features, line, col){
-    
-    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE); 
+
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")
@@ -1212,8 +1220,8 @@ function MediaQuery(modifier, mediaType, features, line, col){
      * @type String
      * @property mediaType
      */
-    this.mediaType = mediaType;    
-    
+    this.mediaType = mediaType;
+
     /**
      * The parts that make up the selector.
      * @type Array
@@ -3508,6 +3516,12 @@ nth
 var Properties = {
 
     //A
+    "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
+    "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
+    "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
     "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "animation"                     : 1,
@@ -3518,7 +3532,7 @@ var Properties = {
     "animation-name"                : { multi: "none | <ident>", comma: true },
     "animation-play-state"          : { multi: "running | paused", comma: true },
     "animation-timing-function"     : 1,
-    
+
     //vendor prefixed
     "-moz-animation-delay"               : { multi: "<time>", comma: true },
     "-moz-animation-direction"           : { multi: "normal | alternate", comma: true },
@@ -3526,28 +3540,28 @@ var Properties = {
     "-moz-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
     "-moz-animation-name"                : { multi: "none | <ident>", comma: true },
     "-moz-animation-play-state"          : { multi: "running | paused", comma: true },
-    
+
     "-ms-animation-delay"               : { multi: "<time>", comma: true },
     "-ms-animation-direction"           : { multi: "normal | alternate", comma: true },
     "-ms-animation-duration"            : { multi: "<time>", comma: true },
     "-ms-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
     "-ms-animation-name"                : { multi: "none | <ident>", comma: true },
     "-ms-animation-play-state"          : { multi: "running | paused", comma: true },
-    
+
     "-webkit-animation-delay"               : { multi: "<time>", comma: true },
     "-webkit-animation-direction"           : { multi: "normal | alternate", comma: true },
     "-webkit-animation-duration"            : { multi: "<time>", comma: true },
     "-webkit-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
     "-webkit-animation-name"                : { multi: "none | <ident>", comma: true },
     "-webkit-animation-play-state"          : { multi: "running | paused", comma: true },
-    
+
     "-o-animation-delay"               : { multi: "<time>", comma: true },
     "-o-animation-direction"           : { multi: "normal | alternate", comma: true },
     "-o-animation-duration"            : { multi: "<time>", comma: true },
     "-o-animation-iteration-count"     : { multi: "<number> | infinite", comma: true },
     "-o-animation-name"                : { multi: "none | <ident>", comma: true },
-    "-o-animation-play-state"          : { multi: "running | paused", comma: true },        
-    
+    "-o-animation-play-state"          : { multi: "running | paused", comma: true },
+
     "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | none | inherit",
     "azimuth"                       : function (expression) {
         var simple      = "<angle> | leftwards | rightwards | inherit",
@@ -3555,13 +3569,13 @@ var Properties = {
             behind      = false,
             valid       = false,
             part;
-        
+
         if (!ValidationTypes.isAny(expression, simple)) {
             if (ValidationTypes.isAny(expression, "behind")) {
                 behind = true;
                 valid = true;
             }
-            
+
             if (ValidationTypes.isAny(expression, direction)) {
                 valid = true;
                 if (!behind) {
@@ -3569,7 +3583,7 @@ var Properties = {
                 }
             }
         }
-        
+
         if (expression.hasNext()) {
             part = expression.next();
             if (valid) {
@@ -3577,9 +3591,9 @@ var Properties = {
             } else {
                 throw new ValidationError("Expected (<'azimuth'>) but found '" + part + "'.", part.line, part.col);
             }
-        }        
+        }
     },
-    
+
     //B
     "backface-visibility"           : "visible | hidden",
     "background"                    : 1,
@@ -3612,19 +3626,19 @@ var Properties = {
     "border-image-outset"           : { multi: "<length> | <number>", max: 4 },
     "border-image-repeat"           : { multi: "stretch | repeat | round", max: 2 },
     "border-image-slice"            : function(expression) {
-        
+
         var valid   = false,
             numeric = "<number> | <percentage>",
             fill    = false,
             count   = 0,
             max     = 4,
             part;
-        
+
         if (ValidationTypes.isAny(expression, "fill")) {
             fill = true;
             valid = true;
         }
-        
+
         while (expression.hasNext() && count < max) {
             valid = ValidationTypes.isAny(expression, numeric);
             if (!valid) {
@@ -3632,14 +3646,14 @@ var Properties = {
             }
             count++;
         }
-        
-        
+
+
         if (!fill) {
             ValidationTypes.isAny(expression, "fill");
         } else {
             valid = true;
         }
-        
+
         if (expression.hasNext()) {
             part = expression.next();
             if (valid) {
@@ -3647,7 +3661,7 @@ var Properties = {
             } else {
                 throw new ValidationError("Expected ([<number> | <percentage>]{1,4} && fill?) but found '" + part + "'.", part.line, part.col);
             }
-        }         
+        }
     },
     "border-image-source"           : "<image> | none",
     "border-image-width"            : { multi: "<length> | <percentage> | <number> | auto", max: 4 },
@@ -3656,7 +3670,7 @@ var Properties = {
     "border-left-style"             : "<border-style>",
     "border-left-width"             : "<border-width>",
     "border-radius"                 : function(expression) {
-        
+
         var valid   = false,
             simple = "<length> | <percentage> | inherit",
             slash   = false,
@@ -3668,7 +3682,7 @@ var Properties = {
         while (expression.hasNext() && count < max) {
             valid = ValidationTypes.isAny(expression, simple);
             if (!valid) {
-            
+
                 if (expression.peek() == "/" && count > 0 && !slash) {
                     slash = true;
                     max = count + 5;
@@ -3679,7 +3693,7 @@ var Properties = {
             }
             count++;
         }
-        
+
         if (expression.hasNext()) {
             part = expression.next();
             if (valid) {
@@ -3687,7 +3701,7 @@ var Properties = {
             } else {
                 throw new ValidationError("Expected (<'border-radius'>) but found '" + part + "'.", part.line, part.col);
             }
-        }         
+        }
     },
     "border-right"                  : "<border-width> || <border-style> || <color>",
     "border-right-color"            : "<color> | inherit",
@@ -3702,34 +3716,43 @@ var Properties = {
     "border-top-style"              : "<border-style>",
     "border-top-width"              : "<border-width>",
     "border-width"                  : { multi: "<border-width>", max: 4 },
-    "bottom"                        : "<margin-width> | inherit", 
-    "box-align"                     : "start | end | center | baseline | stretch",        //http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/
-    "box-decoration-break"          : "slice |clone",
-    "box-direction"                 : "normal | reverse | inherit",
-    "box-flex"                      : "<number>",
-    "box-flex-group"                : "<integer>",
-    "box-lines"                     : "single | multiple",
-    "box-ordinal-group"             : "<integer>",
-    "box-orient"                    : "horizontal | vertical | inline-axis | block-axis | inherit",
-    "box-pack"                      : "start | end | center | justify",
+    "bottom"                        : "<margin-width> | inherit",
+    "-moz-box-align"                : "start | end | center | baseline | stretch",
+    "-moz-box-decoration-break"     : "slice |clone",
+    "-moz-box-direction"            : "normal | reverse | inherit",
+    "-moz-box-flex"                 : "<number>",
+    "-moz-box-flex-group"           : "<integer>",
+    "-moz-box-lines"                : "single | multiple",
+    "-moz-box-ordinal-group"        : "<integer>",
+    "-moz-box-orient"               : "horizontal | vertical | inline-axis | block-axis | inherit",
+    "-moz-box-pack"                 : "start | end | center | justify",
+    "-webkit-box-align"             : "start | end | center | baseline | stretch",
+    "-webkit-box-decoration-break"  : "slice |clone",
+    "-webkit-box-direction"         : "normal | reverse | inherit",
+    "-webkit-box-flex"              : "<number>",
+    "-webkit-box-flex-group"        : "<integer>",
+    "-webkit-box-lines"             : "single | multiple",
+    "-webkit-box-ordinal-group"     : "<integer>",
+    "-webkit-box-orient"            : "horizontal | vertical | inline-axis | block-axis | inherit",
+    "-webkit-box-pack"              : "start | end | center | justify",
     "box-shadow"                    : function (expression) {
         var result      = false,
             part;
 
         if (!ValidationTypes.isAny(expression, "none")) {
-            Validation.multiProperty("<shadow>", expression, true, Infinity);                       
+            Validation.multiProperty("<shadow>", expression, true, Infinity);
         } else {
             if (expression.hasNext()) {
                 part = expression.next();
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-            }   
+            }
         }
     },
     "box-sizing"                    : "content-box | border-box | inherit",
     "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
     "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
     "break-inside"                  : "auto | avoid | avoid-page | avoid-column",
-    
+
     //C
     "caption-side"                  : "top | bottom | inherit",
     "clear"                         : "none | right | left | both | inherit",
@@ -3754,10 +3777,10 @@ var Properties = {
     "cue-after"                     : 1,
     "cue-before"                    : 1,
     "cursor"                        : 1,
-    
+
     //D
     "direction"                     : "ltr | rtl | inherit",
-    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | box | inline-box | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
     "dominant-baseline"             : 1,
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
@@ -3765,16 +3788,36 @@ var Properties = {
     "drop-initial-before-align"     : "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "drop-initial-size"             : "auto | line | <length> | <percentage>",
     "drop-initial-value"            : "initial | <integer>",
-    
+
     //E
     "elevation"                     : "<angle> | below | level | above | higher | lower | inherit",
     "empty-cells"                   : "show | hide | inherit",
-    
+
     //F
     "filter"                        : 1,
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
-    "float"                         : "left | right | none | inherit",    
+    "flex"                          : "none | [ <flex-grow> <flex-shrink>? || <flex-basis>",
+    "flex-basis"                    : "<width>",
+    "flex-direction"                : "row | row-reverse | column | column-reverse",
+    "flex-flow"                     : "<flex-direction> || <flex-wrap>",
+    "flex-grow"                     : "<number>",
+    "flex-shrink"                   : "<number>",
+    "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
+    "-webkit-flex"                  : "none | [ <flex-grow> <flex-shrink>? || <flex-basis>",
+    "-webkit-flex-basis"            : "<width>",
+    "-webkit-flex-direction"        : "row | row-reverse | column | column-reverse",
+    "-webkit-flex-flow"             : "<flex-direction> || <flex-wrap>",
+    "-webkit-flex-grow"             : "<number>",
+    "-webkit-flex-shrink"           : "<number>",
+    "-webkit-flex-wrap"             : "nowrap | wrap | wrap-reverse",
+    "-ms-flex"                      : "[[ <number> <number>? ] || [ <length> || <percentage> || auto ] ] | none",
+    "-ms-flex-align"                : "start | end | center | stretch | baseline",
+    "-ms-flex-direction"            : "row | column | row-reverse | column-reverse | inherit",
+    "-ms-flex-order"                : "<number>",
+    "-ms-flex-pack"                 : "start | end | center | justify",
+    "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
+    "float"                         : "left | right | none | inherit",
     "float-offset"                  : 1,
     "font"                          : 1,
     "font-family"                   : 1,
@@ -3784,7 +3827,7 @@ var Properties = {
     "font-style"                    : "normal | italic | oblique | inherit",
     "font-variant"                  : "normal | small-caps | inherit",
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
-    
+
     //G
     "grid-cell-stacking"            : "columns | rows | layer",
     "grid-column"                   : 1,
@@ -3799,7 +3842,7 @@ var Properties = {
     "grid-row-align"                : "start | end | center | stretch",
     "grid-row-span"                 : "<integer>",
     "grid-row-sizing"               : 1,
-    
+
     //H
     "hanging-punctuation"           : 1,
     "height"                        : "<margin-width> | inherit",
@@ -3809,14 +3852,18 @@ var Properties = {
     "hyphenate-lines"               : "no-limit | <integer>",
     "hyphenate-resource"            : 1,
     "hyphens"                       : "none | manual | auto",
-    
+
     //I
     "icon"                          : 1,
     "image-orientation"             : "angle | auto",
     "image-rendering"               : 1,
     "image-resolution"              : 1,
     "inline-box-align"              : "initial | last | <integer>",
-    
+
+    //J
+    "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
+    "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
+
     //L
     "left"                          : "<margin-width> | inherit",
     "letter-spacing"                : "<length> | normal | inherit",
@@ -3830,7 +3877,7 @@ var Properties = {
     "list-style-image"              : "<uri> | none | inherit",
     "list-style-position"           : "inside | outside | inherit",
     "list-style-type"               : "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none | inherit",
-    
+
     //M
     "margin"                        : { multi: "<margin-width> | inherit", max: 4 },
     "margin-bottom"                 : "<margin-width> | inherit",
@@ -3850,16 +3897,18 @@ var Properties = {
     "min-height"                    : "<length> | <percentage> | inherit",
     "min-width"                     : "<length> | <percentage> | inherit",
     "move-to"                       : 1,
-    
+
     //N
     "nav-down"                      : 1,
     "nav-index"                     : 1,
     "nav-left"                      : 1,
     "nav-right"                     : 1,
     "nav-up"                        : 1,
-    
+
     //O
     "opacity"                       : "<number> | inherit",
+    "order"                         : "<integer>",
+    "-webkit-order"                 : "<integer>",
     "orphans"                       : "<integer> | inherit",
     "outline"                       : 1,
     "outline-color"                 : "<color> | invert | inherit",
@@ -3868,9 +3917,10 @@ var Properties = {
     "outline-width"                 : "<border-width> | inherit",
     "overflow"                      : "visible | hidden | scroll | auto | inherit",
     "overflow-style"                : 1,
+    "overflow-wrap"                 : "normal | break-word",
     "overflow-x"                    : 1,
     "overflow-y"                    : 1,
-    
+
     //P
     "padding"                       : { multi: "<padding-width> | inherit", max: 4 },
     "padding-bottom"                : "<padding-width> | inherit",
@@ -3895,10 +3945,10 @@ var Properties = {
     "position"                      : "static | relative | absolute | fixed | inherit",
     "presentation-level"            : 1,
     "punctuation-trim"              : 1,
-    
+
     //Q
     "quotes"                        : 1,
-    
+
     //R
     "rendering-intent"              : 1,
     "resize"                        : 1,
@@ -3913,7 +3963,7 @@ var Properties = {
     "ruby-overhang"                 : 1,
     "ruby-position"                 : 1,
     "ruby-span"                     : 1,
-    
+
     //S
     "size"                          : 1,
     "speak"                         : "normal | none | spell-out | inherit",
@@ -3924,7 +3974,7 @@ var Properties = {
     "src"                           : 1,
     "stress"                        : 1,
     "string-set"                    : 1,
-    
+
     "table-layout"                  : "auto | fixed | inherit",
     "tab-size"                      : "<integer> | <length>",
     "target"                        : 1,
@@ -3945,6 +3995,8 @@ var Properties = {
     "text-transform"                : "capitalize | uppercase | lowercase | none | inherit",
     "text-wrap"                     : "normal | none | avoid",
     "top"                           : "<margin-width> | inherit",
+    "-ms-touch-action"              : "auto | none | pan-x | pan-y",
+    "touch-action"                  : "auto | none | pan-x | pan-y",
     "transform"                     : 1,
     "transform-origin"              : 1,
     "transform-style"               : 1,
@@ -3953,12 +4005,12 @@ var Properties = {
     "transition-duration"           : 1,
     "transition-property"           : 1,
     "transition-timing-function"    : 1,
-    
+
     //U
-    "unicode-bidi"                  : "normal | embed | bidi-override | inherit",
+    "unicode-bidi"                  : "normal | embed | isolate | bidi-override | isolate-override | plaintext | inherit",
     "user-modify"                   : "read-only | read-write | write-only | inherit",
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
-    
+
     //V
     "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
     "visibility"                    : "visible | hidden | collapse | inherit",
@@ -3971,7 +4023,7 @@ var Properties = {
     "voice-stress"                  : 1,
     "voice-volume"                  : 1,
     "volume"                        : 1,
-    
+
     //W
     "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | inherit | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap", //http://perishablepress.com/wrapping-content/
     "white-space-collapse"          : 1,
@@ -3979,8 +4031,9 @@ var Properties = {
     "width"                         : "<length> | <percentage> | auto | inherit" ,
     "word-break"                    : "normal | keep-all | break-all",
     "word-spacing"                  : "<length> | normal | inherit",
-    "word-wrap"                     : 1,
-    
+    "word-wrap"                     : "normal | break-word",
+    "writing-mode"                  : "horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb | inherit",
+
     //Z
     "z-index"                       : "<integer> | auto | inherit",
     "zoom"                          : "<number> | <percentage> | normal"
@@ -3993,13 +4046,13 @@ var Properties = {
  * @class PropertyName
  * @extends parserlib.util.SyntaxUnit
  * @constructor
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {String} hack The type of IE hack applied ("*", "_", or null).
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function PropertyName(text, hack, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
 
     /**
@@ -4033,14 +4086,14 @@ PropertyName.prototype.toString = function(){
 function PropertyValue(parts, line, col){
 
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
-    
+
     /**
      * The parts that make up the selector.
      * @type Array
      * @property parts
      */
     this.parts = parts;
-    
+
 }
 
 PropertyValue.prototype = new SyntaxUnit();
@@ -4058,14 +4111,14 @@ PropertyValue.prototype.constructor = PropertyValue;
  */
 function PropertyValueIterator(value){
 
-    /** 
+    /**
      * Iterator value
      * @type int
      * @property _i
      * @private
      */
     this._i = 0;
-    
+
     /**
      * The parts that make up the value.
      * @type Array
@@ -4073,7 +4126,7 @@ function PropertyValueIterator(value){
      * @private
      */
     this._parts = value.parts;
-    
+
     /**
      * Keeps track of bookmarks along the way.
      * @type Array
@@ -4081,14 +4134,14 @@ function PropertyValueIterator(value){
      * @private
      */
     this._marks = [];
-    
+
     /**
      * Holds the original property value.
      * @type parserlib.css.PropertyValue
      * @property value
      */
     this.value = value;
-    
+
 }
 
 /**
@@ -4153,7 +4206,7 @@ PropertyValueIterator.prototype.next = function(){
 /**
  * Returns the previous part of the property value or null if there is no
  * previous part.
- * @return {parserlib.css.PropertyValuePart} The previous part of the 
+ * @return {parserlib.css.PropertyValuePart} The previous part of the
  * property value or null if there is no next part.
  * @method previous
  */
@@ -4188,7 +4241,7 @@ PropertyValueIterator.prototype.restore = function(){
 function PropertyValuePart(text, line, col){
 
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
-    
+
     /**
      * Indicates the type of value unit.
      * @type String
@@ -4197,18 +4250,18 @@ function PropertyValuePart(text, line, col){
     this.type = "unknown";
 
     //figure out what type of data it is
-    
+
     var temp;
-    
+
     //it is a measurement?
     if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
         this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2;
-        
+
         //try to narrow down
         switch(this.units.toLowerCase()){
-        
+
             case "em":
             case "rem":
             case "ex":
@@ -4224,35 +4277,32 @@ function PropertyValuePart(text, line, col){
             case "vm":
                 this.type = "length";
                 break;
-                
+
             case "deg":
             case "rad":
             case "grad":
                 this.type = "angle";
                 break;
-            
+
             case "ms":
             case "s":
                 this.type = "time";
                 break;
-            
+
             case "hz":
             case "khz":
                 this.type = "frequency";
                 break;
-            
+
             case "dpi":
             case "dpcm":
                 this.type = "resolution";
                 break;
-                
+
             //default
-                
+
         }
-        
-    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
-        this.type = "percentage";
-        this.value = +RegExp.$1;
+
     } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
@@ -4262,18 +4312,18 @@ function PropertyValuePart(text, line, col){
     } else if (/^([+\-]?[\d\.]+)$/i.test(text)){  //number
         this.type = "number";
         this.value = +RegExp.$1;
-    
+
     } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
         if (temp.length == 3){
             this.red    = parseInt(temp.charAt(0)+temp.charAt(0),16);
             this.green  = parseInt(temp.charAt(1)+temp.charAt(1),16);
-            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);            
+            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);
         } else {
             this.red    = parseInt(temp.substring(0,2),16);
             this.green  = parseInt(temp.substring(2,4),16);
-            this.blue   = parseInt(temp.substring(4,6),16);            
+            this.blue   = parseInt(temp.substring(4,6),16);
         }
     } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)){ //rgb() color with absolute numbers
         this.type   = "color";
@@ -4296,18 +4346,18 @@ function PropertyValuePart(text, line, col){
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
-        this.alpha  = +RegExp.$4;        
+        this.alpha  = +RegExp.$4;
     } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //hsl()
         this.type   = "color";
         this.hue    = +RegExp.$1;
         this.saturation = +RegExp.$2 / 100;
-        this.lightness  = +RegExp.$3 / 100;        
+        this.lightness  = +RegExp.$3 / 100;
     } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //hsla() color with percentages
         this.type   = "color";
         this.hue    = +RegExp.$1;
         this.saturation = +RegExp.$2 / 100;
-        this.lightness  = +RegExp.$3 / 100;        
-        this.alpha  = +RegExp.$4;        
+        this.lightness  = +RegExp.$3 / 100;
+        this.alpha  = +RegExp.$4;
     } else if (/^url\(["']?([^\)"']+)["']?\)/i.test(text)){ //URI
         this.type   = "uri";
         this.uri    = RegExp.$1;
@@ -4323,7 +4373,7 @@ function PropertyValuePart(text, line, col){
         temp        = Colors[text.toLowerCase()].substring(1);
         this.red    = parseInt(temp.substring(0,2),16);
         this.green  = parseInt(temp.substring(2,4),16);
-        this.blue   = parseInt(temp.substring(4,6),16);         
+        this.blue   = parseInt(temp.substring(4,6),16);
     } else if (/^[\,\/]$/.test(text)){
         this.type   = "operator";
         this.value  = text;
@@ -4349,6 +4399,7 @@ PropertyValuePart.prototype.constructor = PropertyValuePart;
 PropertyValuePart.fromToken = function(token){
     return new PropertyValuePart(token.value, token.startLine, token.startCol);
 };
+
 var Pseudos = {
     ":first-letter": 1,
     ":first-line":   1,
@@ -4375,16 +4426,16 @@ Pseudos.isElement = function(pseudo){
  * @param {int} col The column of text on which the unit resides.
  */
 function Selector(parts, line, col){
-    
+
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
-    
+
     /**
      * The parts that make up the selector.
      * @type Array
      * @property parts
      */
     this.parts = parts;
-    
+
     /**
      * The specificity of the selector.
      * @type parserlib.css.Specificity
@@ -4411,12 +4462,12 @@ Selector.prototype.constructor = Selector;
  *      if there is no element name.
  * @param {Array} modifiers Array of individual modifiers for the element.
  *      May be empty if there are none.
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function SelectorPart(elementName, modifiers, text, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 
     /**
@@ -4426,7 +4477,7 @@ function SelectorPart(elementName, modifiers, text, line, col){
      * @property elementName
      */
     this.elementName = elementName;
-    
+
     /**
      * The parts that come after the element name, such as class names, IDs,
      * pseudo classes/elements, etc.
@@ -4449,13 +4500,13 @@ SelectorPart.prototype.constructor = SelectorPart;
  * @class SelectorSubPart
  * @extends parserlib.util.SyntaxUnit
  * @constructor
- * @param {String} text The text representation of the unit. 
+ * @param {String} text The text representation of the unit.
  * @param {String} type The type of selector modifier.
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
 function SelectorSubPart(text, type, line, col){
-    
+
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 
     /**
@@ -4464,7 +4515,7 @@ function SelectorSubPart(text, type, line, col){
      * @property type
      */
     this.type = type;
-    
+
     /**
      * Some subparts have arguments, this represents them.
      * @type Array
@@ -4498,7 +4549,7 @@ function Specificity(a, b, c, d){
 
 Specificity.prototype = {
     constructor: Specificity,
-    
+
     /**
      * Compare this specificity to another.
      * @param {Specificity} other The other specificity to compare to.
@@ -4508,7 +4559,7 @@ Specificity.prototype = {
     compare: function(other){
         var comps = ["a", "b", "c", "d"],
             i, len;
-            
+
         for (i=0, len=comps.length; i < len; i++){
             if (this[comps[i]] < other[comps[i]]){
                 return -1;
@@ -4516,10 +4567,10 @@ Specificity.prototype = {
                 return 1;
             }
         }
-        
+
         return 0;
     },
-    
+
     /**
      * Creates a numeric value for the specificity.
      * @return {int} The numeric value for the specificity.
@@ -4528,7 +4579,7 @@ Specificity.prototype = {
     valueOf: function(){
         return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
     },
-    
+
     /**
      * Returns a string representation for specificity.
      * @return {String} The string representation of specificity.
@@ -4552,17 +4603,17 @@ Specificity.calculate = function(selector){
     var i, len,
         part,
         b=0, c=0, d=0;
-        
+
     function updateValues(part){
-    
+
         var i, j, len, num,
             elementName = part.elementName ? part.elementName.text : "",
             modifier;
-    
+
         if (elementName && elementName.charAt(elementName.length-1) != "*") {
             d++;
-        }    
-    
+        }
+
         for (i=0, len=part.modifiers.length; i < len; i++){
             modifier = part.modifiers[i];
             switch(modifier.type){
@@ -4570,35 +4621,35 @@ Specificity.calculate = function(selector){
                 case "attribute":
                     c++;
                     break;
-                    
+
                 case "id":
                     b++;
                     break;
-                    
+
                 case "pseudo":
                     if (Pseudos.isElement(modifier.text)){
                         d++;
                     } else {
                         c++;
-                    }                    
+                    }
                     break;
-                    
+
                 case "not":
                     for (j=0, num=modifier.args.length; j < num; j++){
                         updateValues(modifier.args[j]);
                     }
-            }    
+            }
          }
     }
-    
+
     for (i=0, len=selector.parts.length; i < len; i++){
         part = selector.parts[i];
-        
+
         if (part instanceof SelectorPart){
-            updateValues(part);                
+            updateValues(part);
         }
     }
-    
+
     return new Specificity(0, b, c, d);
 };
 
@@ -4964,7 +5015,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         //if it's not valid, use the first character only and reset the reader
         if (tt == Tokens.CHAR || tt == Tokens.UNKNOWN){
             if (rule.length > 1){
-                tt = Tokens.UNKNOWN_SYM;                
+                tt = Tokens.UNKNOWN_SYM;
             } else {
                 tt = Tokens.CHAR;
                 rule = first;
@@ -5552,30 +5603,30 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         return ident;
     },
-    
+
     readEscape: function(first){
         var reader  = this._reader,
             cssEscape = first || "",
             i       = 0,
-            c       = reader.peek();    
-    
+            c       = reader.peek();
+
         if (isHexDigit(c)){
             do {
                 cssEscape += reader.read();
                 c = reader.peek();
             } while(c && isHexDigit(c) && ++i < 6);
         }
-        
+
         if (cssEscape.length == 3 && /\s/.test(c) ||
             cssEscape.length == 7 || cssEscape.length == 1){
                 reader.read();
         } else {
             c = "";
         }
-        
+
         return cssEscape + c;
     },
-    
+
     readComment: function(first){
         var reader  = this._reader,
             comment = first || "",
@@ -5636,7 +5687,7 @@ var Tokens  = [
     { name: "FONT_FACE_SYM", text: "@font-face"},
     { name: "CHARSET_SYM", text: "@charset"},
     { name: "NAMESPACE_SYM", text: "@namespace"},
-    { name: "VIEWPORT_SYM", text: "@viewport"},
+    { name: "VIEWPORT_SYM", text: ["@viewport", "@-ms-viewport"]},
     { name: "UNKNOWN_SYM" },
     //{ name: "ATKEYWORD"},
 
@@ -5817,27 +5868,27 @@ var Tokens  = [
 var Validation = {
 
     validate: function(property, value){
-    
+
         //normalize name
         var name        = property.toString().toLowerCase(),
             parts       = value.parts,
             expression  = new PropertyValueIterator(value),
             spec        = Properties[name],
             part,
-            valid,            
+            valid,
             j, count,
             msg,
             types,
             last,
             literals,
             max, multi, group;
-            
+
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
         } else if (typeof spec != "number"){
-        
+
             //initialization
             if (typeof spec == "string"){
                 if (spec.indexOf("||") > -1) {
@@ -5855,14 +5906,14 @@ var Validation = {
         }
 
     },
-    
+
     singleProperty: function(types, expression, max, partial) {
 
         var result      = false,
             value       = expression.value,
             count       = 0,
             part;
-         
+
         while (expression.hasNext() && count < max) {
             result = ValidationTypes.isAny(expression, types);
             if (!result) {
@@ -5870,21 +5921,21 @@ var Validation = {
             }
             count++;
         }
-        
+
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
                 part = expression.peek();
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             } else {
                  throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
-            }        
+            }
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }          
-                 
-    },    
-    
+        }
+
+    },
+
     multiProperty: function (types, expression, comma, max) {
 
         var result      = false,
@@ -5892,7 +5943,7 @@ var Validation = {
             count       = 0,
             sep         = false,
             part;
-            
+
         while(expression.hasNext() && !result && count < max) {
             if (ValidationTypes.isAny(expression, types)) {
                 count++;
@@ -5911,7 +5962,7 @@ var Validation = {
 
             }
         }
-        
+
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {
                 part = expression.peek();
@@ -5919,19 +5970,19 @@ var Validation = {
             } else {
                 part = expression.previous();
                 if (comma && part == ",") {
-                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col); 
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
                 } else {
                     throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
                 }
             }
-        
+
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }  
+        }
 
     },
-    
+
     groupProperty: function (types, expression, comma) {
 
         var result      = false,
@@ -5941,11 +5992,11 @@ var Validation = {
             partial     = false,
             name,
             part;
-            
+
         while(expression.hasNext() && !result) {
             name = ValidationTypes.isAnyOfGroup(expression, types);
             if (name) {
-            
+
                 //no dupes
                 if (groups[name]) {
                     break;
@@ -5953,7 +6004,7 @@ var Validation = {
                     groups[name] = 1;
                     groups.count++;
                     partial = true;
-                    
+
                     if (groups.count == typeCount || !expression.hasNext()) {
                         result = true;
                     }
@@ -5962,8 +6013,8 @@ var Validation = {
                 break;
             }
         }
-        
-        if (!result) {        
+
+        if (!result) {
             if (partial && expression.hasNext()) {
                     part = expression.peek();
                     throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
@@ -5973,10 +6024,10 @@ var Validation = {
         } else if (expression.hasNext()) {
             part = expression.next();
             throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-        }           
+        }
     }
 
-    
+
 
 };
 /**
@@ -6023,24 +6074,24 @@ var ValidationTypes = {
         var text = part.text.toString().toLowerCase(),
             args = literals.split(" | "),
             i, len, found = false;
-        
+
         for (i=0,len=args.length; i < len && !found; i++){
             if (text == args[i].toLowerCase()){
                 found = true;
             }
         }
-        
-        return found;    
+
+        return found;
     },
-    
+
     isSimple: function(type) {
         return !!this.simple[type];
     },
-    
+
     isComplex: function(type) {
         return !!this.complex[type];
     },
-    
+
     /**
      * Determines if the next part(s) of the given expression
      * are any of the given types.
@@ -6048,14 +6099,14 @@ var ValidationTypes = {
     isAny: function (expression, types) {
         var args = types.split(" | "),
             i, len, found = false;
-        
+
         for (i=0,len=args.length; i < len && !found && expression.hasNext(); i++){
             found = this.isType(expression, args[i]);
         }
-        
-        return found;    
+
+        return found;
     },
-    
+
     /**
      * Determines if the next part(s) of the given expression
      * are one of a group.
@@ -6063,14 +6114,14 @@ var ValidationTypes = {
     isAnyOfGroup: function(expression, types) {
         var args = types.split(" || "),
             i, len, found = false;
-        
+
         for (i=0,len=args.length; i < len && !found; i++){
             found = this.isType(expression, args[i]);
         }
-        
+
         return found ? args[i-1] : false;
     },
-    
+
     /**
      * Determines if the next part(s) of the given expression
      * are of a given type.
@@ -6078,7 +6129,7 @@ var ValidationTypes = {
     isType: function (expression, type) {
         var part = expression.peek(),
             result = false;
-            
+
         if (type.charAt(0) != "<") {
             result = this.isLiteral(part, type);
             if (result) {
@@ -6092,51 +6143,51 @@ var ValidationTypes = {
         } else {
             result = this.complex[type](expression);
         }
-        
+
         return result;
     },
-    
-    
-    
+
+
+
     simple: {
 
         "<absolute-size>": function(part){
             return ValidationTypes.isLiteral(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
         },
-        
+
         "<attachment>": function(part){
             return ValidationTypes.isLiteral(part, "scroll | fixed | local");
         },
-        
+
         "<attr>": function(part){
             return part.type == "function" && part.name == "attr";
         },
-                
+
         "<bg-image>": function(part){
             return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
-        },        
-        
+        },
+
         "<gradient>": function(part) {
             return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
         },
-        
+
         "<box>": function(part){
             return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");
         },
-        
+
         "<content>": function(part){
             return part.type == "function" && part.name == "content";
-        },        
-        
+        },
+
         "<relative-size>": function(part){
             return ValidationTypes.isLiteral(part, "smaller | larger");
         },
-        
+
         //any identifier
         "<ident>": function(part){
             return part.type == "identifier";
         },
-        
+
         "<length>": function(part){
             if (part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
@@ -6144,35 +6195,35 @@ var ValidationTypes = {
                 return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
             }
         },
-        
+
         "<color>": function(part){
             return part.type == "color" || part == "transparent";
         },
-        
+
         "<number>": function(part){
             return part.type == "number" || this["<integer>"](part);
         },
-        
+
         "<integer>": function(part){
             return part.type == "integer";
         },
-        
+
         "<line>": function(part){
             return part.type == "integer";
         },
-        
+
         "<angle>": function(part){
             return part.type == "angle";
-        },        
-        
+        },
+
         "<uri>": function(part){
             return part.type == "uri";
         },
-        
+
         "<image>": function(part){
             return this["<uri>"](part);
         },
-        
+
         "<percentage>": function(part){
             return part.type == "percentage" || part == "0";
         },
@@ -6180,28 +6231,28 @@ var ValidationTypes = {
         "<border-width>": function(part){
             return this["<length>"](part) || ValidationTypes.isLiteral(part, "thin | medium | thick");
         },
-        
+
         "<border-style>": function(part){
             return ValidationTypes.isLiteral(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
         },
-        
+
         "<margin-width>": function(part){
             return this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "auto");
         },
-        
+
         "<padding-width>": function(part){
             return this["<length>"](part) || this["<percentage>"](part);
         },
-        
+
         "<shape>": function(part){
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         },
-        
+
         "<time>": function(part) {
             return part.type == "time";
         }
     },
-    
+
     complex: {
 
         "<bg-position>": function(expression){
@@ -6218,7 +6269,7 @@ var ValidationTypes = {
             while (expression.peek(count) && expression.peek(count) != ",") {
                 count++;
             }
-            
+
 /*
 <position> = [
   [ left | center | right | top | bottom | <percentage> | <length> ]
@@ -6271,7 +6322,7 @@ var ValidationTypes = {
                     }
                 }
             }
-            
+
             return result;
         },
 
@@ -6281,29 +6332,29 @@ var ValidationTypes = {
                 result  = false,
                 numeric = "<percentage> | <length> | auto",
                 part,
-                i, len;      
-      
+                i, len;
+
             if (ValidationTypes.isAny(expression, "cover | contain")) {
                 result = true;
             } else if (ValidationTypes.isAny(expression, numeric)) {
-                result = true;                
+                result = true;
                 ValidationTypes.isAny(expression, numeric);
             }
-            
+
             return result;
         },
-        
+
         "<repeat-style>": function(expression){
             //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
             var result  = false,
                 values  = "repeat | space | round | no-repeat",
                 part;
-            
+
             if (expression.hasNext()){
                 part = expression.next();
-                
+
                 if (ValidationTypes.isLiteral(part, "repeat-x | repeat-y")) {
-                    result = true;                    
+                    result = true;
                 } else if (ValidationTypes.isLiteral(part, values)) {
                     result = true;
 
@@ -6312,11 +6363,11 @@ var ValidationTypes = {
                     }
                 }
             }
-            
+
             return result;
-            
+
         },
-        
+
         "<shadow>": function(expression) {
             //inset? && [ <length>{2,4} && <color>? ]
             var result  = false,
@@ -6324,50 +6375,50 @@ var ValidationTypes = {
                 inset   = false,
                 color   = false,
                 part;
-                
-            if (expression.hasNext()) {            
-                
+
+            if (expression.hasNext()) {
+
                 if (ValidationTypes.isAny(expression, "inset")){
                     inset = true;
                 }
-                
+
                 if (ValidationTypes.isAny(expression, "<color>")) {
                     color = true;
-                }                
-                
+                }
+
                 while (ValidationTypes.isAny(expression, "<length>") && count < 4) {
                     count++;
                 }
-                
-                
+
+
                 if (expression.hasNext()) {
                     if (!color) {
                         ValidationTypes.isAny(expression, "<color>");
                     }
-                    
+
                     if (!inset) {
                         ValidationTypes.isAny(expression, "inset");
                     }
 
                 }
-                
+
                 result = (count >= 2 && count <= 4);
-            
+
             }
-            
+
             return result;
         },
-        
+
         "<x-one-radius>": function(expression) {
             //[ <length> | <percentage> ] [ <length> | <percentage> ]?
             var result  = false,
                 simple = "<length> | <percentage> | inherit";
-                
+
             if (ValidationTypes.isAny(expression, simple)){
                 result = true;
                 ValidationTypes.isAny(expression, simple);
-            }                
-            
+            }
+
             return result;
         }
     }

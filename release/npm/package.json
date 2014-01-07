@@ -1,6 +1,6 @@
 {
     "name": "parserlib",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "CSSLint",
     "author": "Nicholas C. Zakas",
     "description": "CSS3 SAX-inspired parser",

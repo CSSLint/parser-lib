@@ -149,7 +149,7 @@ function PropertyValuePart(text, line, col){
     } else if (/^[\,\/]$/.test(text)){
         this.type   = "operator";
         this.value  = text;
-    } else if (/^[a-z\-\u0080-\uFFFF][a-z0-9\-\u0080-\uFFFF]*$/i.test(text)){
+    } else if (/^[a-z\-_\u0080-\uFFFF][a-z0-9\-_\u0080-\uFFFF]*$/i.test(text)){
         this.type   = "identifier";
         this.value  = text;
     }

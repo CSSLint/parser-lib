@@ -69,7 +69,8 @@
             "foo",
             "foo, bar",
             "none, none",
-            "none, foo"
+            "none, foo",
+            "has_underscore"
         ],
 
         invalid: {

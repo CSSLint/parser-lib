@@ -62,6 +62,22 @@
     var suite = new YUITest.TestSuite("Validation Tests");
 
     suite.add(new ValidationTestCase({
+        property: "animation-fill-mode",
+
+        valid: [
+            "none",
+            "forwards",
+            "backwards",
+            "both",
+            "none, forwards"
+        ],
+
+        invalid: {
+            "1px" : "Expected (none | forwards | backwards | both) but found '1px'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-name",
 
         valid: [

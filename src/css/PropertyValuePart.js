@@ -46,7 +46,8 @@ function PropertyValuePart(text, line, col){
             case "ch":
             case "vh":
             case "vw":
-            case "vm":
+            case "vmax":
+            case "vmin":
                 this.type = "length";
                 break;
 

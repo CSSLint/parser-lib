@@ -313,9 +313,13 @@
             "50.0REM"    : [CSSTokens.LENGTH],
             ".5rEm"      : [CSSTokens.LENGTH],
 
-            "5vm"       : [CSSTokens.LENGTH],
-            "50.0VM"    : [CSSTokens.LENGTH],
-            ".5vM"      : [CSSTokens.LENGTH],
+            "5vmax"      : [CSSTokens.LENGTH],
+            "50.0VMAX"   : [CSSTokens.LENGTH],
+            ".5vMax"     : [CSSTokens.LENGTH],
+
+            "5vmin"      : [CSSTokens.LENGTH],
+            "50.0VMIN"   : [CSSTokens.LENGTH],
+            ".5vMin"     : [CSSTokens.LENGTH],
 
             "5ch"       : [CSSTokens.LENGTH],
             "50.0CH"    : [CSSTokens.LENGTH],

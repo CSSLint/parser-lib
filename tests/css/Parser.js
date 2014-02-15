@@ -1025,7 +1025,7 @@
             Assert.areEqual("vw", result.parts[0].units);
         },
 
-        testViewportRelativeMinValue: function(){
+        testViewportRelativeMaxValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vmax");
 

@@ -1025,15 +1025,26 @@
             Assert.areEqual("vw", result.parts[0].units);
         },
 
-        testViewportRelativeMinValue: function(){
+        testViewportRelativeMaxValue: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("50vm");
+            var result = parser.parsePropertyValue("50vmax");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("length", result.parts[0].type);
             Assert.areEqual(50, result.parts[0].value);
-            Assert.areEqual("vm", result.parts[0].units);
+            Assert.areEqual("vmax", result.parts[0].units);
+        },
+
+        testViewportRelativeMinValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vmin");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vmin", result.parts[0].units);
         },
 
         testPercentageValue: function(){

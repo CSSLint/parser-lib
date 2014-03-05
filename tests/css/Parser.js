@@ -1462,6 +1462,12 @@
             Assert.isTrue(true);  //just don't want an error
         },
 
+        testMsKeyFrames: function(){
+            var parser = new Parser({strict:true});
+            var result = parser.parse("@-ms-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
         testKeyFrames: function(){
             var parser = new Parser({strict:true});
             var result = parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");

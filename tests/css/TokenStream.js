@@ -171,6 +171,7 @@
             //animation
             "@-webkit-keyframes":   CSSTokens.KEYFRAMES_SYM,
             "@-moz-keyframes"   : CSSTokens.KEYFRAMES_SYM,
+            "@-ms-keyframes"    : CSSTokens.KEYFRAMES_SYM,
             "@keyframes"        : CSSTokens.KEYFRAMES_SYM,
 
             //errors

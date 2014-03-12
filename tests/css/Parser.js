@@ -1498,6 +1498,12 @@
             Assert.isTrue(true);  //just don't want an error
         },
 
+	testMediaWithViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media { @viewport {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
         testMediaWithTypeOnly: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media print { }");

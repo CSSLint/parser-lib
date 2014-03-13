@@ -1728,6 +1728,34 @@
                 Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
             });
             var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
+        },
+
+        "Test @import uri without quotes": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import url(http://www.yahoo.com);");
+        },
+
+
+        "Test @import uri with quotes": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import url('http://www.yahoo.com');");
+        },
+
+        "Test @import address": function(){
+            var parser = new Parser();
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import 'http://www.yahoo.com';");
         }
     }));
 

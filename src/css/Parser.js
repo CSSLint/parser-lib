@@ -259,7 +259,7 @@ Parser.prototype = function(){
                 tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
 
                 //grab the URI value
-                uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");
+                uri = tokenStream.token().value.replace(/^(?:url\()?["']?([^"']+?)["']?\)?$/, "$1");
 
                 this._readWhitespace();
 

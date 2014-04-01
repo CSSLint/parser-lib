@@ -633,6 +633,8 @@
             "calc(100% + 1em)",
             "calc(100%/6)",
             "calc(10%*6)",
+            "calc((5em - 100%) / -2)",
+            "calc(((100% - 15%) / 3 - 1px) * 3 + 10%)",
             "min-content",
             "-moz-fit-content",
             "-moz-available",

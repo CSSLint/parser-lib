@@ -633,11 +633,16 @@
             "calc(100% + 1em)",
             "calc(100%/6)",
             "calc(10%*6)",
+            "min-content",
+            "-moz-fit-content",
+            "-moz-available",
+            "-webkit-fill-available",
+            "contain-floats",
             "inherit"
         ],
 
         invalid: {
-            "foo" : "Expected (<length> | <percentage> | inherit) but found 'foo'."
+            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit) but found 'foo'."
         }
     }));
 

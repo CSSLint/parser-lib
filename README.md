@@ -1,7 +1,7 @@
 CSS Parser
 ==========
 
-[![build status](https://secure.travis-ci.org/nzakas/parser-lib.png)](http://travis-ci.org/nzakas/parser-lib)
+[![build status](https://secure.travis-ci.org/CSSLint/parser-lib.svg)](http://travis-ci.org/CSSLint/parser-lib)
 
 Introduction
 ------------

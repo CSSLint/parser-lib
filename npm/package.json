@@ -1,31 +1,31 @@
 {
-    "name": "parserlib",
-    "version": "@VERSION@",
-    "description": "CSSLint",
-    "author": "Nicholas C. Zakas",
-    "description": "CSS3 SAX-inspired parser",
-    "keywords": [ "parser", "css", "css3", "sax", "style", "stylesheet" ],
-    "contributors": [
-    ],
-    "engines": {
-        "node" : ">=0.2.0"
-    },
-    "directories": {
-        "lib" : "lib"
-    },
-    "main": "./lib/node-parserlib.js",
-    "licenses":[
-        {
-            "type" : "MIT",
-            "url" : "https://github.com/nzakas/parser-lib/blob/master/LICENSE"
-        }
-    ],
-    "repository": {
-        "type":"git",
-        "url":"http://github.com/nzakas/parser-lib.git"
-    },
-    "scripts": {
-        "test": "ant -f ../../build.xml test",
-        "prepublish": "npm test"
-    }
+  "name": "parserlib",
+  "version": "@VERSION@",
+  "author": "Nicholas C. Zakas",
+  "contributors": [
+    "Nick Schonning"
+  ],
+  "description": "CSS3 SAX-inspired parser",
+  "license": "MIT",
+  "homepage": "https://github.com/CSSLint/parser-lib",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/CSSLint/parser-lib.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CSSLint/parser-lib/issues"
+  },
+  "keywords": [
+    "parser",
+    "css",
+    "css3",
+    "sax",
+    "style",
+    "stylesheet"
+  ],
+  "main": "./lib/node-parserlib.js",
+  "scripts": {
+    "test": "ant -f ../../build.xml test",
+    "prepublish": "npm test"
+  }
 }

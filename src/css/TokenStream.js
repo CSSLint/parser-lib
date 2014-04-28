@@ -314,6 +314,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             value:      value,
             type:       tt,
             channel:    options.channel,
+            endChar:    options.endChar,
             hide:       options.hide || false,
             startLine:  startLine,
             startCol:   startCol,
@@ -383,12 +384,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      */
     charToken: function(c, startLine, startCol){
         var tt = Tokens.type(c);
+        var opts = {};
 
         if (tt == -1){
             tt = Tokens.CHAR;
+        } else {
+            opts.endChar = Tokens[tt].endChar;
         }
 
-        return this.createToken(tt, c, startLine, startCol);
+        return this.createToken(tt, c, startLine, startCol, opts);
     },
 
     /**

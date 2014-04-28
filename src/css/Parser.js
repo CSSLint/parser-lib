@@ -1563,7 +1563,7 @@ Parser.prototype = function(){
                     value       = null,
                     operator    = null;
 
-                value = this._term();
+                value = this._term(inFunction);
                 if (value !== null){
 
                     values.push(value);
@@ -1580,7 +1580,7 @@ Parser.prototype = function(){
 							valueParts = [];
 						}*/
 
-                        value = this._term();
+                        value = this._term(inFunction);
 
                         if (value === null){
                             break;
@@ -1598,7 +1598,7 @@ Parser.prototype = function(){
                 return values.length > 0 ? new PropertyValue(values, values[0].line, values[0].col) : null;
             },
 
-            _term: function(){
+            _term: function(inFunction){
 
                 /*
                  * term
@@ -1612,6 +1612,7 @@ Parser.prototype = function(){
                 var tokenStream = this._tokenStream,
                     unary       = null,
                     value       = null,
+                    endChar     = null,
                     token,
                     line,
                     col;
@@ -1631,6 +1632,20 @@ Parser.prototype = function(){
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol;
                     }
+
+                //see if it's a simple block
+                } else if (inFunction && tokenStream.match([Tokens.LPAREN, Tokens.LBRACE, Tokens.LBRACKET])){
+
+                    token = tokenStream.token();
+                    endChar = token.endChar;
+                    value = token.value + this._expr(inFunction).text;
+                    if (unary === null){
+                        line = tokenStream.token().startLine;
+                        col = tokenStream.token().startCol;
+                    }
+                    tokenStream.mustMatch(Tokens.type(endChar));
+                    value += endChar;
+                    this._readWhitespace();
 
                 //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,

@@ -132,6 +132,7 @@ var Tokens  = [
 
     {
         name: "LBRACE",
+        endChar: "}",
         text: "{"
     },
     {
@@ -140,6 +141,7 @@ var Tokens  = [
     },
     {
         name: "LBRACKET",
+        endChar: "]",
         text: "["
     },
     {
@@ -161,6 +163,7 @@ var Tokens  = [
 
     {
         name: "LPAREN",
+        endChar: ")",
         text: "("
     },
     {

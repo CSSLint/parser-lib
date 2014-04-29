@@ -648,6 +648,142 @@
         }
     }));
 
+    ["flex", "-ms-flex", "-webkit-flex"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                "1",
+                "inherit",
+                // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0 auto",
+                "0 1 auto",
+                "auto",
+                "none",
+                "1 1 0%"
+            ],
+
+            invalid: {
+                "foo": "Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-basis", "-webkit-flex-basis"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "auto",
+                "12px",
+                "3em",
+                "0"
+            ],
+
+            invalid: {
+                "foo": "Expected (<width>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-direction", "-ms-flex-direction", "-webkit-flex-direction"].forEach(function(prop_name) {
+        var prop_definition = "row | row-reverse | column | column-reverse";
+        if (prop_name == "-ms-flex-direction") {
+            prop_definition += " | inherit";
+        }
+        var valid_values = [
+            // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+            "row",
+            "row-reverse",
+            "column",
+            "column-reverse"
+        ];
+        if (prop_name == "-ms-flex-direction") {
+            valid_values.push("inherit");
+        }
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: valid_values,
+
+            invalid: {
+                "foo": "Expected (" + prop_definition + ") but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-flow", "-webkit-flex-flow"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
+                "row",
+                "column wrap",
+                "row-reverse wrap-reverse",
+                "wrap"
+            ],
+
+            invalid: {
+                "foo": "Expected (<flex-direction> || <flex-wrap>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-grow", "-webkit-flex-grow"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0",
+                "1",
+                "1.5"
+            ],
+
+            invalid: {
+                "foo": "Expected (<number>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-shrink", "-webkit-flex-shrink"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0",
+                "1",
+                "1.5"
+            ],
+
+            invalid: {
+                "foo": "Expected (<number>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-wrap", "-ms-flex-wrap", "-webkit-flex-wrap"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "nowrap",
+                "wrap",
+                "wrap-reverse"
+            ],
+
+            invalid: {
+                "foo": "Expected (nowrap | wrap | wrap-reverse) but found 'foo'."
+            }
+        }));
+    });
+
     suite.add(new ValidationTestCase({
         property: "text-rendering",
 

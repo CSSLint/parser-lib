@@ -186,6 +186,30 @@ var ValidationTypes = {
 
         "<time>": function(part) {
             return part.type == "time";
+        },
+
+        "<flex-grow>": function(part){
+            return this["<number>"](part);
+        },
+
+        "<flex-shrink>": function(part){
+            return this["<number>"](part);
+        },
+
+        "<width>": function(part){
+            return this["<margin-width>"](part);
+        },
+
+        "<flex-basis>": function(part){
+            return this["<width>"](part);
+        },
+
+        "<flex-direction>": function(part){
+            return ValidationTypes.isLiteral(part, "row | row-reverse | column | column-reverse");
+        },
+
+        "<flex-wrap>": function(part){
+            return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
         }
     },
 
@@ -353,6 +377,50 @@ var ValidationTypes = {
             if (ValidationTypes.isAny(expression, simple)){
                 result = true;
                 ValidationTypes.isAny(expression, simple);
+            }
+
+            return result;
+        },
+
+        "<flex>": function(expression) {
+            // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
+            // none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]
+            // Valid syntaxes, according to https://developer.mozilla.org/en-US/docs/Web/CSS/flex#Syntax
+            // * none
+            // * <flex-grow>
+            // * <flex-basis>
+            // * <flex-grow> <flex-basis>
+            // * <flex-grow> <flex-shrink>
+            // * <flex-grow> <flex-shrink> <flex-basis>
+            // * inherit
+            var part,
+                result = false;
+            if (ValidationTypes.isAny(expression, "none | inherit")) {
+                result = true;
+            } else {
+                if (ValidationTypes.isType(expression, "<flex-grow>")) {
+                    if (expression.peek()) {
+                        if (ValidationTypes.isType(expression, "<flex-shrink>")) {
+                            if (expression.peek()) {
+                                result = ValidationTypes.isType(expression, "<flex-basis>");
+                            } else {
+                                result = true;
+                            }
+                        } else if (ValidationTypes.isType(expression, "<flex-basis>")) {
+                            result = expression.peek() === null;
+                        }
+                    } else {
+                        result = true;
+                    }
+                } else if (ValidationTypes.isType(expression, "<flex-basis>")) {
+                    result = true;
+                }
+            }
+
+            if (!result) {
+                // Generate a more verbose error than "Expected <flex>..."
+                part = expression.peek();
+                throw new ValidationError("Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found '" + expression.value.text + "'.", part.line, part.col);
             }
 
             return result;

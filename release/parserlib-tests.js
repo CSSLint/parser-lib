@@ -1025,15 +1025,26 @@
             Assert.areEqual("vw", result.parts[0].units);
         },
 
-        testViewportRelativeMinValue: function(){
+        testViewportRelativeMaxValue: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("50vm");
+            var result = parser.parsePropertyValue("50vmax");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("length", result.parts[0].type);
             Assert.areEqual(50, result.parts[0].value);
-            Assert.areEqual("vm", result.parts[0].units);
+            Assert.areEqual("vmax", result.parts[0].units);
+        },
+
+        testViewportRelativeMinValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("50vmin");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(50, result.parts[0].value);
+            Assert.areEqual("vmin", result.parts[0].units);
         },
 
         testPercentageValue: function(){
@@ -1487,6 +1498,12 @@
             Assert.isTrue(true);  //just don't want an error
         },
 
+	testMediaWithViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media { @viewport {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
         testMediaWithTypeOnly: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media print { }");
@@ -1711,6 +1728,34 @@
                 Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
             });
             var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
+        },
+
+        "Test @import uri without quotes": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import url(http://www.yahoo.com);");
+        },
+
+
+        "Test @import uri with quotes": function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import url('http://www.yahoo.com');");
+        },
+
+        "Test @import address": function(){
+            var parser = new Parser();
+            parser.addListener("import", function(event){
+                Assert.areEqual("import", event.type);
+                Assert.areEqual("http://www.yahoo.com", event.uri);
+            });
+            var result = parser.parse("@import 'http://www.yahoo.com';");
         }
     }));
 
@@ -1734,7 +1779,6 @@
     YUITest.TestRunner.add(suite);
 
 })();
-
 (function(){
 
     var Assert = YUITest.Assert,
@@ -2192,9 +2236,13 @@
             "50.0REM"    : [CSSTokens.LENGTH],
             ".5rEm"      : [CSSTokens.LENGTH],
 
-            "5vm"       : [CSSTokens.LENGTH],
-            "50.0VM"    : [CSSTokens.LENGTH],
-            ".5vM"      : [CSSTokens.LENGTH],
+            "5vmax"      : [CSSTokens.LENGTH],
+            "50.0VMAX"   : [CSSTokens.LENGTH],
+            ".5vMax"     : [CSSTokens.LENGTH],
+
+            "5vmin"      : [CSSTokens.LENGTH],
+            "50.0VMIN"   : [CSSTokens.LENGTH],
+            ".5vMin"     : [CSSTokens.LENGTH],
 
             "5ch"       : [CSSTokens.LENGTH],
             "50.0CH"    : [CSSTokens.LENGTH],
@@ -2285,6 +2333,7 @@
             "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
             "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
             "calc(100% - 5px)"      : [CSSTokens.FUNCTION, CSSTokens.PERCENTAGE, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.LENGTH, CSSTokens.RPAREN],
+            "calc((5em - 100%) / -2)" : [CSSTokens.FUNCTION, CSSTokens.LPAREN, CSSTokens.LENGTH, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.PERCENTAGE, CSSTokens.RPAREN, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.MINUS, CSSTokens.NUMBER, CSSTokens.RPAREN],
 
             //old-style IE filters - interpreted as bunch of tokens
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
@@ -2437,7 +2486,6 @@
     YUITest.TestRunner.add(newSuite);
 
 })();
-
 (function(){
 
     var Assert = YUITest.Assert,
@@ -2502,6 +2550,22 @@
     var suite = new YUITest.TestSuite("Validation Tests");
 
     suite.add(new ValidationTestCase({
+        property: "animation-fill-mode",
+
+        valid: [
+            "none",
+            "forwards",
+            "backwards",
+            "both",
+            "none, forwards"
+        ],
+
+        invalid: {
+            "1px" : "Expected (none | forwards | backwards | both) but found '1px'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-name",
 
         valid: [
@@ -2509,7 +2573,8 @@
             "foo",
             "foo, bar",
             "none, none",
-            "none, foo"
+            "none, foo",
+            "has_underscore"
         ],
 
         invalid: {
@@ -3056,13 +3121,156 @@
             "calc(100% + 1em)",
             "calc(100%/6)",
             "calc(10%*6)",
+            "calc((5em - 100%) / -2)",
+            "calc(((100% - 15%) / 3 - 1px) * 3 + 10%)",
+            "min-content",
+            "-moz-fit-content",
+            "-moz-available",
+            "-webkit-fill-available",
+            "contain-floats",
             "inherit"
         ],
 
         invalid: {
-            "foo" : "Expected (<length> | <percentage> | inherit) but found 'foo'."
+            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit) but found 'foo'."
         }
     }));
+
+    ["flex", "-ms-flex", "-webkit-flex"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                "1",
+                "inherit",
+                // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0 auto",
+                "0 1 auto",
+                "auto",
+                "none",
+                "1 1 0%"
+            ],
+
+            invalid: {
+                "foo": "Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-basis", "-webkit-flex-basis"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "auto",
+                "12px",
+                "3em",
+                "0"
+            ],
+
+            invalid: {
+                "foo": "Expected (<width>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-direction", "-ms-flex-direction", "-webkit-flex-direction"].forEach(function(prop_name) {
+        var prop_definition = "row | row-reverse | column | column-reverse";
+        if (prop_name == "-ms-flex-direction") {
+            prop_definition += " | inherit";
+        }
+        var valid_values = [
+            // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+            "row",
+            "row-reverse",
+            "column",
+            "column-reverse"
+        ];
+        if (prop_name == "-ms-flex-direction") {
+            valid_values.push("inherit");
+        }
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: valid_values,
+
+            invalid: {
+                "foo": "Expected (" + prop_definition + ") but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-flow", "-webkit-flex-flow"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
+                "row",
+                "column wrap",
+                "row-reverse wrap-reverse",
+                "wrap"
+            ],
+
+            invalid: {
+                "foo": "Expected (<flex-direction> || <flex-wrap>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-grow", "-webkit-flex-grow"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0",
+                "1",
+                "1.5"
+            ],
+
+            invalid: {
+                "foo": "Expected (<number>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-shrink", "-webkit-flex-shrink"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "0",
+                "1",
+                "1.5"
+            ],
+
+            invalid: {
+                "foo": "Expected (<number>) but found 'foo'."
+            }
+        }));
+    });
+
+    ["flex-wrap", "-ms-flex-wrap", "-webkit-flex-wrap"].forEach(function(prop_name) {
+        suite.add(new ValidationTestCase({
+            property: prop_name,
+
+            valid: [
+                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
+                "nowrap",
+                "wrap",
+                "wrap-reverse"
+            ],
+
+            invalid: {
+                "foo": "Expected (nowrap | wrap | wrap-reverse) but found 'foo'."
+            }
+        }));
+    });
 
     suite.add(new ValidationTestCase({
         property: "text-rendering",
@@ -3246,7 +3454,6 @@
     YUITest.TestRunner.add(suite);
 
 })();
-
 (function(){
 
     var Assert = YUITest.Assert
@@ -3556,4 +3763,3 @@
     YUITest.TestRunner.add(suite);
 
 })();
-

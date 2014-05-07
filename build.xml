@@ -55,7 +55,7 @@
 
         <!-- git log -pretty=format:'* %s (%an)' v0.4.0..v0.5.0-->
         <exec executable="git" failonerror="true" outputproperty="git.changelog">
-            <arg line="log --pretty=format:'* %s (%an)' ${git.log.range}"/>
+            <arg line="log --no-merges --pretty=format:'* %s (%an)' ${git.log.range}"/>
         </exec>
 
         <concat destfile="CHANGELOG.tmp"  fixlastline="true">

@@ -317,3 +317,8 @@ a:hover, foo ... bar {
 * **@ Rules** - there are certain @ rules that are only valid in certain contexts. The parser will skip over `@charset`, `@namespace`, and `@import` if they're found anywhere other than the beginning of the input.
 
 * **Unknown @ Rules** - any @ rules that isn't recognized is automatically skipped, meaning the entire block after it is not parsed.
+
+Running Tests
+-------------
+
+With the Apache Ant build tool installed, you can run the tests via `ant test` from the repository's root.

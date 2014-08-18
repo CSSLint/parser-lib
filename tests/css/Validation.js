@@ -933,6 +933,25 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "will-change",
+
+        valid: [
+            "auto",
+            "scroll-position",
+            "contents",
+            "opacity",
+            "transform",
+            "opacity, transform",
+            "height, opacity, transform, width"
+        ],
+
+        invalid: {
+            "2px"               : "Expected (<ident>) but found '2px'.",
+            "opacity transform" : "Expected end of value but found 'transform'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "word-wrap",
 
         valid: [

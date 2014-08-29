@@ -129,7 +129,7 @@ var ValidationTypes = {
         },
 
         "<color>": function(part){
-            return part.type == "color" || part == "transparent";
+            return part.type == "color" || part == "transparent" || part == "currentColor";
         },
 
         "<number>": function(part){

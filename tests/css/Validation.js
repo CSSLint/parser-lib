@@ -141,6 +141,23 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "background-color",
+
+        valid: [
+            "red",
+            "#f00",
+            "inherit",
+            "transparent",
+            "currentColor"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<color> | inherit) but found 'foo'.",
+            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "background-image",
 
         valid: [
@@ -560,7 +577,8 @@
             "red",
             "#f00",
             "inherit",
-
+            "transparent",
+            "currentColor"
         ],
 
         invalid: {

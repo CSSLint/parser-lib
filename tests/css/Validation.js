@@ -62,6 +62,31 @@
     var suite = new YUITest.TestSuite("Validation Tests");
 
     suite.add(new ValidationTestCase({
+        property: "alignment-baseline",
+
+        valid: [
+            "auto",
+            "baseline",
+            "use-script",
+            "before-edge",
+            "text-before-edge",
+            "after-edge",
+            "text-after-edge",
+            "central",
+            "middle",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-fill-mode",
 
         valid: [
@@ -241,8 +266,22 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "baseline-shift",
 
+        valid: [
+            "baseline",
+            "sub",
+            "super",
+            "5%",
+            "2px",
+            "inherit"
+        ],
 
+        invalid: {
+            "foo" : "Expected (baseline | sub | super | <percentage> | <length> | inherit) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border",
@@ -554,18 +593,76 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "clip-rule",
+
+        valid: [
+            "nonzero",
+            "evenodd",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "color",
 
         valid: [
             "red",
             "#f00",
-            "inherit",
-
+            "inherit"
         ],
 
         invalid: {
             "foo" : "Expected (<color> | inherit) but found 'foo'.",
             "invert" : "Expected (<color> | inherit) but found 'invert'.",
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-interpolation",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-interpolation-filters",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality | inherit) but found 'foo'."
         }
     }));
 
@@ -621,7 +718,132 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "dominant-baseline",
 
+        valid: [
+            "auto",
+            "use-script",
+            "no-change",
+            "reset-size",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "central",
+            "middle",
+            "text-after-edge",
+            "text-before-edge",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-opacity",
+
+        valid: [
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-rule",
+
+        valid: [
+            "nonzero",
+            "evenodd",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "flood-opacity",
+
+        valid: [
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "glyph-orientation-horizontal",
+
+        valid: [
+            "30deg",
+            "1rad",
+            "100grad",
+            "inherit"
+        ],
+
+        invalid: {
+            "1px" : "Expected (<angle> | inherit) but found '1px'.",
+            "auto": "Expected (<angle> | inherit) but found 'auto'.",
+            "foo" : "Expected (<angle> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "glyph-orientation-vertical",
+
+        valid: [
+            "auto",
+            "30deg",
+            "1rad",
+            "100grad",
+            "inherit"
+        ],
+
+        invalid: {
+            "1px" : "Expected (auto | <angle> | inherit) but found '1px'.",
+            "foo" : "Expected (auto | <angle> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "image-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "kerning",
+
+        valid: [
+            "auto",
+            "0.1em",
+            "1px",
+            "inherit"
+        ],
+
+        invalid: {
+            "5%" : "Expected (auto | <length> | inherit) but found '5%'.",
+            "foo" : "Expected (auto | <length> | inherit) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "min-height",
@@ -783,6 +1005,131 @@
             }
         }));
     });
+
+    suite.add(new ValidationTestCase({
+        property: "shape-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "crispEdges",
+            "geometricPrecision",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | crispEdges | geometricPrecision | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stop-opacity",
+
+        valid: [
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-dashoffset",
+
+        valid: [
+            "5%",
+            "2px",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<percentage> | <length> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linecap",
+
+        valid: [
+            "butt",
+            "round",
+            "square",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (butt | round | square | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linejoin",
+
+        valid: [
+            "miter",
+            "round",
+            "bevel",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (miter | round | bevel | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-miterlimit",
+
+        valid: [
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-opacity",
+
+        valid: [
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<number> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-width",
+
+        valid: [
+            "5%",
+            "2px",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<percentage> | <length> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-anchor",
+
+        valid: [
+            "start",
+            "middle",
+            "end",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (start | middle | end | inherit) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "text-rendering",

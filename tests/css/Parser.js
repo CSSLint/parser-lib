@@ -1498,7 +1498,7 @@
             Assert.isTrue(true);  //just don't want an error
         },
 
-	testMediaWithViewport: function(){
+        testMediaWithViewport: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media { @viewport {} }");
             Assert.isTrue(true);  //just don't want an error
@@ -1525,6 +1525,18 @@
         testMediaWithComplexExpression: function(){
             var parser = new Parser({ strict: true});
             var result = parser.parse("@media all and (max-width:400px) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testMediaWithSimpleExpressionWithSpaces: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media ( max-width:400px ) { }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testMediaWithComplexExpressionWithSpaces: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@media all and ( max-width:400px ) { }");
             Assert.isTrue(true);  //just don't want an error
         },
 

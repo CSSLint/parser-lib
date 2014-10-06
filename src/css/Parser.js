@@ -526,6 +526,8 @@ Parser.prototype = function(){
                  */
                 var tokenStream = this._tokenStream;
 
+                this._readWhitespace();
+
                 tokenStream.mustMatch(Tokens.IDENT);
 
                 return SyntaxUnit.fromToken(tokenStream.token());

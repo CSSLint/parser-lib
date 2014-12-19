@@ -785,6 +785,25 @@
     });
 
     suite.add(new ValidationTestCase({
+        property: "text-align",
+
+        valid: [
+            "left",
+            "right",
+            "center",
+            "justify",
+            "match-parent",
+            "start",
+            "end",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (left | right | center | justify | match-parent | start | end | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [

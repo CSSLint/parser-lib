@@ -469,7 +469,7 @@ var Properties = {
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
-    "text-align"                    : "left | right | center | justify | inherit" ,
+    "text-align"                    : "left | right | center | justify | match-parent | start | end | inherit" ,
     "text-align-last"               : 1,
     "text-decoration"               : 1,
     "text-emphasis"                 : 1,

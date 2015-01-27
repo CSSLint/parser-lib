@@ -394,6 +394,8 @@ var Properties = {
     "nav-up"                        : 1,
 
     //O
+    "object-fit"                    : "fill | contain | cover | none | scale-down",
+    "object-position"               : "<bg-position>",
     "opacity"                       : "<number> | inherit",
     "order"                         : "<integer>",
     "-webkit-order"                 : "<integer>",

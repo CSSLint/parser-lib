@@ -827,6 +827,52 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "object-fit",
+
+        valid: [
+            "fill",
+            "contain",
+            "cover",
+            "none",
+            "scale-down"
+        ],
+
+        invalid: {
+            "foo" : "Expected (fill | contain | cover | none | scale-down) but found 'foo'.",
+            "inherit" : "Expected (fill | contain | cover | none | scale-down) but found 'inherit'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "object-position",
+
+        valid: [
+            "top",
+            "bottom",
+            "center",
+            "100%",
+            "left center",
+            "bottom left",
+            "left 10px",
+            "center bottom",
+            "10% top",
+            "left 10px bottom",
+            "right top 5%",
+            "top 3em center",
+            "center top 3em",
+            "top 3em right 10%",
+        ],
+
+        invalid: {
+            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "10% left"            : "Expected end of value but found 'left'.",
+            "left center right"   : "Expected end of value but found 'center'.",
+            "center 3em right 10%": "Expected end of value but found '3em'.",
+            "top, bottom"         : "Expected end of value but found ','."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "opacity",
 
         valid: [

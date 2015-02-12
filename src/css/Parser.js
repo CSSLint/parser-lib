@@ -127,6 +127,10 @@ Parser.prototype = function(){
                                 this._viewport();
                                 this._skipCruft();
                                 break;
+                            case Tokens.DOCUMENT_SYM:
+                                this._document();
+                                this._skipCruft();
+                                break;
                             case Tokens.UNKNOWN_SYM:  //unknown @ rule
                                 tokenStream.get();
                                 if (!this.options.strict){
@@ -368,6 +372,8 @@ Parser.prototype = function(){
                         this._font_face();
                     } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
                         this._viewport();
+                    } else if (tokenStream.peek() == Tokens.DOCUMENT_SYM){
+                        this._document();
                     } else if (!this._ruleset()){
                         break;
                     }
@@ -747,6 +753,92 @@ Parser.prototype = function(){
                         col:    col
                     });
 
+            },
+
+            _document: function(){
+                /*
+                 * document
+                 *   : DOCUMENT_SYM S*
+                 *     _document_function [ ',' S* _document_function ]* S*
+                 *     '{' S* ruleset* '}'
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    token,
+                    tt,
+                    functions = [],
+                    prefix = "";
+
+                tokenStream.mustMatch(Tokens.DOCUMENT_SYM);
+                token = tokenStream.token();
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
+                    prefix = RegExp.$1;
+                }
+
+                this._readWhitespace();
+                functions.push(this._document_function());
+
+                while(tokenStream.match(Tokens.COMMA)) {
+                    this._readWhitespace();
+                    functions.push(this._document_function());
+                }
+
+                tokenStream.mustMatch(Tokens.LBRACE);
+                this._readWhitespace();
+
+                this.fire({
+                    type:      "startdocument",
+                    functions: functions,
+                    prefix:    prefix,
+                    line:      token.startLine,
+                    col:       token.startCol
+                });
+
+                while(true) {
+                    if (tokenStream.peek() == Tokens.PAGE_SYM){
+                        this._page();
+                    } else if (tokenStream.peek() == Tokens.FONT_FACE_SYM){
+                        this._font_face();
+                    } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
+                        this._viewport();
+                    } else if (tokenStream.peek() == Tokens.MEDIA_SYM){
+                        this._media();
+                    } else if (!this._ruleset()){
+                        break;
+                    }
+                }
+
+                tokenStream.mustMatch(Tokens.RBRACE);
+                this._readWhitespace();
+
+                this.fire({
+                    type:      "enddocument",
+                    functions: functions,
+                    prefix:    prefix,
+                    line:      token.startLine,
+                    col:       token.startCol
+                });
+            },
+
+            _document_function: function(){
+                /*
+                 * document_function
+                 *   : function | URI S*
+                 *   ;
+                 */
+
+                var tokenStream = this._tokenStream,
+                    value;
+
+                if (tokenStream.match(Tokens.URI)) {
+                    value = tokenStream.token().value;
+                    this._readWhitespace();
+                } else {
+                    value = this._function();
+                }
+
+                return value;
             },
 
             _operator: function(inFunction){

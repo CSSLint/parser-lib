@@ -1575,63 +1575,123 @@
         },
 
         testDocumentUrl: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentUrlPrefix: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentDomain: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document domain(w3.org) { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentRegexp: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document regexp('https:.*') { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentMultipleFunctions: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testMozDocument: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@-moz-document url-prefix() { p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentWithPage: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix() { @page {} p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentWithMedia: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix() { @media {} p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentWithFontFace: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix() { @font-face {} p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentWithViewport: function(){
-            var parser = new Parser({ strict: true});
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
             var result = parser.parse("@document url-prefix() { @viewport {} p { color: red; } }");
-            Assert.isTrue(true);  //just don't want an error
+            Assert.isTrue(valid);
         },
 
         testDocumentEventFires: function(){

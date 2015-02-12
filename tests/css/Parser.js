@@ -1574,6 +1574,88 @@
             Assert.isTrue(calledEnd);  //just don't want an error
         },
 
+        testDocumentUrl: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url(http://www.w3.org/) {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentUrlPrefix: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix(http://www.w3.org/) {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentDomain: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document domain(w3.org) {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentRegexp: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document regexp('https:.*') {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentMultipleFunctions: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testMozDocument: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@-moz-document url-prefix() {}");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentWithPage: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix() { @page {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentWithMedia: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix() { @media {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentWithFontFace: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix() { @font-face {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentWithViewport: function(){
+            var parser = new Parser({ strict: true});
+            var result = parser.parse("@document url-prefix() { @viewport {} }");
+            Assert.isTrue(true);  //just don't want an error
+        },
+
+        testDocumentEventFires: function(){
+            var parser = new Parser({ strict:true}),
+                calledStart = false,
+                calledEnd = false;
+
+            parser.addListener("startdocument", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledStart = true;
+            });
+
+            parser.addListener("enddocument", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledEnd = true;
+            });
+
+            var result = parser.parse("@document url-prefix() {}");
+            Assert.isTrue(calledStart);  //just don't want an error
+            Assert.isTrue(calledEnd);  //just don't want an error
+        },
+
         testClassesWithEscapes: function(){
             var parser = new Parser({strict:true});
             var result = parser.parseSelector("#\\31 a2b3c");

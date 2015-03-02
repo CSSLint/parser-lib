@@ -346,6 +346,7 @@ var Properties = {
     "image-orientation"             : "angle | auto",
     "image-rendering"               : 1,
     "image-resolution"              : 1,
+    "ime-mode"                      : "auto | normal | active | inactive | disabled | inherit",
     "inline-box-align"              : "initial | last | <integer>",
 
     //J

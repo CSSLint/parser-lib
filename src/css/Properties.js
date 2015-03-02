@@ -309,11 +309,14 @@ var Properties = {
     "float-offset"                  : 1,
     "font"                          : 1,
     "font-family"                   : 1,
+    "font-kerning"                  : "auto | normal | none | initial | inherit | unset",
     "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
     "font-size-adjust"              : "<number> | none | inherit",
     "font-stretch"                  : "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded | inherit",
     "font-style"                    : "normal | italic | oblique | inherit",
     "font-variant"                  : "normal | small-caps | inherit",
+    "font-variant-caps"             : "normal | small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps",
+    "font-variant-position"         : "normal | sub | super | inherit | initial | unset",
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
 
     //G

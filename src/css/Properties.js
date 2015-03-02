@@ -214,6 +214,7 @@ var Properties = {
     "-moz-box-ordinal-group"        : "<integer>",
     "-moz-box-orient"               : "horizontal | vertical | inline-axis | block-axis | inherit",
     "-moz-box-pack"                 : "start | end | center | justify",
+    "-o-box-decoration-break"       : "slice | clone",
     "-webkit-box-align"             : "start | end | center | baseline | stretch",
     "-webkit-box-decoration-break"  : "slice |clone",
     "-webkit-box-direction"         : "normal | reverse | inherit",
@@ -223,6 +224,7 @@ var Properties = {
     "-webkit-box-ordinal-group"     : "<integer>",
     "-webkit-box-orient"            : "horizontal | vertical | inline-axis | block-axis | inherit",
     "-webkit-box-pack"              : "start | end | center | justify",
+    "box-decoration-break"          : "slice | clone",
     "box-shadow"                    : function (expression) {
         var result      = false,
             part;

@@ -107,6 +107,10 @@ Parser.prototype = function(){
                     try {
 
                         switch(tt){
+                            case Tokens.COMMENT:
++                                this._comment();
++                                this._skipCruft();
++                                break;
                             case Tokens.MEDIA_SYM:
                                 this._media();
                                 this._skipCruft();
@@ -240,6 +244,27 @@ Parser.prototype = function(){
                         });
                     }
                 }
+            },
+
+            _comment: function() {
+                var tokenStream = this._tokenStream;
+                var token = tokenStream.token();
+
+                tokenStream.mustMatch(Tokens.COMMENT);
+
+                this.fire({
+                    type:   "startcomment",
+                    comment: token.value,
+                    line: token.startLine,
+                    col: token.startCol
+                });
+
+                this.fire({
+                    type:   "endcomment",
+                    comment: token.value,
+                    line: token.endLine,
+                    col: token.endCol
+                });
             },
 
             _import: function(emit){

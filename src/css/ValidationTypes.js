@@ -210,6 +210,10 @@ var ValidationTypes = {
 
         "<flex-wrap>": function(part){
             return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
+        },
+        
+        "<feature-tag-value>": function(part){
+            return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
         }
     },
 

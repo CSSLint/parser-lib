@@ -309,6 +309,7 @@ var Properties = {
     "float-offset"                  : 1,
     "font"                          : 1,
     "font-family"                   : 1,
+    "font-feature-settings"         : "<feature-tag-value> | normal | inherit",
     "font-kerning"                  : "auto | normal | none | initial | inherit | unset",
     "font-size"                     : "<absolute-size> | <relative-size> | <length> | <percentage> | inherit",
     "font-size-adjust"              : "<number> | none | inherit",

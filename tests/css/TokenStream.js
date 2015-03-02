@@ -168,6 +168,12 @@
             "@right-middle" : CSSTokens.RIGHTMIDDLE_SYM,
             "@right-bottom" : CSSTokens.RIGHTBOTTOM_SYM,
 
+            "@-ms-viewport" : CSSTokens.VIEWPORT_SYM,
+            "@viewport"     : CSSTokens.VIEWPORT_SYM,
+
+            "@-moz-document" : CSSTokens.DOCUMENT_SYM,
+            "@document"      : CSSTokens.DOCUMENT_SYM,
+
             //animation
             "@-webkit-keyframes":   CSSTokens.KEYFRAMES_SYM,
             "@-moz-keyframes"   : CSSTokens.KEYFRAMES_SYM,

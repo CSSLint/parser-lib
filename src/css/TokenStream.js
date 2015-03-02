@@ -510,17 +510,18 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     identOrFunctionToken: function(first, startLine, startCol){
         var reader  = this._reader,
             ident   = this.readName(first),
-            tt      = Tokens.IDENT;
+            tt      = Tokens.IDENT,
+            uriFns  = ["url(", "url-prefix(", "domain("];
 
         //if there's a left paren immediately after, it's a URI or function
         if (reader.peek() == "("){
             ident += reader.read();
-            if (ident.toLowerCase() == "url("){
+            if (uriFns.indexOf(ident.toLowerCase()) > -1){
                 tt = Tokens.URI;
                 ident = this.readURI(ident);
 
                 //didn't find a valid URL or there's no closing paren
-                if (ident.toLowerCase() == "url("){
+                if (uriFns.indexOf(ident.toLowerCase()) > -1){
                     tt = Tokens.FUNCTION;
                 }
             } else {

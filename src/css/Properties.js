@@ -285,6 +285,7 @@ var Properties = {
 
     //F
     "filter"                        : 1,
+    "fill"                          : "<color> | inherit",
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
     "flex"                          : "<flex>",

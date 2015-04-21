@@ -955,6 +955,28 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "vertical-align",
+
+        valid: [
+            "baseline",
+            "sub",
+            "super",
+            "top",
+            "text-top",
+            "middle",
+            "bottom",
+            "text-bottom",
+            "25%",
+            "-1px",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "z-index",
 
         valid: [

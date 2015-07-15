@@ -1808,6 +1808,18 @@
             Assert.isTrue(valid);
         },
 
+        testDocumentWithKeyframes: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@document url-prefix() { @keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } } }");
+            Assert.isTrue(valid);
+        },
+
         testDocumentEventFires: function(){
             var parser = new Parser({ strict:true}),
                 calledStart = false,

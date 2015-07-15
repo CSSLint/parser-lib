@@ -810,6 +810,7 @@ Parser.prototype = function(){
                 }
 
                 tokenStream.mustMatch(Tokens.RBRACE);
+                token = tokenStream.token();
                 this._readWhitespace();
 
                 this.fire({

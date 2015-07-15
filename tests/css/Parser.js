@@ -1821,7 +1821,7 @@
 
             parser.addListener("enddocument", function(event) {
                 Assert.areEqual(1, event.line, "Line should be 1");
-                Assert.areEqual(1, event.col, "Column should be 1");
+                Assert.areEqual(25, event.col, "Column should be 25");
                 calledEnd = true;
             });
 

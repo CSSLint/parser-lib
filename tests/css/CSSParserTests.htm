@@ -1645,7 +1645,7 @@ YAHOO.test.CSSParser = (function(){
 
             parser.addListener("enddocument", function(event) {
                 assert.areEqual(1, event.line, "Line should be 1");
-                assert.areEqual(1, event.col, "Column should be 1");
+                assert.areEqual(25, event.col, "Column should be 25");
                 calledEnd = true;
             });
 

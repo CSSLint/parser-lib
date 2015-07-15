@@ -1988,6 +1988,7 @@ Parser.prototype = function(){
 
                 this._readWhitespace();
                 tokenStream.mustMatch(Tokens.RBRACE);
+                this._readWhitespace();
 
             },
 

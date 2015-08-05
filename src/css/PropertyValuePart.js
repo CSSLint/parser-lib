@@ -50,6 +50,10 @@ function PropertyValuePart(text, line, col){
             case "vmin":
                 this.type = "length";
                 break;
+                
+            case "fr":
+                this.type = "grid";
+                break;
 
             case "deg":
             case "rad":

@@ -523,7 +523,7 @@ var Properties = {
     "user-select"                   : "none | text | toggle | element | elements | all | inherit",
 
     //V
-    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length> | inherit",
     "visibility"                    : "visible | hidden | collapse | inherit",
     "voice-balance"                 : 1,
     "voice-duration"                : 1,

@@ -12,3 +12,9 @@ Desktop.ini
 
 # NPM files
 npm-debug.log
+
+# IntelliJ project info
+.idea
+
+# original release
+.release-original

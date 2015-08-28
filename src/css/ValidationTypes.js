@@ -177,7 +177,7 @@ var ValidationTypes = {
         },
 
         "<padding-width>": function(part){
-            return this["<length>"](part) || this["<percentage>"](part);
+            return part.value >= 0 && (this["<length>"](part) || this["<percentage>"](part));
         },
 
         "<shape>": function(part){

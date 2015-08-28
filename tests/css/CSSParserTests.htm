@@ -1797,6 +1797,50 @@ YAHOO.test.CSSParser = (function(){
 
         },
 
+        testPaddingLeft1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { padding-left: 6px; }");
+
+        },
+
+        testPaddingLeft2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { padding-left: 3%; }");
+        },
+
+        testPaddingLeft3: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNull(event.invalid);
+            });
+            var result = parser.parse(".foo { padding-left: inherit; }");
+
+        },
+
+        testInvalidPaddingLeft1: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected length greater than 0, percentage greater than 0 or inherit but found '-10px'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { padding-left: -10px; }");
+        },
+
+        testInvalidPaddingLeft2: function(){
+            var parser = new Parser({ strict: true});
+            parser.addListener("property", function(event){
+                assert.isNotNull(event.invalid);
+                assert.areEqual("Expected length, percentage or inherit but found 'auto'.", event.invalid.message);
+            });
+            var result = parser.parse(".foo { padding-left: auto; }");
+        },
+
         testBorderWidth1: function(){
             var parser = new Parser({ strict: true});
             parser.addListener("property", function(event){

@@ -247,6 +247,7 @@ var Properties = {
     "caption-side"                  : "top | bottom | inherit",
     "clear"                         : "none | right | left | both | inherit",
 	"clip"							: "<shape> | auto | inherit",
+	"-webkit-clip-path"				: "<uri> | <clip-path> | none",
 	"clip-path"						: "<uri> | <clip-path> | none", // "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
 	"clip-rule"						: "nonzero | evenodd | inherit",
     "color"                         : "<color> | inherit",

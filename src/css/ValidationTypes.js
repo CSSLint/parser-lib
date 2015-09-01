@@ -184,6 +184,24 @@ var ValidationTypes = {
             return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
         },
 
+        "<basic-shape>": function(part){
+            // inset() = inset( <shape-arg>{1,4} [round <border-radius>]? )
+            // circle() = circle( [<shape-radius>]? [at <position>]? )
+            // ellipse() = ellipse( [<shape-radius>{2}]? [at <position>]? )
+            // polygon() = polygon( [<fill-rule>,]? [<shape-arg> <shape-arg>]# )
+            return part.type == "function" && (
+                part.name == "inset" || part.name == "circle" || part.name == "ellipse" || part.name == "polygon"
+            );
+        },
+
+        "<shape-box>": function(part) {
+            return this["<box>"](part) || ValidationTypes.isLiteral(part, "margin-box");
+        },
+
+        "<geometry-box>": function(part) {
+            return this["<shape-box>"](part) || ValidationTypes.isLiteral(part, "fill-box | stroke-box | view-box");
+        },
+
         "<time>": function(part) {
             return part.type == "time";
         },
@@ -211,7 +229,7 @@ var ValidationTypes = {
         "<flex-wrap>": function(part){
             return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
         },
-        
+
         "<feature-tag-value>": function(part){
             return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
         }
@@ -306,6 +324,25 @@ var ValidationTypes = {
             }
 
             return result;
+        },
+
+        "<clip-path>": function(expression) {
+            // <basic-shape> || <geometry-box>
+            var result = false;
+
+            if (ValidationTypes.isType(expression, "<basic-shape>")) {
+                result = true;
+                if (expression.hasNext()) {
+                    result = ValidationTypes.isType(expression, "<geometry-box>");
+                }
+            } else if (ValidationTypes.isType(expression, "<geometry-box>")) {
+                result = true;
+                if (expression.hasNext()) {
+                    result = ValidationTypes.isType(expression, "<basic-shape>");
+                }
+            }
+
+            return result && !expression.hasNext();
         },
 
         "<repeat-style>": function(expression){

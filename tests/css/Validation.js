@@ -599,9 +599,7 @@
 
         invalid: {
 	        "stroke-box ellipse(40% 40%) 40%" : "Expected end of value but found '40%'.",
-	        "x-box" : "Expected <geometry-box> but found 'x-box'.",
             "foo" : "Expected (<uri> | <clip-path> | none) but found 'foo'.",
-	        "invert(40% 40%)" : "Expected (<uri> | <clip-path> | none) but found 'invert(40% 40%)'",
 	        "40%" : "Expected (<uri> | <clip-path> | none) but found '40%'.",
 	        "0.4" : "Expected (<uri> | <clip-path> | none) but found '0.4'."
         }

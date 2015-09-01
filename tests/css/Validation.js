@@ -579,7 +579,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<shape> | inherit) but found 'foo'.",
+            "foo" : "Expected (<shape> | auto | inherit) but found 'foo'."
         }
     }));
 
@@ -601,7 +601,7 @@
 	        "stroke-box ellipse(40% 40%) 40%" : "Expected 2 values at most",
 	        "x-box" : "Expected <geometry-box> but found 'x-box'.",
             "foo" : "Expected (<uri> | <clip-path> | none) but found 'foo'.",
-	        "invert(40% 40%)" : "Expected <basic-shape> but found 'x-box'.",
+	        "invert(40% 40%)" : "Expected <basic-shape> but found 'invert(40% 40%)'.",
 	        "40%" : "Expected (<uri> | <clip-path> | none) but found '40%'.",
 	        "0.4" : "Expected (<uri> | <clip-path> | none) but found '0.4'."
         }
@@ -617,7 +617,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'.",
+            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
         }
     }));
 

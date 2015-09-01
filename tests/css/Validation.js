@@ -587,7 +587,7 @@
         property: "clip-path",
 
         valid: [
-            "rect(10% 15% 10% 15%)",
+            "inset(10% 15% 10% 15%)",
             "circle(30% at 85% 15%)",
 	        "url('#myPath')",
 	        "ellipse(40% 40%)",
@@ -598,10 +598,10 @@
         ],
 
         invalid: {
-	        "stroke-box ellipse(40% 40%) 40%" : "Expected 2 values at most",
+	        "stroke-box ellipse(40% 40%) 40%" : "Expected end of value but found '40%'.",
 	        "x-box" : "Expected <geometry-box> but found 'x-box'.",
             "foo" : "Expected (<uri> | <clip-path> | none) but found 'foo'.",
-	        "invert(40% 40%)" : "Expected <basic-shape> but found 'invert(40% 40%)'.",
+	        "invert(40% 40%)" : "Expected (<uri> | <clip-path> | none) but found 'invert(40% 40%)'",
 	        "40%" : "Expected (<uri> | <clip-path> | none) but found '40%'.",
 	        "0.4" : "Expected (<uri> | <clip-path> | none) but found '0.4'."
         }

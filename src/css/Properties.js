@@ -284,7 +284,7 @@ var Properties = {
     "empty-cells"                   : "show | hide | inherit",
 
     //F
-    "filter"                        : 1,
+    "filter"                        : "<uri> | <filter-function-list> | none",
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
     "flex"                          : "<flex>",

@@ -673,6 +673,28 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "filter",
+
+        valid: [
+            "custom(
+                url(vertexshader.vert)
+                mix(url(fragment.frag) normal source-atop),
+                4 5,
+                time 0
+            )",
+            "blur(30px 30px)",
+            "url('#svgFilter')",
+            "hue-rotate(10deg)",
+            "brightness(0.3) contrast(30)"
+        ],
+
+        invalid: {
+            "circle(50% at 0 0)" : "Expected (<uri> | <filter-function-list> | none) but found 'circle(50% at 0 0)'.",
+            "foo" :                "Expected (<uri> | <filter-function-list> | none) but found 'foo'."
+        }
+    }));
+
     ["flex", "-ms-flex", "-webkit-flex"].forEach(function(prop_name) {
         suite.add(new ValidationTestCase({
             property: prop_name,

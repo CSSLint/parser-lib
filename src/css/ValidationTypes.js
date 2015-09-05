@@ -232,6 +232,21 @@ var ValidationTypes = {
 
         "<feature-tag-value>": function(part){
             return (part.type === "function" && /^[A-Z0-9]{4}$/i.test(part));
+        },
+
+        "<filter-function>": function(part){
+            return part.type === "function" && (
+                    part.name === 'blur' ||
+                    part.name === 'brightness' ||
+                    part.name === 'contrast' ||
+                    part.name === 'custom' || // Not actually in formal spec.
+                    part.name === 'drop-shadow' ||
+                    part.name === 'grayscale' ||
+                    part.name === 'hue-rotate' ||
+                    part.name === 'invert' ||
+                    part.name === 'opacity' ||
+                    part.name === 'saturate' ||
+                    part.name === 'sepia');
         }
     },
 
@@ -340,6 +355,24 @@ var ValidationTypes = {
             }
 
             return result && !expression.hasNext();
+
+        },
+
+        "<filter-function-list>": function(expression){
+            var result, part, i;
+            for (i = 0, result = true; result && expression.hasNext(); i++) {
+                result = ValidationTypes.isAny(expression, "<filter-function> | <uri>");
+            }
+
+            if (i > 1 && !result) {
+                // More precise error message if we fail after the first
+                // parsed <filter-function>.
+                part = expression.peek();
+                throw new ValidationError("Expected (<filter-function> | <uri>) but found '" + part.text + "'.", part.line, part.col);
+            }
+
+            return result;
+
         },
 
         "<repeat-style>": function(expression){

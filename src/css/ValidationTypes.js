@@ -313,17 +313,17 @@ var ValidationTypes = {
             while (expression.hasNext()) {
                 part = expression.next();
                 partResult = part.type == 'function' && (
-                	part.name == 'grayscale' ||
-                	part.name == 'sepia' ||
-                	part.name == 'saturate' ||
-                	part.name == 'hue-rotate' ||
-                	part.name == 'invert' ||
-                	part.name == 'opacity' ||
-                	part.name == 'brightness' ||
-                	part.name == 'contrast' ||
-                	part.name == 'blur' ||
-                	part.name == 'drop-shadow' ||
-                	part.name == 'custom'
+                    part.name == 'grayscale' ||
+                    part.name == 'sepia' ||
+                    part.name == 'saturate' ||
+                    part.name == 'hue-rotate' ||
+                    part.name == 'invert' ||
+                    part.name == 'opacity' ||
+                    part.name == 'brightness' ||
+                    part.name == 'contrast' ||
+                    part.name == 'blur' ||
+                    part.name == 'drop-shadow' ||
+                    part.name == 'custom'
                 );
                 arrayResult = arrayResult && partResult;
             }

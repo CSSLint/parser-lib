@@ -1054,8 +1054,8 @@
         ],
 
         invalid: {
-            "-10px" : "Expected (<length> | <percentage> | inherit) but found '-10px'.",
-            "auto" : "Expected (<length> | <percentage> | inherit) but found 'auto'."
+            "-10px" : "Expected (<padding-width> | inherit) but found '-10px'.",
+            "auto" : "Expected (<padding-width> | inherit) but found 'auto'."
         }
     }));
 

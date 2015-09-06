@@ -132,6 +132,24 @@ var ValidationTypes = {
             return part.type == "color" || part == "transparent" || part == "currentColor";
         },
 
+        "<icccolor>": function(part){
+            /* ex.:
+
+                https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/local
+                icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
+                cielab(62.253188, 23.950124, 48.410653)
+                cielch(62.253188, 54.011108, 63.677091)
+                icc-color(FooColors, Sandy23C)
+
+                http://www.w3.org/TR/2009/WD-SVGColor12-20091001/#iccnamedcolor
+                ~"icc-color(" name (comma-wsp number)+ ")"
+                ~"icc-named-color(" name comma-wsp namedColor ")"
+                ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
+                ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
+
+            */
+        },
+
         "<number>": function(part){
             return part.type == "number" || this["<integer>"](part);
         },
@@ -325,6 +343,34 @@ var ValidationTypes = {
                     if (expression.hasNext() && ValidationTypes.isLiteral(expression.peek(), values)) {
                         expression.next();
                     }
+                }
+            }
+
+            return result;
+
+        },
+
+        "<paint>": function(expression) {
+            /*
+                none | currentColor | <color> [<icccolor>] |
+                <funciri> [ none | currentColor | <color> [<icccolor>] ] |
+                inherit
+                    =>
+                <paint-uni> | <funciri> || <paint-uni> | inherit
+            */
+        },
+
+        "<paint-uni>": function(expression) {
+            // none | currentColor | <color> [<icccolor>]
+            var part, result;
+
+            if (expression.hasNext()) {
+                part = expression.next();
+                result = ValidationTypes.isLiteral(part, "none") || ValidationTypes.simple["<color>"](part);
+                if (expression.hasNext()) {
+                    part = expression.next();
+                    result = result && ValidationTypes.simple["<icccolor>"](part);
+                    result = result && !expression.hasNext();
                 }
             }
 

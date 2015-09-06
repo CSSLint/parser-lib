@@ -132,8 +132,38 @@ var ValidationTypes = {
             return part.type == "color" || part == "transparent" || part == "currentColor";
         },
 
+        "<icccolor>": function(part){
+            /* ex.:
+                https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/local
+                    icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
+                    cielab(62.253188, 23.950124, 48.410653)
+                    cielch(62.253188, 54.011108, 63.677091)
+                    icc-color(FooColors, Sandy23C)
+                http://www.w3.org/TR/2009/WD-SVGColor12-20091001/#iccnamedcolor
+                    ~"icc-color(" name (comma-wsp number)+ ")"
+                    ~"icc-named-color(" name comma-wsp namedColor ")"
+                    ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
+                    ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
+            */
+            return part.type == 'function' && (
+                part.name == 'cielab' ||
+                part.name == 'cielch' ||
+                part.name == 'cielchab' ||
+                part.name == 'icc-color' ||
+                part.name == 'icc-named-color'
+            );
+        },
+
         "<number>": function(part){
             return part.type == "number" || this["<integer>"](part);
+        },
+
+        "<miterlimit>": function(part){
+            return this["<number>"](part) && part.value >= 1;
+        },
+
+        "<opacity-value>": function(part){
+            return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
         "<integer>": function(part){
@@ -211,7 +241,7 @@ var ValidationTypes = {
         "<flex-wrap>": function(part){
             return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
         },
-        
+
         "<feature-tag-value>": function(part){
             return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
         }
@@ -332,6 +362,33 @@ var ValidationTypes = {
 
         },
 
+        "<paint>": function(expression) {
+            /*
+                none | currentColor | <color> [<icccolor>] |
+                <funciri> [ none | currentColor | <color> [<icccolor>] ] |
+                inherit
+            */
+            var part = expression.next(), result = false;
+
+			if (ValidationTypes.simple["<uri>"](part)) {
+				result = true;
+				part = expression.next();
+			}
+			if (part && ValidationTypes.simple["<color>"](part)) {
+				var color = part.value;
+				result = true;
+				part = expression.next();
+				if (part) {
+					result = (color != 'currentColor') && ValidationTypes.simple["<icccolor>"](part);
+				}
+			} else if (part) {
+				result = ValidationTypes.isLiteral(part, "none | currentColor | inherit");
+			}
+
+            return result && !expression.hasNext();
+
+        },
+
         "<shadow>": function(expression) {
             //inset? && [ <length>{2,4} && <color>? ]
             var result  = false,
@@ -384,6 +441,28 @@ var ValidationTypes = {
             }
 
             return result;
+        },
+
+        "<dasharray>": function(expression){
+            var arrayResult = true, part, partResult;
+
+            while (expression.hasNext()) {
+                part = expression.next();
+                partResult =
+                    part.value >= 0 && (
+                        ValidationTypes.simple["<length>"](part) ||
+                        ValidationTypes.simple["<percentage>"](part) ||
+                        ValidationTypes.simple["<number>"](part)
+                    );
+                partResult = partResult || part.value == ',';
+                arrayResult = arrayResult && partResult;
+            }
+
+            if (!arrayResult) {
+                expression.previous();
+            }
+            return arrayResult;
+
         },
 
         "<flex>": function(expression) {

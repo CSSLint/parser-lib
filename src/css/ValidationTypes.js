@@ -145,7 +145,7 @@ var ValidationTypes = {
                     ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
                     ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
             */
-            return  part.type == 'function' && (
+            return part.type == 'function' && (
                 part.name == 'cielab' ||
                 part.name == 'cielch' ||
                 part.name == 'cielchab' ||
@@ -156,6 +156,10 @@ var ValidationTypes = {
 
         "<number>": function(part){
             return part.type == "number" || this["<integer>"](part);
+        },
+
+        "<opacity-value>": function(part){
+            return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
         "<integer>": function(part){
@@ -233,7 +237,7 @@ var ValidationTypes = {
         "<flex-wrap>": function(part){
             return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
         },
-        
+
         "<feature-tag-value>": function(part){
             return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
         }
@@ -359,26 +363,25 @@ var ValidationTypes = {
                 none | currentColor | <color> [<icccolor>] |
                 <funciri> [ none | currentColor | <color> [<icccolor>] ] |
                 inherit
-                    =>
-                <paint-uni> | <funciri> || <paint-uni> | inherit
             */
-        },
+            var part = expression.next(), result = false;
 
-        "<paint-uni>": function(expression) {
-            // none | currentColor | <color> [<icccolor>]
-            var part, result;
+			if (ValidationTypes.simple["<uri>"](part)) {
+				result = true;
+				part = expression.next();
+			}
+			if (part && ValidationTypes.simple["<color>"](part)) {
+				var color = part.value;
+				result = true;
+				part = expression.next();
+				if (part) {
+					result = (color != 'currentColor') && ValidationTypes.simple["<icccolor>"](part);
+				}
+			} else if (part) {
+				result = ValidationTypes.isLiteral(part, "none | currentColor | inherit");
+			}
 
-            if (expression.hasNext()) {
-                part = expression.next();
-                result = ValidationTypes.isLiteral(part, "none") || ValidationTypes.simple["<color>"](part);
-                if (expression.hasNext()) {
-                    part = expression.next();
-                    result = result && ValidationTypes.simple["<icccolor>"](part);
-                    result = result && !expression.hasNext();
-                }
-            }
-
-            return result;
+            return result && !expression.hasNext();
 
         },
 

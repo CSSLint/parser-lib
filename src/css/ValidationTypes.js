@@ -134,20 +134,24 @@ var ValidationTypes = {
 
         "<icccolor>": function(part){
             /* ex.:
-
                 https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/local
-                icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
-                cielab(62.253188, 23.950124, 48.410653)
-                cielch(62.253188, 54.011108, 63.677091)
-                icc-color(FooColors, Sandy23C)
-
+                    icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
+                    cielab(62.253188, 23.950124, 48.410653)
+                    cielch(62.253188, 54.011108, 63.677091)
+                    icc-color(FooColors, Sandy23C)
                 http://www.w3.org/TR/2009/WD-SVGColor12-20091001/#iccnamedcolor
-                ~"icc-color(" name (comma-wsp number)+ ")"
-                ~"icc-named-color(" name comma-wsp namedColor ")"
-                ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
-                ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
-
+                    ~"icc-color(" name (comma-wsp number)+ ")"
+                    ~"icc-named-color(" name comma-wsp namedColor ")"
+                    ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
+                    ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
             */
+            return  part.type == 'function' && (
+                part.name == 'cielab' ||
+                part.name == 'cielch' ||
+                part.name == 'cielchab' ||
+                part.name == 'icc-color' ||
+                part.name == 'icc-named-color'
+            );
         },
 
         "<number>": function(part){

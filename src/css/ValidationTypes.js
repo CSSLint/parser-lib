@@ -158,6 +158,10 @@ var ValidationTypes = {
             return part.type == "number" || this["<integer>"](part);
         },
 
+        "<miterlimit>": function(part){
+            return this["<number>"](part) && part.value >= 1;
+        },
+
         "<opacity-value>": function(part){
             return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
@@ -437,6 +441,25 @@ var ValidationTypes = {
             }
 
             return result;
+        },
+
+        "<dasharray>": function(expression){
+            var arrayResult = true, part, partResult;
+
+            while (expression.hasNext()) {
+                part = expression.next();
+                partResult =
+                    part.value >= 0 && (
+                        ValidationTypes.simple["<length>"](part) ||
+                        ValidationTypes.simple["<percentage>"](part) ||
+                        ValidationTypes.simple["<number>"](part)
+                    );
+                partResult = partResult || part.value == ',';
+                arrayResult = arrayResult && partResult;
+            }
+
+            return arrayResult;
+
         },
 
         "<flex>": function(expression) {

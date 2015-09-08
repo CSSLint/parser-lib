@@ -810,6 +810,57 @@
     });
 
     suite.add(new ValidationTestCase({
+        property: "glyph-orientation-horizontal",
+
+        valid: [
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg",
+            "inherit"
+        ],
+
+        invalid: {
+            "auto" : "Expected (<glyph-angle> | inherit) but found 'auto'.",
+            "70rad" : "Expected (<glyph-angle> | inherit) but found '70rad'.",
+            "4grad" : "Expected (<glyph-angle> | inherit) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "glyph-orientation-vertical",
+
+        valid: [
+            "auto",
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg",
+            "inherit"
+        ],
+
+        invalid: {
+            "70rad" : "Expected (<glyph-angle> | inherit) but found '70rad'.",
+            "4grad" : "Expected (<glyph-angle> | inherit) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-anchor",
+
+        valid: [
+            "start",
+            "middle",
+            "end",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (start | middle | end | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-align",
 
         valid: [

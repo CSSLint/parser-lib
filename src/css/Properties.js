@@ -323,6 +323,8 @@ var Properties = {
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
 
     //G
+    "glyph-orientation-horizontal"  : "<glyph-angle> | inherit",
+    "glyph-orientation-vertical"    : "auto | <glyph-angle> | inherit",
     "grid"                          : 1,
     "grid-area"                     : 1,
     "grid-auto-columns"             : 1,
@@ -492,6 +494,7 @@ var Properties = {
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
+    "text-anchor"                   : "start | middle | end | inherit",
     "text-align"                    : "left | right | center | justify | match-parent | start | end | inherit" ,
     "text-align-last"               : 1,
     "text-decoration"               : 1,

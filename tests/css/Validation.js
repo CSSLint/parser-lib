@@ -840,8 +840,8 @@
         ],
 
         invalid: {
-            "70rad" : "Expected (<glyph-angle> | inherit) but found '70rad'.",
-            "4grad" : "Expected (<glyph-angle> | inherit) but found '4grad'."
+            "70rad" : "Expected (auto | <glyph-angle> | inherit) but found '70rad'.",
+            "4grad" : "Expected (auto | <glyph-angle> | inherit) but found '4grad'."
         }
     }));
 

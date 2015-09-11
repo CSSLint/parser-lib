@@ -446,6 +446,16 @@ var ValidationTypes = {
                 evenness = expression._i % 2,
                 partResult,
                 expressionResult = true,
+                isEscaped = function (text) {
+                    var result = true;
+                    for (var i = 1; i < text.length; i++) {
+                        // 47 is slash, 92 is backslash
+                        if ( /[\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/.test(text.charAt(i)) && text.charCodeAt(i) != 92 ) {
+                            result = result && text.charCodeAt(i-1) == 92 ;
+                        }
+                    }
+                    return result;
+                },
                 isQuoted = function (text) {
                     return (text.charAt(0) == "'" && text.charAt(text.length-1) == "'") || (text.charAt(0) == '"' && text.charAt(text.length-1) == '"');
                 };
@@ -459,6 +469,7 @@ var ValidationTypes = {
                     partResult = part.type != 'operator' && (
                         part.type == 'identifier' ||
                         (part.type == 'color' && !(/[^A-Za-z]/.test(part.text))) ||
+                        (part.type == 'unknown' && isEscaped(part.text)) ||
                         (part.type == 'string' && isQuoted(part.text))
                     ) && !(
                         /^--/.test(part.text) || /^\d/.test(part.text) || /^-\d/.test(part.text)

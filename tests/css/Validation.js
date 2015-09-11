@@ -691,11 +691,11 @@
         invalid: {
             "url('myGradient') icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'url('myGradient') icc-color(myCmykDarkRed)'.",
             "currentColor icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'currentColor icc-color(myCmykDarkRed)'.",
-            "icc-color(myCmykDarkRed) darkred" : "Expected (<paint>) but found 'icc-color(myCmykDarkRed) darkred'.",
+            "icc-color(myCmykDarkRed) darkred" : "Expected end of value but found 'darkred'.",
             "icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'icc-color(myCmykDarkRed)'.",
-            "icc-color(myCmykDarkRed) inherit" : "Expected (<paint>) but found 'icc-color(myCmykDarkRed) inherit'.",
-            "inherit icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'inherit icc-color(myCmykDarkRed)'.",
-            "none inherit" : "Expected (<paint>) but found 'none inherit'."
+            "icc-color(myCmykDarkRed) inherit" : "Expected end of value but found 'inherit'.",
+            "inherit icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
+            "none inherit" : "Expected end of value but found 'inherit'."
         }
     }));
 

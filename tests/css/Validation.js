@@ -677,12 +677,7 @@
         property: "filter",
 
         valid: [
-            "custom(
-                url(vertexshader.vert)
-                mix(url(fragment.frag) normal source-atop),
-                4 5,
-                time 0
-            )",
+            "custom(url(vertexshader.vert) mix(url(fragment.frag) normal source-atop), 4 5, time 0)",
             "blur(30px 30px)",
             "url('#svgFilter')",
             "hue-rotate(10deg)",

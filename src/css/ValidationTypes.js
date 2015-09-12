@@ -432,6 +432,33 @@ var ValidationTypes = {
             }
 
             return result;
+        },
+
+        "<text-decoration>": function(expression) {
+            // none | [ underline || overline || line-through || blink ] | inherit
+            var part,
+                result,
+                someOf = "[ underline || overline || line-through || blink ]",
+                identifiers = {},
+                found;
+
+            do {
+                part = expression.next();
+                found = 0;
+                if (someOf.indexOf(part) > -1) {
+                    if (!identifiers[part]) {
+                        identifiers[part] = 0;
+                    }
+                    identifiers[part]++;
+                    found = identifiers[part];
+                }
+            } while (found == 1 && expression.hasNext());
+
+            result = found == 1 && !expression.hasNext();
+            if (found === 0 && JSON.stringify(identifiers) == '{}') {
+               expression.previous();
+            }
+            return result;
         }
     }
 };

@@ -880,6 +880,25 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "text-decoration",
+
+        valid: [
+            "none",
+            "underline",
+            "underline overline line-through blink",
+            "inherit"
+        ],
+
+        invalid: {
+            "none underline" : "Expected end of value but found 'underline'.",
+            "line-through none" : "Expected (none | <text-decoration> | inherit) but found 'line-through none'.",
+            "inherit blink" : "Expected end of value but found 'blink'.",
+            "overline inherit" : "Expected (none | <text-decoration> | inherit) but found 'overline inherit'.",
+            "foo" : "Expected (none | <text-decoration> | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [

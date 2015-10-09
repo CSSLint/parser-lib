@@ -33,4 +33,5 @@ function SyntaxError(message, line, col){
 }
 
 //inherit from Error
-SyntaxError.prototype = new Error();
+SyntaxError.prototype = Object.create(Error.prototype);
+SyntaxError.prototype.constructor = SyntaxError;

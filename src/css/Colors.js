@@ -147,6 +147,8 @@ var Colors = {
     whitesmoke      :"#f5f5f5",
     yellow          :"#ffff00",
     yellowgreen     :"#9acd32",
+    //'currentColor' color keyword http://www.w3.org/TR/css3-color/#currentcolor
+    currentColor        :"The value of the 'color' property.",
     //CSS2 system colors http://www.w3.org/TR/css3-color/#css2-system
     activeBorder        :"Active window border.",
     activecaption       :"Active window caption.",

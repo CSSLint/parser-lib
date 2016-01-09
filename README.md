@@ -1,15 +1,12 @@
-CSS Parser
-==========
+# CSS Parser
 
 [![build status](https://secure.travis-ci.org/CSSLint/parser-lib.svg)](http://travis-ci.org/CSSLint/parser-lib)
 
-Introduction
-------------
+## Introduction
 
 The ParserLib CSS parser is a CSS3 SAX-inspired parser written in JavaScript. By default, the parser only deals with standard CSS syntax and doesn't do validation (checking of property names and values).
 
-Adding to your project
-----------------------
+## Adding to your project
 
 The CSS parser is intended for use primarily in command line JavaScript environments. The files you should use are in the `build` directory. Copy the files to an appropriate location for your usage.
 
@@ -40,8 +37,7 @@ Or include it as its component parts, the ParserLib core and the CSS parser:
 ```
 Note that parsing large JavaScript files may cause the browser to become unresponsive.
 
-Basic usage
------------
+## Basic usage
 
 You can create a new instance of the parser by using the following code:
 ```js
@@ -66,8 +62,7 @@ The `parse()` method throws an error if a non-recoverable syntax error occurs, o
 
 Note: The `parseStyleSheet()` method is provided for compatibility with SAC-based APIs but does the exact same thing as `parse()`.
 
-Understanding syntax units
---------------------------
+## Understanding syntax units
 
 The CSS parser defines several types that inherit from `parserlib.util.SyntaxUnit`. These types are designed to give you easy access to all relevant parts of the CSS syntax.
 
@@ -131,16 +126,15 @@ Each instance of `parserlib.css.SelectorPart` has an `elementName` property, whi
 Each instance of `parserlib.css.Combinator` has an additional `type` property that indicates the type of combinator: "descendant", "child", "sibling", or "adjacent-sibling".
 
 
-Using events
-------------
+## Using events
 
 The CSS parser fires events as it parses text. The events correspond to important parts of the parsing algorithm and are designed to provide developers with all of the information necessary to create lint checkers, ASTs, and other data structures.
 
 For many events, the `event` object contains additional information. This additional information is most frequently in the form of a `parserlib.util.SyntaxUnit` object, which has three properties:
 
 1. `text` - the string value
-1. `line` - the line on which this token appeared
-1. `col` - the column within the line at which this token appeared
+2. `line` - the line on which this token appeared
+3. `col` - the column within the line at which this token appeared
 
 The `toString()` method for these objects is overridden to be the same value as `text`, so that you can treat the object as a string for comparison and concatenation purposes.
 
@@ -293,8 +287,8 @@ parser.addListener("error", function(event){
     console.log("Parse error: " + event.message + " (" + event.line + "," + event.col + ")", "error");
 });
 ```
-Error recovery
---------------
+
+## Error recovery
 
 The CSS parser's goal is to be on-par with error recovery of CSS parsers in browsers. To that end, the following error recovery mechanisms are in place:
 
@@ -318,7 +312,6 @@ a:hover, foo ... bar {
 
 * **Unknown @ Rules** - any @ rules that isn't recognized is automatically skipped, meaning the entire block after it is not parsed.
 
-Running Tests
--------------
+## Running Tests
 
 With the Apache Ant build tool installed, you can run the tests via `ant test` from the repository's root.

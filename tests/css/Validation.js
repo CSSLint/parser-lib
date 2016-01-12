@@ -931,11 +931,16 @@
             "auto",
             "none",
             "pan-x",
-            "pan-y"
+            "pan-y",
+            "pan-left",
+            "pan-right",
+            "pan-up",
+            "pan-down"
+            "manipulation"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+            "foo" : "Expected (auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation) but found 'foo'."
         }
     }));
 
@@ -946,11 +951,16 @@
             "auto",
             "none",
             "pan-x",
-            "pan-y"
+            "pan-y",
+            "pan-left",
+            "pan-right",
+            "pan-up",
+            "pan-down"
+            "manipulation"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+            "foo" : "Expected (auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation) but found 'foo'."
         }
     }));
 

@@ -1055,6 +1055,21 @@
     }));
 
     suite.add(new ValidationTestCase({
+        property: "padding-left",
+
+        valid: [
+            "6px",
+            "3%",
+            "inherit"
+        ],
+
+        invalid: {
+            "-10px" : "Expected (<padding-width> | inherit) but found '-10px'.",
+            "auto" : "Expected (<padding-width> | inherit) but found 'auto'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "will-change",
 
         valid: [

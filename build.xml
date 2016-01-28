@@ -179,6 +179,9 @@
     <target name="build.node">
 
         <concat destfile="${build.dir}/${node.build.file}" fixlastline="true">
+            <header trimleading="yes">
+            "use strict";
+            </header>
             <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
             <footer trimleading="yes">
             (function(){

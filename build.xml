@@ -87,6 +87,7 @@
     <!-- run tests on the command line -->
     <target name="test" depends="lint,build.all">
         <apply executable="java" failonerror="true">
+            <arg line="-Xss16M"/>
             <fileset dir="${tests.dir}" includes="**/*.js"/>
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>

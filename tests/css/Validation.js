@@ -646,7 +646,73 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "font",
 
+        valid: [
+            "italic small-caps 300 1.3em/10% Genova, 'Comic Sans', sans-serif",
+            "1.3em Shorties, sans-serif",
+            "12px monospace",
+            "caption;",
+            "status-bar",
+            "inherit;",
+        ],
+
+        invalid: {
+            "italic oblique bold 1.3em/10% Genova, 'Comic Sans', sans-serif" : "Expected end of value but found 'oblique'.",
+            "0.9em Nirwana, 'Comic Sans', sans-serif bold" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found '0.9em Nirwana , 'Comic Sans' , sans-serif bold'.",
+            "'Helvetica Neue', sans-serif 1.2em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Helvetica Neue' , sans-serif 1.2em'.",
+            "1.3em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found '1.3em'.",
+            "cursive;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found 'cursive'.",
+            "'Dormant', sans-serif;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Dormant' , sans-serif'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-family",
+
+        valid: [
+            "Futura, sans-serif",
+            '"New Century Schoolbook", serif',
+            "'21st Century', fantasy",
+            "serif",
+            "sans-serif",
+            "cursive",
+            "fantasy",
+            "monospace",
+            // solve problem by quoting
+            "'Red/Black', sans-serif",
+            '"Lucida\\", Grande", sans-serif',
+            "'Ahem!}', sans-serif",
+            '"test@foo", sans-serif',
+            "'#POUND', sans-serif",
+            "'Hawaii 5-0', sans-serif",
+            // solve problem by escaping
+            "Red\\/Black, sans-serif",
+// accepted in the wild but rejected by the unittest
+//            '\\"Lucida\\", Grande, sans-serif', // Unexpected error: Expected RBRACE at line 1, col 21.
+            "Ahem\\!, sans-serif",
+            "test\\@foo, sans-serif",
+// rejected both in the wild and by the unittest
+//            "\\#POUND, sans-serif", // Unexpected error: Expected a hex color but found '#POUND' at line 1, col 20.
+            "Hawaii\\ 5\\-0, sans-serif",
+            "yellowgreen"
+        ],
+
+        invalid: {
+            "--Futura, sans-serif" : "Expected (<font-family> | inherit) but found '--Futura , sans-serif'.",
+// errors both in the wild by the unittest
+//            "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
+//            "-7Futura, sans-serif" : "Unexpected token '7Futura' at line 1, col 21.",
+            "Red/Black, sans-serif" : "Expected (<font-family> | inherit) but found 'Red / Black , sans-serif'.",
+            "'Lucida' Grande, sans-serif" : "Expected (<font-family> | inherit) but found ''Lucida' Grande , sans-serif'.",
+// errors both in the wild by the unittest
+//            "Ahem!, sans-serif" : "Expected RBRACE at line 59, col 22. This rule looks for recoverable syntax errors.",
+//            "test@foo, sans-serif" : "Expected RBRACE at line 60, col 22. This rule looks for recoverable syntax errors.",
+//            "#POUND, sans-serif" : "Expected a hex color but found '#POUND' at line 1, col 20.",
+            "Hawaii 5-0, sans-serif" : "Expected (<font-family> | inherit) but found 'Hawaii 5 -0 , sans-serif'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "min-height",

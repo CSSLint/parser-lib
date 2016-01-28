@@ -214,6 +214,16 @@ var ValidationTypes = {
         
         "<feature-tag-value>": function(part){
             return (part.type == "function" && /^[A-Z0-9]{4}$/i.test(part));
+        },
+
+        "<font-size>": function(part){
+            var result = this["<absolute-size>"](part) || this["<relative-size>"](part) || this["<length>"](part) || this["<percentage>"](part);
+            return result;
+        },
+
+        "<line-height>": function(part){
+            var result = this["<number>"](part) || this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "normal");
+            return result;
         }
     },
 
@@ -428,6 +438,101 @@ var ValidationTypes = {
             }
 
             return result;
+        },
+
+        "<font-family>": function(expression){
+            // identifier: http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
+            var part,
+                evenness = expression._i % 2,
+                partResult,
+                expressionResult = true,
+                isEscaped = function (text) {
+                    var result = true;
+                    for (var i = 1; i < text.length; i++) {
+                        // 47 is slash, 92 is backslash
+                        if ( /[\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/.test(text.charAt(i)) && text.charCodeAt(i) != 92 ) {
+                            result = result && text.charCodeAt(i-1) == 92 ;
+                        }
+                    }
+                    return result;
+                },
+                isQuoted = function (text) {
+                    return (text.charAt(0) == "'" && text.charAt(text.length-1) == "'") || (text.charAt(0) == '"' && text.charAt(text.length-1) == '"');
+                };
+
+            while (expression.hasNext()) {
+                part = expression.next();
+                if (expression._i % 2 == evenness) {
+                    // must be a seperator (thus there is a next value)
+                    partResult = part.value == ',' && expression.hasNext();
+                } else {
+                    partResult = part.type != 'operator' && (
+                        part.type == 'identifier' ||
+                        (part.type == 'color' && !(/[^A-Za-z]/.test(part.text))) ||
+                        (part.type == 'unknown' && isEscaped(part.text)) ||
+                        (part.type == 'string' && isQuoted(part.text))
+                    ) && !(
+                        /^--/.test(part.text) || /^\d/.test(part.text) || /^-\d/.test(part.text)
+                    );
+                }
+                expressionResult = expressionResult && partResult;
+            }
+            return expressionResult;
+        },
+
+        "<font-shorthand>": function(expression){
+            // font [ [ <‘font-style’> || <font-variant-css21> || <‘font-weight’> || <‘font-stretch’ ]? <‘font-size’> [ / <‘line-height’> ]? <‘font-family’> ]
+            var
+                appearances = {style: 0, variant: 0, weight: 0, stretch: 0},
+                foundThisIteration,
+                part,
+                result;
+
+            // check font-appearance, they are optional but may not be doubled
+            do {
+                part = expression.next();
+                foundThisIteration = 0;
+                if (ValidationTypes.isLiteral(part, Properties["font-style"]) && part.value != 'inherit') {
+                    appearances.style++;
+                    foundThisIteration = appearances.style;
+                }
+                // <font-variant-css21>
+                if (ValidationTypes.isLiteral(part, "normal | small-caps")) {
+                    appearances.variant++;
+                    foundThisIteration = appearances.variant;
+                }
+                if (ValidationTypes.isLiteral(part, Properties["font-weight"]) && part.value != 'inherit') {
+                    appearances.weight++;
+                    foundThisIteration = appearances.weight;
+                }
+                if (ValidationTypes.isLiteral(part, Properties["font-stretch"]) && part.value != 'inherit') {
+                    appearances.stretch++;
+                    foundThisIteration = appearances.stretch;
+                }
+            } while (foundThisIteration == 1);
+
+            // validate font-appearance
+            result = (foundThisIteration <= 1);
+            // last one was not an appearance
+            part = expression.previous();
+
+            // evaluate font-size, the first obligation
+            result = result && ValidationTypes.isType(expression, "<font-size>");
+
+            part = expression.next();
+            if (part == '/') {
+                result = result && ValidationTypes.isType(expression, "<line-height>");
+            } else if (part) {
+                expression.previous();
+            } else {
+                result = false;
+            }
+
+            // font-family is the latter obligation
+            result = result && ValidationTypes.isType(expression, "<font-family>");
+
+            return result;
+
         }
     }
 };

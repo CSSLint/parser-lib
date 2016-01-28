@@ -935,7 +935,7 @@
             "pan-left",
             "pan-right",
             "pan-up",
-            "pan-down"
+            "pan-down",
             "manipulation"
         ],
 
@@ -955,7 +955,7 @@
             "pan-left",
             "pan-right",
             "pan-up",
-            "pan-down"
+            "pan-down",
             "manipulation"
         ],
 

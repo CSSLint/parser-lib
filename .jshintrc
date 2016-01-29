@@ -1,0 +1,9 @@
+{
+  "curly":      true,
+  "forin":      true,
+  "latedef":    true,
+  "evil":       true,
+  "loopfunc":   true,
+  "undef":      true,
+  "rhino":      false
+}

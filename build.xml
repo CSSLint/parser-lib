@@ -79,8 +79,9 @@
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
+            <arg line="-opt -1"/>
             <arg path="${lib.dir}/jshint.js" />
-            <arg line="${jsfiles.clean} curly=true,forin=true,latedef=true,evil=true,loopfunc=true,undef=true,rhino=false" />
+            <arg line="${jsfiles.clean}" />
         </exec>
     </target>
 

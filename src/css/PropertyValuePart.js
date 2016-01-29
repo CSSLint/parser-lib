@@ -93,7 +93,7 @@ function PropertyValuePart(text, line, col){
     } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
-        if (temp.length == 3){
+        if (temp.length === 3){
             this.red    = parseInt(temp.charAt(0)+temp.charAt(0),16);
             this.green  = parseInt(temp.charAt(1)+temp.charAt(1),16);
             this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);

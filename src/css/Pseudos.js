@@ -9,5 +9,5 @@ Pseudos.ELEMENT = 1;
 Pseudos.CLASS = 2;
 
 Pseudos.isElement = function(pseudo){
-    return pseudo.indexOf("::") === 0 || Pseudos[pseudo.toLowerCase()] == Pseudos.ELEMENT;
+    return pseudo.indexOf("::") === 0 || Pseudos[pseudo.toLowerCase()] === Pseudos.ELEMENT;
 };

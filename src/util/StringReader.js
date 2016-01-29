@@ -75,7 +75,7 @@ StringReader.prototype = {
      * @method eof
      */
     eof: function(){
-        return (this._cursor == this._input.length);
+        return (this._cursor === this._input.length);
     },
 
     //-------------------------------------------------------------------------
@@ -90,7 +90,7 @@ StringReader.prototype = {
      */
     peek: function(count){
         var c = null;
-        count = (typeof count == "undefined" ? 1 : count);
+        count = (typeof count === "undefined" ? 1 : count);
 
         //if we're not at the end of the input...
         if (this._cursor < this._input.length){
@@ -116,7 +116,7 @@ StringReader.prototype = {
 
             //if the last character was a newline, increment row count
             //and reset column count
-            if (this._input.charAt(this._cursor) == "\n"){
+            if (this._input.charAt(this._cursor) === "\n"){
                 this._line++;
                 this._col=1;
             } else {
@@ -178,7 +178,7 @@ StringReader.prototype = {
          * Then, buffer must end with the pattern or else reach the
          * end of the input.
          */
-        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) != buffer.length - pattern.length){
+        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) !== buffer.length - pattern.length){
             c = this.read();
             if (c){
                 buffer += c;
@@ -233,7 +233,7 @@ StringReader.prototype = {
             value = null;
 
         //if it's a string, just do a straight match
-        if (typeof matcher == "string"){
+        if (typeof matcher === "string"){
             if (source.indexOf(matcher) === 0){
                 value = this.readCount(matcher.length);
             }

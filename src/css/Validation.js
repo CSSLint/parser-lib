@@ -22,10 +22,10 @@ var Validation = {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
-        } else if (typeof spec != "number"){
+        } else if (typeof spec !== "number"){
 
             //initialization
-            if (typeof spec == "string"){
+            if (typeof spec === "string"){
                 if (spec.indexOf("||") > -1) {
                     this.groupProperty(spec, expression);
                 } else {
@@ -34,7 +34,7 @@ var Validation = {
 
             } else if (spec.multi) {
                 this.multiProperty(spec.multi, expression, spec.comma, spec.max || Infinity);
-            } else if (typeof spec == "function") {
+            } else if (typeof spec === "function") {
                 spec(expression);
             }
 
@@ -140,7 +140,7 @@ var Validation = {
                     groups.count++;
                     partial = true;
 
-                    if (groups.count == typeCount || !expression.hasNext()) {
+                    if (groups.count === typeCount || !expression.hasNext()) {
                         result = true;
                     }
                 }

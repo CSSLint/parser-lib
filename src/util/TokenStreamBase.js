@@ -127,7 +127,7 @@ TokenStreamBase.prototype = {
             len = tokenTypes.length;
 
         while(i < len){
-            if (tt == tokenTypes[i++]){
+            if (tt === tokenTypes[i++]){
                 return true;
             }
         }

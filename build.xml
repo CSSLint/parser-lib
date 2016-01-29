@@ -113,7 +113,7 @@
             ${license.text}
             */
             /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
-            var parserlib = {};
+            var parserlib = Object.create(null);
             (function(){
             </header>
             <!--<filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> -->

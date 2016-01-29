@@ -40,7 +40,7 @@ function isIdentStart(c){
 
 function mix(receiver, supplier){
     for (var prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
+        if (Object.prototype.hasOwnProperty.call(supplier, prop)){
             receiver[prop] = supplier[prop];
         }
     }

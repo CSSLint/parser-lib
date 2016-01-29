@@ -5,5 +5,6 @@
   "evil":       true,
   "loopfunc":   true,
   "undef":      true,
-  "rhino":      false
+  "rhino":      false,
+  "proto":      true
 }

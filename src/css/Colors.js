@@ -1,5 +1,6 @@
 
 var Colors = {
+    __proto__       :null,
     aliceblue       :"#f0f8ff",
     antiquewhite    :"#faebd7",
     aqua            :"#00ffff",

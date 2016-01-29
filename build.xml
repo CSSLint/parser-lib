@@ -120,6 +120,7 @@
             <fileset dir="${src.dir}/util" includes="*.js" />
             <footer trimleading="yes">
             parserlib.util = {
+                __proto__   : null,
                 StringReader: StringReader,
                 SyntaxError : SyntaxError,
                 SyntaxUnit  : SyntaxUnit,
@@ -150,6 +151,7 @@
             <fileset dir="${src.dir}/css" includes="*.js" />
             <footer trimleading="yes">
             parserlib.css = {
+                __proto__           :null,
                 Colors              :Colors,
                 Combinator          :Combinator,
                 Parser              :Parser,

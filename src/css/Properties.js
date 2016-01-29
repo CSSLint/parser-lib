@@ -1,5 +1,6 @@
 /*global Validation, ValidationTypes, ValidationError*/
 var Properties = {
+    __proto__: null,
 
     //A
     "align-items"                   : "flex-start | flex-end | center | baseline | stretch",

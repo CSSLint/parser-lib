@@ -43,6 +43,7 @@ Parser.prototype = function(){
     var proto = new EventTarget(),  //new prototype
         prop,
         additions =  {
+            __proto__: null,
 
             //restore constructor
             constructor: Parser,
@@ -2363,7 +2364,7 @@ Parser.prototype = function(){
 
     //copy over onto prototype
     for (prop in additions){
-        if (additions.hasOwnProperty(prop)){
+        if (Object.prototype.hasOwnProperty.call(additions, prop)){
             proto[prop] = additions[prop];
         }
     }

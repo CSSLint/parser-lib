@@ -97,7 +97,7 @@ var ValidationTypes = {
         },
 
         "<bg-image>": function(part){
-            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
+            return this["<image>"](part) || this["<gradient>"](part) ||  String(part) === "none";
         },
 
         "<gradient>": function(part) {
@@ -125,12 +125,12 @@ var ValidationTypes = {
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
             }else{
-                return part.type === "length" || part.type === "number" || part.type === "integer" || part == "0";
+                return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
             }
         },
 
         "<color>": function(part){
-            return part.type === "color" || part == "transparent" || part == "currentColor";
+            return part.type === "color" || String(part) === "transparent" || String(part) === "currentColor";
         },
 
         "<number>": function(part){
@@ -162,7 +162,7 @@ var ValidationTypes = {
         },
 
         "<percentage>": function(part){
-            return part.type === "percentage" || part == "0";
+            return part.type === "percentage" || String(part) === "0";
         },
 
         "<border-width>": function(part){

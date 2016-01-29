@@ -2134,7 +2134,7 @@ Parser.prototype = function(){
                  * or
                  * S* '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
                  * Note that this is how it is described in CSS3 Paged Media, but is actually incorrect.
-                 * A semicolon is only necessary following a declaration is there's another declaration
+                 * A semicolon is only necessary following a declaration if there's another declaration
                  * or margin afterwards.
                  */
                 var tokenStream = this._tokenStream,

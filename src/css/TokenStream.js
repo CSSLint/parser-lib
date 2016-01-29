@@ -696,26 +696,46 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var delim   = first,
             string  = first,
             reader  = this._reader,
-            prev    = first,
             tt      = Tokens.STRING,
-            c       = reader.read();
+            c       = reader.read(),
+            i;
 
         while(c){
             string += c;
 
-            //if the delimiter is found with an escapement, we're done.
-            if (c === delim && prev !== "\\"){
-                break;
-            }
-
-            //if there's a newline without an escapement, it's an invalid string
-            if (isNewLine(reader.peek()) && c !== "\\"){
+            if (c === "\\") {
+                c = reader.read();
+                if (c === null) {
+                    break; // premature EOF after backslash
+                } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
+                    // single-character escape
+                    string += c;
+                } else {
+                    // read up to six hex digits
+                    for (i=0; isHexDigit(c) && i<6; i++) {
+                        string += c;
+                        c = reader.read();
+                    }
+                    // swallow trailing newline or space
+                    if (c === "\r" && reader.peek() === "\n") {
+                        string += c;
+                        c = reader.read();
+                    }
+                    if (isWhitespace(c)) {
+                        string += c;
+                    } else {
+                        // This character is null or not part of the escape;
+                        // jump back to the top to process it.
+                        continue;
+                    }
+                }
+            } else if (c === delim) {
+                break; // delimiter found.
+            } else if (isNewLine(reader.peek())) {
+                // newline without an escapement: it's an invalid string
                 tt = Tokens.INVALID;
                 break;
             }
-
-            //save previous and get next
-            prev = c;
             c = reader.read();
         }
 
@@ -857,38 +877,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return number;
     },
     readString: function(){
-        var reader  = this._reader,
-            delim   = reader.read(),
-            string  = delim,
-            prev    = delim,
-            c       = reader.peek();
-
-        while(c){
-            c = reader.read();
-            string += c;
-
-            //if the delimiter is found with an escapement, we're done.
-            if (c === delim && prev !== "\\"){
-                break;
-            }
-
-            //if there's a newline without an escapement, it's an invalid string
-            if (isNewLine(reader.peek()) && c !== "\\"){
-                string = "";
-                break;
-            }
-
-            //save previous and get next
-            prev = c;
-            c = reader.peek();
-        }
-
-        //if c is null, that means we're out of input and the string was never closed
-        if (c === null){
-            string = "";
-        }
-
-        return string;
+        var token = this.stringToken(this._reader.read(), 0, 0);
+        return token.type === Tokens.INVALID ? "" : token.value;
     },
     readURI: function(first){
         var reader  = this._reader,

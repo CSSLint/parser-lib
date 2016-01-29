@@ -8,6 +8,8 @@
  * @param {int} col The column at which the error occurred.
  */
 function SyntaxError(message, line, col){
+    Error.call(this);
+    this.name = this.constructor.name;
 
     /**
      * The column at which the error occurred.
@@ -33,4 +35,5 @@ function SyntaxError(message, line, col){
 }
 
 //inherit from Error
-SyntaxError.prototype = new Error();
+SyntaxError.prototype = Object.create(Error.prototype); // jshint ignore:line
+SyntaxError.prototype.constructor = SyntaxError; // jshint ignore:line

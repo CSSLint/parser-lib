@@ -142,9 +142,12 @@ function PropertyValuePart(text, line, col){
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
-    } else if (/^["'][^"']*["']/.test(text)){    //string
+    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)){    //double-quoted string
         this.type   = "string";
-        this.value  = eval(text);
+        this.value  = PropertyValuePart.parseString(text);
+    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)){    //single-quoted string
+        this.type   = "string";
+        this.value  = PropertyValuePart.parseString(text);
     } else if (Colors[text.toLowerCase()]){  //named color
         this.type   = "color";
         temp        = Colors[text.toLowerCase()].substring(1);
@@ -163,6 +166,46 @@ function PropertyValuePart(text, line, col){
 
 PropertyValuePart.prototype = new SyntaxUnit();
 PropertyValuePart.prototype.constructor = PropertyValuePart;
+
+/**
+ * Helper method to parse a CSS string.
+ */
+PropertyValuePart.parseString = function(str) {
+    str = str.slice(1, -1); // Strip surrounding single/double quotes
+    var replacer = function(match, esc) {
+        if (/^(\n|\r\n|\r|\f)$/.test(esc)) { return ''; }
+        var m = /^[0-9a-f]{1,6}/i.exec(esc);
+        if (m) {
+            var codePoint = parseInt(m[0], 16);
+            if (String.fromCodePoint) {
+                return String.fromCodePoint(codePoint);
+            } else {
+                // XXX No support for surrogates on old JavaScript engines.
+                return String.fromCharCode(codePoint);
+            }
+        }
+        return esc;
+    };
+    return str.replace(/\\(\r\n|[^\r0-9a-f]|[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)/ig,
+                       replacer);
+};
+
+/**
+ * Helper method to serialize a CSS string.
+ */
+PropertyValuePart.serializeString = function(value) {
+    var replacer = function(match, c) {
+        if (c === '"') {
+            return "\\" + c;
+        }
+        var cp = String.codePointAt ? String.codePointAt(0) :
+            // We only escape non-surrogate chars, so using charCodeAt
+            // is harmless here.
+            String.charCodeAt(0);
+        return "\\" + cp.toString(16) + " ";
+    };
+    return '"' + value.replace(/["\r\n\f]/g, replacer) + '"';
+};
 
 /**
  * Create a new syntax unit based solely on the given token.

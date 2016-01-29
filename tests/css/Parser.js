@@ -1235,6 +1235,26 @@
             Assert.areEqual("Hello world!", result.parts[0].value);
         },
 
+        testStringValue3: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\"Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\\\"\'\\\n\\\r\n\\\r\\\f\\41\"");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
+        },
+
+        testStringValue4: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\'Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\"\\\'\\\n\\\r\n\\\r\\\f\\41\'");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
+        },
+
         testValueWithOperators: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("10px / 1em");

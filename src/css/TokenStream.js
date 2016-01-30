@@ -1,7 +1,7 @@
 /*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
-    nonascii = /^[\u00A0-\uFFFF]$/,
+    //nonascii = /^[\u00A0-\uFFFF]$/,
     nl = /\n|\r\n|\r|\f/,
     whitespace = /\u0009|\u000a|\u000c|\u000d|\u0020/;
 
@@ -354,9 +354,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var rule    = first,
             reader  = this._reader,
             tt      = Tokens.CHAR,
-            valid   = false,
-            ident,
-            c;
+            ident;
 
         /*
          * First, mark where we are. There are only four @ rules,
@@ -420,8 +418,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method commentToken
      */
     commentToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            comment = this.readComment(first);
+        var comment = this.readComment(first);
 
         return this.createToken(Tokens.COMMENT, comment, startLine, startCol);
     },
@@ -455,8 +452,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method hashToken
      */
     hashToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            name    = this.readName(first);
+        var name    = this.readName(first);
 
         return this.createToken(Tokens.HASH, name, startLine, startCol);
     },
@@ -784,8 +780,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method whitespaceToken
      */
     whitespaceToken: function(first, startLine, startCol){
-        var reader  = this._reader,
-            value   = first + this.readWhitespace();
+        var value   = first + this.readWhitespace();
         return this.createToken(Tokens.S, value, startLine, startCol);
     },
 

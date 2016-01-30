@@ -1,5 +1,5 @@
 //This file will likely change a lot! Very experimental!
-/*global Properties, Validation, ValidationError, PropertyValueIterator, console*/
+/*global ValidationError */
 var ValidationTypes = {
 
     isLiteral: function (part, literals) {
@@ -238,15 +238,11 @@ var ValidationTypes = {
     complex: {
 
         "<bg-position>": function(expression){
-            var types   = this,
-                result  = false,
+            var result  = false,
                 numeric = "<percentage> | <length>",
                 xDir    = "left | right",
                 yDir    = "top | bottom",
-                count = 0,
-                hasNext = function() {
-                    return expression.hasNext() && expression.peek().text !== ",";
-                };
+                count = 0;
 
             while (expression.peek(count) && expression.peek(count).text !== ",") {
                 count++;
@@ -310,11 +306,8 @@ var ValidationTypes = {
 
         "<bg-size>": function(expression){
             //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
-            var types   = this,
-                result  = false,
-                numeric = "<percentage> | <length> | auto",
-                part,
-                i, len;
+            var result  = false,
+                numeric = "<percentage> | <length> | auto";
 
             if (ValidationTypes.isAny(expression, "cover | contain")) {
                 result = true;
@@ -378,8 +371,7 @@ var ValidationTypes = {
             var result  = false,
                 count   = 0,
                 inset   = false,
-                color   = false,
-                part;
+                color   = false;
 
             if (expression.hasNext()) {
 

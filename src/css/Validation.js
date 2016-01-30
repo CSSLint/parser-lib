@@ -6,17 +6,8 @@ var Validation = {
 
         //normalize name
         var name        = property.toString().toLowerCase(),
-            parts       = value.parts,
             expression  = new PropertyValueIterator(value),
-            spec        = Properties[name],
-            part,
-            valid,
-            j, count,
-            msg,
-            types,
-            last,
-            literals,
-            max, multi, group;
+            spec        = Properties[name];
 
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
@@ -76,7 +67,6 @@ var Validation = {
         var result      = false,
             value       = expression.value,
             count       = 0,
-            sep         = false,
             part;
 
         while(expression.hasNext() && !result && count < max) {

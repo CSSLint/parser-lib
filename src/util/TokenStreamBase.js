@@ -196,11 +196,7 @@ TokenStreamBase.prototype = {
     get: function(channel){
 
         var tokenInfo   = this._tokenData,
-            reader      = this._reader,
-            value,
             i           =0,
-            len         = tokenInfo.length,
-            found       = false,
             token,
             info;
 

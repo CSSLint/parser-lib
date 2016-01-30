@@ -1,3 +1,4 @@
+/*exported Colors*/
 
 var Colors = {
     __proto__       :null,

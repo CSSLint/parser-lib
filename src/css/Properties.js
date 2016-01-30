@@ -1,4 +1,5 @@
 /*global Validation, ValidationTypes, ValidationError*/
+/*exported Properties*/
 var Properties = {
     __proto__: null,
 

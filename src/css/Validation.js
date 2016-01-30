@@ -1,5 +1,6 @@
 //This file will likely change a lot! Very experimental!
 /*global Properties, ValidationTypes, ValidationError, PropertyValueIterator */
+/*exported Validation */
 var Validation = {
 
     validate: function(property, value){

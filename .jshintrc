@@ -1,10 +1,17 @@
 {
+  "bitwise":    true,
   "curly":      true,
-  "forin":      true,
-  "latedef":    true,
+  "eqeqeq":     true,
   "evil":       true,
+  "forin":      true,
+  "freeze":     true,
+  "latedef":    true,
   "loopfunc":   true,
-  "undef":      true,
+  "noarg":      true,
+  "nonew":      true,
+  "proto":      true,
   "rhino":      false,
-  "proto":      true
+  "strict":     "implied",
+  "undef":      true,
+  "unused":     "vars"
 }

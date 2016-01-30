@@ -85,8 +85,19 @@
         </exec>
     </target>
 
+    <!-- validate npm build file with JSHint -->
+    <target name="lint.node" depends="build.node">
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg line="-opt -1"/>
+            <arg path="${lib.dir}/jshint.js" />
+            <arg path="${build.dir}/${node.build.file}" />
+        </exec>
+    </target>
+
     <!-- run tests on the command line -->
-    <target name="test" depends="lint,build.all">
+    <target name="test" depends="lint,build.all,lint.node">
         <apply executable="java" failonerror="true">
             <arg line="-Xss16M"/>
             <fileset dir="${tests.dir}" includes="**/*.js"/>
@@ -179,17 +190,23 @@
     <target name="build.node">
 
         <concat destfile="${build.dir}/${node.build.file}" fixlastline="true">
-            <header trimleading="yes">
-            "use strict";
+            <header trimleading="yes">/* jshint node:true, latedef:false */
+            "use strict"; // jshint ignore:line
             </header>
             <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
             <footer trimleading="yes">
             (function(){
+                /* jshint forin:false */
                 for(var prop in parserlib){
                     exports[prop] = parserlib[prop];
                 }
             })();
             </footer>
+            <filterchain>
+              <linecontainsregexp negate="true">
+                <regexp pattern="^/[*](global|exported) .*[*]/$"/>
+              </linecontainsregexp>
+            </filterchain>
         </concat>
 
        <mkdir dir="${build.npm.dir}"/>

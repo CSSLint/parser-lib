@@ -143,7 +143,7 @@
             (function(){
             var EventTarget = parserlib.util.EventTarget,
                 TokenStreamBase = parserlib.util.TokenStreamBase,
-                StringReader = parserlib.util.StringReader,
+                StringReader = parserlib.util.StringReader, // jshint ignore:line
                 SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;
             </header>

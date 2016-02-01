@@ -61,7 +61,9 @@
             " "     : [CSSTokens.S],
             "\n"    : [CSSTokens.S],
             "\n \t" : [CSSTokens.S],
-            "\f \n" : [CSSTokens.S]
+            "\f \n" : [CSSTokens.S],
+            // Not legal whitespace (PR#16)
+            "\v\u00A0\u1680": [CSSTokens.CHAR, CSSTokens.IDENT]
         }
     }));
 

@@ -2,7 +2,8 @@
 
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u0080-\uFFFF]$/,
-    nl = /\n|\r\n|\r|\f/;
+    nl = /\n|\r\n|\r|\f/,
+    whitespace = /\u0009|\u000a|\u000c|\u000d|\u0020/;
 
 //-----------------------------------------------------------------------------
 // Helper functions
@@ -18,7 +19,7 @@ function isDigit(c){
 }
 
 function isWhitespace(c){
-    return c !== null && /\s/.test(c);
+    return c !== null && whitespace.test(c);
 }
 
 function isNewLine(c){

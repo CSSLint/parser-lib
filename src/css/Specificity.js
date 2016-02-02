@@ -79,7 +79,7 @@ Specificity.calculate = function(selector){
             elementName = part.elementName ? part.elementName.text : "",
             modifier;
 
-        if (elementName && elementName.charAt(elementName.length-1) != "*") {
+        if (elementName && elementName.charAt(elementName.length-1) !== "*") {
             d++;
         }
 

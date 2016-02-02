@@ -1,4 +1,3 @@
-/*global SyntaxUnit, Parser*/
 /**
  * A utility class that allows for easy iteration over the various parts of a
  * property value.
@@ -105,7 +104,7 @@ PropertyValueIterator.prototype.next = function(){
  * Returns the previous part of the property value or null if there is no
  * previous part.
  * @return {parserlib.css.PropertyValuePart} The previous part of the
- * property value or null if there is no next part.
+ * property value or null if there is no previous part.
  * @method previous
  */
 PropertyValueIterator.prototype.previous = function(){

@@ -1,6 +1,7 @@
-/*global Tokens, TokenStream, SyntaxError, Properties, Validation, ValidationError, SyntaxUnit,
-    PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart, Selector,
-    PropertyName, Combinator, MediaFeature, MediaQuery, EventTarget */
+/*global Tokens, TokenStream, SyntaxError, Validation, SyntaxUnit */
+/*global PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart */
+/*global Selector, PropertyName, Combinator, MediaFeature, MediaQuery */
+/*global EventTarget */
 
 /**
  * A CSS3 parser.
@@ -74,7 +75,6 @@ Parser.prototype = function(){
                  */
 
                 var tokenStream = this._tokenStream,
-                    charset     = null,
                     count,
                     token,
                     tt;
@@ -87,13 +87,13 @@ Parser.prototype = function(){
                 this._skipCruft();
 
                 //try to read imports - may be more than one
-                while (tokenStream.peek() == Tokens.IMPORT_SYM){
+                while (tokenStream.peek() === Tokens.IMPORT_SYM){
                     this._import();
                     this._skipCruft();
                 }
 
                 //try to read namespaces - may be more than one
-                while (tokenStream.peek() == Tokens.NAMESPACE_SYM){
+                while (tokenStream.peek() === Tokens.NAMESPACE_SYM){
                     this._namespace();
                     this._skipCruft();
                 }
@@ -146,7 +146,7 @@ Parser.prototype = function(){
 
                                     //skip braces
                                     count=0;
-                                    while (tokenStream.advance([Tokens.LBRACE, Tokens.RBRACE]) == Tokens.LBRACE){
+                                    while (tokenStream.advance([Tokens.LBRACE, Tokens.RBRACE]) === Tokens.LBRACE){
                                         count++;    //keep track of nesting depth
                                     }
 
@@ -204,7 +204,7 @@ Parser.prototype = function(){
                     tt = tokenStream.peek();
                 }
 
-                if (tt != Tokens.EOF){
+                if (tt !== Tokens.EOF){
                     this._unexpectedToken(tokenStream.token());
                 }
 
@@ -250,7 +250,6 @@ Parser.prototype = function(){
                  */
 
                 var tokenStream = this._tokenStream,
-                    tt,
                     uri,
                     importToken,
                     mediaList   = [];
@@ -366,13 +365,13 @@ Parser.prototype = function(){
                 });
 
                 while(true) {
-                    if (tokenStream.peek() == Tokens.PAGE_SYM){
+                    if (tokenStream.peek() === Tokens.PAGE_SYM){
                         this._page();
-                    } else if (tokenStream.peek() == Tokens.FONT_FACE_SYM){
+                    } else if (tokenStream.peek() === Tokens.FONT_FACE_SYM){
                         this._font_face();
-                    } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
+                    } else if (tokenStream.peek() === Tokens.VIEWPORT_SYM){
                         this._viewport();
-                    } else if (tokenStream.peek() == Tokens.DOCUMENT_SYM){
+                    } else if (tokenStream.peek() === Tokens.DOCUMENT_SYM){
                         this._document();
                     } else if (!this._ruleset()){
                         break;
@@ -404,7 +403,7 @@ Parser.prototype = function(){
 
                 this._readWhitespace();
 
-                if (tokenStream.peek() == Tokens.IDENT || tokenStream.peek() == Tokens.LPAREN){
+                if (tokenStream.peek() === Tokens.IDENT || tokenStream.peek() === Tokens.LPAREN){
                     mediaList.push(this._media_query());
                 }
 
@@ -438,7 +437,7 @@ Parser.prototype = function(){
                     ident = tokenStream.token().value.toLowerCase();
 
                     //since there's no custom tokens for these, need to manually check
-                    if (ident != "only" && ident != "not"){
+                    if (ident !== "only" && ident !== "not"){
                         tokenStream.unget();
                         ident = null;
                     } else {
@@ -448,12 +447,12 @@ Parser.prototype = function(){
 
                 this._readWhitespace();
 
-                if (tokenStream.peek() == Tokens.IDENT){
+                if (tokenStream.peek() === Tokens.IDENT){
                     type = this._media_type();
                     if (token === null){
                         token = tokenStream.token();
                     }
-                } else if (tokenStream.peek() == Tokens.LPAREN){
+                } else if (tokenStream.peek() === Tokens.LPAREN){
                     if (token === null){
                         token = tokenStream.LT(1);
                     }
@@ -465,7 +464,7 @@ Parser.prototype = function(){
                 } else {
                     this._readWhitespace();
                     while (tokenStream.match(Tokens.IDENT)){
-                        if (tokenStream.token().value.toLowerCase() != "and"){
+                        if (tokenStream.token().value.toLowerCase() !== "and"){
                             this._unexpectedToken(tokenStream.token());
                         }
 
@@ -570,7 +569,7 @@ Parser.prototype = function(){
                 }
 
                 //see if there's a colon upcoming
-                if (tokenStream.peek() == Tokens.COLON){
+                if (tokenStream.peek() === Tokens.COLON){
                     pseudoPage = this._pseudo_page();
                 }
 
@@ -768,7 +767,6 @@ Parser.prototype = function(){
 
                 var tokenStream = this._tokenStream,
                     token,
-                    tt,
                     functions = [],
                     prefix = "";
 
@@ -798,13 +796,13 @@ Parser.prototype = function(){
                 });
 
                 while(true) {
-                    if (tokenStream.peek() == Tokens.PAGE_SYM){
+                    if (tokenStream.peek() === Tokens.PAGE_SYM){
                         this._page();
-                    } else if (tokenStream.peek() == Tokens.FONT_FACE_SYM){
+                    } else if (tokenStream.peek() === Tokens.FONT_FACE_SYM){
                         this._font_face();
-                    } else if (tokenStream.peek() == Tokens.VIEWPORT_SYM){
+                    } else if (tokenStream.peek() === Tokens.VIEWPORT_SYM){
                         this._viewport();
-                    } else if (tokenStream.peek() == Tokens.MEDIA_SYM){
+                    } else if (tokenStream.peek() === Tokens.MEDIA_SYM){
                         this._media();
                     } else if (!this._ruleset()){
                         break;
@@ -920,7 +918,7 @@ Parser.prototype = function(){
                     col;
 
                 //check for star hack - throws error if not allowed
-                if (tokenStream.peek() == Tokens.STAR && this.options.starHack){
+                if (tokenStream.peek() === Tokens.STAR && this.options.starHack){
                     tokenStream.get();
                     token = tokenStream.token();
                     hack = token.value;
@@ -933,7 +931,7 @@ Parser.prototype = function(){
                     tokenValue = token.value;
 
                     //check for underscore hack - no error if not allowed because it's valid CSS syntax
-                    if (tokenValue.charAt(0) == "_" && this.options.underscoreHack){
+                    if (tokenValue.charAt(0) === "_" && this.options.underscoreHack){
                         hack = "_";
                         tokenValue = tokenValue.substring(1);
                     }
@@ -979,7 +977,7 @@ Parser.prototype = function(){
 
                         //skip over everything until closing brace
                         tt = tokenStream.advance([Tokens.RBRACE]);
-                        if (tt == Tokens.RBRACE){
+                        if (tt === Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
                         } else {
                             //otherwise, rethrow the error because it wasn't handled properly
@@ -1161,7 +1159,6 @@ Parser.prototype = function(){
                     i           = 0,
                     len         = components.length,
                     component   = null,
-                    found       = false,
                     line,
                     col;
 
@@ -1418,7 +1415,7 @@ Parser.prototype = function(){
                         pseudo = tokenStream.token().value;
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol - colons.length;
-                    } else if (tokenStream.peek() == Tokens.FUNCTION){
+                    } else if (tokenStream.peek() === Tokens.FUNCTION){
                         line = tokenStream.LT(1).startLine;
                         col = tokenStream.LT(1).startCol - colons.length;
                         pseudo = this._functional_pseudo();
@@ -1535,7 +1532,6 @@ Parser.prototype = function(){
                     arg         = null,
                     i           = 0,
                     len         = args.length,
-                    elementName,
                     line,
                     col,
                     part;
@@ -1555,7 +1551,7 @@ Parser.prototype = function(){
                 }
 
                 //it's an element name
-                if (arg.type == "elementName"){
+                if (arg.type === "elementName"){
                     part = new SelectorPart(arg, [], arg.toString(), line, col);
                 } else {
                     part = new SelectorPart(null, [arg], arg.toString(), line, col);
@@ -1577,7 +1573,6 @@ Parser.prototype = function(){
                     property    = null,
                     expr        = null,
                     prio        = null,
-                    error       = null,
                     invalid     = null,
                     propertyName= "";
 
@@ -1602,8 +1597,8 @@ Parser.prototype = function(){
                      * _property or *property as invalid properties.
                      */
                     propertyName = property.toString();
-                    if (this.options.starHack && property.hack == "*" ||
-                            this.options.underscoreHack && property.hack == "_") {
+                    if (this.options.starHack && property.hack === "*" ||
+                            this.options.underscoreHack && property.hack === "_") {
 
                         propertyName = property.text;
                     }
@@ -1651,8 +1646,7 @@ Parser.prototype = function(){
                  *   ;
                  */
 
-                var tokenStream = this._tokenStream,
-                    values      = [],
+                var values      = [],
 					//valueParts	= [],
                     value       = null,
                     operator    = null;
@@ -1719,7 +1713,7 @@ Parser.prototype = function(){
                 }
 
                 //exception for IE filters
-                if (tokenStream.peek() == Tokens.IE_FUNCTION && this.options.ieFilters){
+                if (tokenStream.peek() === Tokens.IE_FUNCTION && this.options.ieFilters){
 
                     value = this._ie_function();
                     if (unary === null){
@@ -1771,7 +1765,7 @@ Parser.prototype = function(){
                              * This checks for alpha(opacity=0) style of IE
                              * functions. IE_FUNCTION only presents progid: style.
                              */
-                            if (tokenStream.LA(3) == Tokens.EQUALS && this.options.ieFilters){
+                            if (tokenStream.LA(3) === Tokens.EQUALS && this.options.ieFilters){
                                 value = this._ie_function();
                             } else {
                                 value = this._function();
@@ -1819,7 +1813,7 @@ Parser.prototype = function(){
                     functionText += expr;
 
                     //START: Horrible hack in case it's an IE filter
-                    if (this.options.ieFilters && tokenStream.peek() == Tokens.EQUALS){
+                    if (this.options.ieFilters && tokenStream.peek() === Tokens.EQUALS){
                         do {
 
                             if (this._readWhitespace()){
@@ -1827,7 +1821,7 @@ Parser.prototype = function(){
                             }
 
                             //might be second time in the loop
-                            if (tokenStream.LA(0) == Tokens.COMMA){
+                            if (tokenStream.LA(0) === Tokens.COMMA){
                                 functionText += tokenStream.token().value;
                             }
 
@@ -1839,7 +1833,7 @@ Parser.prototype = function(){
 
                             //functionText += this._term();
                             lt = tokenStream.peek();
-                            while(lt != Tokens.COMMA && lt != Tokens.S && lt != Tokens.RPAREN){
+                            while(lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN){
                                 tokenStream.get();
                                 functionText += tokenStream.token().value;
                                 lt = tokenStream.peek();
@@ -1867,7 +1861,6 @@ Parser.prototype = function(){
 
                 var tokenStream = this._tokenStream,
                     functionText = null,
-                    expr        = null,
                     lt;
 
                 //IE function can begin like a regular function, too
@@ -1881,7 +1874,7 @@ Parser.prototype = function(){
                         }
 
                         //might be second time in the loop
-                        if (tokenStream.LA(0) == Tokens.COMMA){
+                        if (tokenStream.LA(0) === Tokens.COMMA){
                             functionText += tokenStream.token().value;
                         }
 
@@ -1893,7 +1886,7 @@ Parser.prototype = function(){
 
                         //functionText += this._term();
                         lt = tokenStream.peek();
-                        while(lt != Tokens.COMMA && lt != Tokens.S && lt != Tokens.RPAREN){
+                        while(lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN){
                             tokenStream.get();
                             functionText += tokenStream.token().value;
                             lt = tokenStream.peek();
@@ -1979,7 +1972,7 @@ Parser.prototype = function(){
                 tt = tokenStream.peek();
 
                 //check for key
-                while(tt == Tokens.IDENT || tt == Tokens.PERCENTAGE) {
+                while(tt === Tokens.IDENT || tt === Tokens.PERCENTAGE) {
                     this._keyframe_rule();
                     this._readWhitespace();
                     tt = tokenStream.peek();
@@ -2006,8 +1999,7 @@ Parser.prototype = function(){
                  *   | STRING
                  *   ;
                  */
-                var tokenStream = this._tokenStream,
-                    token;
+                var tokenStream = this._tokenStream;
 
                 tokenStream.mustMatch([Tokens.IDENT, Tokens.STRING]);
                 return SyntaxUnit.fromToken(tokenStream.token());
@@ -2021,9 +2013,7 @@ Parser.prototype = function(){
                  *     '{' S* declaration [ ';' S* declaration ]* '}' S*
                  *   ;
                  */
-                var tokenStream = this._tokenStream,
-                    token,
-                    keyList = this._key_list();
+                var keyList = this._key_list();
 
                 this.fire({
                     type:   "startkeyframerule",
@@ -2051,8 +2041,6 @@ Parser.prototype = function(){
                  *   ;
                  */
                 var tokenStream = this._tokenStream,
-                    token,
-                    key,
                     keyList = [];
 
                 //must be least one key
@@ -2134,7 +2122,7 @@ Parser.prototype = function(){
                  * or
                  * S* '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
                  * Note that this is how it is described in CSS3 Paged Media, but is actually incorrect.
-                 * A semicolon is only necessary following a declaration is there's another declaration
+                 * A semicolon is only necessary following a declaration if there's another declaration
                  * or margin afterwards.
                  */
                 var tokenStream = this._tokenStream,
@@ -2186,10 +2174,10 @@ Parser.prototype = function(){
 
                         //see if there's another declaration
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
-                        if (tt == Tokens.SEMICOLON){
+                        if (tt === Tokens.SEMICOLON){
                             //if there's a semicolon, then there might be another declaration
                             this._readDeclarations(false, readMargins);
-                        } else if (tt != Tokens.RBRACE){
+                        } else if (tt !== Tokens.RBRACE){
                             //if there's a right brace, the rule is finished so don't do anything
                             //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
@@ -2243,7 +2231,7 @@ Parser.prototype = function(){
              * @private
              */
             _verifyEnd: function(){
-                if (this._tokenStream.LA(1) != Tokens.EOF){
+                if (this._tokenStream.LA(1) !== Tokens.EOF){
                     this._unexpectedToken(this._tokenStream.LT(1));
                 }
             },

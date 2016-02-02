@@ -162,7 +162,6 @@ var Properties = {
         var valid   = false,
             simple = "<length> | <percentage> | inherit",
             slash   = false,
-            fill    = false,
             count   = 0,
             max     = 8,
             part;
@@ -226,8 +225,7 @@ var Properties = {
     "-webkit-box-pack"              : "start | end | center | justify",
     "box-decoration-break"          : "slice | clone",
     "box-shadow"                    : function (expression) {
-        var result      = false,
-            part;
+        var part;
 
         if (!ValidationTypes.isAny(expression, "none")) {
             Validation.multiProperty("<shadow>", expression, true, Infinity);

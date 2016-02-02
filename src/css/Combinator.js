@@ -23,11 +23,11 @@ function Combinator(text, line, col){
     //pretty simple
     if (/^\s+$/.test(text)){
         this.type = "descendant";
-    } else if (text == ">"){
+    } else if (text === ">"){
         this.type = "child";
-    } else if (text == "+"){
+    } else if (text === "+"){
         this.type = "adjacent-sibling";
-    } else if (text == "~"){
+    } else if (text === "~"){
         this.type = "sibling";
     }
 

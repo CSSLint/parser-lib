@@ -44,14 +44,14 @@ EventTarget.prototype = {
      * @method fire
      */
     fire: function(event){
-        if (typeof event == "string"){
+        if (typeof event === "string"){
             event = { type: event };
         }
-        if (typeof event.target != "undefined"){
+        if (typeof event.target !== "undefined"){
             event.target = this;
         }
 
-        if (typeof event.type == "undefined"){
+        if (typeof event.type === "undefined"){
             throw new Error("Event object missing 'type' property.");
         }
 

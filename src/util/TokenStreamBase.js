@@ -127,7 +127,7 @@ TokenStreamBase.prototype = {
             len = tokenTypes.length;
 
         while(i < len){
-            if (tt == tokenTypes[i++]){
+            if (tt === tokenTypes[i++]){
                 return true;
             }
         }
@@ -196,11 +196,7 @@ TokenStreamBase.prototype = {
     get: function(channel){
 
         var tokenInfo   = this._tokenData,
-            reader      = this._reader,
-            value,
             i           =0,
-            len         = tokenInfo.length,
-            found       = false,
             token,
             info;
 

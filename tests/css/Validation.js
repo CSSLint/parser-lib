@@ -248,12 +248,15 @@
             "no-repeat",
             "repeat repeat",
             "repeat space",
-            "no-repeat round"
+            "no-repeat round",
+            "repeat-x, repeat-y, space", // PR #103
+            "repeat space, no-repeat round"
         ],
 
         invalid: {
             "foo"               : "Expected (<repeat-style>) but found 'foo'.",
-            "no-repeat round 1px" : "Expected (<repeat-style>) but found 'no-repeat round 1px'."
+            "repeat-x repeat-y" : "Expected end of value but found 'repeat-y'.",
+            "no-repeat round 1px" : "Expected end of value but found '1px'."
 
         }
     }));

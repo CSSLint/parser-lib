@@ -246,7 +246,10 @@ var Properties = {
     //C
     "caption-side"                  : "top | bottom | inherit",
     "clear"                         : "none | right | left | both | inherit",
-    "clip"                          : 1,
+    "clip"                          : "<shape> | auto | inherit",
+    "-webkit-clip-path"             : "<uri> | <clip-path> | none",
+    "clip-path"                     : "<uri> | <clip-path> | none", // "<clip-source> | [ <basic-shape> || <geometry-box> ] | none",
+    "clip-rule"                     : "nonzero | evenodd | inherit",
     "color"                         : "<color> | inherit",
     "color-profile"                 : 1,
     "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/

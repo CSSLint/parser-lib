@@ -9,7 +9,7 @@ var Properties = {
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
     "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
     "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
-    "alignment-baseline"            : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical | inherit",
     "animation"                     : 1,
     "animation-delay"               : { multi: "<time>", comma: true },
     "animation-direction"           : { multi: "normal | alternate", comma: true },
@@ -272,7 +272,7 @@ var Properties = {
     //D
     "direction"                     : "ltr | rtl | inherit",
     "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
-    "dominant-baseline"             : 1,
+    "dominant-baseline"             : "auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge | inherit",
     "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
     "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
@@ -325,6 +325,8 @@ var Properties = {
     "font-weight"                   : "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit",
 
     //G
+    "glyph-orientation-horizontal"  : "<glyph-angle> | inherit",
+    "glyph-orientation-vertical"    : "auto | <glyph-angle> | inherit",
     "grid"                          : 1,
     "grid-area"                     : 1,
     "grid-auto-columns"             : 1,
@@ -494,9 +496,10 @@ var Properties = {
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
+    "text-anchor"                   : "start | middle | end | inherit",
     "text-align"                    : "left | right | center | justify | match-parent | start | end | inherit" ,
     "text-align-last"               : 1,
-    "text-decoration"               : 1,
+    "text-decoration"               : "none | <text-decoration> | inherit",
     "text-emphasis"                 : 1,
     "text-height"                   : 1,
     "text-indent"                   : "<length> | <percentage> | inherit",

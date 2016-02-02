@@ -864,6 +864,57 @@
     });
 
     suite.add(new ValidationTestCase({
+        property: "glyph-orientation-horizontal",
+
+        valid: [
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg",
+            "inherit"
+        ],
+
+        invalid: {
+            "auto" : "Expected (<glyph-angle> | inherit) but found 'auto'.",
+            "70rad" : "Expected (<glyph-angle> | inherit) but found '70rad'.",
+            "4grad" : "Expected (<glyph-angle> | inherit) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "glyph-orientation-vertical",
+
+        valid: [
+            "auto",
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg",
+            "inherit"
+        ],
+
+        invalid: {
+            "70rad" : "Expected (auto | <glyph-angle> | inherit) but found '70rad'.",
+            "4grad" : "Expected (auto | <glyph-angle> | inherit) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-anchor",
+
+        valid: [
+            "start",
+            "middle",
+            "end",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (start | middle | end | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-align",
 
         valid: [
@@ -879,6 +930,25 @@
 
         invalid: {
             "foo" : "Expected (left | right | center | justify | match-parent | start | end | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration",
+
+        valid: [
+            "none",
+            "underline",
+            "underline overline line-through blink",
+            "inherit"
+        ],
+
+        invalid: {
+            "none underline" : "Expected end of value but found 'underline'.",
+            "line-through none" : "Expected (none | <text-decoration> | inherit) but found 'line-through none'.",
+            "inherit blink" : "Expected end of value but found 'blink'.",
+            "overline inherit" : "Expected (none | <text-decoration> | inherit) but found 'overline inherit'.",
+            "foo" : "Expected (none | <text-decoration> | inherit) but found 'foo'."
         }
     }));
 

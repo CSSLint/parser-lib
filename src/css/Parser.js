@@ -131,6 +131,10 @@ Parser.prototype = function(){
                                 this._document();
                                 this._skipCruft();
                                 break;
+                            case Tokens.SUPPORTS_SYM:
+                                this._supports();
+                                this._skipCruft();
+                                break;
                             case Tokens.UNKNOWN_SYM:  //unknown @ rule
                                 tokenStream.get();
                                 if (!this.options.strict){
@@ -332,6 +336,137 @@ Parser.prototype = function(){
                     });
                 }
 
+            },
+
+            _supports: function(emit){
+                /*
+                 * supports_rule
+                 *  : SUPPORTS_SYM S* supports_condition S* group_rule_body
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream,
+                    line,
+                    col;
+
+                if (tokenStream.match(Tokens.SUPPORTS_SYM)){
+                    line = tokenStream.token().startLine;
+                    col = tokenStream.token().startCol;
+
+                    this._readWhitespace();
+                    this._supports_condition();
+                    this._readWhitespace();
+
+                    tokenStream.mustMatch(Tokens.LBRACE);
+                    this._readWhitespace();
+
+                    if (emit !== false){
+                        this.fire({
+                            type:   "startsupports",
+                            line:   line,
+                            col:    col
+                        });
+                    }
+
+                    while(true) {
+                        if (!this._ruleset()){
+                            break;
+                        }
+                    }
+
+                    tokenStream.mustMatch(Tokens.RBRACE);
+                    this._readWhitespace();
+
+                    this.fire({
+                        type:   "endsupports",
+                        line:   line,
+                        col:    col
+                    });
+                }
+            },
+
+            _supports_condition: function(){
+                /*
+                 * supports_condition
+                 *  : supports_negation | supports_conjunction | supports_disjunction |
+                 *    supports_condition_in_parens
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream,
+                    ident;
+
+                if (tokenStream.match(Tokens.IDENT)){
+                    ident = tokenStream.token().value.toLowerCase();
+
+                    if (ident === "not"){
+                        tokenStream.mustMatch(Tokens.S);
+                        this._supports_condition_in_parens();
+                    } else {
+                        tokenStream.unget();
+                    }
+                } else{
+                    this._supports_condition_in_parens();
+                    this._readWhitespace();
+
+                    while(tokenStream.peek() === Tokens.IDENT){
+                        ident = tokenStream.LT(1).value.toLowerCase();
+                        if(ident === "and" || ident === "or"){
+                            tokenStream.mustMatch(Tokens.IDENT);
+                            this._readWhitespace();
+                            this._supports_condition_in_parens();
+                            this._readWhitespace();
+                        }
+                    }
+                }
+            },
+
+            _supports_condition_in_parens: function(){
+                /*
+                 * supports_condition_in_parens
+                 *  : ( '(' S* supports_condition S* ')' ) | supports_declaration_condition |
+                 *    general_enclosed
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream,
+                    ident;
+
+                if (tokenStream.match(Tokens.LPAREN)){
+                    this._readWhitespace();
+                    if(tokenStream.match(Tokens.IDENT)){
+                        // look ahead for not keyword, if not given, continue with declaration condition.
+                        ident = tokenStream.token().value.toLowerCase();
+                        if(ident === "not"){
+                            this._readWhitespace();
+                            this._supports_condition();
+                            this._readWhitespace();
+                            tokenStream.mustMatch(Tokens.RPAREN);
+                        }else{
+                            tokenStream.unget();
+                            this._supports_declaration_condition(false);
+                        }
+                    }else{
+                        this._supports_condition();
+                        this._readWhitespace();
+                        tokenStream.mustMatch(Tokens.RPAREN);
+                    }
+                }else{
+                    this._supports_declaration_condition();
+                }
+            },
+
+            _supports_declaration_condition: function(requireStartParen){
+                /*
+                 * supports_declaration_condition
+                 *  : '(' S* declaration ')'
+                 *  ;
+                 */
+                var tokenStream = this._tokenStream;
+
+                if(requireStartParen !== false){
+                    tokenStream.mustMatch(Tokens.LPAREN);
+                }
+                this._readWhitespace();
+                this._declaration();
+                tokenStream.mustMatch(Tokens.RPAREN);
             },
 
             _media: function(){

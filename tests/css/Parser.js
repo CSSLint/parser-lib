@@ -1850,8 +1850,163 @@
             Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
             Assert.areEqual("#1a2b3c", result.parts[0].toString(), "Selector should be correct.");
             Assert.areEqual(1, result.parts.length, "Should be one part.");
-        }
+        },
 
+        testSupportsWithSingleCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsWithSingleNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports not ( display: table-cell) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsWithNestedNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports not (not (not (display: table-cell) )) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndFollowedByNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) and (not (display: flex)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsNotFollowedByAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (not (display: table-cell)) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndAndAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) and (display: flex) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) or (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsOrFollowedByNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) or (not (display: flex)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsNotFollowedByOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (not (display: table-cell)) or (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndWithNestedOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) and ((display: flex) or (display: table)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndWithNestedComplexOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            var result = parser.parse("@supports (display: table-cell) and ((display: flex) or ((display: table) and (not (position: absolute)))) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        }
     }));
 
     suite.add(new YUITest.TestCase({

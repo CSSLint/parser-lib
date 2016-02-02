@@ -91,7 +91,7 @@ var Properties = {
     "background-image"              : { multi: "<bg-image>", comma: true },
     "background-origin"             : { multi: "<box>", comma: true },
     "background-position"           : { multi: "<bg-position>", comma: true },
-    "background-repeat"             : { multi: "<repeat-style>" },
+    "background-repeat"             : { multi: "<repeat-style>", comma: true },
     "background-size"               : { multi: "<bg-size>", comma: true },
     "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
     "behavior"                      : 1,

@@ -1836,7 +1836,7 @@
 
             Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
             Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
-            Assert.areEqual("#\\31 a2b3c", result.parts[0].toString(), "Selector should be correct.");
+            Assert.areEqual("#1a2b3c", result.parts[0].toString(), "Selector should be correct.");
             Assert.areEqual(1, result.parts.length, "Should be one part.");
         }
 

@@ -61,7 +61,9 @@
             " "     : [CSSTokens.S],
             "\n"    : [CSSTokens.S],
             "\n \t" : [CSSTokens.S],
-            "\f \n" : [CSSTokens.S]
+            "\f \n" : [CSSTokens.S],
+            // Not legal whitespace (PR#16)
+            "\v\u00A0\u1680": [CSSTokens.CHAR, CSSTokens.IDENT]
         }
     }));
 
@@ -136,7 +138,9 @@
             "#h\\0fllo"         : [CSSTokens.HASH],
             "#ffeeff"           : [CSSTokens.HASH],
             "#\\31 a2b3c"        : [CSSTokens.HASH],
-            "#r0\\.5"            : [CSSTokens.HASH]
+            "#r0\\.5"            : [CSSTokens.HASH],
+            // Invalid escape sequence
+            "#a\\\r"             : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
         }
     }));
 
@@ -148,6 +152,7 @@
 
         var atRules = {
             "@charset"      : CSSTokens.CHARSET_SYM,
+            "@ch\\041 rset" : CSSTokens.CHARSET_SYM,
             "@import"       : CSSTokens.IMPORT_SYM,
             "@page"         : CSSTokens.PAGE_SYM,
             "@media"        : CSSTokens.MEDIA_SYM,

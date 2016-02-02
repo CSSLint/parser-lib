@@ -1,8 +1,9 @@
 /*global Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
-    nonascii = /^[\u0080-\uFFFF]$/,
-    nl = /\n|\r\n|\r|\f/;
+    nonascii = /^[\u00A0-\uFFFF]$/,
+    nl = /\n|\r\n|\r|\f/,
+    whitespace = /\u0009|\u000a|\u000c|\u000d|\u0020/;
 
 //-----------------------------------------------------------------------------
 // Helper functions
@@ -18,7 +19,7 @@ function isDigit(c){
 }
 
 function isWhitespace(c){
-    return c !== null && /\s/.test(c);
+    return c !== null && whitespace.test(c);
 }
 
 function isNewLine(c){
@@ -26,7 +27,7 @@ function isNewLine(c){
 }
 
 function isNameStart(c){
-    return c !== null && (/[a-z_\u0080-\uFFFF\\]/i.test(c));
+    return c !== null && (/[a-z_\u00A0-\uFFFF\\]/i.test(c));
 }
 
 function isNameChar(c){
@@ -211,6 +212,19 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "<":
                     token = this.htmlCommentStartToken(c, startLine, startCol);
+                    break;
+
+                /*
+                 * Potential tokens:
+                 * - IDENT
+                 * - CHAR
+                 */
+                case "\\":
+                    if (/[^\r\n\f]/.test(reader.peek())) {
+                        token = this.identOrFunctionToken(c, startLine, startCol);
+                    } else {
+                        token = this.charToken(c, startLine, startCol);
+                    }
                     break;
 
                 /*
@@ -941,8 +955,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         while(true){
             if (c == "\\"){
-                ident += this.readEscape(reader.read());
-                c = reader.peek();
+                if (/^[^\r\n\f]$/.test(reader.peek(2))) {
+                    ident += this.readEscape(reader.read(), true);
+                    c = reader.peek();
+                } else {
+                    // Bad escape sequence.
+                    break;
+                }
             } else if(c && isNameChar(c)){
                 ident += reader.read();
                 c = reader.peek();
@@ -954,7 +973,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         return ident;
     },
 
-    readEscape: function(first){
+    readEscape: function(first, unescape){
         var reader  = this._reader,
             cssEscape = first || "",
             i       = 0,
@@ -967,13 +986,31 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             } while(c && isHexDigit(c) && ++i < 6);
         }
 
-        if (cssEscape.length == 3 && /\s/.test(c) ||
-            cssEscape.length == 7 || cssEscape.length == 1){
+        if (cssEscape.length === 1) {
+            if (/^[^\r\n\f0-9a-f]$/.test(c)) {
                 reader.read();
+                if (unescape) { return c; }
+            } else {
+                // We should never get here (readName won't call readEscape
+                // if the escape sequence is bad).
+                throw new Error("Bad escape sequence.");
+            }
+        } else if (c === '\r') {
+            reader.read();
+            if (reader.peek() === '\n') {
+                c += reader.read();
+            }
+        } else if (/^[ \t\n\f]$/.test(c)) {
+            reader.read();
         } else {
             c = "";
         }
 
+        if (unescape) {
+            var cp = parseInt(cssEscape.slice(first.length), 16);
+            return String.fromCodePoint ? String.fromCodePoint(cp) :
+                String.fromCharCode(cp);
+        }
         return cssEscape + c;
     },
 

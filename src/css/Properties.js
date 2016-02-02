@@ -285,6 +285,9 @@ var Properties = {
     "empty-cells"                   : "show | hide | inherit",
 
     //F
+    "fill"                          : "<paint>",
+    "fill-opacity"                  : "<opacity-value> | inherit",
+    "fill-rule"                     : "nonzero | evenodd | inherit",
     "filter"                        : 1,
     "fill"                          : "<color> | inherit",
     "fit"                           : "fill | hidden | meet | slice",
@@ -421,7 +424,7 @@ var Properties = {
     //O
     "object-fit"                    : "fill | contain | cover | none | scale-down",
     "object-position"               : "<bg-position>",
-    "opacity"                       : "<number> | inherit",
+    "opacity"                       : "<opacity-value> | inherit",
     "order"                         : "<integer>",
     "-webkit-order"                 : "<integer>",
     "orphans"                       : "<integer> | inherit",
@@ -489,6 +492,14 @@ var Properties = {
     "src"                           : 1,
     "stress"                        : 1,
     "string-set"                    : 1,
+    "stroke"                        : "<paint>",
+    "stroke-dasharray"              : "none | <dasharray> | inherit",
+    "stroke-dashoffset"             : "<percentage> | <length> | inherit",
+    "stroke-linecap"                : "butt | round | square | inherit",
+    "stroke-linejoin"               : "miter | round | bevel | inherit",
+    "stroke-miterlimit"             : "<miterlimit> | inherit",
+    "stroke-opacity"                : "<opacity-value> | inherit",
+    "stroke-width"                  : "<percentage> | <length> | inherit",
 
     "table-layout"                  : "auto | fixed | inherit",
     "tab-size"                      : "<integer> | <length>",

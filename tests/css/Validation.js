@@ -727,6 +727,46 @@
         }
     }));
 
+    // test <paint>
+    suite.add(new ValidationTestCase({
+        property: "fill",
+
+        valid: [
+            "url('myGradient')",
+            "url('myGradient') inherit",
+            "url('myGradient') darkred",
+            "url('myGradient') darkred icc-color(myCmykDarkRed)",
+            "currentColor",
+            "darkred icc-color(myCmykDarkRed)",
+            "none",
+            "inherit"
+        ],
+
+        invalid: {
+            "url('myGradient') icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'url('myGradient') icc-color(myCmykDarkRed)'.",
+            "currentColor icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'currentColor icc-color(myCmykDarkRed)'.",
+            "icc-color(myCmykDarkRed) darkred" : "Expected end of value but found 'darkred'.",
+            "icc-color(myCmykDarkRed)" : "Expected (<paint>) but found 'icc-color(myCmykDarkRed)'.",
+            "icc-color(myCmykDarkRed) inherit" : "Expected end of value but found 'inherit'.",
+            "inherit icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
+            "none inherit" : "Expected end of value but found 'inherit'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-rule",
+
+        valid: [
+            "nonzero",
+            "evenodd",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
+        }
+    }));
+
     ["flex", "-ms-flex", "-webkit-flex"].forEach(function(prop_name) {
         suite.add(new ValidationTestCase({
             property: prop_name,
@@ -1018,11 +1058,15 @@
         property: "opacity",
 
         valid: [
+            "0",
+            "0.5",
             "1"
         ],
 
         invalid: {
-            "foo" : "Expected (<number> | inherit) but found 'foo'."
+            "-0.75" : "Expected (<opacity-value> | inherit) but found '-0.75'.",
+            "12" : "Expected (<opacity-value> | inherit) but found '12'.",
+            "foo" : "Expected (<opacity-value> | inherit) but found 'foo'."
         }
     }));
 
@@ -1045,6 +1089,75 @@
 
         invalid: {
             "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-dasharray",
+
+        valid: [
+            "0",
+            "4",
+            "20px",
+            "20px 40px 30px",
+            "20px, 40px, 30px",
+            "none",
+            "inherit"
+        ],
+
+        invalid: {
+            "-20px" : "Expected (none | <dasharray> | inherit) but found '-20px'.",
+            "auto" : "Expected (none | <dasharray> | inherit) but found 'auto'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linecap",
+
+        valid: [
+            "butt",
+            "round",
+            "square",
+            "inherit"
+        ],
+
+        invalid: {
+            "auto" : "Expected (butt | round | square | inherit) but found 'auto'.",
+            "none" : "Expected (butt | round | square | inherit) but found 'none'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linejoin",
+
+        valid: [
+            "miter",
+            "round",
+            "bevel",
+            "inherit"
+        ],
+
+        invalid: {
+            "auto" : "Expected (miter | round | bevel | inherit) but found 'auto'.",
+            "none" : "Expected (miter | round | bevel | inherit) but found 'none'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-miterlimit",
+
+        valid: [
+            "1",
+            "1.4",
+            "20",
+            "10",
+            "inherit"
+        ],
+
+        invalid: {
+            "-10" : "Expected (<miterlimit> | inherit) but found '-10'.",
+            "0.5" : "Expected (<miterlimit> | inherit) but found '0.5'.",
+            "foo" : "Expected (<miterlimit> | inherit) but found 'foo'."
         }
     }));
 

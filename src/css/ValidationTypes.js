@@ -339,7 +339,7 @@ var ValidationTypes = {
         },
 
         "<clip-source>": function(expression){
-			return ValidationTypes.isAny(expression, "<uri>");
+            return ValidationTypes.isAny(expression, "<uri>");
         },
 
         "<clip-path>": function(expression) {

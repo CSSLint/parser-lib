@@ -1202,8 +1202,11 @@
         property: "padding-left",
 
         valid: [
+            "0",
             "6px",
             "3%",
+            "1em",
+            "calc(100% - 80px)",
             "inherit"
         ],
 

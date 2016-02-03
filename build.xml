@@ -140,7 +140,7 @@
             /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
             (function(){
             var EventTarget = parserlib.util.EventTarget,
-			    TokenStreamBase = parserlib.util.TokenStreamBase,
+                TokenStreamBase = parserlib.util.TokenStreamBase,
                 StringReader = parserlib.util.StringReader,
                 SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;

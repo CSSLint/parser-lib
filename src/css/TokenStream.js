@@ -39,12 +39,12 @@ function isIdentStart(c){
 }
 
 function mix(receiver, supplier){
-	for (var prop in supplier){
-		if (supplier.hasOwnProperty(prop)){
-			receiver[prop] = supplier[prop];
-		}
-	}
-	return receiver;
+    for (var prop in supplier){
+        if (supplier.hasOwnProperty(prop)){
+            receiver[prop] = supplier[prop];
+        }
+    }
+    return receiver;
 }
 
 //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ function mix(receiver, supplier){
  * @namespace parserlib.css
  */
 function TokenStream(input){
-	TokenStreamBase.call(this, input, Tokens);
+    TokenStreamBase.call(this, input, Tokens);
 }
 
 TokenStream.prototype = mix(new TokenStreamBase(), {

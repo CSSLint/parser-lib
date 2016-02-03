@@ -285,8 +285,8 @@ var Properties = {
     "empty-cells"                   : "show | hide | inherit",
 
     //F
-    "filter"                        : 1,
     "fill"                          : "<color> | inherit",
+    "filter"                        : "<filter-function-list> | none",
     "fit"                           : "fill | hidden | meet | slice",
     "fit-position"                  : 1,
     "flex"                          : "<flex>",

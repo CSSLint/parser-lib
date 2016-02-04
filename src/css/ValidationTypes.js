@@ -117,7 +117,7 @@ var ValidationTypes = {
 
         //any identifier
         "<ident>": function(part){
-            return part.type === "identifier";
+            return part.type === "identifier" || part.wasIdent;
         },
 
         "<length>": function(part){

@@ -122,3 +122,11 @@ PropertyValueIterator.prototype.restore = function(){
     }
 };
 
+/**
+ * Drops the last saved bookmark.
+ * @return {void}
+ * @method drop
+ */
+PropertyValueIterator.prototype.drop = function() {
+    this._marks.pop();
+};

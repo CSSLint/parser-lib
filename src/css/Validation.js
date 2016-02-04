@@ -53,7 +53,7 @@ var Validation = {
                 part = expression.peek();
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             } else {
-                 throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);
+                throw new ValidationError("Expected (" + ValidationTypes.describe(types) + ") but found '" + value + "'.", value.line, value.col);
             }
         } else if (expression.hasNext()) {
             part = expression.next();

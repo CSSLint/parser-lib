@@ -981,6 +981,26 @@
 
         name: "Property Values",
 
+        testIdentifierValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("foo");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("identifier", result.parts[0].type);
+        },
+
+        testIdentifierValue2: function(){
+            var parser = new Parser();
+			// Identifiers can even start with digits, iff they are escaped.
+            var result = parser.parsePropertyValue("\\30 \\0000307");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("007", result.parts[0].text);
+            Assert.areEqual(true, result.parts[0].wasIdent);
+        },
+
         testDimensionValuePx: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
@@ -1176,6 +1196,18 @@
             Assert.areEqual(0, result.parts[0].blue);
         },
 
+        testColorValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\\r\\45 d");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(0, result.parts[0].green);
+            Assert.areEqual(0, result.parts[0].blue);
+        },
+
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1208,6 +1240,16 @@
         testURIValue3: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("url(\"http://www.yahoo.com\")");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);
+            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+
+        testURIValue4: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(http\\03a\r\n//www.yahoo.com)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);

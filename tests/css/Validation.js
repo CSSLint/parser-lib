@@ -8,13 +8,14 @@
     //-------------------------------------------------------------------------
 
     function ValidationTestCase(info){
-        var i, len, prop;
+        var i, len, prop, msg;
 
         YUITest.TestCase.call(this, info);
         this.valid = info.valid;
         this.invalid = info.invalid;
         this.property = info.property;
         this.name = "Tests for " + this.property;
+        this._should.error = {};
 
         for (i=0, len=this.valid.length; i < len; i++){
             this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value){
@@ -31,6 +32,18 @@
                         this._testInvalidValue(value, message);
                     };
                 }(prop, this.invalid[prop]);
+            }
+        }
+
+        for (prop in this.error){
+            if (this.error.hasOwnProperty(prop)){
+                msg = "'" + prop + "' is an invalid value for '" + this.property + "'";
+                this[msg] = function(value){
+                    return function(){
+                        this._testSyntaxError(value);
+                    };
+                }(prop);
+                this._should.error[msg] = this.error[prop];
             }
         }
     }
@@ -51,6 +64,11 @@
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
         });
+        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+    };
+
+    ValidationTestCase.prototype._testSyntaxError = function(value){
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         var result = parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 

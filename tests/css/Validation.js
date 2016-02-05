@@ -735,7 +735,154 @@
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "font",
 
+        valid: [
+            "italic small-caps 300 1.3em/10% Genova, 'Comic Sans', sans-serif",
+            "1.3em Shorties, sans-serif",
+            "12px monospace",
+            "caption",
+            "status-bar",
+            "12pt/14pt sans-serif",
+            "80% sans-serif",
+            "condensed 80% sans-serif",
+            "x-large/110% \"new century schoolbook\", serif",
+            "bold italic large Palatino, serif",
+            "normal small-caps 120%/120% fantasy",
+            "normal normal normal normal 12pt cursive",
+            "normal bold small-caps italic 18px 'font'",
+            "condensed oblique 12pt \"Helvetica Neue\", serif",
+            "inherit",
+        ],
+
+        invalid: {
+            "italic oblique bold 1.3em/10% Genova, 'Comic Sans', sans-serif" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found 'italic oblique bold 1.3em / 10% Genova , 'Comic Sans' , sans-serif'.",
+            "0.9em Nirwana, 'Comic Sans', sans-serif bold" : "Expected end of value but found 'bold'.",
+            "'Helvetica Neue', sans-serif 1.2em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Helvetica Neue' , sans-serif 1.2em'.",
+            "1.3em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found '1.3em'.",
+            "cursive;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found 'cursive'.",
+            "'Dormant', sans-serif;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Dormant' , sans-serif'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-family",
+
+        valid: [
+            "Futura, sans-serif",
+            "-Futura, sans-serif",
+            '"New Century Schoolbook", serif',
+            "'21st Century', fantasy",
+            "serif",
+            "sans-serif",
+            "cursive",
+            "fantasy",
+            "monospace",
+            // solve problem by quoting
+            "'Red/Black', sans-serif",
+            '"Lucida\\", Grande", sans-serif',
+            "'Ahem!}', sans-serif",
+            '"test@foo", sans-serif',
+            "'#POUND', sans-serif",
+            "'Hawaii 5-0', sans-serif",
+            // solve problem by escaping
+            "Red\\/Black, sans-serif",
+            '\\"Lucida\\", Grande, sans-serif',
+            "Ahem\\!, sans-serif",
+            "test\\@foo, sans-serif",
+            "\\#POUND, sans-serif",
+            "Hawaii\\ 5\\-0, sans-serif",
+            "yellowgreen"
+        ],
+
+        invalid: {
+            "--Futura, sans-serif"   : "Expected (<font-family> | inherit) but found '--Futura , sans-serif'.",
+            "Red/Black, sans-serif"  : "Expected end of value but found '/'.",
+            "'Lucida' Grande, sans-serif" : "Expected end of value but found 'Grande'.",
+            "Hawaii 5-0, sans-serif" : "Expected end of value but found '5'."
+        },
+
+        error: {
+            "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
+            "-7Futura, sans-serif" : "Unexpected token '7Futura' at line 1, col 21.",
+            "Ahem!, sans-serif"    : "Expected RBRACE at line 1, col 24.",
+            "test@foo, sans-serif" : "Expected RBRACE at line 1, col 24.",
+            "#POUND, sans-serif"   : "Expected a hex color but found '#POUND' at line 1, col 20."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-style",
+
+        valid: [
+            "normal", "italic", "oblique",
+            "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant",
+
+        valid: [
+            "normal", "none", "small-caps", "common-ligatures small-caps",
+            "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-alternates",
+
+        valid: [
+            "normal", "historical-forms",
+            "stylistic(salt) styleset(ss01, ss02)",
+            "character-variant(cv03, cv04, cv05) swash(swsh)",
+            "ornaments(ornm2) annotation(nalt2)",
+            "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-caps",
+
+        valid: [
+            "normal", "small-caps", "all-small-caps", "petite-caps",
+            "all-petite-caps", "unicase", "titling-caps", "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-east-asian",
+
+        valid: [
+            "normal", "ruby", "jis78", "jis83", "jis90", "jis04",
+            "simplified", "traditional", "full-width", "proportional-width",
+            "ruby full-width jis83",
+            "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-ligatures",
+
+        valid: [
+            "normal", "none",
+            "common-ligatures discretionary-ligatures historical-ligatures contextual",
+            "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual",
+            "inherit"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-numeric",
+
+        valid: [
+            "normal", "ordinal", "slashed-zero", "lining-nums",
+            "lining-nums proportional-nums diagonal-fractions ordinal",
+            "oldstyle-nums tabular-nums stacked-fractions slashed-zero",
+            "inherit"
+        ]
+    }));
 
     suite.add(new ValidationTestCase({
         property: "min-height",

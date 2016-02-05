@@ -387,6 +387,10 @@ ValidationTypes = {
                 !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(part);
         },
 
+        "<string>": function(part){
+            return part.type === "string";
+        },
+
         "<length>": function(part){
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
@@ -539,6 +543,36 @@ ValidationTypes = {
                 part, "blur() | brightness() | contrast() | custom() | " +
                     "drop-shadow() | grayscale() | hue-rotate() | invert() | " +
                     "opacity() | saturate() | sepia()");
+        },
+
+        "<generic-family>": function(part){
+            return ValidationTypes.isLiteral(part, "serif | sans-serif | cursive | fantasy | monospace");
+        },
+
+        "<ident-not-generic-family>": function(part){
+            return this["<ident>"](part) && !this["<generic-family>"](part);
+        },
+
+        "<font-size>": function(part){
+            var result = this["<absolute-size>"](part) || this["<relative-size>"](part) || this["<length>"](part) || this["<percentage>"](part);
+            return result;
+        },
+
+        "<font-stretch>": function(part){
+            return ValidationTypes.isLiteral(part, "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded");
+        },
+
+        "<font-style>": function(part){
+            return ValidationTypes.isLiteral(part, "normal | italic | oblique");
+        },
+
+        "<font-weight>": function(part){
+            return ValidationTypes.isLiteral(part, "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900");
+        },
+
+        "<line-height>": function(part){
+            var result = this["<number>"](part) || this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "normal");
+            return result;
         }
     },
 
@@ -637,6 +671,73 @@ ValidationTypes = {
         // * inherit
         Matcher.alt("none", "inherit", Matcher.cast("<flex-grow>").then(Matcher.cast("<flex-shrink>").question()).oror("<flex-basis>")),
 
+        "<font-family>":
+        // [ <family-name> | <generic-family> ]#
+        Matcher.cast("<generic-family> | <family-name>").hash(),
+
+        "<family-name>":
+        // <string> | <IDENT>+
+        Matcher.alt("<string>",
+                    Matcher.seq("<ident-not-generic-family>",
+                                Matcher.cast("<ident>").star())),
+
+        "<font-variant-alternates>":
+        Matcher.oror(// stylistic(<feature-value-name>)
+                     "stylistic()",
+                     "historical-forms",
+                     // styleset(<feature-value-name> #)
+                     "styleset()",
+                     // character-variant(<feature-value-name> #)
+                     "character-variant()",
+                     // swash(<feature-value-name>)
+                     "swash()",
+                     // ornaments(<feature-value-name>)
+                     "ornaments()",
+                     // annotation(<feature-value-name>)
+                     "annotation()"),
+
+        "<font-variant-caps>":
+        Matcher.cast("small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps"),
+
+        "<font-variant-css21>":
+        Matcher.cast("normal | small-caps"),
+
+        "<font-variant-ligatures>":
+        Matcher.oror(// <common-lig-values>
+                     "common-ligatures | no-common-ligatures",
+                     // <discretionary-lig-values>
+                     "discretionary-ligatures | no-discretionary-ligatures",
+                     // <historical-lig-values>
+                     "historical-ligatures | no-historical-ligatures",
+                     // <contextual-alt-values>
+                     "contextual | no-contextual"),
+
+        "<font-variant-numeric>":
+        Matcher.oror(// <numeric-figure-values>
+                     "lining-nums | oldstyle-nums",
+                     // <numeric-spacing-values>
+                     "proportional-nums | tabular-nums",
+                     // <numeric-fraction-values>
+                     "diagonal-fractions | stacked-fractions",
+                     "ordinal",
+                     "slashed-zero"),
+
+        "<font-variant-east-asian>":
+        Matcher.oror(// <east-asian-variant-values>
+                     "jis78 | jis83 | jis90 | jis04 | simplified | traditional",
+                     // <east-asian-width-values>
+                     "full-width | proportional-width",
+                     "ruby"),
+
+        "<font-shorthand>":
+        Matcher.seq(Matcher.oror("<font-style>",
+                                 "<font-variant-css21>",
+                                 "<font-weight>",
+                                 "<font-stretch>").question(),
+                    "<font-size>",
+                    Matcher.seq("/", "<line-height>").question(),
+                    "<font-family>"),
+
         "<text-decoration>":
         // none | [ underline || overline || line-through || blink ] | inherit
         Matcher.oror("underline", "overline", "line-through", "blink"),
@@ -646,3 +747,12 @@ ValidationTypes = {
         Matcher.alt("auto", Matcher.cast("<animateable-feature>").hash())
     }
 };
+
+// Because this is defined relative to other complex validation types,
+// we need to define it *after* the rest of the types are initialized.
+ValidationTypes.complex["<font-variant>"] =
+    Matcher.oror({ expand: "<font-variant-ligatures>" },
+                 { expand: "<font-variant-alternates>" },
+                 "<font-variant-caps>",
+                 { expand: "<font-variant-numeric>" },
+                 { expand: "<font-variant-east-asian>" });

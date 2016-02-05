@@ -149,7 +149,7 @@ var ValidationTypes = {
         },
 
         "<glyph-angle>": function(part){
-            return part.type == "angle" && part.units == 'deg';
+            return part.type === "angle" && part.units === 'deg';
         },
 
         "<uri>": function(part){
@@ -519,10 +519,10 @@ var ValidationTypes = {
                     identifiers[part]++;
                     found = identifiers[part];
                 }
-            } while (found == 1 && expression.hasNext());
+            } while (found === 1 && expression.hasNext());
 
-            result = found == 1 && !expression.hasNext();
-            if (found === 0 && JSON.stringify(identifiers) == '{}') {
+            result = found === 1 && !expression.hasNext();
+            if (found === 0 && JSON.stringify(identifiers) === '{}') {
                expression.previous();
             }
             return result;

@@ -11,7 +11,8 @@
         var i, len, prop, msg;
 
         YUITest.TestCase.call(this, info);
-        this.valid = info.valid;
+        // initial | inherit | unset are always valid property values.
+        this.valid = [ 'initial', 'inherit', 'unset' ].concat(info.valid);
         this.invalid = info.invalid;
         this.property = info.property;
         this.name = "Tests for " + this.property;
@@ -111,15 +112,12 @@
             "none, none",
             "none, foo",
             "has_underscore",
-            "none, -moz-specific, sliding",
-            "initial",
-            "inherit",
-            "unset"
+            "none, -moz-specific, sliding"
         ],
 
         invalid: {
-            "1px" : "Expected (none | initial | inherit | unset | <single-animation-name>) but found '1px'.",
-            "--invalid" : "Expected (none | initial | inherit | unset | <single-animation-name>) but found '--invalid'."
+            "1px" : "Expected (none | <single-animation-name>) but found '1px'.",
+            "--invalid" : "Expected (none | <single-animation-name>) but found '--invalid'."
         },
 
         error: {
@@ -179,14 +177,13 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent",
             "currentColor"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -239,7 +236,7 @@
         ],
 
         invalid: {
-            "foo"                 : "Expected (<bg-position> | inherit) but found 'foo'.",
+            "foo"                 : "Expected (<position>#) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
             "left center right"   : "Expected end of value but found 'right'.",
             "center 3em right 10%": "Expected end of value but found 'right'.",
@@ -323,13 +320,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -339,13 +335,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -355,13 +350,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -371,13 +365,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -387,13 +380,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -407,7 +399,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -418,12 +410,11 @@
         valid: [
             "5px",
             "25%",
-            "5px 25%",
-            "inherit"
+            "5px 25%"
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -455,8 +446,7 @@
             "5px 25%",
             "5px / 25%",
             "5px 25% / 7px 27%",
-            "1px 2px 3px 4px / 5px 6px 7px 8px",
-            "inherit"
+            "1px 2px 3px 4px / 5px 6px 7px 8px"
         ],
 
         invalid: {
@@ -472,13 +462,12 @@
             "0",
             "3px",
             "2em",
-            "0.4em 12px",
-            "inherit"
+            "0.4em 12px"
         ],
 
         invalid: {
             "1px 0.4em 1px" : "Expected end of value but found '1px'.",
-            "foo" : "Expected (<length> | inherit) but found 'foo'."
+            "foo" : "Expected (<length>) but found 'foo'."
         }
     }));
 
@@ -492,7 +481,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -507,7 +496,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -617,7 +606,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<shape> | auto | inherit) but found 'foo'."
+            "foo" : "Expected (<shape> | auto) but found 'foo'."
         }
     }));
 
@@ -650,12 +639,11 @@
 
         valid: [
             "nonzero",
-            "evenodd",
-            "inherit"
+            "evenodd"
         ],
 
         invalid: {
-            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
+            "foo" : "Expected (nonzero | evenodd) but found 'foo'."
         }
     }));
 
@@ -665,14 +653,13 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent",
             "currentColor"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -704,7 +691,6 @@
             "ruby-text-container",
             "contents",
             "none",
-            "inherit",
             "-moz-box",
             "-moz-inline-block",
             "-moz-inline-box",
@@ -731,7 +717,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex) but found 'foo'."
+            "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex) but found 'foo'."
         }
     }));
 
@@ -752,17 +738,16 @@
             "normal small-caps 120%/120% fantasy",
             "normal normal normal normal 12pt cursive",
             "normal bold small-caps italic 18px 'font'",
-            "condensed oblique 12pt \"Helvetica Neue\", serif",
-            "inherit",
+            "condensed oblique 12pt \"Helvetica Neue\", serif"
         ],
 
         invalid: {
-            "italic oblique bold 1.3em/10% Genova, 'Comic Sans', sans-serif" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found 'italic oblique bold 1.3em / 10% Genova , 'Comic Sans' , sans-serif'.",
+            "italic oblique bold 1.3em/10% Genova, 'Comic Sans', sans-serif" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found 'italic oblique bold 1.3em / 10% Genova , 'Comic Sans' , sans-serif'.",
             "0.9em Nirwana, 'Comic Sans', sans-serif bold" : "Expected end of value but found 'bold'.",
-            "'Helvetica Neue', sans-serif 1.2em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Helvetica Neue' , sans-serif 1.2em'.",
-            "1.3em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found '1.3em'.",
-            "cursive;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found 'cursive'.",
-            "'Dormant', sans-serif;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar | inherit) but found ''Dormant' , sans-serif'."
+            "'Helvetica Neue', sans-serif 1.2em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found ''Helvetica Neue' , sans-serif 1.2em'.",
+            "1.3em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found '1.3em'.",
+            "cursive;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found 'cursive'.",
+            "'Dormant', sans-serif;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found ''Dormant' , sans-serif'."
         }
     }));
 
@@ -797,7 +782,7 @@
         ],
 
         invalid: {
-            "--Futura, sans-serif"   : "Expected (<font-family> | inherit) but found '--Futura , sans-serif'.",
+            "--Futura, sans-serif"   : "Expected ([ <generic-family> | <family-name> ]#) but found '--Futura , sans-serif'.",
             "Red/Black, sans-serif"  : "Expected end of value but found '/'.",
             "'Lucida' Grande, sans-serif" : "Expected end of value but found 'Grande'.",
             "Hawaii 5-0, sans-serif" : "Expected end of value but found '5'."
@@ -816,8 +801,7 @@
         property: "font-style",
 
         valid: [
-            "normal", "italic", "oblique",
-            "inherit"
+            "normal", "italic", "oblique"
         ]
     }));
 
@@ -825,8 +809,7 @@
         property: "font-variant",
 
         valid: [
-            "normal", "none", "small-caps", "common-ligatures small-caps",
-            "inherit"
+            "normal", "none", "small-caps", "common-ligatures small-caps"
         ]
     }));
 
@@ -837,8 +820,7 @@
             "normal", "historical-forms",
             "stylistic(salt) styleset(ss01, ss02)",
             "character-variant(cv03, cv04, cv05) swash(swsh)",
-            "ornaments(ornm2) annotation(nalt2)",
-            "inherit"
+            "ornaments(ornm2) annotation(nalt2)"
         ]
     }));
 
@@ -847,7 +829,7 @@
 
         valid: [
             "normal", "small-caps", "all-small-caps", "petite-caps",
-            "all-petite-caps", "unicase", "titling-caps", "inherit"
+            "all-petite-caps", "unicase", "titling-caps"
         ]
     }));
 
@@ -857,8 +839,7 @@
         valid: [
             "normal", "ruby", "jis78", "jis83", "jis90", "jis04",
             "simplified", "traditional", "full-width", "proportional-width",
-            "ruby full-width jis83",
-            "inherit"
+            "ruby full-width jis83"
         ]
     }));
 
@@ -868,8 +849,7 @@
         valid: [
             "normal", "none",
             "common-ligatures discretionary-ligatures historical-ligatures contextual",
-            "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual",
-            "inherit"
+            "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual"
         ]
     }));
 
@@ -879,8 +859,7 @@
         valid: [
             "normal", "ordinal", "slashed-zero", "lining-nums",
             "lining-nums proportional-nums diagonal-fractions ordinal",
-            "oldstyle-nums tabular-nums stacked-fractions slashed-zero",
-            "inherit"
+            "oldstyle-nums tabular-nums stacked-fractions slashed-zero"
         ]
     }));
 
@@ -900,12 +879,11 @@
             "-moz-fit-content",
             "-moz-available",
             "-webkit-fill-available",
-            "contain-floats",
-            "inherit"
+            "contain-floats"
         ],
 
         invalid: {
-            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit) but found 'foo'."
+            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats) but found 'foo'."
         }
     }));
 
@@ -919,17 +897,16 @@
             "url('myGradient') darkred icc-color(myCmykDarkRed)",
             "currentColor",
             "darkred icc-color(myCmykDarkRed)",
-            "none",
-            "inherit"
+            "none"
         ],
 
         invalid: {
             "url('myGradient') inherit" : "Expected end of value but found 'inherit'.",
             "url('myGradient') icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
             "currentColor icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
-            "icc-color(myCmykDarkRed) darkred" : "Expected (<paint> | inherit) but found 'icc-color(myCmykDarkRed) darkred'.",
-            "icc-color(myCmykDarkRed)" : "Expected (<paint> | inherit) but found 'icc-color(myCmykDarkRed)'.",
-            "icc-color(myCmykDarkRed) inherit" : "Expected (<paint> | inherit) but found 'icc-color(myCmykDarkRed) inherit'.",
+            "icc-color(myCmykDarkRed) darkred" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed) darkred'.",
+            "icc-color(myCmykDarkRed)" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed)'.",
+            "icc-color(myCmykDarkRed) inherit" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed) inherit'.",
             "inherit icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
             "none inherit" : "Expected end of value but found 'inherit'."
         }
@@ -940,12 +917,11 @@
 
         valid: [
             "nonzero",
-            "evenodd",
-            "inherit"
+            "evenodd"
         ],
 
         invalid: {
-            "foo" : "Expected (nonzero | evenodd | inherit) but found 'foo'."
+            "foo" : "Expected (nonzero | evenodd) but found 'foo'."
         }
     }));
 
@@ -975,9 +951,7 @@
 
             valid: [
                 "1",
-                "inherit",
                 // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0 auto",
                 "0 1 auto",
                 "auto",
@@ -986,7 +960,7 @@
             ],
 
             invalid: {
-                "foo": "Expected (none | inherit | <flex-grow> <flex-shrink>? || <flex-basis>) but found 'foo'."
+                "foo": "Expected (none | <flex-grow> <flex-shrink>? || <flex-basis>) but found 'foo'."
             }
         }));
     });
@@ -996,7 +970,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "auto",
                 "12px",
                 "3em",
@@ -1010,27 +983,18 @@
     });
 
     ["flex-direction", "-ms-flex-direction", "-webkit-flex-direction"].forEach(function(prop_name) {
-        var prop_definition = "row | row-reverse | column | column-reverse";
-        if (prop_name == "-ms-flex-direction") {
-            prop_definition += " | inherit";
-        }
-        var valid_values = [
-            // "initial", // FIXME this needs to be integrated as a univerally acceptable value
-            "row",
-            "row-reverse",
-            "column",
-            "column-reverse"
-        ];
-        if (prop_name == "-ms-flex-direction") {
-            valid_values.push("inherit");
-        }
         suite.add(new ValidationTestCase({
             property: prop_name,
 
-            valid: valid_values,
+            valid: [
+                "row",
+                "row-reverse",
+                "column",
+                "column-reverse"
+            ],
 
             invalid: {
-                "foo": "Expected (" + prop_definition + ") but found 'foo'."
+                "foo": "Expected (row | row-reverse | column | column-reverse) but found 'foo'."
             }
         }));
     });
@@ -1040,7 +1004,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
                 "row",
                 "column wrap",
@@ -1059,7 +1022,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0",
                 "1",
                 "1.5"
@@ -1076,7 +1038,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0",
                 "1",
                 "1.5"
@@ -1093,7 +1054,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "nowrap",
                 "wrap",
                 "wrap-reverse"
@@ -1112,14 +1072,13 @@
             "-43deg",
             ".7deg",
             "90deg",
-            "521deg",
-            "inherit"
+            "521deg"
         ],
 
         invalid: {
-            "auto" : "Expected (<glyph-angle> | inherit) but found 'auto'.",
-            "70rad" : "Expected (<glyph-angle> | inherit) but found '70rad'.",
-            "4grad" : "Expected (<glyph-angle> | inherit) but found '4grad'."
+            "auto" : "Expected (<glyph-angle>) but found 'auto'.",
+            "70rad" : "Expected (<glyph-angle>) but found '70rad'.",
+            "4grad" : "Expected (<glyph-angle>) but found '4grad'."
         }
     }));
 
@@ -1131,13 +1090,12 @@
             "-43deg",
             ".7deg",
             "90deg",
-            "521deg",
-            "inherit"
+            "521deg"
         ],
 
         invalid: {
-            "70rad" : "Expected (auto | <glyph-angle> | inherit) but found '70rad'.",
-            "4grad" : "Expected (auto | <glyph-angle> | inherit) but found '4grad'."
+            "70rad" : "Expected (auto | <glyph-angle>) but found '70rad'.",
+            "4grad" : "Expected (auto | <glyph-angle>) but found '4grad'."
         }
     }));
 
@@ -1147,12 +1105,11 @@
         valid: [
             "start",
             "middle",
-            "end",
-            "inherit"
+            "end"
         ],
 
         invalid: {
-            "foo" : "Expected (start | middle | end | inherit) but found 'foo'."
+            "foo" : "Expected (start | middle | end) but found 'foo'."
         }
     }));
 
@@ -1166,12 +1123,11 @@
             "justify",
             "match-parent",
             "start",
-            "end",
-            "inherit"
+            "end"
         ],
 
         invalid: {
-            "foo" : "Expected (left | right | center | justify | match-parent | start | end | inherit) but found 'foo'."
+            "foo" : "Expected (left | right | center | justify | match-parent | start | end) but found 'foo'."
         }
     }));
 
@@ -1181,8 +1137,7 @@
         valid: [
             "none",
             "underline",
-            "underline overline line-through blink",
-            "inherit"
+            "underline overline line-through blink"
         ],
 
         invalid: {
@@ -1190,7 +1145,7 @@
             "line-through none" : "Expected end of value but found 'none'.",
             "inherit blink" : "Expected end of value but found 'blink'.",
             "overline inherit" : "Expected end of value but found 'inherit'.",
-            "foo" : "Expected (none | <text-decoration> | inherit) but found 'foo'."
+            "foo" : "Expected (none | underline || overline || line-through || blink) but found 'foo'."
         }
     }));
 
@@ -1201,12 +1156,11 @@
             "auto",
             "optimizeSpeed",
             "optimizeLegibility",
-            "geometricPrecision",
-            "inherit"
+            "geometricPrecision"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit) but found 'foo'."
+            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision) but found 'foo'."
         }
     }));
 
@@ -1223,7 +1177,7 @@
 
         invalid: {
             "foo" : "Expected (fill | contain | cover | none | scale-down) but found 'foo'.",
-            "inherit" : "Expected (fill | contain | cover | none | scale-down) but found 'inherit'."
+            "fill cover" : "Expected end of value but found 'cover'."
         }
     }));
 
@@ -1248,7 +1202,7 @@
         ],
 
         invalid: {
-            "foo"                 : "Expected (<position> | inherit) but found 'foo'.",
+            "foo"                 : "Expected ([ center | [ left | right ] [ <percentage> | <length> ]? ] && [ center | [ top | bottom ] [ <percentage> | <length> ]? ] | [ left | center | right | <percentage> | <length> ] [ top | center | bottom | <percentage> | <length> ] | left | center | right | top | bottom | <percentage> | <length>) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
             "left center right"   : "Expected end of value but found 'right'.",
             "center 3em right 10%": "Expected end of value but found 'right'.",
@@ -1266,9 +1220,9 @@
         ],
 
         invalid: {
-            "-0.75" : "Expected (<opacity-value> | inherit) but found '-0.75'.",
-            "12" : "Expected (<opacity-value> | inherit) but found '12'.",
-            "foo" : "Expected (<opacity-value> | inherit) but found 'foo'."
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
         }
     }));
 
@@ -1285,12 +1239,11 @@
             "painted",
             "fill",
             "stroke",
-            "all",
-            "inherit"
+            "all"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit) but found 'foo'."
+            "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all) but found 'foo'."
         }
     }));
 
@@ -1304,15 +1257,14 @@
             "20px 40px 30px",
             "20px, 40px, 30px",
             "calc(1px + 2px) calc(3px + 1em)",
-            "none",
-            "inherit"
+            "none"
         ],
 
         invalid: {
-            "-20px" : "Expected (none | <dasharray> | inherit) but found '-20px'.",
+            "-20px" : "Expected (none | <dasharray>) but found '-20px'.",
             "20px," : "Expected end of value but found ','.",
             "20px, -20px": "Expected end of value but found ','.",
-            "auto"  : "Expected (none | <dasharray> | inherit) but found 'auto'."
+            "auto"  : "Expected (none | <dasharray>) but found 'auto'."
         }
     }));
 
@@ -1322,13 +1274,12 @@
         valid: [
             "butt",
             "round",
-            "square",
-            "inherit"
+            "square"
         ],
 
         invalid: {
-            "auto" : "Expected (butt | round | square | inherit) but found 'auto'.",
-            "none" : "Expected (butt | round | square | inherit) but found 'none'."
+            "auto" : "Expected (butt | round | square) but found 'auto'.",
+            "none" : "Expected (butt | round | square) but found 'none'."
         }
     }));
 
@@ -1338,13 +1289,12 @@
         valid: [
             "miter",
             "round",
-            "bevel",
-            "inherit"
+            "bevel"
         ],
 
         invalid: {
-            "auto" : "Expected (miter | round | bevel | inherit) but found 'auto'.",
-            "none" : "Expected (miter | round | bevel | inherit) but found 'none'."
+            "auto" : "Expected (miter | round | bevel) but found 'auto'.",
+            "none" : "Expected (miter | round | bevel) but found 'none'."
         }
     }));
 
@@ -1355,14 +1305,13 @@
             "1",
             "1.4",
             "20",
-            "10",
-            "inherit"
+            "10"
         ],
 
         invalid: {
-            "-10" : "Expected (<miterlimit> | inherit) but found '-10'.",
-            "0.5" : "Expected (<miterlimit> | inherit) but found '0.5'.",
-            "foo" : "Expected (<miterlimit> | inherit) but found 'foo'."
+            "-10" : "Expected (<miterlimit>) but found '-10'.",
+            "0.5" : "Expected (<miterlimit>) but found '0.5'.",
+            "foo" : "Expected (<miterlimit>) but found 'foo'."
         }
     }));
 
@@ -1419,12 +1368,11 @@
             "bottom",
             "text-bottom",
             "25%",
-            "-1px",
-            "inherit"
+            "-1px"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length> | inherit) but found 'foo'."
+            "foo" : "Expected (auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>) but found 'foo'."
         }
     }));
 
@@ -1433,12 +1381,11 @@
 
         valid: [
             "1",
-            "auto",
-            "inherit"
+            "auto"
         ],
 
         invalid: {
-            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+            "foo" : "Expected (<integer> | auto) but found 'foo'."
         }
     }));
 
@@ -1448,12 +1395,11 @@
 
         valid: [
             "1",
-            "auto",
-            "inherit"
+            "auto"
         ],
 
         invalid: {
-            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+            "foo" : "Expected (<integer> | auto) but found 'foo'."
         }
     }));
 
@@ -1474,12 +1420,11 @@
             "rl-bt",
             "lr",
             "rl",
-            "tb",
-            "inherit"
+            "tb"
         ],
 
         invalid: {
-            "foo" : "Expected (horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb | inherit) but found 'foo'."
+            "foo" : "Expected (horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb) but found 'foo'."
         }
     }));
 
@@ -1504,14 +1449,13 @@
             "6px",
             "3%",
             "1em",
-            "calc(100% - 80px)",
-            "inherit"
+            "calc(100% - 80px)"
         ],
 
         invalid: {
-            "-10px" : "Expected (<padding-width> | inherit) but found '-10px'.",
-            "-3%"   : "Expected (<padding-width> | inherit) but found '-3%'.",
-            "auto"   : "Expected (<padding-width> | inherit) but found 'auto'."
+            "-10px" : "Expected (<padding-width>) but found '-10px'.",
+            "-3%"   : "Expected (<padding-width>) but found '-3%'.",
+            "auto"   : "Expected (<padding-width>) but found 'auto'."
         }
     }));
 
@@ -1519,9 +1463,6 @@
         property: "will-change",
 
         valid: [
-            "inherit",
-            "initial",
-            "unset",
             "auto",
             "scroll-position",
             "contents",
@@ -1533,9 +1474,9 @@
         ],
 
         invalid: {
-            "2px"               : "Expected (<will-change> | inherit | initial | unset) but found '2px'.",
+            "2px"               : "Expected (auto | <animateable-feature>#) but found '2px'.",
             "opacity transform" : "Expected end of value but found 'transform'.",
-            "will-change"       : "Expected (<will-change> | inherit | initial | unset) but found 'will-change'."
+            "will-change"       : "Expected (auto | <animateable-feature>#) but found 'will-change'."
         }
     }));
 
@@ -1561,12 +1502,11 @@
             "isolate",
             "bidi-override",
             "isolate-override",
-            "plaintext",
-            "inherit"
+            "plaintext"
         ],
 
         invalid: {
-            "foo" : "Expected (normal | embed | isolate | bidi-override | isolate-override | plaintext | inherit) but found 'foo'."
+            "foo" : "Expected (normal | embed | isolate | bidi-override | isolate-override | plaintext) but found 'foo'."
         }
     }));
 

@@ -8,7 +8,8 @@ var Validation = {
         //normalize name
         var name        = property.toString().toLowerCase(),
             expression  = new PropertyValueIterator(value),
-            spec        = Properties[name];
+            spec        = Properties[name],
+            part;
 
         if (!spec) {
             if (name.indexOf("-") !== 0){    //vendor prefixed are ok
@@ -16,12 +17,22 @@ var Validation = {
             }
         } else if (typeof spec !== "number"){
 
-            //initialization
+            // All properties accept some CSS-wide values.
+            // https://drafts.csswg.org/css-values-3/#common-keywords
+            if (ValidationTypes.isAny(expression, "inherit | initial | unset")){
+                if (expression.hasNext()) {
+                    part = expression.next();
+                    throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
+                }
+                return;
+            }
+
+            // Property-specific validation.
             if (typeof spec === "string"){
                 if (spec.indexOf("||") > -1) {
                     this.groupProperty(spec, expression);
                 } else {
-                    this.singleProperty(spec, expression, 1);
+                    this.singleProperty(spec, expression);
                 }
 
             } else if (spec.multi) {
@@ -34,20 +45,13 @@ var Validation = {
 
     },
 
-    singleProperty: function(types, expression, max, partial) {
+    singleProperty: function(types, expression) {
 
         var result      = false,
             value       = expression.value,
-            count       = 0,
             part;
 
-        while (expression.hasNext() && count < max) {
-            result = ValidationTypes.isAny(expression, types);
-            if (!result) {
-                break;
-            }
-            count++;
-        }
+        result = ValidationTypes.isAny(expression, types);
 
         if (!result) {
             if (expression.hasNext() && !expression.isFirst()) {

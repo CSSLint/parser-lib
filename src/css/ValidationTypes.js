@@ -668,8 +668,7 @@ ValidationTypes = {
         // * <flex-grow> <flex-basis>
         // * <flex-grow> <flex-shrink>
         // * <flex-grow> <flex-shrink> <flex-basis>
-        // * inherit
-        Matcher.alt("none", "inherit", Matcher.cast("<flex-grow>").then(Matcher.cast("<flex-shrink>").question()).oror("<flex-basis>")),
+        Matcher.alt("none", Matcher.cast("<flex-grow>").then(Matcher.cast("<flex-shrink>").question()).oror("<flex-basis>")),
 
         "<font-family>":
         // [ <family-name> | <generic-family> ]#
@@ -739,8 +738,8 @@ ValidationTypes = {
                     "<font-family>"),
 
         "<text-decoration>":
-        // none | [ underline || overline || line-through || blink ] | inherit
-        Matcher.oror("underline", "overline", "line-through", "blink"),
+        // none | [ underline || overline || line-through || blink ]
+        Matcher.alt("none", Matcher.oror("underline", "overline", "line-through", "blink")),
 
         "<will-change>":
         // auto | <animateable-feature>#

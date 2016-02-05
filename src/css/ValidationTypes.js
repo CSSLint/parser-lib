@@ -480,9 +480,18 @@ ValidationTypes = {
             return this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "auto");
         },
 
-        "<padding-width>": function(part){
+        "<nonnegative-length-or-percentage>": function(part){
             return (this["<length>"](part) || this["<percentage>"](part)) &&
                 (String(part) === "0" || part.type === "function" || (part.value) >= 0);
+        },
+
+        "<nonnegative-number-or-percentage>": function(part){
+            return (this["<number>"](part) || this["<percentage>"](part)) &&
+                (String(part) === "0" || part.type === "function" || (part.value) >= 0);
+        },
+
+        "<padding-width>": function(part){
+            return this["<nonnegative-length-or-percentage>"](part);
         },
 
         "<shape>": function(part){
@@ -583,11 +592,43 @@ ValidationTypes = {
         // scroll-position | contents | <custom-ident>
         Matcher.cast("scroll-position | contents | <animateable-feature-name>"),
 
+        "<azimuth>":
+        // <angle> |
+        // [[ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind ] |
+        // leftwards | rightwards
+        Matcher.alt("<angle>",
+                    Matcher.cast(
+                        "left-side | far-left | left | center-left | " +
+                        "center | center-right | right | far-right | " +
+                        "right-side").oror("behind"),
+                    "leftwards", "rightwards"),
+
         "<bg-position>": Matcher.cast("<position>").hash(),
 
         "<bg-size>":
         //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
         Matcher.alt("cover", "contain", Matcher.cast("<percentage> | <length> | auto").braces(1,2)),
+
+        "<border-image-slice>":
+        // [<number> | <percentage>]{1,4} && fill?
+        // *but* fill can appear between any of the numbers
+        Matcher.many([true /* first element is required */],
+                     Matcher.cast("<nonnegative-number-or-percentage>"),
+                     Matcher.cast("<nonnegative-number-or-percentage>"),
+                     Matcher.cast("<nonnegative-number-or-percentage>"),
+                     Matcher.cast("<nonnegative-number-or-percentage>"),
+                     "fill"),
+
+        "<border-radius>":
+        // [ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?
+        Matcher.seq(
+            Matcher.cast("<nonnegative-length-or-percentage>").braces(1, 4),
+            Matcher.seq(
+                "/",
+                Matcher.cast("<nonnegative-length-or-percentage>").braces(1, 4)
+            ).question()),
+
+        "<box-shadow>": Matcher.alt("none", Matcher.cast("<shadow>").hash()),
 
         "<clip-source>": Matcher.cast("<uri>"),
 
@@ -597,9 +638,8 @@ ValidationTypes = {
 
         "<dasharray>":
         // "list of comma and/or white space separated <length>s and
-        // <percentage>s".  We use <padding-width> to enforce the
-        // nonnegative constraint.
-        Matcher.cast("<padding-width>")
+        // <percentage>s".  There is a non-negative constraint.
+        Matcher.cast("<nonnegative-length-or-percentage>")
             .braces(1, Infinity, "#", Matcher.cast(",").question()),
 
         "<filter-function-list>":

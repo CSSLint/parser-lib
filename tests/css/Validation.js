@@ -153,7 +153,7 @@
 
         invalid: {
             "behind behind" : "Expected end of value but found 'behind'.",
-            "foo" : "Expected (<'azimuth'>) but found 'foo'."
+            "foo" : "Expected (<angle> | [ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind | leftwards | rightwards) but found 'foo'."
         }
     }));
 
@@ -426,13 +426,14 @@
             "5",
             "50% 60%",
             "10 15 20 23",
-            "fill",
             "10 20 fill",
-            "fill 25% 10"
+            "fill 25% 10",
+            "10% fill 7 12"
         ],
 
         invalid: {
-            "foo" : "Expected ([<number> | <percentage>]{1,4} && fill?) but found 'foo'.",
+            "foo" : "Expected (<nonnegative-number-or-percentage> && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && fill?) but found 'foo'.",
+            "fill" : "Expected (<nonnegative-number-or-percentage> && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && fill?) but found 'fill'.",
             "50% 75% 85% 95% 105%" : "Expected end of value but found '105%'."
         }
     }));
@@ -450,8 +451,8 @@
         ],
 
         invalid: {
-            "foo"   : "Expected (<'border-radius'>) but found 'foo'.",
-            "5px x" : "Expected (<'border-radius'>) but found 'x'.",
+            "foo"   : "Expected (<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?) but found 'foo'.",
+            "5px x" : "Expected end of value but found 'x'.",
         }
     }));
 
@@ -588,9 +589,9 @@
         ],
 
         invalid: {
-            "foo"           : "Expected (<shadow>) but found 'foo'.",
-            "1px"           : "Expected (<shadow>) but found '1px'.",
-            "1em red"       : "Expected (<shadow>) but found '1em red'.",
+            "foo"           : "Expected (none | <shadow>#) but found 'foo'.",
+            "1px"           : "Expected (none | <shadow>#) but found '1px'.",
+            "1em red"       : "Expected (none | <shadow>#) but found '1em red'.",
             "1px 1px redd"  : "Expected end of value but found 'redd'.",
             "none 1px"      : "Expected end of value but found '1px'.",
             "inset 2px 2px 2px 2px black inset" : "Expected end of value but found 'inset'."

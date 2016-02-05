@@ -1,4 +1,3 @@
-/*global Validation, ValidationTypes, ValidationError*/
 /*exported Properties*/
 var Properties = {
     __proto__: null,
@@ -53,36 +52,7 @@ var Properties = {
     "-o-animation-play-state"          : { multi: "running | paused", comma: true },
 
     "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | none",
-    "azimuth"                       : function (expression) {
-        var simple      = "<angle> | leftwards | rightwards | inherit",
-            direction   = "left-side | far-left | left | center-left | center | center-right | right | far-right | right-side",
-            behind      = false,
-            valid       = false,
-            part;
-
-        if (!ValidationTypes.isAny(expression, simple)) {
-            if (ValidationTypes.isAny(expression, "behind")) {
-                behind = true;
-                valid = true;
-            }
-
-            if (ValidationTypes.isAny(expression, direction)) {
-                valid = true;
-                if (!behind) {
-                    ValidationTypes.isAny(expression, "behind");
-                }
-            }
-        }
-
-        if (expression.hasNext()) {
-            part = expression.next();
-            if (valid) {
-                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-            } else {
-                throw new ValidationError("Expected (<'azimuth'>) but found '" + part + "'.", part.line, part.col);
-            }
-        }
-    },
+    "azimuth"                       : "<azimuth>",
 
     //B
     "backface-visibility"           : "visible | hidden",
@@ -115,83 +85,14 @@ var Properties = {
     "border-image"                  : 1,
     "border-image-outset"           : { multi: "<length> | <number>", max: 4 },
     "border-image-repeat"           : { multi: "stretch | repeat | round", max: 2 },
-    "border-image-slice"            : function(expression) {
-
-        var valid   = false,
-            numeric = "<number> | <percentage>",
-            fill    = false,
-            count   = 0,
-            max     = 4,
-            part;
-
-        if (ValidationTypes.isAny(expression, "fill")) {
-            fill = true;
-            valid = true;
-        }
-
-        while (expression.hasNext() && count < max) {
-            valid = ValidationTypes.isAny(expression, numeric);
-            if (!valid) {
-                break;
-            }
-            count++;
-        }
-
-
-        if (!fill) {
-            ValidationTypes.isAny(expression, "fill");
-        } else {
-            valid = true;
-        }
-
-        if (expression.hasNext()) {
-            part = expression.next();
-            if (valid) {
-                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-            } else {
-                throw new ValidationError("Expected ([<number> | <percentage>]{1,4} && fill?) but found '" + part + "'.", part.line, part.col);
-            }
-        }
-    },
+    "border-image-slice"            : "<border-image-slice>",
     "border-image-source"           : "<image> | none",
     "border-image-width"            : { multi: "<length> | <percentage> | <number> | auto", max: 4 },
     "border-left"                   : "<border-width> || <border-style> || <color>",
     "border-left-color"             : "<color>",
     "border-left-style"             : "<border-style>",
     "border-left-width"             : "<border-width>",
-    "border-radius"                 : function(expression) {
-
-        var valid   = false,
-            simple = "<length> | <percentage> | inherit",
-            slash   = false,
-            count   = 0,
-            max     = 8,
-            part;
-
-        while (expression.hasNext() && count < max) {
-            valid = ValidationTypes.isAny(expression, simple);
-            if (!valid) {
-
-                if (String(expression.peek()) === "/" && count > 0 && !slash) {
-                    slash = true;
-                    max = count + 5;
-                    expression.next();
-                } else {
-                    break;
-                }
-            }
-            count++;
-        }
-
-        if (expression.hasNext()) {
-            part = expression.next();
-            if (valid) {
-                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-            } else {
-                throw new ValidationError("Expected (<'border-radius'>) but found '" + part + "'.", part.line, part.col);
-            }
-        }
-    },
+    "border-radius"                 : "<border-radius>",
     "border-right"                  : "<border-width> || <border-style> || <color>",
     "border-right-color"            : "<color>",
     "border-right-style"            : "<border-style>",
@@ -226,18 +127,7 @@ var Properties = {
     "-webkit-box-orient"            : "horizontal | vertical | inline-axis | block-axis",
     "-webkit-box-pack"              : "start | end | center | justify",
     "box-decoration-break"          : "slice | clone",
-    "box-shadow"                    : function (expression) {
-        var part;
-
-        if (!ValidationTypes.isAny(expression, "none")) {
-            Validation.multiProperty("<shadow>", expression, true, Infinity);
-        } else {
-            if (expression.hasNext()) {
-                part = expression.next();
-                throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
-            }
-        }
-    },
+    "box-shadow"                    : "<box-shadow>",
     "box-sizing"                    : "content-box | border-box",
     "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
     "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",

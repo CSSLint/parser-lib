@@ -13,7 +13,7 @@ function StringReader(text){
      * @type String
      * @private
      */
-    this._input = text.replace(/(\r|\n){1,2}/g, "\n");
+    this._input = text.replace(/(\r\n?|\n)/g, "\n");
 
 
     /**

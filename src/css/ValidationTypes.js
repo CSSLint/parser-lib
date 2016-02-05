@@ -387,8 +387,37 @@ ValidationTypes = {
             return part.type === "color" || part == "transparent" || part == "currentColor";
         },
 
+        // The SVG <color> spec doesn't include "currentColor" or "transparent" as a color.
+        "<color-svg>": function(part) {
+            return part.type === "color";
+        },
+
+        "<icccolor>": function(part){
+            /* ex.:
+                https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/local
+                    icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
+                    cielab(62.253188, 23.950124, 48.410653)
+                    cielch(62.253188, 54.011108, 63.677091)
+                    icc-color(FooColors, Sandy23C)
+                http://www.w3.org/TR/2009/WD-SVGColor12-20091001/#iccnamedcolor
+                    ~"icc-color(" name (comma-wsp number)+ ")"
+                    ~"icc-named-color(" name comma-wsp namedColor ")"
+                    ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
+                    ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
+            */
+            return ValidationTypes.isLiteral(part, "cielab() | cielch() | cielchab() | icc-color() | icc-named-color()");
+        },
+
         "<number>": function(part){
             return part.type === "number" || this["<integer>"](part);
+        },
+
+        "<miterlimit>": function(part){
+            return this["<number>"](part) && part.value >= 1;
+        },
+
+        "<opacity-value>": function(part){
+            return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
         "<integer>": function(part){
@@ -515,9 +544,30 @@ ValidationTypes = {
         // <basic-shape> || <geometry-box>
         Matcher.cast("<basic-shape>").oror("<geometry-box>"),
 
+        "<dasharray>":
+        // "list of comma and/or white space separated <length>s and
+        // <percentage>s".  We use <padding-width> to enforce the
+        // nonnegative constraint.
+        Matcher.cast("<padding-width>")
+            .braces(1, Infinity, "#", Matcher.cast(",").question()),
+
         "<filter-function-list>":
         // [ <filter-function> | <uri> ]+
         Matcher.cast("<filter-function> | <uri>").plus(),
+
+        "<paint>":
+        // none | currentColor | <color> [<icccolor>]? |
+        // <funciri> [ none | currentColor | <color> [<icccolor>]? ]?
+
+        // Note that <color> here is "as defined in the SVG spec", which
+        // is more restrictive that the <color> defined in the CSS spec.
+        Matcher.alt("<paint-basic>",
+                    Matcher.seq("<uri>", Matcher.cast("<paint-basic>").question())),
+        // Helper definition for <paint> above.
+        "<paint-basic>":
+        Matcher.alt("none", "currentColor",
+                    Matcher.seq("<color-svg>",
+                                Matcher.cast("<icccolor>").question())),
 
         "<position>":
         // <position> = [

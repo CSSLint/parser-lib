@@ -181,7 +181,8 @@ var ValidationTypes = {
         },
 
         "<padding-width>": function(part){
-            return part.value >= 0 && (this["<length>"](part) || this["<percentage>"](part));
+            return (this["<length>"](part) || this["<percentage>"](part)) &&
+                (String(part) === "0" || part.type === "function" || (part.value) >= 0);
         },
 
         "<shape>": function(part){

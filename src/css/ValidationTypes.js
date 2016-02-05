@@ -251,7 +251,10 @@ ValidationTypes = {
             i, len, found = false;
 
         for (i=0,len=args.length; i < len && !found; i++){
-            if (text === args[i].toLowerCase()){
+            if (args[i].slice(-2) === "()"){
+                found = (part.type === "function" &&
+                         part.name === args[i].slice(0, -2));
+            } else if (text === args[i].toLowerCase()){
                 found = true;
             }
         }
@@ -344,7 +347,7 @@ ValidationTypes = {
         },
 
         "<attr>": function(part){
-            return part.type === "function" && part.name === "attr";
+            return ValidationTypes.isLiteral(part, "attr()");
         },
 
         "<bg-image>": function(part){
@@ -360,7 +363,7 @@ ValidationTypes = {
         },
 
         "<content>": function(part){
-            return part.type === "function" && part.name === "content";
+            return ValidationTypes.isLiteral(part, "content()");
         },
 
         "<relative-size>": function(part){
@@ -438,7 +441,7 @@ ValidationTypes = {
         },
 
         "<shape>": function(part){
-            return part.type === "function" && (part.name === "rect" || part.name === "inset-rect");
+            return ValidationTypes.isLiteral(part, "rect() | inset-rect()");
         },
 
         "<basic-shape>": function(part){
@@ -446,9 +449,7 @@ ValidationTypes = {
             // circle() = circle( [<shape-radius>]? [at <position>]? )
             // ellipse() = ellipse( [<shape-radius>{2}]? [at <position>]? )
             // polygon() = polygon( [<fill-rule>,]? [<shape-arg> <shape-arg>]# )
-            return part.type === "function" && (
-                part.name === "inset" || part.name === "circle" || part.name === "ellipse" || part.name === "polygon"
-            );
+            return ValidationTypes.isLiteral(part, "inset() | circle() | ellipse() | polygon()");
         },
 
         "<shape-box>": function(part) {
@@ -492,18 +493,11 @@ ValidationTypes = {
         },
 
         "<filter-function>": function(part){
-            return part.type === "function" && (
-                    part.name === 'blur' ||
-                    part.name === 'brightness' ||
-                    part.name === 'contrast' ||
-                    part.name === 'custom' || // Not actually in formal spec.
-                    part.name === 'drop-shadow' ||
-                    part.name === 'grayscale' ||
-                    part.name === 'hue-rotate' ||
-                    part.name === 'invert' ||
-                    part.name === 'opacity' ||
-                    part.name === 'saturate' ||
-                    part.name === 'sepia');
+            // custom() isn't actually in the spec
+            return ValidationTypes.isLiteral(
+                part, "blur() | brightness() | contrast() | custom() | " +
+                    "drop-shadow() | grayscale() | hue-rotate() | invert() | " +
+                    "opacity() | saturate() | sepia()");
         }
     },
 

@@ -101,14 +101,29 @@
         valid: [
             "none",
             "foo",
+            "red",
+            "-red",
+            "-specific",
+            "sliding-vertically",
+            "test1",
+            "test1, animation4",
             "foo, bar",
             "none, none",
             "none, foo",
-            "has_underscore"
+            "has_underscore",
+            "none, -moz-specific, sliding",
+            "initial",
+            "inherit",
+            "unset"
         ],
 
         invalid: {
-            "1px" : "Expected (none | <ident>) but found '1px'."
+            "1px" : "Expected (none | initial | inherit | unset | <single-animation-name>) but found '1px'.",
+            "--invalid" : "Expected (none | initial | inherit | unset | <single-animation-name>) but found '--invalid'."
+        },
+
+        error: {
+            "-0num": "Unexpected token '0num' at line 1, col 24."
         }
     }));
 
@@ -1357,18 +1372,23 @@
         property: "will-change",
 
         valid: [
+            "inherit",
+            "initial",
+            "unset",
             "auto",
             "scroll-position",
             "contents",
             "opacity",
             "transform",
             "opacity, transform",
+            "left, top",
             "height, opacity, transform, width"
         ],
 
         invalid: {
-            "2px"               : "Expected (<ident>) but found '2px'.",
-            "opacity transform" : "Expected end of value but found 'transform'."
+            "2px"               : "Expected (<will-change> | inherit | initial | unset) but found '2px'.",
+            "opacity transform" : "Expected end of value but found 'transform'.",
+            "will-change"       : "Expected (<will-change> | inherit | initial | unset) but found 'will-change'."
         }
     }));
 

@@ -376,6 +376,17 @@ ValidationTypes = {
             return part.type === "identifier" || part.wasIdent;
         },
 
+        "<single-animation-name>": function(part) {
+            return this["<ident>"](part) &&
+                /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
+                !/^(none|unset|initial|inherit)$/i.test(part);
+        },
+
+        "<animateable-feature-name>": function(part) {
+            return this["<ident>"](part) &&
+                !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(part);
+        },
+
         "<length>": function(part){
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
@@ -534,6 +545,10 @@ ValidationTypes = {
     complex: {
         __proto__: null,
 
+        "<animateable-feature>":
+        // scroll-position | contents | <custom-ident>
+        Matcher.cast("scroll-position | contents | <animateable-feature-name>"),
+
         "<bg-position>": Matcher.cast("<position>").hash(),
 
         "<bg-size>":
@@ -624,6 +639,10 @@ ValidationTypes = {
 
         "<text-decoration>":
         // none | [ underline || overline || line-through || blink ] | inherit
-        Matcher.oror("underline", "overline", "line-through", "blink")
+        Matcher.oror("underline", "overline", "line-through", "blink"),
+
+        "<will-change>":
+        // auto | <animateable-feature>#
+        Matcher.alt("auto", Matcher.cast("<animateable-feature>").hash())
     }
 };

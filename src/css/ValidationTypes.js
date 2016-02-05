@@ -509,275 +509,75 @@ ValidationTypes = {
 
     complex: {
 
-        "<bg-position>": function(expression){
-            var result  = false,
-                numeric = "<percentage> | <length>",
-                xDir    = "left | right",
-                yDir    = "top | bottom",
-                count = 0;
+        "<bg-position>": Matcher.cast("<position>").hash(),
 
-            while (expression.peek(count) && expression.peek(count).text !== ",") {
-                count++;
-            }
+        "<bg-size>":
+        //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
+        Matcher.alt("cover", "contain", Matcher.cast("<percentage> | <length> | auto").braces(1,2)),
 
-/*
-<position> = [
-  [ left | center | right | top | bottom | <percentage> | <length> ]
-|
-  [ left | center | right | <percentage> | <length> ]
-  [ top | center | bottom | <percentage> | <length> ]
-|
-  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
-  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
-]
-*/
+        "<clip-source>": Matcher.cast("<uri>"),
 
-            if (count < 3) {
-                if (ValidationTypes.isAny(expression, xDir + " | center | " + numeric)) {
-                        result = true;
-                        ValidationTypes.isAny(expression, yDir + " | center | " + numeric);
-                } else if (ValidationTypes.isAny(expression, yDir)) {
-                        result = true;
-                        ValidationTypes.isAny(expression, xDir + " | center");
-                }
-            } else {
-                if (ValidationTypes.isAny(expression, xDir)) {
-                    if (ValidationTypes.isAny(expression, yDir)) {
-                        result = true;
-                        ValidationTypes.isAny(expression, numeric);
-                    } else if (ValidationTypes.isAny(expression, numeric)) {
-                        if (ValidationTypes.isAny(expression, yDir)) {
-                            result = true;
-                            ValidationTypes.isAny(expression, numeric);
-                        } else if (ValidationTypes.isAny(expression, "center")) {
-                            result = true;
-                        }
-                    }
-                } else if (ValidationTypes.isAny(expression, yDir)) {
-                    if (ValidationTypes.isAny(expression, xDir)) {
-                        result = true;
-                        ValidationTypes.isAny(expression, numeric);
-                    } else if (ValidationTypes.isAny(expression, numeric)) {
-                        if (ValidationTypes.isAny(expression, xDir)) {
-                                result = true;
-                                ValidationTypes.isAny(expression, numeric);
-                        } else if (ValidationTypes.isAny(expression, "center")) {
-                            result = true;
-                        }
-                    }
-                } else if (ValidationTypes.isAny(expression, "center")) {
-                    if (ValidationTypes.isAny(expression, xDir + " | " + yDir)) {
-                        result = true;
-                        ValidationTypes.isAny(expression, numeric);
-                    }
-                }
-            }
+        "<clip-path>":
+        // <basic-shape> || <geometry-box>
+        Matcher.cast("<basic-shape>").oror("<geometry-box>"),
 
-            return result;
-        },
+        "<filter-function-list>":
+        // [ <filter-function> | <uri> ]+
+        Matcher.cast("<filter-function> | <uri>").plus(),
 
-        "<bg-size>": function(expression){
-            //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
-            var result  = false,
-                numeric = "<percentage> | <length> | auto";
+        "<position>":
+        // <position> = [
+        //  [ left | center | right | top | bottom | <percentage> | <length> ]
+        // |
+        //  [ left | center | right | <percentage> | <length> ]
+        //  [ top | center | bottom | <percentage> | <length> ]
+        // |
+        //  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
+        //  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
+        //]
+        Matcher.alt(
+            // Because `alt` combinator is ordered, we need to test these
+            // in order from longest possible match to shortest.
+            Matcher.andand(
+                Matcher.cast("center").or(
+                    Matcher.seq("left | right",
+                                Matcher.cast("<percentage> | <length>").question())),
+                Matcher.cast("center").or(
+                    Matcher.seq("top | bottom",
+                                Matcher.cast("<percentage> | <length>").question()))),
+            Matcher.seq("left | center | right | <percentage> | <length>",
+                        "top | center | bottom | <percentage> | <length>"),
+            "left | center | right | top | bottom | <percentage> | <length>"
+        ),
 
-            if (ValidationTypes.isAny(expression, "cover | contain")) {
-                result = true;
-            } else if (ValidationTypes.isAny(expression, numeric)) {
-                result = true;
-                ValidationTypes.isAny(expression, numeric);
-            }
+        "<repeat-style>":
+        //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
+        Matcher.alt("repeat-x | repeat-y", Matcher.cast("repeat | space | round | no-repeat").braces(1,2)),
 
-            return result;
-        },
+        "<shadow>":
+        //inset? && [ <length>{2,4} && <color>? ]
+        Matcher.many([true /* length is required */],
+                     Matcher.cast("<length>").braces(2,4), "inset", "<color>"),
 
-        "<clip-source>": function(expression){
-            return ValidationTypes.isAny(expression, "<uri>");
-        },
+        "<x-one-radius>":
+        //[ <length> | <percentage> ] [ <length> | <percentage> ]?
+        Matcher.cast("<length> | <percentage>").braces(1,2),
 
-        "<clip-path>": function(expression) {
-            // <basic-shape> || <geometry-box>
-            var result = false;
+        "<flex>":
+        // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
+        // none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]
+        // Valid syntaxes, according to https://developer.mozilla.org/en-US/docs/Web/CSS/flex#Syntax
+        // * none
+        // * <flex-grow>
+        // * <flex-basis>
+        // * <flex-grow> <flex-basis>
+        // * <flex-grow> <flex-shrink>
+        // * <flex-grow> <flex-shrink> <flex-basis>
+        // * inherit
+        Matcher.alt("none", "inherit", Matcher.cast("<flex-grow>").then(Matcher.cast("<flex-shrink>").question()).oror("<flex-basis>")),
 
-            if (ValidationTypes.isType(expression, "<basic-shape>")) {
-                result = true;
-                if (expression.hasNext()) {
-                    result = ValidationTypes.isType(expression, "<geometry-box>");
-                }
-            } else if (ValidationTypes.isType(expression, "<geometry-box>")) {
-                result = true;
-                if (expression.hasNext()) {
-                    result = ValidationTypes.isType(expression, "<basic-shape>");
-                }
-            }
-
-            return result && !expression.hasNext();
-
-        },
-
-        "<filter-function-list>": function(expression){
-            var result, part, i;
-            for (i = 0, result = true; result && expression.hasNext(); i++) {
-                result = ValidationTypes.isAny(expression, "<filter-function> | <uri>");
-            }
-
-            if (i > 1 && !result) {
-                // More precise error message if we fail after the first
-                // parsed <filter-function>.
-                part = expression.peek();
-                throw new ValidationError("Expected (<filter-function> | <uri>) but found '" + part.text + "'.", part.line, part.col);
-            }
-
-            return result;
-
-        },
-
-        "<repeat-style>": function(expression){
-            //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
-            var result  = false,
-                values  = "repeat | space | round | no-repeat",
-                part;
-
-            if (expression.hasNext()){
-                part = expression.next();
-
-                if (ValidationTypes.isLiteral(part, "repeat-x | repeat-y")) {
-                    result = true;
-                } else if (ValidationTypes.isLiteral(part, values)) {
-                    result = true;
-
-                    if (expression.hasNext() && ValidationTypes.isLiteral(expression.peek(), values)) {
-                        expression.next();
-                    }
-                }
-            }
-
-            return result;
-
-        },
-
-        "<shadow>": function(expression) {
-            //inset? && [ <length>{2,4} && <color>? ]
-            var result  = false,
-                count   = 0,
-                inset   = false,
-                color   = false;
-
-            if (expression.hasNext()) {
-
-                if (ValidationTypes.isAny(expression, "inset")){
-                    inset = true;
-                }
-
-                if (ValidationTypes.isAny(expression, "<color>")) {
-                    color = true;
-                }
-
-                while (ValidationTypes.isAny(expression, "<length>") && count < 4) {
-                    count++;
-                }
-
-
-                if (expression.hasNext()) {
-                    if (!color) {
-                        ValidationTypes.isAny(expression, "<color>");
-                    }
-
-                    if (!inset) {
-                        ValidationTypes.isAny(expression, "inset");
-                    }
-
-                }
-
-                result = (count >= 2 && count <= 4);
-
-            }
-
-            return result;
-        },
-
-        "<x-one-radius>": function(expression) {
-            //[ <length> | <percentage> ] [ <length> | <percentage> ]?
-            var result  = false,
-                simple = "<length> | <percentage> | inherit";
-
-            if (ValidationTypes.isAny(expression, simple)){
-                result = true;
-                ValidationTypes.isAny(expression, simple);
-            }
-
-            return result;
-        },
-
-        "<flex>": function(expression) {
-            // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
-            // none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]
-            // Valid syntaxes, according to https://developer.mozilla.org/en-US/docs/Web/CSS/flex#Syntax
-            // * none
-            // * <flex-grow>
-            // * <flex-basis>
-            // * <flex-grow> <flex-basis>
-            // * <flex-grow> <flex-shrink>
-            // * <flex-grow> <flex-shrink> <flex-basis>
-            // * inherit
-            var part,
-                result = false;
-            if (ValidationTypes.isAny(expression, "none | inherit")) {
-                result = true;
-            } else {
-                if (ValidationTypes.isType(expression, "<flex-grow>")) {
-                    if (expression.peek()) {
-                        if (ValidationTypes.isType(expression, "<flex-shrink>")) {
-                            if (expression.peek()) {
-                                result = ValidationTypes.isType(expression, "<flex-basis>");
-                            } else {
-                                result = true;
-                            }
-                        } else if (ValidationTypes.isType(expression, "<flex-basis>")) {
-                            result = expression.peek() === null;
-                        }
-                    } else {
-                        result = true;
-                    }
-                } else if (ValidationTypes.isType(expression, "<flex-basis>")) {
-                    result = true;
-                }
-            }
-
-            if (!result) {
-                // Generate a more verbose error than "Expected <flex>..."
-                part = expression.peek();
-                throw new ValidationError("Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found '" + expression.value.text + "'.", part.line, part.col);
-            }
-
-            return result;
-        },
-
-        "<text-decoration>": function(expression) {
-            // none | [ underline || overline || line-through || blink ] | inherit
-            var part,
-                result,
-                someOf = "[ underline || overline || line-through || blink ]",
-                identifiers = {},
-                found;
-
-            do {
-                part = expression.next();
-                found = 0;
-                if (someOf.indexOf(part) > -1) {
-                    if (!identifiers[part]) {
-                        identifiers[part] = 0;
-                    }
-                    identifiers[part]++;
-                    found = identifiers[part];
-                }
-            } while (found === 1 && expression.hasNext());
-
-            result = found === 1 && !expression.hasNext();
-            if (found === 0 && JSON.stringify(identifiers) === '{}') {
-               expression.previous();
-            }
-            return result;
-        }
+        "<text-decoration>":
+        // none | [ underline || overline || line-through || blink ] | inherit
+        Matcher.oror("underline", "overline", "line-through", "blink")
     }
 };

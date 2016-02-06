@@ -1,8 +1,11 @@
-(function(){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    Parser = parserlib.css.Parser,
+    Specificity = parserlib.css.Specificity;
 
-    var Assert = YUITest.Assert,
-        Parser = parserlib.css.Parser,
-        Specificity = parserlib.css.Specificity;
+(function(){
 
     YUITest.TestRunner.add(new YUITest.TestCase({
 

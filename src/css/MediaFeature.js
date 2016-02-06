@@ -1,4 +1,11 @@
-/*global SyntaxUnit, Parser*/
+"use strict";
+
+module.exports = MediaFeature;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+
 /**
  * Represents a media feature, such as max-width:500.
  * @namespace parserlib.css

@@ -1,5 +1,8 @@
-/*exported Properties*/
-var Properties = {
+"use strict";
+
+/* exported Properties */
+
+var Properties = module.exports = {
     __proto__: null,
 
     //A

@@ -1,7 +1,14 @@
-//This file will likely change a lot! Very experimental!
-/*global Matcher, Properties, ValidationTypes, ValidationError, PropertyValueIterator */
-/*exported Validation */
-var Validation = {
+"use strict";
+
+/* exported Validation */
+
+var Matcher = require("./Matcher");
+var Properties = require("./Properties");
+var ValidationTypes = require("./ValidationTypes");
+var ValidationError = require("./ValidationError");
+var PropertyValueIterator = require("./PropertyValueIterator");
+
+var Validation = module.exports = {
 
     validate: function(property, value){
 

@@ -1,7 +1,10 @@
-(function(){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    StringReader = parserlib.util.StringReader;
 
-    var Assert = YUITest.Assert
-        StringReader = parserlib.util.StringReader;
+(function(){
 
     //-------------------------------------------------------------------------
     // Base Test Suite

@@ -1,4 +1,11 @@
-/*global PropertyValuePart, Tokens, TokenStreamBase*/
+"use strict";
+
+module.exports = TokenStream;
+
+var TokenStreamBase = require("../util/TokenStreamBase");
+
+var PropertyValuePart = require("./PropertyValuePart");
+var Tokens = require("./Tokens");
 
 var h = /^[0-9a-fA-F]$/,
     nonascii = /^[\u00A0-\uFFFF]$/,

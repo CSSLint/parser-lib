@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = StringReader;
+
 /**
  * Convenient way to read through strings.
  * @namespace parserlib.util

@@ -5,23 +5,39 @@
 ## Introduction
 
 The ParserLib CSS parser is a CSS3 SAX-inspired parser written in JavaScript.
-By default, the parser only deals with standard CSS syntax and doesn't do validation (checking of property names and values).
+It handles standard CSS syntax as well as validation (checking of
+property names and values) although it is not guaranteed to thoroughly
+validate all possible CSS properties.
 
 ## Adding to your project
 
-The CSS parser is intended for use primarily in command line JavaScript environments.
-The files you should use are in the `build` directory. Copy the files to an appropriate location for your usage.
+The CSS parser is built for a number of different JavaScript
+environments.  The most recently released version of the parser
+can be found in the `dist` directory when you check out the
+repository; run `npm run build` to regenerate them from the
+latest sources.
 
 ### Node.js
 
-To use the CSS parser in a Node.js script, include it at the beginning:
+You can use the CSS parser in a `Node.js` script via the standard
+`npm` package manager as the `parserlib` package (`npm install parserlib`):
+
+```js
+var parserlib = require("parserlib");
+
+var parser = new parserlib.css.Parser();
+```
+
+Alternatively, you can copy a single file version of the parser from
+`dist/node-parserlib.js` to your own project, and use it as follows:
 ```js
 var parserlib = require("./node-parserlib");
 ```
 
 ### Rhino
 
-To use the CSS parser in a Rhino script, include it at the beginning:
+To use the CSS parser in a Rhino script, copy the file
+`dist/parserlib.js` to your project and then include it at the beginning:
 ```js
 load("parserlib.js");
 ```
@@ -37,7 +53,9 @@ Or include it as its component parts, the ParserLib core and the CSS parser:
 <script src="parserlib-core.js"></script>
 <script src="parserlib-css.js"></script>
 ```
-Note that parsing large JavaScript files may cause the browser to become unresponsive.
+Note that parsing large JavaScript files may cause the browser to
+become unresponsive.  All three of these files are located in the
+`dist` directory.
 
 ## Basic usage
 
@@ -360,11 +378,12 @@ parser.addListener("endrule", function(event) {
 
 The `property` event fires whenever a CSS property (`name:value`) is encountered,
 which may be inside of a rule, a media block, a page block, etc. The `event` object
-has three additional properties: `property`, which is the name of the property as a
+has four additional properties: `property`, which is the name of the property as a
 `parserlib.css.PropertyName` object, `value`, which is an instance of
 `parserlib.css.PropertyValue` (both types inherit from `parserlib.util.SyntaxUnit`),
-and `important`, which is a Boolean value indicating if the property is flagged
-with `!important`. Example:
+`important`, which is a Boolean value indicating if the property is flagged
+with `!important`, and `invalid` which is a Boolean value indicating
+whether the property value failed validation. Example:
 
 ```js
 parser.addListener("property", function(event) {
@@ -417,4 +436,5 @@ a:hover, foo ... bar {
 
 ## Running Tests
 
-With the Apache Ant build tool installed, you can run the tests via `ant test` from the repository's root.
+You can run the tests via `npm test` from the repository's root.  You
+may need to run `npm install` first to install the necessary dependencies.

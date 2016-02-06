@@ -1,4 +1,11 @@
-/*global SyntaxUnit, Parser*/
+"use strict";
+
+module.exports = SelectorSubPart;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+
 /**
  * Represents a selector modifier string, meaning a class name, element name,
  * element ID, pseudo rule, etc.

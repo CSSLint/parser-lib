@@ -1,11 +1,43 @@
-(function(){
+/*!
+Parser-Lib
+Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
 
-    var Assert = YUITest.Assert,
-        MediaQuery = parserlib.css.MediaQuery,
-        Selector = parserlib.css.Selector,
-        Combinator = parserlib.css.Combinator,
-        SelectorPart = parserlib.css.SelectorPart,
-        Parser = parserlib.css.Parser;
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+/* Version v0.2.5, Build time: 10-February-2016 16:42:35 */
+(function () {
+var require = function(x) {
+if (x==='yuitest') { return YUITest; }
+return parserlib;
+};
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"test0":[function(require,module,exports){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    MediaQuery = parserlib.css.MediaQuery,
+    Selector = parserlib.css.Selector,
+    Combinator = parserlib.css.Combinator,
+    SelectorPart = parserlib.css.SelectorPart,
+    Parser = parserlib.css.Parser;
+
+(function(){
 
     //-------------------------------------------------------------------------
     // Base Test Suite
@@ -981,6 +1013,26 @@
 
         name: "Property Values",
 
+        testIdentifierValue: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("foo");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("identifier", result.parts[0].type);
+        },
+
+        testIdentifierValue2: function(){
+            var parser = new Parser();
+			// Identifiers can even start with digits, iff they are escaped.
+            var result = parser.parsePropertyValue("\\30 \\0000307");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("007", result.parts[0].text);
+            Assert.areEqual(true, result.parts[0].wasIdent);
+        },
+
         testDimensionValuePx: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
@@ -1176,6 +1228,18 @@
             Assert.areEqual(0, result.parts[0].blue);
         },
 
+        testColorValue2: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\\r\\45 d");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("color", result.parts[0].type);
+            Assert.areEqual(255, result.parts[0].red);
+            Assert.areEqual(0, result.parts[0].green);
+            Assert.areEqual(0, result.parts[0].blue);
+        },
+
         testCSS2SystemColorValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
@@ -1215,6 +1279,16 @@
             Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
         },
 
+        testURIValue4: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("url(http\\03a\r\n//www.yahoo.com)");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);
+            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+        },
+
         testStringValue: function(){
             var parser = new Parser();
             var result = parser.parsePropertyValue("'Hello world!'");
@@ -1233,6 +1307,26 @@
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("string", result.parts[0].type);
             Assert.areEqual("Hello world!", result.parts[0].value);
+        },
+
+        testStringValue3: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\"Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\\\"\'\\\n\\\r\n\\\r\\\f\\41\"");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
+        },
+
+        testStringValue4: function(){
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("\'Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\"\\\'\\\n\\\r\n\\\r\\\f\\41\'");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("string", result.parts[0].type);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
         },
 
         testValueWithOperators: function(){
@@ -1452,32 +1546,56 @@
                 Assert.areEqual(1, event.col, "Column should be 1");
                 called = true;
             });
-            var result = parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
+            parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
             Assert.isTrue(called);  //just don't want an error
         },
 
         testMozKeyFrames: function(){
             var parser = new Parser({strict:true});
-            var result = parser.parse("@-moz-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@-moz-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            Assert.isTrue(valid);
         },
 
         testKeyFrames: function(){
             var parser = new Parser({strict:true});
-            var result = parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            Assert.isTrue(valid);
         },
 
         testKeyFramesFromTo: function(){
             var parser = new Parser({strict:true});
-            var result = parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
+            Assert.isTrue(valid);
         },
 
         testKeyFramesWithWhitespace: function(){
             var parser = new Parser({strict:true});
-            var result = parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
-            Assert.isTrue(true);
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
+            Assert.isTrue(valid);
         }
 
     }));
@@ -1488,68 +1606,158 @@
 
         testMediaWithPage: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media { @page {} }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media { @page {} }");
+            Assert.isTrue(valid);
         },
 
         testMediaWithFontFace: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media { @font-face {} }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media { @font-face {} }");
+            Assert.isTrue(valid);
         },
 
-	testMediaWithViewport: function(){
+        testMediaWithViewport: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media { @viewport {} }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media { @viewport {} }");
+            Assert.isTrue(valid);
         },
 
         testMediaWithTypeOnly: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media print { }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media print { }");
+            Assert.isTrue(valid);
         },
 
         testMediaWithTypesOnly: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media print, screen { }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media print, screen { }");
+            Assert.isTrue(valid);
         },
 
         testMediaWithSimpleExpression: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media (max-width:400px) { }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media (max-width:400px) { }");
+            Assert.isTrue(valid);
         },
 
         testMediaWithComplexExpression: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@media all and (max-width:400px) { }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media all and (max-width:400px) { }");
+            Assert.isTrue(valid);
+        },
+
+        testMediaWithSimpleExpressionWithSpaces: function(){
+            var parser = new Parser({ strict: true});
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media ( max-width:400px ) { }");
+            Assert.isTrue(valid);
+        },
+
+        testMediaWithComplexExpressionWithSpaces: function(){
+            var parser = new Parser({ strict: true});
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@media all and ( max-width:400px ) { }");
+            Assert.isTrue(valid);
         },
 
         testViewport: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@viewport { width: 397px; }");
-            Assert.isTrue(true);  //just don't want an error
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@viewport { width: 397px; }");
+            Assert.isTrue(valid);
         },
 
         testMSViewport: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@-ms-viewport { width: 397px; }");
-            Assert.isTrue(true);
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@-ms-viewport { width: 397px; }");
+            Assert.isTrue(valid);
         },
 
         testMSViewportInsideDeviceWidth: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@-ms-viewport { width: device-width; }");
-            Assert.isTrue(true);
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@-ms-viewport { width: device-width; }");
+            Assert.isTrue(valid);
         },
 
         testMSViewportInsideDeviceHeight: function(){
             var parser = new Parser({ strict: true});
-            var result = parser.parse("@-ms-viewport { width: device-height; }");
-            Assert.isTrue(true);
+            var valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@-ms-viewport { width: device-height; }");
+            Assert.isTrue(valid);
         },
 
         testViewportEventFires: function(){
@@ -1569,7 +1777,161 @@
                 calledEnd = true;
             });
 
-            var result = parser.parse("@viewport { width: 397px; }");
+            parser.parse("@viewport { width: 397px; }");
+            Assert.isTrue(calledStart);  //just don't want an error
+            Assert.isTrue(calledEnd);  //just don't want an error
+        },
+
+        testDocumentUrl: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentUrlPrefix: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentDomain: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document domain(w3.org) { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentRegexp: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document regexp('https:.*') { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentMultipleFunctions: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testMozDocument: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@-moz-document url-prefix() { p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentWithPage: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix() { @page {} p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentWithMedia: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix() { @media {} p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentWithFontFace: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix() { @font-face {} p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentWithViewport: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix() { @viewport {} p { color: red; } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentWithKeyframes: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@document url-prefix() { @keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } } }");
+            Assert.isTrue(valid);
+        },
+
+        testDocumentEventFires: function(){
+            var parser = new Parser({ strict:true}),
+                calledStart = false,
+                calledEnd = false;
+
+            parser.addListener("startdocument", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(1, event.col, "Column should be 1");
+                calledStart = true;
+            });
+
+            parser.addListener("enddocument", function(event) {
+                Assert.areEqual(1, event.line, "Line should be 1");
+                Assert.areEqual(25, event.col, "Column should be 25");
+                calledEnd = true;
+            });
+
+            parser.parse("@document url-prefix() {}");
             Assert.isTrue(calledStart);  //just don't want an error
             Assert.isTrue(calledEnd);  //just don't want an error
         },
@@ -1580,10 +1942,165 @@
 
             Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
             Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
-            Assert.areEqual("#\\31 a2b3c", result.parts[0].toString(), "Selector should be correct.");
+            Assert.areEqual("#1a2b3c", result.parts[0].toString(), "Selector should be correct.");
             Assert.areEqual(1, result.parts.length, "Should be one part.");
-        }
+        },
 
+        testSupportsWithSingleCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsWithSingleNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports not ( display: table-cell) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsWithNestedNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports not (not (not (display: table-cell) )) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndFollowedByNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) and (not (display: flex)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsNotFollowedByAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (not (display: table-cell)) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndAndAndCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) and (display: flex) and (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) or (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsOrFollowedByNotCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) or (not (display: flex)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsNotFollowedByOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (not (display: table-cell)) or (display: flex) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndWithNestedOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) and ((display: flex) or (display: table)) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        },
+
+        testSupportsAndWithNestedComplexOrCondition: function(){
+            var parser = new Parser({ strict: true}),
+                valid = true;
+
+            parser.addListener("error", function(event) {
+                valid = false;
+            });
+
+            parser.parse("@supports (display: table-cell) and ((display: flex) or ((display: table) and (not (position: absolute)))) {}");
+            parser._verifyEnd();
+            Assert.isTrue(valid);
+        }
     }));
 
     suite.add(new YUITest.TestCase({
@@ -1615,7 +2132,7 @@
                 Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    color: #fff;\n}");
+            parser.parse(".foo {\n    color: #fff;\n}");
         },
 
        "Test rule with star hack property": function(){
@@ -1632,7 +2149,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 13.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    *color: #fff;\n}");
+            parser.parse(".foo {\n    *color: #fff;\n}");
         },
 
        "Test rule with underscore hack property": function(){
@@ -1649,7 +2166,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 13.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    _color: #fff;\n}");
+            parser.parse(".foo {\n    _color: #fff;\n}");
         },
 
         "Test rule with space after property name": function(){
@@ -1664,7 +2181,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    color : #fff;\n}");
+            parser.parse(".foo {\n    color : #fff;\n}");
         },
 
         "Test rule with one property and !important": function(){
@@ -1680,7 +2197,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.isTrue(event.important, "Important should be true.");
             });
-            var result = parser.parse(".foo {\n    color: #fff !important;\n}");
+            parser.parse(".foo {\n    color: #fff !important;\n}");
         },
 
         "Test rule with leading semicolon": function(){
@@ -1695,7 +2212,7 @@
                 Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n;   color: #fff;\n}");
+            parser.parse(".foo {\n;   color: #fff;\n}");
         },
 
         "Test rule vendor prefix value": function(){
@@ -1711,7 +2228,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.areEqual("-moz-pre-wrap", event.value.parts[0].text, "The vendor prefixed value should be intact.");
             });
-            var result = parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
+            parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
         },
 
         "Test display -moz-inline-stack": function(){
@@ -1727,7 +2244,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
             });
-            var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
+            parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
         },
 
         "Test @import uri without quotes": function(){
@@ -1736,7 +2253,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import url(http://www.yahoo.com);");
+            parser.parse("@import url(http://www.yahoo.com);");
         },
 
 
@@ -1746,7 +2263,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import url('http://www.yahoo.com');");
+            parser.parse("@import url('http://www.yahoo.com');");
         },
 
         "Test @import address": function(){
@@ -1755,7 +2272,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import 'http://www.yahoo.com';");
+            parser.parse("@import 'http://www.yahoo.com';");
         }
     }));
 
@@ -1779,11 +2296,16 @@
     YUITest.TestRunner.add(suite);
 
 })();
-(function(){
 
-    var Assert = YUITest.Assert,
-        Parser = parserlib.css.Parser,
-        Specificity = parserlib.css.Specificity;
+},{"../../":undefined,"yuitest":undefined}],"test1":[function(require,module,exports){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    Parser = parserlib.css.Parser,
+    Specificity = parserlib.css.Specificity;
+
+(function(){
 
     YUITest.TestRunner.add(new YUITest.TestCase({
 
@@ -1921,11 +2443,15 @@
 
 
 })();
-(function(){
+},{"../../":undefined,"yuitest":undefined}],"test2":[function(require,module,exports){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    TokenStream = parserlib.css.TokenStream,
+    CSSTokens = parserlib.css.Tokens;
 
-    var Assert = YUITest.Assert,
-        TokenStream = parserlib.css.TokenStream,
-        CSSTokens = parserlib.css.Tokens;
+(function(){
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
@@ -1978,13 +2504,23 @@
 
     //note: \r\n is normalized to just \n by StringReader
     suite.add(new CSSTokenTestCase({
+        name : "Tests for empty input",
+
+        patterns: {
+            ""        : [CSSTokens.EOF]
+        }
+    }));
+
+    suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
 
         patterns: {
             " "     : [CSSTokens.S],
             "\n"    : [CSSTokens.S],
             "\n \t" : [CSSTokens.S],
-            "\f \n" : [CSSTokens.S]
+            "\f \n" : [CSSTokens.S],
+            // Not legal whitespace (PR#16)
+            "\v\u00A0\u1680": [CSSTokens.CHAR, CSSTokens.IDENT]
         }
     }));
 
@@ -2059,7 +2595,9 @@
             "#h\\0fllo"         : [CSSTokens.HASH],
             "#ffeeff"           : [CSSTokens.HASH],
             "#\\31 a2b3c"        : [CSSTokens.HASH],
-            "#r0\\.5"            : [CSSTokens.HASH]
+            "#r0\\.5"            : [CSSTokens.HASH],
+            // Invalid escape sequence
+            "#a\\\r"             : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
         }
     }));
 
@@ -2071,11 +2609,13 @@
 
         var atRules = {
             "@charset"      : CSSTokens.CHARSET_SYM,
+            "@ch\\041 rset" : CSSTokens.CHARSET_SYM,
             "@import"       : CSSTokens.IMPORT_SYM,
             "@page"         : CSSTokens.PAGE_SYM,
             "@media"        : CSSTokens.MEDIA_SYM,
             "@font-face"    : CSSTokens.FONT_FACE_SYM,
             "@namespace"    : CSSTokens.NAMESPACE_SYM,
+            "@supports"     : CSSTokens.SUPPORTS_SYM,
             "@top-left-corner"  : CSSTokens.TOPLEFTCORNER_SYM,
             "@top-left"     : CSSTokens.TOPLEFT_SYM,
             "@top-right-corner" : CSSTokens.TOPRIGHTCORNER_SYM,
@@ -2091,6 +2631,12 @@
             "@right-middle" : CSSTokens.RIGHTMIDDLE_SYM,
             "@right-bottom" : CSSTokens.RIGHTBOTTOM_SYM,
 
+            "@-ms-viewport" : CSSTokens.VIEWPORT_SYM,
+            "@viewport"     : CSSTokens.VIEWPORT_SYM,
+
+            "@-moz-document" : CSSTokens.DOCUMENT_SYM,
+            "@document"      : CSSTokens.DOCUMENT_SYM,
+
             //animation
             "@-webkit-keyframes":   CSSTokens.KEYFRAMES_SYM,
             "@-moz-keyframes"   : CSSTokens.KEYFRAMES_SYM,
@@ -2103,7 +2649,7 @@
 
         var patterns;
 
-        for (var prop in atRules){
+        for (var prop in atRules){ // jshint ignore:line
             patterns = {};
 
             patterns[prop] = [atRules[prop]];
@@ -2486,23 +3032,30 @@
     YUITest.TestRunner.add(newSuite);
 
 })();
-(function(){
 
-    var Assert = YUITest.Assert,
-        Parser = parserlib.css.Parser;
+},{"../../":undefined,"yuitest":undefined}],"test3":[function(require,module,exports){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    Parser = parserlib.css.Parser;
+
+(function(){
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
     //-------------------------------------------------------------------------
 
     function ValidationTestCase(info){
-        var i, len, prop;
+        var i, len, prop, msg;
 
         YUITest.TestCase.call(this, info);
-        this.valid = info.valid;
+        // initial | inherit | unset are always valid property values.
+        this.valid = [ 'initial', 'inherit', 'unset' ].concat(info.valid);
         this.invalid = info.invalid;
         this.property = info.property;
         this.name = "Tests for " + this.property;
+        this._should.error = {};
 
         for (i=0, len=this.valid.length; i < len; i++){
             this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value){
@@ -2521,6 +3074,18 @@
                 }(prop, this.invalid[prop]);
             }
         }
+
+        for (prop in this.error){
+            if (this.error.hasOwnProperty(prop)){
+                msg = "'" + prop + "' is an invalid value for '" + this.property + "'";
+                this[msg] = function(value){
+                    return function(){
+                        this._testSyntaxError(value);
+                    };
+                }(prop);
+                this._should.error[msg] = this.error[prop];
+            }
+        }
     }
 
     ValidationTestCase.prototype = new YUITest.TestCase();
@@ -2530,7 +3095,7 @@
         parser.addListener("property", function(event){
             Assert.isNull(event.invalid);
         });
-        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+        parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message){
@@ -2539,7 +3104,12 @@
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
         });
-        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+        parser.parse(".foo { " + this.property + ":" + value + "}");
+    };
+
+    ValidationTestCase.prototype._testSyntaxError = function(value){
+        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
 
@@ -2561,7 +3131,7 @@
         ],
 
         invalid: {
-            "1px" : "Expected (none | forwards | backwards | both) but found '1px'."
+            "1px" : "Expected ([ none | forwards | backwards | both ]#) but found '1px'."
         }
     }));
 
@@ -2571,14 +3141,26 @@
         valid: [
             "none",
             "foo",
+            "red",
+            "-red",
+            "-specific",
+            "sliding-vertically",
+            "test1",
+            "test1, animation4",
             "foo, bar",
             "none, none",
             "none, foo",
-            "has_underscore"
+            "has_underscore",
+            "none, -moz-specific, sliding"
         ],
 
         invalid: {
-            "1px" : "Expected (none | <ident>) but found '1px'."
+            "1px" : "Expected ([ none | <single-animation-name> ]#) but found '1px'.",
+            "--invalid" : "Expected ([ none | <single-animation-name> ]#) but found '--invalid'."
+        },
+
+        error: {
+            "-0num": "Unexpected token '0num' at line 1, col 24."
         }
     }));
 
@@ -2591,8 +3173,8 @@
         ],
 
         invalid: {
-            "0" : "Expected (<time>) but found '0'.",
-            "1px" : "Expected (<time>) but found '1px'."
+            "0" : "Expected (<time>#) but found '0'.",
+            "1px" : "Expected (<time>#) but found '1px'."
         }
     }));
 
@@ -2610,7 +3192,7 @@
 
         invalid: {
             "behind behind" : "Expected end of value but found 'behind'.",
-            "foo" : "Expected (<'azimuth'>) but found 'foo'."
+            "foo" : "Expected (<angle> | [ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind | leftwards | rightwards) but found 'foo'."
         }
     }));
 
@@ -2624,7 +3206,23 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<attachment>) but found 'foo'."
+            "foo" : "Expected (<attachment>#) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "background-color",
+
+        valid: [
+            "red",
+            "#f00",
+            "transparent",
+            "currentColor"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -2645,7 +3243,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<bg-image>) but found 'foo'.",
+            "foo" : "Expected (<bg-image>#) but found 'foo'.",
             "url(foo.png)," : "Expected end of value but found ','."
         }
     }));
@@ -2668,6 +3266,8 @@
             "right top 5%",
             "top 3em center",
             "center top 3em",
+            "right 3% center",
+            "center right 3%",
             "top 3em right 10%",
             "top, bottom",
             "left 10px, left 10px",
@@ -2675,10 +3275,10 @@
         ],
 
         invalid: {
-            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "foo"                 : "Expected (<position>#) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
-            "left center right"   : "Expected end of value but found 'center'.",
-            "center 3em right 10%": "Expected end of value but found '3em'.",
+            "left center right"   : "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'.",
         }
     }));
 
@@ -2701,7 +3301,7 @@
         ],
 
         invalid: {
-            "foo"               : "Expected (<bg-size>) but found 'foo'.",
+            "foo"               : "Expected (<bg-size>#) but found 'foo'.",
             "1px 1px 1px"       : "Expected end of value but found '1px'."
 
         }
@@ -2719,12 +3319,15 @@
             "no-repeat",
             "repeat repeat",
             "repeat space",
-            "no-repeat round"
+            "no-repeat round",
+            "repeat-x, repeat-y, space", // PR #103
+            "repeat space, no-repeat round"
         ],
 
         invalid: {
-            "foo"               : "Expected (<repeat-style>) but found 'foo'.",
-            "no-repeat round 1px" : "Expected (<repeat-style>) but found 'no-repeat round 1px'."
+            "foo"               : "Expected (<repeat-style>#) but found 'foo'.",
+            "repeat-x repeat-y" : "Expected end of value but found 'repeat-y'.",
+            "no-repeat round 1px" : "Expected end of value but found '1px'."
 
         }
     }));
@@ -2756,13 +3359,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>{1,4}) but found 'foo'.",
+            "invert" : "Expected (<color>{1,4}) but found 'invert'.",
         }
     }));
 
@@ -2772,13 +3374,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -2788,13 +3389,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -2804,13 +3404,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -2820,13 +3419,12 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
             "transparent"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -2840,7 +3438,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -2851,12 +3449,11 @@
         valid: [
             "5px",
             "25%",
-            "5px 25%",
-            "inherit"
+            "5px 25%"
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -2868,13 +3465,14 @@
             "5",
             "50% 60%",
             "10 15 20 23",
-            "fill",
             "10 20 fill",
-            "fill 25% 10"
+            "fill 25% 10",
+            "10% fill 7 12"
         ],
 
         invalid: {
-            "foo" : "Expected ([<number> | <percentage>]{1,4} && fill?) but found 'foo'.",
+            "foo" : "Expected (<nonnegative-number-or-percentage> && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && fill?) but found 'foo'.",
+            "fill" : "Expected (<nonnegative-number-or-percentage> && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && <nonnegative-number-or-percentage>? && fill?) but found 'fill'.",
             "50% 75% 85% 95% 105%" : "Expected end of value but found '105%'."
         }
     }));
@@ -2888,13 +3486,12 @@
             "5px 25%",
             "5px / 25%",
             "5px 25% / 7px 27%",
-            "1px 2px 3px 4px / 5px 6px 7px 8px",
-            "inherit"
+            "1px 2px 3px 4px / 5px 6px 7px 8px"
         ],
 
         invalid: {
-            "foo"   : "Expected (<'border-radius'>) but found 'foo'.",
-            "5px x" : "Expected (<'border-radius'>) but found 'x'.",
+            "foo"   : "Expected (<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?) but found 'foo'.",
+            "5px x" : "Expected end of value but found 'x'.",
         }
     }));
 
@@ -2905,13 +3502,12 @@
             "0",
             "3px",
             "2em",
-            "0.4em 12px",
-            "inherit"
+            "0.4em 12px"
         ],
 
         invalid: {
             "1px 0.4em 1px" : "Expected end of value but found '1px'.",
-            "foo" : "Expected (<length> | inherit) but found 'foo'."
+            "foo" : "Expected (<length>{1,2}) but found 'foo'."
         }
     }));
 
@@ -2925,7 +3521,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -2940,7 +3536,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -2957,7 +3553,7 @@
 
         invalid: {
             "1px 1px 1px 1px 5px" : "Expected end of value but found '5px'.",
-            "foo" : "Expected (<border-width>) but found 'foo'."
+            "foo" : "Expected (<border-width>{1,4}) but found 'foo'."
         }
     }));
 
@@ -3032,12 +3628,62 @@
         ],
 
         invalid: {
-            "foo"           : "Expected (<shadow>) but found 'foo'.",
-            "1px"           : "Expected (<shadow>) but found '1px'.",
-            "1em red"       : "Expected (<shadow>) but found '1em red'.",
+            "foo"           : "Expected (none | <shadow>#) but found 'foo'.",
+            "1px"           : "Expected (none | <shadow>#) but found '1px'.",
+            "1em red"       : "Expected (none | <shadow>#) but found '1em red'.",
             "1px 1px redd"  : "Expected end of value but found 'redd'.",
             "none 1px"      : "Expected end of value but found '1px'.",
             "inset 2px 2px 2px 2px black inset" : "Expected end of value but found 'inset'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "clip",
+
+        valid: [
+            "rect(10%, 85%, 90%, 15%)",
+            'auto'
+        ],
+
+        invalid: {
+            "foo" : "Expected (<shape> | auto) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "clip-path",
+
+        valid: [
+            "inset(10% 15% 10% 15%)",
+            "circle(30% at 85% 15%)",
+            "url('#myPath')",
+            "ellipse(40% 40%)",
+            "margin-box",
+            "ellipse(40% 40%) content-box",
+            "stroke-box ellipse(40% 40%)",
+            "none"
+        ],
+
+        invalid: {
+            "stroke-box ellipse(40% 40%) 40%" : "Expected end of value but found '40%'.",
+            "x-box" : "Expected (<clip-source> | <clip-path> | none) but found 'x-box'.",
+            "foo" : "Expected (<clip-source> | <clip-path> | none) but found 'foo'.",
+            "invert(40% 40%)" : "Expected (<clip-source> | <clip-path> | none) but found 'invert(40% 40%)'.",
+            "40%" : "Expected (<clip-source> | <clip-path> | none) but found '40%'.",
+            "0.4" : "Expected (<clip-source> | <clip-path> | none) but found '0.4'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "clip-rule",
+
+        valid: [
+            "nonzero",
+            "evenodd"
+        ],
+
+        invalid: {
+            "foo" : "Expected (nonzero | evenodd) but found 'foo'."
         }
     }));
 
@@ -3047,13 +3693,13 @@
         valid: [
             "red",
             "#f00",
-            "inherit",
-
+            "transparent",
+            "currentColor"
         ],
 
         invalid: {
-            "foo" : "Expected (<color> | inherit) but found 'foo'.",
-            "invert" : "Expected (<color> | inherit) but found 'invert'.",
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'.",
         }
     }));
 
@@ -3077,8 +3723,14 @@
             "table-caption",
             "grid",
             "inline-grid",
+            "run-in",
+            "ruby",
+            "ruby-base",
+            "ruby-text",
+            "ruby-base-container",
+            "ruby-text-container",
+            "contents",
             "none",
-            "inherit",
             "-moz-box",
             "-moz-inline-block",
             "-moz-inline-box",
@@ -3105,11 +3757,151 @@
         ],
 
         invalid: {
-            "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | none | inherit | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex) but found 'foo'."
+            "foo" : "Expected (inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex) but found 'foo'."
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "font",
 
+        valid: [
+            "italic small-caps 300 1.3em/10% Genova, 'Comic Sans', sans-serif",
+            "1.3em Shorties, sans-serif",
+            "12px monospace",
+            "caption",
+            "status-bar",
+            "12pt/14pt sans-serif",
+            "80% sans-serif",
+            "condensed 80% sans-serif",
+            "x-large/110% \"new century schoolbook\", serif",
+            "bold italic large Palatino, serif",
+            "normal small-caps 120%/120% fantasy",
+            "normal normal normal normal 12pt cursive",
+            "normal bold small-caps italic 18px 'font'",
+            "condensed oblique 12pt \"Helvetica Neue\", serif"
+        ],
+
+        invalid: {
+            "italic oblique bold 1.3em/10% Genova, 'Comic Sans', sans-serif" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found 'italic oblique bold 1.3em / 10% Genova , 'Comic Sans' , sans-serif'.",
+            "0.9em Nirwana, 'Comic Sans', sans-serif bold" : "Expected end of value but found 'bold'.",
+            "'Helvetica Neue', sans-serif 1.2em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found ''Helvetica Neue' , sans-serif 1.2em'.",
+            "1.3em" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found '1.3em'.",
+            "cursive;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found 'cursive'.",
+            "'Dormant', sans-serif;" : "Expected (<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar) but found ''Dormant' , sans-serif'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-family",
+
+        valid: [
+            "Futura, sans-serif",
+            "-Futura, sans-serif",
+            '"New Century Schoolbook", serif',
+            "'21st Century', fantasy",
+            "serif",
+            "sans-serif",
+            "cursive",
+            "fantasy",
+            "monospace",
+            // solve problem by quoting
+            "'Red/Black', sans-serif",
+            '"Lucida\\", Grande", sans-serif',
+            "'Ahem!}', sans-serif",
+            '"test@foo", sans-serif',
+            "'#POUND', sans-serif",
+            "'Hawaii 5-0', sans-serif",
+            // solve problem by escaping
+            "Red\\/Black, sans-serif",
+            '\\"Lucida\\", Grande, sans-serif',
+            "Ahem\\!, sans-serif",
+            "test\\@foo, sans-serif",
+            "\\#POUND, sans-serif",
+            "Hawaii\\ 5\\-0, sans-serif",
+            "yellowgreen"
+        ],
+
+        invalid: {
+            "--Futura, sans-serif"   : "Expected ([ <generic-family> | <family-name> ]#) but found '--Futura , sans-serif'.",
+            "Red/Black, sans-serif"  : "Expected end of value but found '/'.",
+            "'Lucida' Grande, sans-serif" : "Expected end of value but found 'Grande'.",
+            "Hawaii 5-0, sans-serif" : "Expected end of value but found '5'."
+        },
+
+        error: {
+            "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
+            "-7Futura, sans-serif" : "Unexpected token '7Futura' at line 1, col 21.",
+            "Ahem!, sans-serif"    : "Expected RBRACE at line 1, col 24.",
+            "test@foo, sans-serif" : "Expected RBRACE at line 1, col 24.",
+            "#POUND, sans-serif"   : "Expected a hex color but found '#POUND' at line 1, col 20."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-style",
+
+        valid: [
+            "normal", "italic", "oblique"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant",
+
+        valid: [
+            "normal", "none", "small-caps", "common-ligatures small-caps"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-alternates",
+
+        valid: [
+            "normal", "historical-forms",
+            "stylistic(salt) styleset(ss01, ss02)",
+            "character-variant(cv03, cv04, cv05) swash(swsh)",
+            "ornaments(ornm2) annotation(nalt2)"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-caps",
+
+        valid: [
+            "normal", "small-caps", "all-small-caps", "petite-caps",
+            "all-petite-caps", "unicase", "titling-caps"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-east-asian",
+
+        valid: [
+            "normal", "ruby", "jis78", "jis83", "jis90", "jis04",
+            "simplified", "traditional", "full-width", "proportional-width",
+            "ruby full-width jis83"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-ligatures",
+
+        valid: [
+            "normal", "none",
+            "common-ligatures discretionary-ligatures historical-ligatures contextual",
+            "no-common-ligatures no-discretionary-ligatures no-historical-ligatures no-contextual"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "font-variant-numeric",
+
+        valid: [
+            "normal", "ordinal", "slashed-zero", "lining-nums",
+            "lining-nums proportional-nums diagonal-fractions ordinal",
+            "oldstyle-nums tabular-nums stacked-fractions slashed-zero"
+        ]
+    }));
 
     suite.add(new ValidationTestCase({
         property: "min-height",
@@ -3127,12 +3919,69 @@
             "-moz-fit-content",
             "-moz-available",
             "-webkit-fill-available",
-            "contain-floats",
-            "inherit"
+            "contain-floats"
         ],
 
         invalid: {
-            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats | inherit) but found 'foo'."
+            "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats) but found 'foo'."
+        }
+    }));
+
+    // test <paint>
+    suite.add(new ValidationTestCase({
+        property: "fill",
+
+        valid: [
+            "url('myGradient')",
+            "url('myGradient') darkred",
+            "url('myGradient') darkred icc-color(myCmykDarkRed)",
+            "currentColor",
+            "darkred icc-color(myCmykDarkRed)",
+            "none"
+        ],
+
+        invalid: {
+            "url('myGradient') inherit" : "Expected end of value but found 'inherit'.",
+            "url('myGradient') icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
+            "currentColor icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
+            "icc-color(myCmykDarkRed) darkred" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed) darkred'.",
+            "icc-color(myCmykDarkRed)" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed)'.",
+            "icc-color(myCmykDarkRed) inherit" : "Expected (<paint-basic> | <uri> <paint-basic>?) but found 'icc-color(myCmykDarkRed) inherit'.",
+            "inherit icc-color(myCmykDarkRed)" : "Expected end of value but found 'icc-color(myCmykDarkRed)'.",
+            "none inherit" : "Expected end of value but found 'inherit'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-rule",
+
+        valid: [
+            "nonzero",
+            "evenodd"
+        ],
+
+        invalid: {
+            "foo" : "Expected (nonzero | evenodd) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "filter",
+
+        valid: [
+            "custom(url(vertexshader.vert) mix(url(fragment.frag) normal source-atop), 4 5, time 0)",
+            "blur(30px 30px)",
+            "url('#svgFilter')",
+            "hue-rotate(10deg)",
+            "brightness(0.3) contrast(30)",
+            "brightness(0.3) contrast(30) url(commonfilters.svg#filter)",
+            "none"
+        ],
+
+        invalid: {
+            "circle(50% at 0 0)" : "Expected (<filter-function-list> | none) but found 'circle(50% at 0 0)'.",
+            "foo" :                "Expected (<filter-function-list> | none) but found 'foo'.",
+            "blur(30px 30px) none" : "Expected end of value but found 'none'."
         }
     }));
 
@@ -3142,9 +3991,7 @@
 
             valid: [
                 "1",
-                "inherit",
                 // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0 auto",
                 "0 1 auto",
                 "auto",
@@ -3153,7 +4000,7 @@
             ],
 
             invalid: {
-                "foo": "Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found 'foo'."
+                "foo": "Expected (none | <flex-grow> <flex-shrink>? || <flex-basis>) but found 'foo'."
             }
         }));
     });
@@ -3163,7 +4010,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "auto",
                 "12px",
                 "3em",
@@ -3177,27 +4023,18 @@
     });
 
     ["flex-direction", "-ms-flex-direction", "-webkit-flex-direction"].forEach(function(prop_name) {
-        var prop_definition = "row | row-reverse | column | column-reverse";
-        if (prop_name == "-ms-flex-direction") {
-            prop_definition += " | inherit";
-        }
-        var valid_values = [
-            // "initial", // FIXME this needs to be integrated as a univerally acceptable value
-            "row",
-            "row-reverse",
-            "column",
-            "column-reverse"
-        ];
-        if (prop_name == "-ms-flex-direction") {
-            valid_values.push("inherit");
-        }
         suite.add(new ValidationTestCase({
             property: prop_name,
 
-            valid: valid_values,
+            valid: [
+                "row",
+                "row-reverse",
+                "column",
+                "column-reverse"
+            ],
 
             invalid: {
-                "foo": "Expected (" + prop_definition + ") but found 'foo'."
+                "foo": "Expected (row | row-reverse | column | column-reverse) but found 'foo'."
             }
         }));
     });
@@ -3207,7 +4044,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
                 "row",
                 "column wrap",
@@ -3226,7 +4062,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0",
                 "1",
                 "1.5"
@@ -3243,7 +4078,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "0",
                 "1",
                 "1.5"
@@ -3260,7 +4094,6 @@
             property: prop_name,
 
             valid: [
-                // "initial", // FIXME this needs to be integrated as a univerally acceptable value
                 "nowrap",
                 "wrap",
                 "wrap-reverse"
@@ -3273,18 +4106,147 @@
     });
 
     suite.add(new ValidationTestCase({
+        property: "glyph-orientation-horizontal",
+
+        valid: [
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg"
+        ],
+
+        invalid: {
+            "auto" : "Expected (<glyph-angle>) but found 'auto'.",
+            "70rad" : "Expected (<glyph-angle>) but found '70rad'.",
+            "4grad" : "Expected (<glyph-angle>) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "glyph-orientation-vertical",
+
+        valid: [
+            "auto",
+            "-43deg",
+            ".7deg",
+            "90deg",
+            "521deg"
+        ],
+
+        invalid: {
+            "70rad" : "Expected (auto | <glyph-angle>) but found '70rad'.",
+            "4grad" : "Expected (auto | <glyph-angle>) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-anchor",
+
+        valid: [
+            "start",
+            "middle",
+            "end"
+        ],
+
+        invalid: {
+            "foo" : "Expected (start | middle | end) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-align",
+
+        valid: [
+            "left",
+            "right",
+            "center",
+            "justify",
+            "match-parent",
+            "start",
+            "end"
+        ],
+
+        invalid: {
+            "foo" : "Expected (left | right | center | justify | match-parent | start | end) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration",
+
+        valid: [
+            "none",
+            "underline",
+            "underline overline line-through blink"
+        ],
+
+        invalid: {
+            "none underline" : "Expected end of value but found 'underline'.",
+            "line-through none" : "Expected end of value but found 'none'.",
+            "inherit blink" : "Expected end of value but found 'blink'.",
+            "overline inherit" : "Expected end of value but found 'inherit'.",
+            "foo" : "Expected (none | underline || overline || line-through || blink) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [
             "auto",
             "optimizeSpeed",
             "optimizeLegibility",
-            "geometricPrecision",
-            "inherit"
+            "geometricPrecision"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision | inherit) but found 'foo'."
+            "foo" : "Expected (auto | optimizeSpeed | optimizeLegibility | geometricPrecision) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "object-fit",
+
+        valid: [
+            "fill",
+            "contain",
+            "cover",
+            "none",
+            "scale-down"
+        ],
+
+        invalid: {
+            "foo" : "Expected (fill | contain | cover | none | scale-down) but found 'foo'.",
+            "fill cover" : "Expected end of value but found 'cover'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "object-position",
+
+        valid: [
+            "top",
+            "bottom",
+            "center",
+            "100%",
+            "left center",
+            "bottom left",
+            "left 10px",
+            "center bottom",
+            "10% top",
+            "left 10px bottom",
+            "right top 5%",
+            "top 3em center",
+            "center top 3em",
+            "top 3em right 10%",
+        ],
+
+        invalid: {
+            "foo"                 : "Expected ([ center | [ left | right ] [ <percentage> | <length> ]? ] && [ center | [ top | bottom ] [ <percentage> | <length> ]? ] | [ left | center | right | <percentage> | <length> ] [ top | center | bottom | <percentage> | <length> ] | left | center | right | top | bottom | <percentage> | <length>) but found 'foo'.",
+            "10% left"            : "Expected end of value but found 'left'.",
+            "left center right"   : "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'.",
+            "top, bottom"         : "Expected end of value but found ','."
         }
     }));
 
@@ -3292,11 +4254,15 @@
         property: "opacity",
 
         valid: [
+            "0",
+            "0.5",
             "1"
         ],
 
         invalid: {
-            "foo" : "Expected (<number> | inherit) but found 'foo'."
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
         }
     }));
 
@@ -3313,12 +4279,79 @@
             "painted",
             "fill",
             "stroke",
-            "all",
-            "inherit"
+            "all"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all | inherit) but found 'foo'."
+            "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-dasharray",
+
+        valid: [
+            "0",
+            "4",
+            "20px",
+            "20px 40px 30px",
+            "20px, 40px, 30px",
+            "calc(1px + 2px) calc(3px + 1em)",
+            "none"
+        ],
+
+        invalid: {
+            "-20px" : "Expected (none | <dasharray>) but found '-20px'.",
+            "20px," : "Expected end of value but found ','.",
+            "20px, -20px": "Expected end of value but found ','.",
+            "auto"  : "Expected (none | <dasharray>) but found 'auto'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linecap",
+
+        valid: [
+            "butt",
+            "round",
+            "square"
+        ],
+
+        invalid: {
+            "auto" : "Expected (butt | round | square) but found 'auto'.",
+            "none" : "Expected (butt | round | square) but found 'none'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-linejoin",
+
+        valid: [
+            "miter",
+            "round",
+            "bevel"
+        ],
+
+        invalid: {
+            "auto" : "Expected (miter | round | bevel) but found 'auto'.",
+            "none" : "Expected (miter | round | bevel) but found 'none'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-miterlimit",
+
+        valid: [
+            "1",
+            "1.4",
+            "20",
+            "10"
+        ],
+
+        invalid: {
+            "-10" : "Expected (<miterlimit>) but found '-10'.",
+            "0.5" : "Expected (<miterlimit>) but found '0.5'.",
+            "foo" : "Expected (<miterlimit>) but found 'foo'."
         }
     }));
 
@@ -3329,11 +4362,16 @@
             "auto",
             "none",
             "pan-x",
-            "pan-y"
+            "pan-y",
+            "pan-left",
+            "pan-right",
+            "pan-up",
+            "pan-down",
+            "manipulation"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+            "foo" : "Expected (auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation) but found 'foo'."
         }
     }));
 
@@ -3344,11 +4382,37 @@
             "auto",
             "none",
             "pan-x",
-            "pan-y"
+            "pan-y",
+            "pan-left",
+            "pan-right",
+            "pan-up",
+            "pan-down",
+            "manipulation"
         ],
 
         invalid: {
-            "foo" : "Expected (auto | none | pan-x | pan-y) but found 'foo'."
+            "foo" : "Expected (auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "vertical-align",
+
+        valid: [
+            "baseline",
+            "sub",
+            "super",
+            "top",
+            "text-top",
+            "middle",
+            "bottom",
+            "text-bottom",
+            "25%",
+            "-1px"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>) but found 'foo'."
         }
     }));
 
@@ -3357,12 +4421,11 @@
 
         valid: [
             "1",
-            "auto",
-            "inherit"
+            "auto"
         ],
 
         invalid: {
-            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+            "foo" : "Expected (<integer> | auto) but found 'foo'."
         }
     }));
 
@@ -3372,12 +4435,11 @@
 
         valid: [
             "1",
-            "auto",
-            "inherit"
+            "auto"
         ],
 
         invalid: {
-            "foo" : "Expected (<integer> | auto | inherit) but found 'foo'."
+            "foo" : "Expected (<integer> | auto) but found 'foo'."
         }
     }));
 
@@ -3398,12 +4460,11 @@
             "rl-bt",
             "lr",
             "rl",
-            "tb",
-            "inherit"
+            "tb"
         ],
 
         invalid: {
-            "foo" : "Expected (horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb | inherit) but found 'foo'."
+            "foo" : "Expected (horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb) but found 'foo'."
         }
     }));
 
@@ -3417,6 +4478,45 @@
 
         invalid: {
             "foo" : "Expected (normal | break-word) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "padding-left",
+
+        valid: [
+            "0",
+            "6px",
+            "3%",
+            "1em",
+            "calc(100% - 80px)"
+        ],
+
+        invalid: {
+            "-10px" : "Expected (<padding-width>) but found '-10px'.",
+            "-3%"   : "Expected (<padding-width>) but found '-3%'.",
+            "auto"   : "Expected (<padding-width>) but found 'auto'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "will-change",
+
+        valid: [
+            "auto",
+            "scroll-position",
+            "contents",
+            "opacity",
+            "transform",
+            "opacity, transform",
+            "left, top",
+            "height, opacity, transform, width"
+        ],
+
+        invalid: {
+            "2px"               : "Expected (auto | <animateable-feature>#) but found '2px'.",
+            "opacity transform" : "Expected end of value but found 'transform'.",
+            "will-change"       : "Expected (auto | <animateable-feature>#) but found 'will-change'."
         }
     }));
 
@@ -3442,22 +4542,26 @@
             "isolate",
             "bidi-override",
             "isolate-override",
-            "plaintext",
-            "inherit"
+            "plaintext"
         ],
 
         invalid: {
-            "foo" : "Expected (normal | embed | isolate | bidi-override | isolate-override | plaintext | inherit) but found 'foo'."
+            "foo" : "Expected (normal | embed | isolate | bidi-override | isolate-override | plaintext) but found 'foo'."
         }
     }));
 
     YUITest.TestRunner.add(suite);
 
 })();
-(function(){
 
-    var Assert = YUITest.Assert
-        StringReader = parserlib.util.StringReader;
+},{"../../":undefined,"yuitest":undefined}],"test4":[function(require,module,exports){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    StringReader = parserlib.util.StringReader;
+
+(function(){
 
     //-------------------------------------------------------------------------
     // Base Test Suite
@@ -3511,7 +4615,7 @@
 
             while(c){
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
-                if (c == "\n"){
+                if (c === "\n"){
                     Assert.areEqual(2, reader.getLine(), "Should now be on second row.");
                     Assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
                 }
@@ -3628,6 +4732,23 @@
             Assert.areEqual(testString, result);
             Assert.areEqual(1, reader.getLine());
             Assert.areEqual(13, reader.getCol());
+        },
+
+        /*
+         * Tests that the filter function works.
+         */
+        testReadWhileFilter: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+
+            var result = reader.readWhile(function(c){
+                return c !== ' ';
+            });
+
+            Assert.areEqual('Hello', result);
+            Assert.areEqual(reader.peek(), ' ');
+            Assert.areEqual(1, reader.getLine());
+            Assert.areEqual(6, reader.getCol());
         }
     }));
 
@@ -3683,6 +4804,10 @@
             var result = reader.readMatch("Hello");
 
             Assert.areEqual("Hello", result);
+
+            result = reader.readMatch("Good-bye!");
+
+            Assert.isNull(result, "Should return null if no match.");
         },
 
         /*
@@ -3692,9 +4817,13 @@
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
-            var result = reader.readMatch(/^Hello/);
+            var result = reader.readMatch(/^Hello?/);
 
             Assert.areEqual("Hello", result);
+
+            result = reader.readMatch(/^ war/);
+
+            Assert.isNull(result, "Should return null if no match.");
         }
 
 
@@ -3762,4 +4891,13 @@
 
     YUITest.TestRunner.add(suite);
 
+})();
+
+},{"../../":undefined,"yuitest":undefined}]},{},[]);
+
+require('test0');
+require('test1');
+require('test2');
+require('test3');
+require('test4');
 })();

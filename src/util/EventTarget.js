@@ -1,3 +1,6 @@
+"use strict";
+
+module.exports = EventTarget;
 
 /**
  * A generic base to inherit from for any object

@@ -1,6 +1,8 @@
-/*exported Colors*/
+"use strict";
 
-var Colors = {
+/* exported Colors */
+
+var Colors = module.exports = {
     __proto__       :null,
     aliceblue       :"#f0f8ff",
     antiquewhite    :"#faebd7",

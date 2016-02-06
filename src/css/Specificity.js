@@ -1,4 +1,10 @@
-/*global Pseudos, SelectorPart*/
+"use strict";
+
+module.exports = Specificity;
+
+var Pseudos = require("./Pseudos");
+var SelectorPart = require("./SelectorPart");
+
 /**
  * Represents a selector's specificity.
  * @namespace parserlib.css

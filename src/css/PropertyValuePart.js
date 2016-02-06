@@ -1,4 +1,13 @@
-/*global Colors, Parser, SyntaxUnit, Tokens*/
+"use strict";
+
+module.exports = PropertyValuePart;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Colors = require("./Colors");
+var Parser = require("./Parser");
+var Tokens = require("./Tokens");
+
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just one part of the data between ":" and ";".

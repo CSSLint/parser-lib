@@ -1,7 +1,13 @@
-//This file will likely change a lot! Very experimental!
-/*global Matcher */
+"use strict";
 
-var ValidationTypes = {
+var ValidationTypes = module.exports;
+
+var Matcher = require("./Matcher");
+
+function copy(to, from) {
+    Object.keys(from).forEach(function(prop) { to[prop] = from[prop]; });
+}
+copy(ValidationTypes, {
 
     isLiteral: function (part, literals) {
         var text = part.text.toString().toLowerCase(),
@@ -433,7 +439,7 @@ var ValidationTypes = {
             //[ <length> | <percentage> ] [ <length> | <percentage> ]?
             "[ <length> | <percentage> ]{1,2}"
     }
-};
+});
 
 Object.keys(ValidationTypes.simple).forEach(function(nt) {
     var rule = ValidationTypes.simple[nt];

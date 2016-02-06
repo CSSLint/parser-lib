@@ -1,4 +1,11 @@
-/*global SyntaxUnit, Parser*/
+"use strict";
+
+module.exports = MediaQuery;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+
 /**
  * Represents an individual media query.
  * @namespace parserlib.css

@@ -1,4 +1,11 @@
-/*global SyntaxUnit, Parser*/
+"use strict";
+
+module.exports = Combinator;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+
 /**
  * Represents a selector combinator (whitespace, +, >).
  * @namespace parserlib.css

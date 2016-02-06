@@ -1,4 +1,6 @@
-var Pseudos = {
+"use strict";
+
+var Pseudos = module.exports = {
     __proto__:       null,
     ":first-letter": 1,
     ":first-line":   1,

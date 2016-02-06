@@ -1,4 +1,9 @@
-/*global StringReader, SyntaxError*/
+"use strict";
+
+module.exports = TokenStreamBase;
+
+var StringReader = require("./StringReader");
+var SyntaxError = require("./SyntaxError");
 
 /**
  * Generic TokenStream providing base functionality.

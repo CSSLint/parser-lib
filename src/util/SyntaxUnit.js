@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = SyntaxUnit;
+
 /**
  * Base type to represent a single syntactic unit.
  * @class SyntaxUnit

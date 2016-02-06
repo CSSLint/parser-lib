@@ -23,9 +23,25 @@
     "style",
     "stylesheet"
   ],
-  "main": "./lib/node-parserlib.js",
+  "main": "./src/index.js",
   "scripts": {
-    "test": "ant -f ../../build.xml test",
+    "changelog": "node scripts/changelog.js",
+    "coverage": "ytestrunner -c",
+    "pretest": "jshint src tests scripts",
+    "build": "node scripts/build.js",
+    "test-yuitest": "ytestrunner",
+    "test": "npm run test-yuitest",
     "prepublish": "npm test"
+  },
+  "devDependencies": {
+    "babybird": "0.0.1",
+    "browserify": "^13.0.0",
+    "concat-stream": "^1.5.1",
+    "factor-bundle": "^2.5.0",
+    "jshint": "^2.9.1",
+    "moment": "^2.11.2",
+    "shelljs": "^0.6.0",
+    "ytestrunner": "^0.3.3",
+    "yuitest": "^0.7.9"
   }
 }

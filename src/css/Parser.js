@@ -1,7 +1,23 @@
-/*global Tokens, TokenStream, SyntaxError, Validation, SyntaxUnit */
-/*global PropertyValue, PropertyValuePart, SelectorPart, SelectorSubPart */
-/*global Selector, PropertyName, Combinator, MediaFeature, MediaQuery */
-/*global EventTarget */
+"use strict";
+
+module.exports = Parser;
+
+var EventTarget = require("../util/EventTarget");
+var SyntaxError = require("../util/SyntaxError");
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Combinator = require("./Combinator");
+var MediaFeature = require("./MediaFeature");
+var MediaQuery = require("./MediaQuery");
+var PropertyName = require("./PropertyName");
+var PropertyValue = require("./PropertyValue");
+var PropertyValuePart = require("./PropertyValuePart");
+var Selector = require("./Selector");
+var SelectorPart = require("./SelectorPart");
+var SelectorSubPart = require("./SelectorSubPart");
+var TokenStream = require("./TokenStream");
+var Tokens = require("./Tokens");
+var Validation = require("./Validation");
 
 /**
  * A CSS3 parser.

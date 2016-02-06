@@ -172,6 +172,23 @@
             Assert.areEqual(testString, result);
             Assert.areEqual(1, reader.getLine());
             Assert.areEqual(13, reader.getCol());
+        },
+
+        /*
+         * Tests that the filter function works.
+         */
+        testReadWhileFilter: function(){
+            var testString = "Hello world!",
+                reader = new StringReader(testString);
+
+            var result = reader.readWhile(function(c){
+                return c !== ' ';
+            });
+
+            Assert.areEqual('Hello', result);
+            Assert.areEqual(reader.peek(), ' ');
+            Assert.areEqual(1, reader.getLine());
+            Assert.areEqual(6, reader.getCol());
         }
     }));
 

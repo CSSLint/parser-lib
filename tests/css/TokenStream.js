@@ -53,6 +53,14 @@
     var suite = new YUITest.TestSuite("CSS Tokens");
 
 
+    suite.add(new CSSTokenTestCase({
+        name : "Tests for empty",
+
+        patterns: {
+            "": [CSSTokens.EOF],
+        }
+    }));
+
     //note: \r\n is normalized to just \n by StringReader
     suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",

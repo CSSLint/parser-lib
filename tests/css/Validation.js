@@ -92,7 +92,7 @@
         ],
 
         invalid: {
-            "1px" : "Expected (none | forwards | backwards | both) but found '1px'."
+            "1px" : "Expected ([ none | forwards | backwards | both ]#) but found '1px'."
         }
     }));
 
@@ -116,8 +116,8 @@
         ],
 
         invalid: {
-            "1px" : "Expected (none | <single-animation-name>) but found '1px'.",
-            "--invalid" : "Expected (none | <single-animation-name>) but found '--invalid'."
+            "1px" : "Expected ([ none | <single-animation-name> ]#) but found '1px'.",
+            "--invalid" : "Expected ([ none | <single-animation-name> ]#) but found '--invalid'."
         },
 
         error: {
@@ -134,8 +134,8 @@
         ],
 
         invalid: {
-            "0" : "Expected (<time>) but found '0'.",
-            "1px" : "Expected (<time>) but found '1px'."
+            "0" : "Expected (<time>#) but found '0'.",
+            "1px" : "Expected (<time>#) but found '1px'."
         }
     }));
 
@@ -167,7 +167,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<attachment>) but found 'foo'."
+            "foo" : "Expected (<attachment>#) but found 'foo'."
         }
     }));
 
@@ -204,7 +204,7 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<bg-image>) but found 'foo'.",
+            "foo" : "Expected (<bg-image>#) but found 'foo'.",
             "url(foo.png)," : "Expected end of value but found ','."
         }
     }));
@@ -262,7 +262,7 @@
         ],
 
         invalid: {
-            "foo"               : "Expected (<bg-size>) but found 'foo'.",
+            "foo"               : "Expected (<bg-size>#) but found 'foo'.",
             "1px 1px 1px"       : "Expected end of value but found '1px'."
 
         }
@@ -286,7 +286,7 @@
         ],
 
         invalid: {
-            "foo"               : "Expected (<repeat-style>) but found 'foo'.",
+            "foo"               : "Expected (<repeat-style>#) but found 'foo'.",
             "repeat-x repeat-y" : "Expected end of value but found 'repeat-y'.",
             "no-repeat round 1px" : "Expected end of value but found '1px'."
 
@@ -324,8 +324,8 @@
         ],
 
         invalid: {
-            "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "foo" : "Expected (<color>{1,4}) but found 'foo'.",
+            "invert" : "Expected (<color>{1,4}) but found 'invert'.",
         }
     }));
 
@@ -468,7 +468,7 @@
 
         invalid: {
             "1px 0.4em 1px" : "Expected end of value but found '1px'.",
-            "foo" : "Expected (<length>) but found 'foo'."
+            "foo" : "Expected (<length>{1,2}) but found 'foo'."
         }
     }));
 
@@ -514,7 +514,7 @@
 
         invalid: {
             "1px 1px 1px 1px 5px" : "Expected end of value but found '5px'.",
-            "foo" : "Expected (<border-width>) but found 'foo'."
+            "foo" : "Expected (<border-width>{1,4}) but found 'foo'."
         }
     }));
 

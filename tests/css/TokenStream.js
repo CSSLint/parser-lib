@@ -55,6 +55,14 @@
 
     //note: \r\n is normalized to just \n by StringReader
     suite.add(new CSSTokenTestCase({
+        name : "Tests for empty input",
+
+        patterns: {
+            ""        : [CSSTokens.EOF]
+        }
+    }));
+
+    suite.add(new CSSTokenTestCase({
         name : "Tests for Whitespace",
 
         patterns: {

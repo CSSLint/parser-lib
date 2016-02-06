@@ -204,11 +204,11 @@ StringReader.prototype = {
     readWhile: function(filter){
 
         var buffer = "",
-            c = this.read();
+            c = this.peek();
 
         while(c !== null && filter(c)){
-            buffer += c;
-            c = this.read();
+            buffer += this.read();
+            c = this.peek();
         }
 
         return buffer;

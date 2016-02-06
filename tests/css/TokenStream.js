@@ -166,6 +166,7 @@
             "@media"        : CSSTokens.MEDIA_SYM,
             "@font-face"    : CSSTokens.FONT_FACE_SYM,
             "@namespace"    : CSSTokens.NAMESPACE_SYM,
+            "@supports"     : CSSTokens.SUPPORTS_SYM,
             "@top-left-corner"  : CSSTokens.TOPLEFTCORNER_SYM,
             "@top-left"     : CSSTokens.TOPLEFT_SYM,
             "@top-right-corner" : CSSTokens.TOPRIGHTCORNER_SYM,

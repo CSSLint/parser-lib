@@ -330,7 +330,9 @@ ValidationTypes = {
             i, len, found = false;
 
         for (i=0,len=args.length; i < len && !found; i++){
-            if (args[i].slice(-2) === "()"){
+            if (args[i].charAt(0) === "<") {
+                found = this.simple[args[i]](part);
+            } else if (args[i].slice(-2) === "()"){
                 found = (part.type === "function" &&
                          part.name === args[i].slice(0, -2));
             } else if (text === args[i].toLowerCase()){
@@ -418,65 +420,42 @@ ValidationTypes = {
     simple: {
         __proto__: null,
 
-        "<absolute-size>": function(part){
-            return ValidationTypes.isLiteral(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
-        },
+        "<absolute-size>":
+            "xx-small | x-small | small | medium | large | x-large | xx-large",
 
-        "<attachment>": function(part){
-            return ValidationTypes.isLiteral(part, "scroll | fixed | local");
-        },
-
-        "<attr>": function(part){
-            return ValidationTypes.isLiteral(part, "attr()");
-        },
-
-        "<bg-image>": function(part){
-            return this["<image>"](part) || this["<gradient>"](part) ||  String(part) === "none";
-        },
-
-        "<gradient>": function(part) {
-            return part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
-        },
-
-        "<box>": function(part){
-            return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");
-        },
-
-        "<content>": function(part){
-            return ValidationTypes.isLiteral(part, "content()");
-        },
-
-        "<relative-size>": function(part){
-            return ValidationTypes.isLiteral(part, "smaller | larger");
-        },
-
-        //any identifier
-        "<ident>": function(part){
-            return part.type === "identifier" || part.wasIdent;
-        },
-
-        "<single-animation-name>": function(part) {
-            return this["<ident>"](part) &&
-                /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
-                !/^(none|unset|initial|inherit)$/i.test(part);
-        },
+        "<animateable-feature>":
+            "scroll-position | contents | <animateable-feature-name>",
 
         "<animateable-feature-name>": function(part) {
             return this["<ident>"](part) &&
                 !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(part);
         },
 
-        "<string>": function(part){
-            return part.type === "string";
+        "<angle>": function(part){
+            return part.type === "angle";
         },
 
-        "<length>": function(part){
-            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
-                return true;
-            }else{
-                return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
-            }
-        },
+        "<attachment>": "scroll | fixed | local",
+
+        "<attr>": "attr()",
+
+        // inset() = inset( <shape-arg>{1,4} [round <border-radius>]? )
+        // circle() = circle( [<shape-radius>]? [at <position>]? )
+        // ellipse() = ellipse( [<shape-radius>{2}]? [at <position>]? )
+        // polygon() = polygon( [<fill-rule>,]? [<shape-arg> <shape-arg>]# )
+        "<basic-shape>": "inset() | circle() | ellipse() | polygon()",
+
+        "<bg-image>": "<image> | <gradient> | none",
+
+        "<border-style>":
+            "none | hidden | dotted | dashed | solid | double | groove | " +
+            "ridge | inset | outset",
+
+        "<border-width>": "<length> | thin | medium | thick",
+
+        "<box>": "padding-box | border-box | content-box",
+
+        "<clip-source>": "<uri>",
 
         "<color>": function(part){
             return part.type === "color" || String(part) === "transparent" || String(part) === "currentColor";
@@ -487,76 +466,105 @@ ValidationTypes = {
             return part.type === "color";
         },
 
-        "<icccolor>": function(part){
-            /* ex.:
-                https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/local
-                    icc-color(acmecmyk, 0.11, 0.48, 0.83, 0.00)
-                    cielab(62.253188, 23.950124, 48.410653)
-                    cielch(62.253188, 54.011108, 63.677091)
-                    icc-color(FooColors, Sandy23C)
-                http://www.w3.org/TR/2009/WD-SVGColor12-20091001/#iccnamedcolor
-                    ~"icc-color(" name (comma-wsp number)+ ")"
-                    ~"icc-named-color(" name comma-wsp namedColor ")"
-                    ~"cielab(" lightness comma-wsp a-value comma-wsp b-value ")"
-                    ~"cielchab(" lightness comma-wsp chroma comma-wsp hue ")"
-            */
-            return ValidationTypes.isLiteral(part, "cielab() | cielch() | cielchab() | icc-color() | icc-named-color()");
+        "<content>": "content()",
+
+        // http://www.w3.org/TR/css3-sizing/#width-height-keywords
+        "<content-sizing>":
+            "fill-available | -moz-available | -webkit-fill-available | " +
+            "max-content | -moz-max-content | -webkit-max-content | " +
+            "min-content | -moz-min-content | -webkit-min-content | " +
+            "fit-content | -moz-fit-content | -webkit-fit-content",
+
+        "<feature-tag-value>": function(part){
+            return (part.type === "function" && /^[A-Z0-9]{4}$/i.test(part));
         },
 
-        "<number>": function(part){
-            return part.type === "number" || this["<integer>"](part);
+        // custom() isn't actually in the spec
+        "<filter-function>":
+            "blur() | brightness() | contrast() | custom() | " +
+            "drop-shadow() | grayscale() | hue-rotate() | invert() | " +
+            "opacity() | saturate() | sepia()",
+
+        "<flex-basis>": "<width>",
+
+        "<flex-direction>": "row | row-reverse | column | column-reverse",
+
+        "<flex-grow>": "<number>",
+
+        "<flex-shrink>": "<number>",
+
+        "<flex-wrap>": "nowrap | wrap | wrap-reverse",
+
+        "<font-size>":
+            "<absolute-size> | <relative-size> | <length> | <percentage>",
+
+        "<font-stretch>":
+            "normal | ultra-condensed | extra-condensed | condensed | " +
+            "semi-condensed | semi-expanded | expanded | extra-expanded | " +
+            "ultra-expanded",
+
+        "<font-style>": "normal | italic | oblique",
+
+        "<font-variant-caps>":
+            "small-caps | all-small-caps | petite-caps | all-petite-caps | " +
+            "unicase | titling-caps",
+
+        "<font-variant-css21>": "normal | small-caps",
+
+        "<font-weight>":
+            "normal | bold | bolder | lighter | " +
+            "100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900",
+
+        "<generic-family>":
+            "serif | sans-serif | cursive | fantasy | monospace",
+
+        "<geometry-box>": "<shape-box> | fill-box | stroke-box | view-box",
+
+        "<glyph-angle>": function(part){
+            return part.type === "angle" && part.units === 'deg';
         },
 
-        "<miterlimit>": function(part){
-            return this["<number>"](part) && part.value >= 1;
+        "<gradient>": function(part) {
+            return part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
         },
 
-        "<opacity-value>": function(part){
-            return this["<number>"](part) && part.value >= 0 && part.value <= 1;
+        "<icccolor>":
+            "cielab() | cielch() | cielchab() | " +
+            "icc-color() | icc-named-color()",
+
+        //any identifier
+        "<ident>": function(part){
+            return part.type === "identifier" || part.wasIdent;
         },
+
+        "<ident-not-generic-family>": function(part){
+            return this["<ident>"](part) && !this["<generic-family>"](part);
+        },
+
+        "<image>": "<uri>",
 
         "<integer>": function(part){
             return part.type === "integer";
+        },
+
+        "<length>": function(part){
+            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
+                return true;
+            }else{
+                return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
+            }
         },
 
         "<line>": function(part){
             return part.type === "integer";
         },
 
-        "<angle>": function(part){
-            return part.type === "angle";
-        },
+        "<line-height>": "<number> | <length> | <percentage> | normal",
 
-        "<glyph-angle>": function(part){
-            return part.type === "angle" && part.units === 'deg';
-        },
+        "<margin-width>": "<length> | <percentage> | auto",
 
-        "<uri>": function(part){
-            return part.type === "uri";
-        },
-
-        "<image>": function(part){
-            return this["<uri>"](part);
-        },
-
-        "<percentage>": function(part){
-            return part.type === "percentage" || String(part) === "0";
-        },
-
-        "<border-width>": function(part){
-            return this["<length>"](part) || ValidationTypes.isLiteral(part, "thin | medium | thick");
-        },
-
-        "<border-style>": function(part){
-            return ValidationTypes.isLiteral(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
-        },
-
-        "<content-sizing>": function(part){ // http://www.w3.org/TR/css3-sizing/#width-height-keywords
-            return ValidationTypes.isLiteral(part, "fill-available | -moz-available | -webkit-fill-available | max-content | -moz-max-content | -webkit-max-content | min-content | -moz-min-content | -webkit-min-content | fit-content | -moz-fit-content | -webkit-fit-content");
-        },
-
-        "<margin-width>": function(part){
-            return this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "auto");
+        "<miterlimit>": function(part){
+            return this["<number>"](part) && part.value >= 1;
         },
 
         "<nonnegative-length-or-percentage>": function(part){
@@ -569,124 +577,62 @@ ValidationTypes = {
                 (String(part) === "0" || part.type === "function" || (part.value) >= 0);
         },
 
-        "<padding-width>": function(part){
-            return this["<nonnegative-length-or-percentage>"](part);
+        "<number>": function(part){
+            return part.type === "number" || this["<integer>"](part);
         },
 
-        "<shape>": function(part){
-            return ValidationTypes.isLiteral(part, "rect() | inset-rect()");
+        "<opacity-value>": function(part){
+            return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
-        "<basic-shape>": function(part){
-            // inset() = inset( <shape-arg>{1,4} [round <border-radius>]? )
-            // circle() = circle( [<shape-radius>]? [at <position>]? )
-            // ellipse() = ellipse( [<shape-radius>{2}]? [at <position>]? )
-            // polygon() = polygon( [<fill-rule>,]? [<shape-arg> <shape-arg>]# )
-            return ValidationTypes.isLiteral(part, "inset() | circle() | ellipse() | polygon()");
+        "<padding-width>": "<nonnegative-length-or-percentage>",
+
+        "<percentage>": function(part){
+            return part.type === "percentage" || String(part) === "0";
         },
 
-        "<shape-box>": function(part) {
-            return this["<box>"](part) || ValidationTypes.isLiteral(part, "margin-box");
+        "<relative-size>": "smaller | larger",
+
+        "<shape>": "rect() | inset-rect()",
+
+        "<shape-box>": "<box> | margin-box",
+
+        "<single-animation-name>": function(part) {
+            return this["<ident>"](part) &&
+                /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&
+                !/^(none|unset|initial|inherit)$/i.test(part);
         },
 
-        "<geometry-box>": function(part) {
-            return this["<shape-box>"](part) || ValidationTypes.isLiteral(part, "fill-box | stroke-box | view-box");
+        "<string>": function(part){
+            return part.type === "string";
         },
 
         "<time>": function(part) {
             return part.type === "time";
         },
 
-        "<flex-grow>": function(part){
-            return this["<number>"](part);
+        "<uri>": function(part){
+            return part.type === "uri";
         },
 
-        "<flex-shrink>": function(part){
-            return this["<number>"](part);
-        },
-
-        "<width>": function(part){
-            return this["<margin-width>"](part);
-        },
-
-        "<flex-basis>": function(part){
-            return this["<width>"](part);
-        },
-
-        "<flex-direction>": function(part){
-            return ValidationTypes.isLiteral(part, "row | row-reverse | column | column-reverse");
-        },
-
-        "<flex-wrap>": function(part){
-            return ValidationTypes.isLiteral(part, "nowrap | wrap | wrap-reverse");
-        },
-
-        "<feature-tag-value>": function(part){
-            return (part.type === "function" && /^[A-Z0-9]{4}$/i.test(part));
-        },
-
-        "<filter-function>": function(part){
-            // custom() isn't actually in the spec
-            return ValidationTypes.isLiteral(
-                part, "blur() | brightness() | contrast() | custom() | " +
-                    "drop-shadow() | grayscale() | hue-rotate() | invert() | " +
-                    "opacity() | saturate() | sepia()");
-        },
-
-        "<generic-family>": function(part){
-            return ValidationTypes.isLiteral(part, "serif | sans-serif | cursive | fantasy | monospace");
-        },
-
-        "<ident-not-generic-family>": function(part){
-            return this["<ident>"](part) && !this["<generic-family>"](part);
-        },
-
-        "<font-size>": function(part){
-            var result = this["<absolute-size>"](part) || this["<relative-size>"](part) || this["<length>"](part) || this["<percentage>"](part);
-            return result;
-        },
-
-        "<font-stretch>": function(part){
-            return ValidationTypes.isLiteral(part, "normal | ultra-condensed | extra-condensed | condensed | semi-condensed | semi-expanded | expanded | extra-expanded | ultra-expanded");
-        },
-
-        "<font-style>": function(part){
-            return ValidationTypes.isLiteral(part, "normal | italic | oblique");
-        },
-
-        "<font-weight>": function(part){
-            return ValidationTypes.isLiteral(part, "normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900");
-        },
-
-        "<line-height>": function(part){
-            var result = this["<number>"](part) || this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "normal");
-            return result;
-        }
+        "<width>": "<margin-width>"
     },
 
     complex: {
         __proto__: null,
 
-        "<animateable-feature>":
-        // scroll-position | contents | <custom-ident>
-        Matcher.cast("scroll-position | contents | <animateable-feature-name>"),
-
         "<azimuth>":
-        // <angle> |
-        // [[ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind ] |
-        // leftwards | rightwards
-        Matcher.alt("<angle>",
-                    Matcher.cast(
-                        "left-side | far-left | left | center-left | " +
-                        "center | center-right | right | far-right | " +
-                        "right-side").oror("behind"),
-                    "leftwards", "rightwards"),
+            "<angle>" +
+            " | " +
+            "[ [ left-side | far-left | left | center-left | center | " +
+            "center-right | right | far-right | right-side ] || behind ]" +
+            " | "+
+            "leftwards | rightwards",
 
-        "<bg-position>": Matcher.cast("<position>").hash(),
+        "<bg-position>": "<position>#",
 
         "<bg-size>":
-        //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
-        Matcher.alt("cover", "contain", Matcher.cast("<percentage> | <length> | auto").braces(1,2)),
+            "[ <length> | <percentage> | auto ]{1,2} | cover | contain",
 
         "<border-image-slice>":
         // [<number> | <percentage>]{1,4} && fill?
@@ -699,21 +645,12 @@ ValidationTypes = {
                      "fill"),
 
         "<border-radius>":
-        // [ <length> | <percentage> ]{1,4} [ / [ <length> | <percentage> ]{1,4} ]?
-        Matcher.seq(
-            Matcher.cast("<nonnegative-length-or-percentage>").braces(1, 4),
-            Matcher.seq(
-                "/",
-                Matcher.cast("<nonnegative-length-or-percentage>").braces(1, 4)
-            ).question()),
+            "<nonnegative-length-or-percentage>{1,4} " +
+            "[ / <nonnegative-length-or-percentage>{1,4} ]?",
 
-        "<box-shadow>": Matcher.alt("none", Matcher.cast("<shadow>").hash()),
+        "<box-shadow>": "none | <shadow>#",
 
-        "<clip-source>": Matcher.cast("<uri>"),
-
-        "<clip-path>":
-        // <basic-shape> || <geometry-box>
-        Matcher.cast("<basic-shape>").oror("<geometry-box>"),
+        "<clip-path>": "<basic-shape> || <geometry-box>",
 
         "<dasharray>":
         // "list of comma and/or white space separated <length>s and
@@ -721,150 +658,119 @@ ValidationTypes = {
         Matcher.cast("<nonnegative-length-or-percentage>")
             .braces(1, Infinity, "#", Matcher.cast(",").question()),
 
-        "<filter-function-list>":
-        // [ <filter-function> | <uri> ]+
-        Matcher.cast("<filter-function> | <uri>").plus(),
+        "<family-name>":
+            // <string> | <IDENT>+
+            "<string> | <ident-not-generic-family> <ident>*",
 
-        "<paint>":
-        // none | currentColor | <color> [<icccolor>]? |
-        // <funciri> [ none | currentColor | <color> [<icccolor>]? ]?
+        "<filter-function-list>": "[ <filter-function> | <uri> ]+",
+
+        // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
+        "<flex>":
+            "none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]",
+
+        "<font-family>": "[ <generic-family> | <family-name> ]#",
+
+        "<font-shorthand>":
+            "[ <font-style> || <font-variant-css21> || " +
+            "<font-weight> || <font-stretch> ]? <font-size> " +
+            "[ / <line-height> ]? <font-family>",
+
+        "<font-variant-alternates>":
+            // stylistic(<feature-value-name>)
+            "stylistic() || " +
+            "historical-forms || " +
+            // styleset(<feature-value-name> #)
+            "styleset() || " +
+            // character-variant(<feature-value-name> #)
+            "character-variant() || " +
+            // swash(<feature-value-name>)
+            "swash() || " +
+            // ornaments(<feature-value-name>)
+            "ornaments() || " +
+            // annotation(<feature-value-name>)
+            "annotation()",
+
+        "<font-variant-ligatures>":
+            // <common-lig-values>
+            "[ common-ligatures | no-common-ligatures ] || " +
+            // <discretionary-lig-values>
+            "[ discretionary-ligatures | no-discretionary-ligatures ] || " +
+            // <historical-lig-values>
+            "[ historical-ligatures | no-historical-ligatures ] || " +
+            // <contextual-alt-values>
+            "[ contextual | no-contextual ]",
+
+        "<font-variant-numeric>":
+            // <numeric-figure-values>
+            "[ lining-nums | oldstyle-nums ] || " +
+            // <numeric-spacing-values>
+            "[ proportional-nums | tabular-nums ] || " +
+            // <numeric-fraction-values>
+            "[ diagonal-fractions | stacked-fractions ] || " +
+            "ordinal || slashed-zero",
+
+        "<font-variant-east-asian>":
+            // <east-asian-variant-values>
+            "[ jis78 | jis83 | jis90 | jis04 | simplified | traditional ] || " +
+            // <east-asian-width-values>
+            "[ full-width | proportional-width ] || " +
+            "ruby",
 
         // Note that <color> here is "as defined in the SVG spec", which
         // is more restrictive that the <color> defined in the CSS spec.
-        Matcher.alt("<paint-basic>",
-                    Matcher.seq("<uri>", Matcher.cast("<paint-basic>").question())),
+        // none | currentColor | <color> [<icccolor>]? |
+        // <funciri> [ none | currentColor | <color> [<icccolor>]? ]?
+        "<paint>": "<paint-basic> | <uri> <paint-basic>?",
+
         // Helper definition for <paint> above.
-        "<paint-basic>":
-        Matcher.alt("none", "currentColor",
-                    Matcher.seq("<color-svg>",
-                                Matcher.cast("<icccolor>").question())),
+        "<paint-basic>": "none | currentColor | <color-svg> <icccolor>?",
 
         "<position>":
-        // <position> = [
-        //  [ left | center | right | top | bottom | <percentage> | <length> ]
-        // |
-        //  [ left | center | right | <percentage> | <length> ]
-        //  [ top | center | bottom | <percentage> | <length> ]
-        // |
-        //  [ center | [ left | right ] [ <percentage> | <length> ]? ] &&
-        //  [ center | [ top | bottom ] [ <percentage> | <length> ]? ]
-        //]
-        Matcher.alt(
-            // Because `alt` combinator is ordered, we need to test these
+            // Because our `alt` combinator is ordered, we need to test these
             // in order from longest possible match to shortest.
-            Matcher.andand(
-                Matcher.cast("center").or(
-                    Matcher.seq("left | right",
-                                Matcher.cast("<percentage> | <length>").question())),
-                Matcher.cast("center").or(
-                    Matcher.seq("top | bottom",
-                                Matcher.cast("<percentage> | <length>").question()))),
-            Matcher.seq("left | center | right | <percentage> | <length>",
-                        "top | center | bottom | <percentage> | <length>"),
-            "left | center | right | top | bottom | <percentage> | <length>"
-        ),
+            "[ center | [ left | right ] [ <percentage> | <length> ]? ] && " +
+            "[ center | [ top | bottom ] [ <percentage> | <length> ]? ]" +
+            " | " +
+            "[ left | center | right | <percentage> | <length> ] " +
+            "[ top | center | bottom | <percentage> | <length> ]" +
+            " | " +
+            "[ left | center | right | top | bottom | <percentage> | <length> ]",
 
         "<repeat-style>":
-        //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
-        Matcher.alt("repeat-x | repeat-y", Matcher.cast("repeat | space | round | no-repeat").braces(1,2)),
+            "repeat-x | repeat-y | [ repeat | space | round | no-repeat ]{1,2}",
 
         "<shadow>":
         //inset? && [ <length>{2,4} && <color>? ]
         Matcher.many([true /* length is required */],
                      Matcher.cast("<length>").braces(2,4), "inset", "<color>"),
 
-        "<x-one-radius>":
-        //[ <length> | <percentage> ] [ <length> | <percentage> ]?
-        Matcher.cast("<length> | <percentage>").braces(1,2),
-
-        "<flex>":
-        // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
-        // none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]
-        // Valid syntaxes, according to https://developer.mozilla.org/en-US/docs/Web/CSS/flex#Syntax
-        // * none
-        // * <flex-grow>
-        // * <flex-basis>
-        // * <flex-grow> <flex-basis>
-        // * <flex-grow> <flex-shrink>
-        // * <flex-grow> <flex-shrink> <flex-basis>
-        Matcher.alt("none", Matcher.cast("<flex-grow>").then(Matcher.cast("<flex-shrink>").question()).oror("<flex-basis>")),
-
-        "<font-family>":
-        // [ <family-name> | <generic-family> ]#
-        Matcher.cast("<generic-family> | <family-name>").hash(),
-
-        "<family-name>":
-        // <string> | <IDENT>+
-        Matcher.alt("<string>",
-                    Matcher.seq("<ident-not-generic-family>",
-                                Matcher.cast("<ident>").star())),
-
-        "<font-variant-alternates>":
-        Matcher.oror(// stylistic(<feature-value-name>)
-                     "stylistic()",
-                     "historical-forms",
-                     // styleset(<feature-value-name> #)
-                     "styleset()",
-                     // character-variant(<feature-value-name> #)
-                     "character-variant()",
-                     // swash(<feature-value-name>)
-                     "swash()",
-                     // ornaments(<feature-value-name>)
-                     "ornaments()",
-                     // annotation(<feature-value-name>)
-                     "annotation()"),
-
-        "<font-variant-caps>":
-        Matcher.cast("small-caps | all-small-caps | petite-caps | all-petite-caps | unicase | titling-caps"),
-
-        "<font-variant-css21>":
-        Matcher.cast("normal | small-caps"),
-
-        "<font-variant-ligatures>":
-        Matcher.oror(// <common-lig-values>
-                     "common-ligatures | no-common-ligatures",
-                     // <discretionary-lig-values>
-                     "discretionary-ligatures | no-discretionary-ligatures",
-                     // <historical-lig-values>
-                     "historical-ligatures | no-historical-ligatures",
-                     // <contextual-alt-values>
-                     "contextual | no-contextual"),
-
-        "<font-variant-numeric>":
-        Matcher.oror(// <numeric-figure-values>
-                     "lining-nums | oldstyle-nums",
-                     // <numeric-spacing-values>
-                     "proportional-nums | tabular-nums",
-                     // <numeric-fraction-values>
-                     "diagonal-fractions | stacked-fractions",
-                     "ordinal",
-                     "slashed-zero"),
-
-        "<font-variant-east-asian>":
-        Matcher.oror(// <east-asian-variant-values>
-                     "jis78 | jis83 | jis90 | jis04 | simplified | traditional",
-                     // <east-asian-width-values>
-                     "full-width | proportional-width",
-                     "ruby"),
-
-        "<font-shorthand>":
-        Matcher.seq(Matcher.oror("<font-style>",
-                                 "<font-variant-css21>",
-                                 "<font-weight>",
-                                 "<font-stretch>").question(),
-                    "<font-size>",
-                    Matcher.seq("/", "<line-height>").question(),
-                    "<font-family>"),
-
         "<text-decoration>":
-        // none | [ underline || overline || line-through || blink ]
-        Matcher.alt("none", Matcher.oror("underline", "overline", "line-through", "blink")),
+            "none | [ underline || overline || line-through || blink ]",
 
         "<will-change>":
-        // auto | <animateable-feature>#
-        Matcher.alt("auto", Matcher.cast("<animateable-feature>").hash())
+            "auto | <animateable-feature>#",
+
+        "<x-one-radius>":
+            //[ <length> | <percentage> ] [ <length> | <percentage> ]?
+            "[ <length> | <percentage> ]{1,2}"
     }
 };
+
+Object.keys(ValidationTypes.simple).forEach(function(nt) {
+    var rule = ValidationTypes.simple[nt];
+    if (typeof rule === "string") {
+        ValidationTypes.simple[nt] = function(part) {
+            return ValidationTypes.isLiteral(part, rule);
+        };
+    }
+});
+
+Object.keys(ValidationTypes.complex).forEach(function(nt) {
+    var rule = ValidationTypes.complex[nt];
+    if (typeof rule === "string") {
+        ValidationTypes.complex[nt] = Matcher.parse(rule);
+    }
+});
 
 // Because this is defined relative to other complex validation types,
 // we need to define it *after* the rest of the types are initialized.

@@ -197,6 +197,8 @@
             "right top 5%",
             "top 3em center",
             "center top 3em",
+            "right 3% center",
+            "center right 3%",
             "top 3em right 10%",
             "top, bottom",
             "left 10px, left 10px",
@@ -204,10 +206,10 @@
         ],
 
         invalid: {
-            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "foo"                 : "Expected (<bg-position> | inherit) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
-            "left center right"   : "Expected end of value but found 'center'.",
-            "center 3em right 10%": "Expected end of value but found '3em'.",
+            "left center right"   : "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'.",
         }
     }));
 
@@ -372,7 +374,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -388,7 +390,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -457,7 +459,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -472,7 +474,7 @@
         ],
 
         invalid: {
-            "foo"       : "Expected (<x-one-radius>) but found 'foo'.",
+            "foo"       : "Expected (<x-one-radius> | inherit) but found 'foo'.",
             "5px 5px 7px" : "Expected end of value but found '7px'.",
         }
     }));
@@ -743,7 +745,7 @@
         invalid: {
             "circle(50% at 0 0)" : "Expected (<filter-function-list> | none) but found 'circle(50% at 0 0)'.",
             "foo" :                "Expected (<filter-function-list> | none) but found 'foo'.",
-            "blur(30px 30px) none" : "Expected (<filter-function> | <uri>) but found 'none'."
+            "blur(30px 30px) none" : "Expected end of value but found 'none'."
         }
     }));
 
@@ -764,7 +766,7 @@
             ],
 
             invalid: {
-                "foo": "Expected (none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]) but found 'foo'."
+                "foo": "Expected (none | inherit | <flex-grow> <flex-shrink>? || <flex-basis>) but found 'foo'."
             }
         }));
     });
@@ -965,9 +967,9 @@
 
         invalid: {
             "none underline" : "Expected end of value but found 'underline'.",
-            "line-through none" : "Expected (none | <text-decoration> | inherit) but found 'line-through none'.",
+            "line-through none" : "Expected end of value but found 'none'.",
             "inherit blink" : "Expected end of value but found 'blink'.",
-            "overline inherit" : "Expected (none | <text-decoration> | inherit) but found 'overline inherit'.",
+            "overline inherit" : "Expected end of value but found 'inherit'.",
             "foo" : "Expected (none | <text-decoration> | inherit) but found 'foo'."
         }
     }));
@@ -1026,10 +1028,10 @@
         ],
 
         invalid: {
-            "foo"                 : "Expected (<bg-position>) but found 'foo'.",
+            "foo"                 : "Expected (<position> | inherit) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
-            "left center right"   : "Expected end of value but found 'center'.",
-            "center 3em right 10%": "Expected end of value but found '3em'.",
+            "left center right"   : "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'.",
             "top, bottom"         : "Expected end of value but found ','."
         }
     }));

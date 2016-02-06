@@ -1,7 +1,7 @@
-/*global Tokens, TokenStreamBase*/
+/*global PropertyValuePart, Tokens, TokenStreamBase*/
 
 var h = /^[0-9a-fA-F]$/,
-    //nonascii = /^[\u00A0-\uFFFF]$/,
+    nonascii = /^[\u00A0-\uFFFF]$/,
     nl = /\n|\r\n|\r|\f/,
     whitespace = /\u0009|\u000a|\u000c|\u000d|\u0020/;
 
@@ -40,7 +40,7 @@ function isIdentStart(c){
 
 function mix(receiver, supplier){
     for (var prop in supplier){
-        if (supplier.hasOwnProperty(prop)){
+        if (Object.prototype.hasOwnProperty.call(supplier, prop)){
             receiver[prop] = supplier[prop];
         }
     }
@@ -221,7 +221,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "\\":
                     if (/[^\r\n\f]/.test(reader.peek())) {
-                        token = this.identOrFunctionToken(c, startLine, startCol);
+                        token = this.identOrFunctionToken(this.readEscape(c, true), startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
@@ -521,18 +521,22 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var reader  = this._reader,
             ident   = this.readName(first),
             tt      = Tokens.IDENT,
-            uriFns  = ["url(", "url-prefix(", "domain("];
+            uriFns  = ["url(", "url-prefix(", "domain("],
+            uri;
 
         //if there's a left paren immediately after, it's a URI or function
         if (reader.peek() === "("){
             ident += reader.read();
             if (uriFns.indexOf(ident.toLowerCase()) > -1){
-                tt = Tokens.URI;
-                ident = this.readURI(ident);
-
-                //didn't find a valid URL or there's no closing paren
-                if (uriFns.indexOf(ident.toLowerCase()) > -1){
+                reader.mark();
+                uri = this.readURI(ident);
+                if (uri === null) {
+                    //didn't find a valid URL or there's no closing paren
+                    reader.reset();
                     tt = Tokens.FUNCTION;
+                } else {
+                    tt = Tokens.URI;
+                    ident = uri;
                 }
             } else {
                 tt = Tokens.FUNCTION;
@@ -696,26 +700,46 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         var delim   = first,
             string  = first,
             reader  = this._reader,
-            prev    = first,
             tt      = Tokens.STRING,
-            c       = reader.read();
+            c       = reader.read(),
+            i;
 
         while(c){
             string += c;
 
-            //if the delimiter is found with an escapement, we're done.
-            if (c === delim && prev !== "\\"){
-                break;
-            }
-
-            //if there's a newline without an escapement, it's an invalid string
-            if (isNewLine(reader.peek()) && c !== "\\"){
+            if (c === "\\") {
+                c = reader.read();
+                if (c === null) {
+                    break; // premature EOF after backslash
+                } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
+                    // single-character escape
+                    string += c;
+                } else {
+                    // read up to six hex digits
+                    for (i=0; isHexDigit(c) && i<6; i++) {
+                        string += c;
+                        c = reader.read();
+                    }
+                    // swallow trailing newline or space
+                    if (c === "\r" && reader.peek() === "\n") {
+                        string += c;
+                        c = reader.read();
+                    }
+                    if (isWhitespace(c)) {
+                        string += c;
+                    } else {
+                        // This character is null or not part of the escape;
+                        // jump back to the top to process it.
+                        continue;
+                    }
+                }
+            } else if (c === delim) {
+                break; // delimiter found.
+            } else if (isNewLine(reader.peek())) {
+                // newline without an escapement: it's an invalid string
                 tt = Tokens.INVALID;
                 break;
             }
-
-            //save previous and get next
-            prev = c;
             c = reader.read();
         }
 
@@ -856,47 +880,19 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         return number;
     },
+
+    // returns null w/o resetting reader if string is invalid.
     readString: function(){
-        var reader  = this._reader,
-            delim   = reader.read(),
-            string  = delim,
-            prev    = delim,
-            c       = reader.peek();
-
-        while(c){
-            c = reader.read();
-            string += c;
-
-            //if the delimiter is found with an escapement, we're done.
-            if (c === delim && prev !== "\\"){
-                break;
-            }
-
-            //if there's a newline without an escapement, it's an invalid string
-            if (isNewLine(reader.peek()) && c !== "\\"){
-                string = "";
-                break;
-            }
-
-            //save previous and get next
-            prev = c;
-            c = reader.peek();
-        }
-
-        //if c is null, that means we're out of input and the string was never closed
-        if (c === null){
-            string = "";
-        }
-
-        return string;
+        var token = this.stringToken(this._reader.read(), 0, 0);
+        return token.type === Tokens.INVALID ? null : token.value;
     },
+
+    // returns null w/o resetting reader if URI is invalid.
     readURI: function(first){
         var reader  = this._reader,
             uri     = first,
             inner   = "",
             c       = reader.peek();
-
-        reader.mark();
 
         //skip whitespace before
         while(c && isWhitespace(c)){
@@ -907,8 +903,11 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         //it's a string
         if (c === "'" || c === "\""){
             inner = this.readString();
+            if (inner !== null) {
+                inner = PropertyValuePart.parseString(inner);
+            }
         } else {
-            inner = this.readURL();
+            inner = this.readUnquotedURL();
         }
 
         c = reader.peek();
@@ -920,46 +919,60 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
         }
 
         //if there was no inner value or the next character isn't closing paren, it's not a URI
-        if (inner === "" || c !== ")"){
-            uri = first;
-            reader.reset();
+        if (inner === null || c !== ")"){
+            uri = null;
         } else {
-            uri += inner + reader.read();
+            // Ensure argument to URL is always double-quoted
+            // (This simplifies later processing in PropertyValuePart.)
+            uri += PropertyValuePart.serializeString(inner) + reader.read();
         }
 
         return uri;
     },
-    readURL: function(){
+    // This method never fails, although it may return an empty string.
+    readUnquotedURL: function(first){
         var reader  = this._reader,
-            url     = "",
-            c       = reader.peek();
+            url     = first || "",
+            c;
 
-        //TODO: Check for escape and nonascii
-        while (/^[!#$%&\\*-~]$/.test(c)){
-            url += reader.read();
-            c = reader.peek();
+        for (c = reader.peek(); c; c = reader.peek()) {
+            // Note that the grammar at
+            // https://www.w3.org/TR/CSS2/grammar.html#scanner
+            // incorrectly includes the backslash character in the
+            // `url` production, although it is correctly omitted in
+            // the `baduri1` production.
+            if (nonascii.test(c) || /^[\-!#$%&*-\[\]-~]$/.test(c)) {
+                url += c;
+                reader.read();
+            } else if (c === '\\') {
+                if (/^[^\r\n\f]$/.test(reader.peek(2))) {
+                    url += this.readEscape(reader.read(), true);
+                } else {
+                    break; // bad escape sequence.
+                }
+            } else {
+                break; // bad character
+            }
         }
 
         return url;
-
     },
+
     readName: function(first){
         var reader  = this._reader,
             ident   = first || "",
-            c       = reader.peek();
+            c;
 
-        while(true){
+        for (c = reader.peek(); c; c = reader.peek()) {
             if (c === "\\"){
                 if (/^[^\r\n\f]$/.test(reader.peek(2))) {
                     ident += this.readEscape(reader.read(), true);
-                    c = reader.peek();
                 } else {
                     // Bad escape sequence.
                     break;
                 }
-            } else if(c && isNameChar(c)){
+            } else if(isNameChar(c)){
                 ident += reader.read();
-                c = reader.peek();
             } else {
                 break;
             }

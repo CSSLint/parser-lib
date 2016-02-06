@@ -1,4 +1,5 @@
 var Pseudos = {
+    __proto__:       null,
     ":first-letter": 1,
     ":first-line":   1,
     ":before":       1,

@@ -180,7 +180,7 @@ var Tokens  = [
 (function(){
 
     var nameMap = [],
-        typeMap = {};
+        typeMap = Object.create(null);
 
     Tokens.UNKNOWN = -1;
     Tokens.unshift({name:"EOF"});

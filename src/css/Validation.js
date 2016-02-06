@@ -1,5 +1,6 @@
 //This file will likely change a lot! Very experimental!
 /*global Properties, ValidationTypes, ValidationError, PropertyValueIterator */
+/*exported Validation */
 var Validation = {
 
     validate: function(property, value){
@@ -76,7 +77,7 @@ var Validation = {
                     result = true;
 
                 } else if (comma) {
-                    if (expression.peek() == ",") {
+                    if (String(expression.peek()) === ",") {
                         part = expression.next();
                     } else {
                         break;
@@ -94,7 +95,7 @@ var Validation = {
                 throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
             } else {
                 part = expression.previous();
-                if (comma && part == ",") {
+                if (comma && String(part) === ",") {
                     throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);
                 } else {
                     throw new ValidationError("Expected (" + types + ") but found '" + value + "'.", value.line, value.col);

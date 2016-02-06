@@ -65,7 +65,7 @@ function TokenStreamBase(input, tokenData){
 TokenStreamBase.createTokenData = function(tokens){
 
     var nameMap     = [],
-        typeMap     = {},
+        typeMap     = Object.create(null),
         tokenData     = tokens.concat([]),
         i            = 0,
         len            = tokenData.length+1;

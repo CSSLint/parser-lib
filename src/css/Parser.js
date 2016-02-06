@@ -43,6 +43,7 @@ Parser.prototype = function(){
     var proto = new EventTarget(),  //new prototype
         prop,
         additions =  {
+            __proto__: null,
 
             //restore constructor
             constructor: Parser,
@@ -1701,6 +1702,7 @@ Parser.prototype = function(){
                     unary       = null,
                     value       = null,
                     endChar     = null,
+                    part        = null,
                     token,
                     line,
                     col;
@@ -1744,6 +1746,9 @@ Parser.prototype = function(){
                     if (unary === null){
                         line = tokenStream.token().startLine;
                         col = tokenStream.token().startCol;
+                        // Correct potentially-inaccurate IDENT parsing in
+                        // PropertyValuePart constructor.
+                        part = PropertyValuePart.fromToken(tokenStream.token());
                     }
                     this._readWhitespace();
                 } else {
@@ -1787,7 +1792,7 @@ Parser.prototype = function(){
 
                 }
 
-                return value !== null ?
+                return part !== null ? part : value !== null ?
                         new PropertyValuePart(unary !== null ? unary + value : value, line, col) :
                         null;
 
@@ -2359,7 +2364,7 @@ Parser.prototype = function(){
 
     //copy over onto prototype
     for (prop in additions){
-        if (additions.hasOwnProperty(prop)){
+        if (Object.prototype.hasOwnProperty.call(additions, prop)){
             proto[prop] = additions[prop];
         }
     }

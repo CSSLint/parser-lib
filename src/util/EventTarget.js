@@ -13,7 +13,7 @@ function EventTarget(){
      * @property _listeners
      * @private
      */
-    this._listeners = {};
+    this._listeners = Object.create(null);
 }
 
 EventTarget.prototype = {

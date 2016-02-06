@@ -85,6 +85,7 @@ var ValidationTypes = {
 
 
     simple: {
+        __proto__: null,
 
         "<absolute-size>": function(part){
             return ValidationTypes.isLiteral(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
@@ -99,7 +100,7 @@ var ValidationTypes = {
         },
 
         "<bg-image>": function(part){
-            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
+            return this["<image>"](part) || this["<gradient>"](part) ||  String(part) === "none";
         },
 
         "<gradient>": function(part) {
@@ -120,19 +121,19 @@ var ValidationTypes = {
 
         //any identifier
         "<ident>": function(part){
-            return part.type === "identifier";
+            return part.type === "identifier" || part.wasIdent;
         },
 
         "<length>": function(part){
             if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
                 return true;
             }else{
-                return part.type === "length" || part.type === "number" || part.type === "integer" || part == "0";
+                return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
             }
         },
 
         "<color>": function(part){
-            return part.type === "color" || part == "transparent" || part == "currentColor";
+            return part.type === "color" || String(part) === "transparent" || String(part) === "currentColor";
         },
 
         "<number>": function(part){
@@ -164,7 +165,7 @@ var ValidationTypes = {
         },
 
         "<percentage>": function(part){
-            return part.type === "percentage" || part == "0";
+            return part.type === "percentage" || String(part) === "0";
         },
 
         "<border-width>": function(part){
@@ -250,6 +251,7 @@ var ValidationTypes = {
     },
 
     complex: {
+        __proto__: null,
 
         "<bg-position>": function(expression){
             var result  = false,

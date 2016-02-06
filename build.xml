@@ -79,13 +79,25 @@
         <exec executable="java" failonerror="true">
             <arg line="-jar"/>
             <arg path="${lib.dir}/js.jar"/>
+            <arg line="-opt -1"/>
             <arg path="${lib.dir}/jshint.js" />
-            <arg line="${jsfiles.clean} curly=true,forin=true,latedef=true,evil=true,loopfunc=true,undef=true,rhino=false" />
+            <arg line="${jsfiles.clean}" />
+        </exec>
+    </target>
+
+    <!-- validate npm build file with JSHint -->
+    <target name="lint.node" depends="build.node">
+        <exec executable="java" failonerror="true">
+            <arg line="-jar"/>
+            <arg path="${lib.dir}/js.jar"/>
+            <arg line="-opt -1"/>
+            <arg path="${lib.dir}/jshint.js" />
+            <arg path="${build.dir}/${node.build.file}" />
         </exec>
     </target>
 
     <!-- run tests on the command line -->
-    <target name="test" depends="lint,build.all">
+    <target name="test" depends="lint,build.all,lint.node">
         <apply executable="java" failonerror="true">
             <arg line="-Xss16M"/>
             <fileset dir="${tests.dir}" includes="**/*.js"/>
@@ -112,13 +124,14 @@
             ${license.text}
             */
             /* Version v@VERSION@, Build time: ${RIGHT_NOW} */
-            var parserlib = {};
+            var parserlib = Object.create(null);
             (function(){
             </header>
             <!--<filelist dir="${src.dir}/util" files="EventTarget.js, StringReader.js, TokenStream.js"/> -->
             <fileset dir="${src.dir}/util" includes="*.js" />
             <footer trimleading="yes">
             parserlib.util = {
+                __proto__   : null,
                 StringReader: StringReader,
                 SyntaxError : SyntaxError,
                 SyntaxUnit  : SyntaxUnit,
@@ -141,7 +154,7 @@
             (function(){
             var EventTarget = parserlib.util.EventTarget,
                 TokenStreamBase = parserlib.util.TokenStreamBase,
-                StringReader = parserlib.util.StringReader,
+                StringReader = parserlib.util.StringReader, // jshint ignore:line
                 SyntaxError = parserlib.util.SyntaxError,
                 SyntaxUnit  = parserlib.util.SyntaxUnit;
             </header>
@@ -149,6 +162,7 @@
             <fileset dir="${src.dir}/css" includes="*.js" />
             <footer trimleading="yes">
             parserlib.css = {
+                __proto__           :null,
                 Colors              :Colors,
                 Combinator          :Combinator,
                 Parser              :Parser,
@@ -176,14 +190,23 @@
     <target name="build.node">
 
         <concat destfile="${build.dir}/${node.build.file}" fixlastline="true">
+            <header trimleading="yes">/* jshint node:true, latedef:false */
+            "use strict"; // jshint ignore:line
+            </header>
             <filelist dir="${build.dir}" files="${core.build.file}, ${css.build.file}"/>
             <footer trimleading="yes">
             (function(){
+                /* jshint forin:false */
                 for(var prop in parserlib){
                     exports[prop] = parserlib[prop];
                 }
             })();
             </footer>
+            <filterchain>
+              <linecontainsregexp negate="true">
+                <regexp pattern="^/[*](global|exported) .*[*]/$"/>
+              </linecontainsregexp>
+            </filterchain>
         </concat>
 
        <mkdir dir="${build.npm.dir}"/>

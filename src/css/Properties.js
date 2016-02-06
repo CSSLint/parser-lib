@@ -1,5 +1,7 @@
 /*global Validation, ValidationTypes, ValidationError*/
+/*exported Properties*/
 var Properties = {
+    __proto__: null,
 
     //A
     "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
@@ -170,7 +172,7 @@ var Properties = {
             valid = ValidationTypes.isAny(expression, simple);
             if (!valid) {
 
-                if (expression.peek() == "/" && count > 0 && !slash) {
+                if (String(expression.peek()) === "/" && count > 0 && !slash) {
                     slash = true;
                     max = count + 5;
                     expression.next();

@@ -244,6 +244,10 @@
             var result = reader.readMatch("Hello");
 
             Assert.areEqual("Hello", result);
+
+            result = reader.readMatch("Good-bye!");
+
+            Assert.isNull(result, "Should return null if no match.");
         },
 
         /*
@@ -253,9 +257,13 @@
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
-            var result = reader.readMatch(/^Hello/);
+            var result = reader.readMatch(/^Hello?/);
 
             Assert.areEqual("Hello", result);
+
+            result = reader.readMatch(/^ war/);
+
+            Assert.isNull(result, "Should return null if no match.");
         }
 
 

@@ -1,4 +1,5 @@
 //This file will likely change a lot! Very experimental!
+/*global StringReader*/
 var ValidationTypes;
 
 /**
@@ -34,6 +35,87 @@ Matcher.prec = {
     ALT:    1
 };
 
+/** Simple recursive-descent grammar to build matchers from strings. */
+Matcher.parse = function(str) {
+    var reader, eat, expr, oror, andand, seq, mod, term, result;
+    reader = new StringReader(str);
+    eat = function(matcher) {
+        var result = reader.readMatch(matcher);
+        if (result === null) {
+            throw new SyntaxError(
+                "Expected "+matcher, reader.getLine(), reader.getCol());
+        }
+        return result;
+    };
+    expr = function() {
+        // expr = oror (" | " oror)*
+        var m = [ oror() ];
+        while (reader.readMatch(" | ") !== null) {
+            m.push(oror());
+        }
+        return m.length === 1 ? m[0] : Matcher.alt.apply(Matcher, m);
+    };
+    oror = function() {
+        // oror = andand ( " || " andand)*
+        var m = [ andand() ];
+        while (reader.readMatch(" || ") !== null) {
+            m.push(andand());
+        }
+        return m.length === 1 ? m[0] : Matcher.oror.apply(Matcher, m);
+    };
+    andand = function() {
+        // andand = seq ( " && " seq)*
+        var m = [ seq() ];
+        while (reader.readMatch(" && ") !== null) {
+            m.push(seq());
+        }
+        return m.length === 1 ? m[0] : Matcher.andand.apply(Matcher, m);
+    };
+    seq = function() {
+        // seq = mod ( " " mod)*
+        var m = [ mod() ];
+        while (reader.readMatch(/^ (?![&|\]])/) !== null) {
+            m.push(mod());
+        }
+        return m.length === 1 ? m[0] : Matcher.seq.apply(Matcher, m);
+    };
+    mod = function() {
+        // mod = term ( "?" | "*" | "+" | "#" | "{<num>,<num>}" )?
+        var m = term();
+        if (reader.readMatch("?") !== null) {
+            return m.question();
+        } else if (reader.readMatch("*") !== null) {
+            return m.star();
+        } else if (reader.readMatch("+") !== null) {
+            return m.plus();
+        } else if (reader.readMatch("#") !== null) {
+            return m.hash();
+        } else if (reader.readMatch(/^\{\s*/) !== null) {
+            var min = eat(/^\d+/);
+            eat(/^\s*,\s*/);
+            var max = eat(/^\d+/);
+            eat(/^\s*\}/);
+            return m.braces(+min, +max);
+        }
+        return m;
+    };
+    term = function() {
+        // term = <nt> | literal | "[ " expression " ]"
+        if (reader.readMatch("[ ") !== null) {
+            var m = expr();
+            eat(" ]");
+            return m;
+        }
+        return Matcher.fromType(eat(/^[^ ?*+#{]+/));
+    };
+    result = expr();
+    if (!reader.eof()) {
+        throw new SyntaxError(
+            "Expected end of string", reader.getLine(), reader.getCol());
+    }
+    return result;
+};
+
 /**
  * Convert a string to a matcher (parsing simple alternations),
  * or do nothing if the argument is already a matcher.
@@ -42,10 +124,7 @@ Matcher.cast = function(m) {
     if (m instanceof Matcher) {
         return m;
     }
-    if (/ \| /.test(m)) {
-        return Matcher.alt.apply(Matcher, m.split(" | "));
-    }
-    return Matcher.fromType(m);
+    return Matcher.parse(m);
 };
 
 /**

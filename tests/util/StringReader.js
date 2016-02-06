@@ -55,7 +55,7 @@
 
             while(c){
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
-                if (c == "\n"){
+                if (c === "\n"){
                     Assert.areEqual(2, reader.getLine(), "Should now be on second row.");
                     Assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
                 }

@@ -55,7 +55,7 @@
         parser.addListener("property", function(event){
             Assert.isNull(event.invalid);
         });
-        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+        parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message){
@@ -64,12 +64,12 @@
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
         });
-        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+        parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
     ValidationTestCase.prototype._testSyntaxError = function(value){
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
-        var result = parser.parse(".foo { " + this.property + ":" + value + "}");
+        parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
 

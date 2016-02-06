@@ -1514,7 +1514,7 @@
                 Assert.areEqual(1, event.col, "Column should be 1");
                 called = true;
             });
-            var result = parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
+            parser.parse("@-webkit-keyframes movingbox{0%{left:90%;}}");
             Assert.isTrue(called);  //just don't want an error
         },
 
@@ -1526,7 +1526,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@-moz-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            parser.parse("@-moz-keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
             Assert.isTrue(valid);
         },
 
@@ -1538,7 +1538,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
+            parser.parse("@keyframes movingbox{0%{left:90%;}50%{left:10%;}100%{left:90%;}}");
             Assert.isTrue(valid);
         },
 
@@ -1550,7 +1550,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
+            parser.parse("@keyframes movingbox{from{left:90%;-webkit-transform: rotate(0deg);}to{left:10%;-webkit-transform: rotate(360deg);}}");
             Assert.isTrue(valid);
         },
 
@@ -1562,7 +1562,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
+            parser.parse("@keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } }");
             Assert.isTrue(valid);
         }
 
@@ -1580,7 +1580,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media { @page {} }");
+            parser.parse("@media { @page {} }");
             Assert.isTrue(valid);
         },
 
@@ -1592,7 +1592,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media { @font-face {} }");
+            parser.parse("@media { @font-face {} }");
             Assert.isTrue(valid);
         },
 
@@ -1604,7 +1604,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media { @viewport {} }");
+            parser.parse("@media { @viewport {} }");
             Assert.isTrue(valid);
         },
 
@@ -1616,7 +1616,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media print { }");
+            parser.parse("@media print { }");
             Assert.isTrue(valid);
         },
 
@@ -1628,7 +1628,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media print, screen { }");
+            parser.parse("@media print, screen { }");
             Assert.isTrue(valid);
         },
 
@@ -1640,7 +1640,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media (max-width:400px) { }");
+            parser.parse("@media (max-width:400px) { }");
             Assert.isTrue(valid);
         },
 
@@ -1652,7 +1652,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media all and (max-width:400px) { }");
+            parser.parse("@media all and (max-width:400px) { }");
             Assert.isTrue(valid);
         },
 
@@ -1664,7 +1664,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media ( max-width:400px ) { }");
+            parser.parse("@media ( max-width:400px ) { }");
             Assert.isTrue(valid);
         },
 
@@ -1676,7 +1676,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@media all and ( max-width:400px ) { }");
+            parser.parse("@media all and ( max-width:400px ) { }");
             Assert.isTrue(valid);
         },
 
@@ -1688,7 +1688,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@viewport { width: 397px; }");
+            parser.parse("@viewport { width: 397px; }");
             Assert.isTrue(valid);
         },
 
@@ -1700,7 +1700,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@-ms-viewport { width: 397px; }");
+            parser.parse("@-ms-viewport { width: 397px; }");
             Assert.isTrue(valid);
         },
 
@@ -1712,7 +1712,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@-ms-viewport { width: device-width; }");
+            parser.parse("@-ms-viewport { width: device-width; }");
             Assert.isTrue(valid);
         },
 
@@ -1724,7 +1724,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@-ms-viewport { width: device-height; }");
+            parser.parse("@-ms-viewport { width: device-height; }");
             Assert.isTrue(valid);
         },
 
@@ -1745,7 +1745,7 @@
                 calledEnd = true;
             });
 
-            var result = parser.parse("@viewport { width: 397px; }");
+            parser.parse("@viewport { width: 397px; }");
             Assert.isTrue(calledStart);  //just don't want an error
             Assert.isTrue(calledEnd);  //just don't want an error
         },
@@ -1758,7 +1758,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1770,7 +1770,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1782,7 +1782,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document domain(w3.org) { p { color: red; } }");
+            parser.parse("@document domain(w3.org) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1794,7 +1794,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document regexp('https:.*') { p { color: red; } }");
+            parser.parse("@document regexp('https:.*') { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1806,7 +1806,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
+            parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1818,7 +1818,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@-moz-document url-prefix() { p { color: red; } }");
+            parser.parse("@-moz-document url-prefix() { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1830,7 +1830,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix() { @page {} p { color: red; } }");
+            parser.parse("@document url-prefix() { @page {} p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1842,7 +1842,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix() { @media {} p { color: red; } }");
+            parser.parse("@document url-prefix() { @media {} p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1854,7 +1854,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix() { @font-face {} p { color: red; } }");
+            parser.parse("@document url-prefix() { @font-face {} p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1866,7 +1866,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix() { @viewport {} p { color: red; } }");
+            parser.parse("@document url-prefix() { @viewport {} p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1878,7 +1878,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@document url-prefix() { @keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } } }");
+            parser.parse("@document url-prefix() { @keyframes 'diagonal-slide' {  from { left: 0; top: 0; } to { left: 100px; top: 100px; } } }");
             Assert.isTrue(valid);
         },
 
@@ -1899,7 +1899,7 @@
                 calledEnd = true;
             });
 
-            var result = parser.parse("@document url-prefix() {}");
+            parser.parse("@document url-prefix() {}");
             Assert.isTrue(calledStart);  //just don't want an error
             Assert.isTrue(calledEnd);  //just don't want an error
         },
@@ -1922,7 +1922,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) {}");
+            parser.parse("@supports (display: table-cell) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -1935,7 +1935,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports not ( display: table-cell) {}");
+            parser.parse("@supports not ( display: table-cell) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -1948,7 +1948,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports not (not (not (display: table-cell) )) {}");
+            parser.parse("@supports not (not (not (display: table-cell) )) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -1961,7 +1961,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) and (display: flex) {}");
+            parser.parse("@supports (display: table-cell) and (display: flex) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -1974,7 +1974,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) and (not (display: flex)) {}");
+            parser.parse("@supports (display: table-cell) and (not (display: flex)) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -1987,7 +1987,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (not (display: table-cell)) and (display: flex) {}");
+            parser.parse("@supports (not (display: table-cell)) and (display: flex) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2000,7 +2000,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) and (display: flex) and (display: flex) {}");
+            parser.parse("@supports (display: table-cell) and (display: flex) and (display: flex) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2013,7 +2013,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) or (display: flex) {}");
+            parser.parse("@supports (display: table-cell) or (display: flex) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2026,7 +2026,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) or (not (display: flex)) {}");
+            parser.parse("@supports (display: table-cell) or (not (display: flex)) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2039,7 +2039,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (not (display: table-cell)) or (display: flex) {}");
+            parser.parse("@supports (not (display: table-cell)) or (display: flex) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2052,7 +2052,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) and ((display: flex) or (display: table)) {}");
+            parser.parse("@supports (display: table-cell) and ((display: flex) or (display: table)) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         },
@@ -2065,7 +2065,7 @@
                 valid = false;
             });
 
-            var result = parser.parse("@supports (display: table-cell) and ((display: flex) or ((display: table) and (not (position: absolute)))) {}");
+            parser.parse("@supports (display: table-cell) and ((display: flex) or ((display: table) and (not (position: absolute)))) {}");
             parser._verifyEnd();
             Assert.isTrue(valid);
         }
@@ -2100,7 +2100,7 @@
                 Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    color: #fff;\n}");
+            parser.parse(".foo {\n    color: #fff;\n}");
         },
 
        "Test rule with star hack property": function(){
@@ -2117,7 +2117,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 13.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    *color: #fff;\n}");
+            parser.parse(".foo {\n    *color: #fff;\n}");
         },
 
        "Test rule with underscore hack property": function(){
@@ -2134,7 +2134,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 13.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    _color: #fff;\n}");
+            parser.parse(".foo {\n    _color: #fff;\n}");
         },
 
         "Test rule with space after property name": function(){
@@ -2149,7 +2149,7 @@
                 Assert.areEqual(13, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n    color : #fff;\n}");
+            parser.parse(".foo {\n    color : #fff;\n}");
         },
 
         "Test rule with one property and !important": function(){
@@ -2165,7 +2165,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.isTrue(event.important, "Important should be true.");
             });
-            var result = parser.parse(".foo {\n    color: #fff !important;\n}");
+            parser.parse(".foo {\n    color: #fff !important;\n}");
         },
 
         "Test rule with leading semicolon": function(){
@@ -2180,7 +2180,7 @@
                 Assert.areEqual(12, event.value.parts[0].col, "First part column should be 12.");
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
             });
-            var result = parser.parse(".foo {\n;   color: #fff;\n}");
+            parser.parse(".foo {\n;   color: #fff;\n}");
         },
 
         "Test rule vendor prefix value": function(){
@@ -2196,7 +2196,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.areEqual("-moz-pre-wrap", event.value.parts[0].text, "The vendor prefixed value should be intact.");
             });
-            var result = parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
+            parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
         },
 
         "Test display -moz-inline-stack": function(){
@@ -2212,7 +2212,7 @@
                 Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
                 Assert.areEqual("-moz-inline-stack", event.value.parts[0].text, "Vendor prefixed value -moz-inline-stack is intact.");
             });
-            var result = parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
+            parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
         },
 
         "Test @import uri without quotes": function(){
@@ -2221,7 +2221,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import url(http://www.yahoo.com);");
+            parser.parse("@import url(http://www.yahoo.com);");
         },
 
 
@@ -2231,7 +2231,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import url('http://www.yahoo.com');");
+            parser.parse("@import url('http://www.yahoo.com');");
         },
 
         "Test @import address": function(){
@@ -2240,7 +2240,7 @@
                 Assert.areEqual("import", event.type);
                 Assert.areEqual("http://www.yahoo.com", event.uri);
             });
-            var result = parser.parse("@import 'http://www.yahoo.com';");
+            parser.parse("@import 'http://www.yahoo.com';");
         }
     }));
 

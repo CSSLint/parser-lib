@@ -200,7 +200,7 @@
 
         var patterns;
 
-        for (var prop in atRules){
+        for (var prop in atRules){ // jshint ignore:line
             patterns = {};
 
             patterns[prop] = [atRules[prop]];

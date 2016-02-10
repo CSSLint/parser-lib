@@ -220,7 +220,7 @@ StringReader.prototype = {
      * returns those characters. If a match is found, the row and column
      * are adjusted; if no match is found, the reader's state is unchanged.
      * reading or false to stop.
-     * @param {String|RegExp} matchter If a string, then the literal string
+     * @param {String|RegExp} matcher If a string, then the literal string
      *      value is searched for. If a regular expression, then any string
      *      matching the pattern is search for.
      * @return {String} The string made up of all characters that matched or
@@ -234,7 +234,7 @@ StringReader.prototype = {
 
         //if it's a string, just do a straight match
         if (typeof matcher === "string"){
-            if (source.indexOf(matcher) === 0){
+            if (source.slice(0, matcher.length) === matcher){
                 value = this.readCount(matcher.length);
             }
         } else if (matcher instanceof RegExp){

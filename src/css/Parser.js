@@ -1575,6 +1575,10 @@ Parser.prototype = function(){
 
                     if (pseudo){
                         pseudo = new SelectorSubPart(colons + pseudo, "pseudo", line, col);
+                    }else{
+                        var startLine = tokenStream.LT(1).startLine,
+                            startCol  = tokenStream.LT(0).startCol;
+                        throw new SyntaxError("Expected a `FUNCTION` or `IDENT` after colon at line " + startLine + ", col " + startCol + ".", startLine, startCol);
                     }
                 }
 

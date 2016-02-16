@@ -62,7 +62,7 @@ var Properties = {
     "background-color"              : "<color>",
     "background-image"              : "<bg-image>#",
     "background-origin"             : "<box>#",
-    "background-position"           : "<bg-position>",
+    "background-position"           : "<bg-position> | inherit",
     "background-repeat"             : "<repeat-style>#",
     "background-size"               : "<bg-size>#",
     "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",

@@ -232,7 +232,8 @@
             "top 3em right 10%",
             "top, bottom",
             "left 10px, left 10px",
-            "right top 5%, left 10px bottom"
+            "right top 5%, left 10px bottom",
+            "inherit"
         ],
 
         invalid: {
@@ -240,6 +241,8 @@
             "10% left"            : "Expected end of value but found 'left'.",
             "left center right"   : "Expected end of value but found 'right'.",
             "center 3em right 10%": "Expected end of value but found 'right'.",
+            "center inherit": "Expected end of value but found 'inherit'.",
+            "inherit center": "Expected end of value but found 'center'.",
         }
     }));
 

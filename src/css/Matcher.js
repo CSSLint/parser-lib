@@ -1,4 +1,9 @@
-/*global ValidationTypes, StringReader*/
+"use strict";
+
+module.exports = Matcher;
+
+var StringReader = require("../util/StringReader");
+var SyntaxError = require("../util/SyntaxError");
 
 /**
  * This class implements a combinator library for matcher functions.
@@ -129,6 +134,8 @@ Matcher.cast = function(m) {
  * Create a matcher for a single type.
  */
 Matcher.fromType = function(type) {
+    // Late require of ValidationTypes to break a dependency cycle.
+    var ValidationTypes = require("./ValidationTypes");
     return new Matcher(function(expression) {
         return expression.hasNext() && ValidationTypes.isType(expression, type);
     }, type);
@@ -188,6 +195,7 @@ Matcher.many = function(required) {
         if (v.expand) {
             // Insert all of the options for the given complex rule as
             // individual options.
+            var ValidationTypes = require("./ValidationTypes");
             acc.push.apply(acc, ValidationTypes.complex[v.expand].options);
         } else {
             acc.push(Matcher.cast(v));

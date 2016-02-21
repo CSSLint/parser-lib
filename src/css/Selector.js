@@ -1,4 +1,12 @@
-/*global SyntaxUnit, Parser, Specificity*/
+"use strict";
+
+module.exports = Selector;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+var Specificity = require("./Specificity");
+
 /**
  * Represents an entire single selector, including all parts but not
  * including multiple selectors (those separated by commas).

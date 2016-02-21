@@ -1,6 +1,3 @@
-#Ignore timestamped build outputs.
-build/
-
 # Windows image file caches
 Thumbs.db
 
@@ -12,3 +9,4 @@ Desktop.ini
 
 # NPM files
 npm-debug.log
+node_modules

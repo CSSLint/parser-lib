@@ -1,11 +1,14 @@
-(function(){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    MediaQuery = parserlib.css.MediaQuery,
+    Selector = parserlib.css.Selector,
+    Combinator = parserlib.css.Combinator,
+    SelectorPart = parserlib.css.SelectorPart,
+    Parser = parserlib.css.Parser;
 
-    var Assert = YUITest.Assert,
-        MediaQuery = parserlib.css.MediaQuery,
-        Selector = parserlib.css.Selector,
-        Combinator = parserlib.css.Combinator,
-        SelectorPart = parserlib.css.SelectorPart,
-        Parser = parserlib.css.Parser;
+(function(){
 
     //-------------------------------------------------------------------------
     // Base Test Suite

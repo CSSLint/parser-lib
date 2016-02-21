@@ -1,4 +1,6 @@
-var Tokens  = [
+"use strict";
+
+var Tokens = module.exports = [
 
     /*
      * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical

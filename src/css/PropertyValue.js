@@ -1,4 +1,11 @@
-/*global SyntaxUnit, Parser*/
+"use strict";
+
+module.exports = PropertyValue;
+
+var SyntaxUnit = require("../util/SyntaxUnit");
+
+var Parser = require("./Parser");
+
 /**
  * Represents a single part of a CSS property value, meaning that it represents
  * just everything single part between ":" and ";". If there are multiple values

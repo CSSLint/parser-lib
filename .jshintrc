@@ -5,13 +5,14 @@
   "evil":       true,
   "forin":      true,
   "freeze":     true,
-  "latedef":    true,
+  "latedef":    "nofunc",
   "loopfunc":   true,
   "noarg":      true,
+  "node":       true,
   "nonew":      true,
+  "predef":     ["-SyntaxError"],
   "proto":      true,
-  "rhino":      false,
-  "strict":     "implied",
+  "strict":     true,
   "undef":      true,
   "unused":     "vars"
 }

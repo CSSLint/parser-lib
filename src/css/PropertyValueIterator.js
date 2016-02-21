@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = PropertyValueIterator;
+
 /**
  * A utility class that allows for easy iteration over the various parts of a
  * property value.

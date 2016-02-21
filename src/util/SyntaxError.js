@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = SyntaxError;
+
 /**
  * Type to use when a syntax error occurs.
  * @class SyntaxError

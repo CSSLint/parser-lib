@@ -1,3 +1,7 @@
+"use strict";
+
+module.exports = ValidationError;
+
 /**
  * Type to use when a validation error occurs.
  * @class ValidationError

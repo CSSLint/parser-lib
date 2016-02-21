@@ -1,7 +1,10 @@
-(function(){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    Parser = parserlib.css.Parser;
 
-    var Assert = YUITest.Assert,
-        Parser = parserlib.css.Parser;
+(function(){
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns

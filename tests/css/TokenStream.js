@@ -1,8 +1,11 @@
-(function(){
+"use strict";
+var YUITest = require("yuitest"),
+    Assert = YUITest.Assert,
+    parserlib = require("../../"),
+    TokenStream = parserlib.css.TokenStream,
+    CSSTokens = parserlib.css.Tokens;
 
-    var Assert = YUITest.Assert,
-        TokenStream = parserlib.css.TokenStream,
-        CSSTokens = parserlib.css.Tokens;
+(function(){
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns

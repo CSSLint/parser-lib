@@ -444,6 +444,17 @@ var YUITest = require("yuitest"),
 
         name: "Pseudo Class Selector Tests",
 
+        _should: {
+            error: {
+                testInvalidPseudoClassSelector: "Expected a `FUNCTION` or `IDENT` after colon at line 1, col 2."
+            }
+        },
+
+        testInvalidPseudoClassSelector: function(){
+            var parser = new Parser();
+            parser.parseSelector("a:");
+        },
+
         testSimplePseudoClassSelector: function(){
             var parser = new Parser();
             var result = parser.parseSelector("a:hover");

@@ -14,29 +14,40 @@ var buildDir = path.join(__dirname, "../dist");
 var srcDir = path.join(__dirname, "../src");
 var testsDir = path.join(__dirname, "../tests");
 
-var RIGHT_NOW = moment().locale('en-US').format("D-MMMM-YYYY HH:mm:ss");
+var RIGHT_NOW = moment().locale("en-US").format("D-MMMM-YYYY HH:mm:ss");
 var LICENSE = [
     "/*!",
     shell.cat(path.join(__dirname, "../LICENSE")),
     "*/",
     "/* Version v" + version + ", Build time: " + RIGHT_NOW + " */"
-].map(function(s) { return s.trim(); }).join("\n");
+].map(function(s) {
+    return s.trim();
+}).join("\n");
 
 function writeFile(filename, contents) {
     return new Promise(function(resolve, reject) {
         var fullname = path.join(buildDir, filename);
         console.log("Writing", path.relative(process.cwd(), fullname));
-        fs.writeFile(fullname, contents, 'utf8', function(err) {
-            if (err) { reject(err); } else { resolve(); }
+        fs.writeFile(fullname, contents, "utf8", function(err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
         });
     });
 }
 
 function concatP() {
     var resolve;
-    var promise = new Promise(function(r) { resolve = r; });
+    var promise = new Promise(function(r) {
+        resolve = r;
+    });
     var stream = concat(resolve);
-    return { stream: stream, promise: promise };
+    return {
+        stream: stream,
+        promise: promise
+    };
 }
 
 function build(target, filename) {
@@ -49,15 +60,21 @@ function build(target, filename) {
         if (target === "split") {
             bundle.require(path.join(srcDir, "util"),
                            { expose: "parserlib-core" });
-            var css = concatP(); results.push(css.promise);
-            var stub = concatP(); results.push(stub.promise);
-            bundle.plugin('factor-bundle', {
+            var css = concatP();
+            results.push(css.promise);
+            var stub = concatP();
+            results.push(stub.promise);
+            bundle.plugin("factor-bundle", {
                 outputs: [ css.stream, stub.stream ]
             });
         }
 
         bundle.bundle(function(err, src) {
-            if (err) { reject(err); } else { resolve(src); }
+            if (err) {
+                reject(err);
+            } else {
+                resolve(src);
+            }
         });
     });
     return Promise.all(results).then(function(results) {
@@ -96,7 +113,7 @@ function build(target, filename) {
                 "return require('parserlib');",
                 "})();"
             ];
-            if (target === 'node') {
+            if (target === "node") {
                 src.push("module.exports = parserlib;");
             }
             return writeFile(filename, src.join("\n"));
@@ -114,10 +131,14 @@ function buildTests(filename) {
         tests.forEach(function(f, i) {
             bundle.require(f, { expose: "test"+i });
         });
-        bundle.exclude('yuitest');
+        bundle.exclude("yuitest");
         bundle.exclude(path.join(srcDir, "index.js"));
         bundle.bundle(function(err, src) {
-            if (err) { reject(err); } else { resolve(src); }
+            if (err) {
+                reject(err);
+            } else {
+                resolve(src);
+            }
         });
     }).then(function(src) {
         src = [
@@ -128,7 +149,7 @@ function buildTests(filename) {
             "return parserlib;",
             "};",
             src
-        ].concat(tests.map(function(f,i) {
+        ].concat(tests.map(function(f, i) {
             return "require('test"+i+"');";
         })).concat([
             "})();"
@@ -139,7 +160,7 @@ function buildTests(filename) {
 
 Promise.resolve().then(function() {
     // Ensure build directory is present.
-    shell.mkdir('-p', buildDir);
+    shell.mkdir("-p", buildDir);
 }).then(function() {
     return build("full", "parserlib.js");
 }).then(function() {

@@ -422,7 +422,7 @@ var Properties = module.exports = {
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
-    "text-align"                    : "left | right | center | justify | match-parent | start | end" ,
+    "text-align"                    : "left | right | center | justify | match-parent | start | end",
     "text-align-last"               : 1,
     "text-anchor"                   : "start | middle | end",
     "text-decoration"               : "<text-decoration>",

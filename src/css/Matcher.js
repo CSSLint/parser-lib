@@ -147,7 +147,9 @@ Matcher.fromType = function(type) {
  */
 Matcher.seq = function() {
     var ms = Array.prototype.slice.call(arguments).map(Matcher.cast);
-    if (ms.length === 1) { return ms[0]; }
+    if (ms.length === 1) {
+        return ms[0];
+    }
     return new Matcher(function(expression) {
         var i, result = true;
         for (i = 0; result && i < ms.length; i++) {
@@ -156,8 +158,12 @@ Matcher.seq = function() {
         return result;
     }, function(prec) {
         var p = Matcher.prec.SEQ;
-        var s = ms.map(function(m) { return m.toString(p); }).join(" ");
-        if (prec > p) { s = "[ " + s + " ]"; }
+        var s = ms.map(function(m) {
+            return m.toString(p);
+        }).join(" ");
+        if (prec > p) {
+            s = "[ " + s + " ]";
+        }
         return s;
     });
 };
@@ -168,7 +174,9 @@ Matcher.seq = function() {
  */
 Matcher.alt = function() {
     var ms = Array.prototype.slice.call(arguments).map(Matcher.cast);
-    if (ms.length === 1) { return ms[0]; }
+    if (ms.length === 1) {
+        return ms[0];
+    }
     return new Matcher(function(expression) {
         var i, result = false;
         for (i = 0; !result && i < ms.length; i++) {
@@ -177,8 +185,12 @@ Matcher.alt = function() {
         return result;
     }, function(prec) {
         var p = Matcher.prec.ALT;
-        var s = ms.map(function(m) { return m.toString(p); }).join(" | ");
-        if (prec > p) { s = "[ " + s + " ]"; }
+        var s = ms.map(function(m) {
+            return m.toString(p);
+        }).join(" | ");
+        if (prec > p) {
+            s = "[ " + s + " ]";
+        }
         return s;
     });
 };
@@ -202,7 +214,13 @@ Matcher.many = function(required) {
         }
         return acc;
     }, []);
-    if (required === true) { required = ms.map(function() { return true; }); }
+
+    if (required === true) {
+        required = ms.map(function() {
+            return true;
+        });
+    }
+
     var result = new Matcher(function(expression) {
         var seen = [], max = 0, pass = 0;
         var success = function(matchCount) {
@@ -215,7 +233,9 @@ Matcher.many = function(required) {
         };
         var tryMatch = function(matchCount) {
             for (var i = 0; i < ms.length; i++) {
-                if (seen[i]) { continue; }
+                if (seen[i]) {
+                    continue;
+                }
                 expression.mark();
                 if (ms[i].match(expression)) {
                     seen[i] = true;
@@ -243,7 +263,7 @@ Matcher.many = function(required) {
         }
 
         if (required === false) {
-            return (max > 0);
+            return max > 0;
         }
         // Use finer-grained specification of which matchers are required.
         for (var i = 0; i < ms.length; i++) {
@@ -253,14 +273,16 @@ Matcher.many = function(required) {
         }
         return true;
     }, function(prec) {
-        var p = (required === false) ? Matcher.prec.OROR : Matcher.prec.ANDAND;
+        var p = required === false ? Matcher.prec.OROR : Matcher.prec.ANDAND;
         var s = ms.map(function(m, i) {
             if (required !== false && !required[i]) {
                 return m.toString(Matcher.prec.MOD) + "?";
             }
             return m.toString(p);
         }).join(required === false ? " || " : " && ");
-        if (prec > p) { s = "[ " + s + " ]"; }
+        if (prec > p) {
+            s = "[ " + s + " ]";
+        }
         return s;
     });
     result.options = ms;
@@ -292,7 +314,7 @@ Matcher.oror = function() {
 Matcher.prototype = {
     constructor: Matcher,
     // These are expected to be overridden in every instance.
-    match: function(expression) { throw new Error("unimplemented"); },
+    match: function() { throw new Error("unimplemented"); },
     toString: function() { throw new Error("unimplemented"); },
     // This returns a standalone function to do the matching.
     func: function() { return this.match.bind(this); },
@@ -321,9 +343,13 @@ Matcher.prototype = {
                 } else {
                     result = m1.match(expression);
                 }
-                if (!result) { break; }
+                if (!result) {
+                    break;
+                }
             }
-            return (i >= min);
-        }, function() { return m1.toString(Matcher.prec.MOD) + marker; });
+            return i >= min;
+        }, function() {
+            return m1.toString(Matcher.prec.MOD) + marker;
+        });
     }
 };

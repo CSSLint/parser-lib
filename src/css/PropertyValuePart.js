@@ -19,7 +19,7 @@ var Tokens = require("./Tokens");
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function PropertyValuePart(text, line, col, optionalHint){
+function PropertyValuePart(text, line, col, optionalHint) {
     var hint = optionalHint || {};
 
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_VALUE_PART_TYPE);
@@ -36,13 +36,13 @@ function PropertyValuePart(text, line, col, optionalHint){
     var temp;
 
     //it is a measurement?
-    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)){  //dimension
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)) {  //dimension
         this.type = "dimension";
         this.value = +RegExp.$1;
         this.units = RegExp.$2;
 
         //try to narrow down
-        switch(this.units.toLowerCase()){
+        switch (this.units.toLowerCase()) {
 
             case "em":
             case "rem":
@@ -60,7 +60,7 @@ function PropertyValuePart(text, line, col, optionalHint){
             case "vmin":
                 this.type = "length";
                 break;
-                
+
             case "fr":
                 this.type = "grid";
                 break;
@@ -90,85 +90,85 @@ function PropertyValuePart(text, line, col, optionalHint){
 
         }
 
-    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)){  //percentage
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)) {  //percentage
         this.type = "percentage";
         this.value = +RegExp.$1;
-    } else if (/^([+\-]?\d+)$/i.test(text)){  //integer
+    } else if (/^([+\-]?\d+)$/i.test(text)) {  //integer
         this.type = "integer";
         this.value = +RegExp.$1;
-    } else if (/^([+\-]?[\d\.]+)$/i.test(text)){  //number
+    } else if (/^([+\-]?[\d\.]+)$/i.test(text)) {  //number
         this.type = "number";
         this.value = +RegExp.$1;
 
-    } else if (/^#([a-f0-9]{3,6})/i.test(text)){  //hexcolor
+    } else if (/^#([a-f0-9]{3,6})/i.test(text)) {  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
-        if (temp.length === 3){
-            this.red    = parseInt(temp.charAt(0)+temp.charAt(0),16);
-            this.green  = parseInt(temp.charAt(1)+temp.charAt(1),16);
-            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2),16);
+        if (temp.length === 3) {
+            this.red    = parseInt(temp.charAt(0)+temp.charAt(0), 16);
+            this.green  = parseInt(temp.charAt(1)+temp.charAt(1), 16);
+            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2), 16);
         } else {
-            this.red    = parseInt(temp.substring(0,2),16);
-            this.green  = parseInt(temp.substring(2,4),16);
-            this.blue   = parseInt(temp.substring(4,6),16);
+            this.red    = parseInt(temp.substring(0, 2), 16);
+            this.green  = parseInt(temp.substring(2, 4), 16);
+            this.blue   = parseInt(temp.substring(4, 6), 16);
         }
-    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)){ //rgb() color with absolute numbers
+    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)) { //rgb() color with absolute numbers
         this.type   = "color";
         this.red    = +RegExp.$1;
         this.green  = +RegExp.$2;
         this.blue   = +RegExp.$3;
-    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //rgb() color with percentages
+    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { //rgb() color with percentages
         this.type   = "color";
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
-    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with absolute numbers
+    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with absolute numbers
         this.type   = "color";
         this.red    = +RegExp.$1;
         this.green  = +RegExp.$2;
         this.blue   = +RegExp.$3;
         this.alpha  = +RegExp.$4;
-    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //rgba() color with percentages
+    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with percentages
         this.type   = "color";
         this.red    = +RegExp.$1 * 255 / 100;
         this.green  = +RegExp.$2 * 255 / 100;
         this.blue   = +RegExp.$3 * 255 / 100;
         this.alpha  = +RegExp.$4;
-    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)){ //hsl()
+    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { //hsl()
         this.type   = "color";
         this.hue    = +RegExp.$1;
         this.saturation = +RegExp.$2 / 100;
         this.lightness  = +RegExp.$3 / 100;
-    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)){ //hsla() color with percentages
+    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //hsla() color with percentages
         this.type   = "color";
         this.hue    = +RegExp.$1;
         this.saturation = +RegExp.$2 / 100;
         this.lightness  = +RegExp.$3 / 100;
         this.alpha  = +RegExp.$4;
-    } else if (/^url\(("([^\\"]|\\.)*")\)/i.test(text)){ //URI
+    } else if (/^url\(("([^\\"]|\\.)*")\)/i.test(text)) { //URI
         // generated by TokenStream.readURI, so always double-quoted.
         this.type   = "uri";
         this.uri    = PropertyValuePart.parseString(RegExp.$1);
-    } else if (/^([^\(]+)\(/i.test(text)){
+    } else if (/^([^\(]+)\(/i.test(text)) {
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
-    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)){    //double-quoted string
+    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {    //double-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)){    //single-quoted string
+    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {    //single-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (Colors[text.toLowerCase()]){  //named color
+    } else if (Colors[text.toLowerCase()]) {  //named color
         this.type   = "color";
         temp        = Colors[text.toLowerCase()].substring(1);
-        this.red    = parseInt(temp.substring(0,2),16);
-        this.green  = parseInt(temp.substring(2,4),16);
-        this.blue   = parseInt(temp.substring(4,6),16);
-    } else if (/^[\,\/]$/.test(text)){
+        this.red    = parseInt(temp.substring(0, 2), 16);
+        this.green  = parseInt(temp.substring(2, 4), 16);
+        this.blue   = parseInt(temp.substring(4, 6), 16);
+    } else if (/^[,\/]$/.test(text)) {
         this.type   = "operator";
         this.value  = text;
-    } else if (/^-?[a-z_\u00A0-\uFFFF][a-z0-9\-_\u00A0-\uFFFF]*$/i.test(text)){
+    } else if (/^-?[a-z_\u00A0-\uFFFF][a-z0-9\-_\u00A0-\uFFFF]*$/i.test(text)) {
         this.type   = "identifier";
         this.value  = text;
     }
@@ -177,7 +177,7 @@ function PropertyValuePart(text, line, col, optionalHint){
     // well as with "color" parts which are also "identifiers", so record
     // an explicit hint when the token generating this PropertyValuePart
     // was an identifier.
-    this.wasIdent = !!hint.ident;
+    this.wasIdent = Boolean(hint.ident);
 
 }
 
@@ -190,7 +190,9 @@ PropertyValuePart.prototype.constructor = PropertyValuePart;
 PropertyValuePart.parseString = function(str) {
     str = str.slice(1, -1); // Strip surrounding single/double quotes
     var replacer = function(match, esc) {
-        if (/^(\n|\r\n|\r|\f)$/.test(esc)) { return ''; }
+        if (/^(\n|\r\n|\r|\f)$/.test(esc)) {
+            return "";
+        }
         var m = /^[0-9a-f]{1,6}/i.exec(esc);
         if (m) {
             var codePoint = parseInt(m[0], 16);
@@ -212,7 +214,7 @@ PropertyValuePart.parseString = function(str) {
  */
 PropertyValuePart.serializeString = function(value) {
     var replacer = function(match, c) {
-        if (c === '"') {
+        if (c === "\"") {
             return "\\" + c;
         }
         var cp = String.codePointAt ? String.codePointAt(0) :
@@ -221,7 +223,7 @@ PropertyValuePart.serializeString = function(value) {
             String.charCodeAt(0);
         return "\\" + cp.toString(16) + " ";
     };
-    return '"' + value.replace(/["\r\n\f]/g, replacer) + '"';
+    return "\"" + value.replace(/["\r\n\f]/g, replacer) + "\"";
 };
 
 /**
@@ -233,7 +235,7 @@ PropertyValuePart.serializeString = function(value) {
  * @static
  * @method fromToken
  */
-PropertyValuePart.fromToken = function(token){
+PropertyValuePart.fromToken = function(token) {
     var part = new PropertyValuePart(token.value, token.startLine, token.startCol, {
         // Tokens can have escaped characters that would fool the type
         // identification in the PropertyValuePart constructor, so pass

@@ -18,7 +18,7 @@ var Parser = require("./Parser");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function MediaQuery(modifier, mediaType, features, line, col){
+function MediaQuery(modifier, mediaType, features, line, col) {
 
     SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 

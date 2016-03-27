@@ -10,7 +10,7 @@ module.exports = PropertyValueIterator;
  * @class PropertyValueIterator
  * @constructor
  */
-function PropertyValueIterator(value){
+function PropertyValueIterator(value) {
 
     /**
      * Iterator value
@@ -50,7 +50,7 @@ function PropertyValueIterator(value){
  * @return {int} The total number of parts in the value.
  * @method count
  */
-PropertyValueIterator.prototype.count = function(){
+PropertyValueIterator.prototype.count = function() {
     return this._parts.length;
 };
 
@@ -59,7 +59,7 @@ PropertyValueIterator.prototype.count = function(){
  * @return {Boolean} True if positioned at first item, false if not.
  * @method isFirst
  */
-PropertyValueIterator.prototype.isFirst = function(){
+PropertyValueIterator.prototype.isFirst = function() {
     return this._i === 0;
 };
 
@@ -68,8 +68,8 @@ PropertyValueIterator.prototype.isFirst = function(){
  * @return {Boolean} True if there are more parts, false if not.
  * @method hasNext
  */
-PropertyValueIterator.prototype.hasNext = function(){
-    return (this._i < this._parts.length);
+PropertyValueIterator.prototype.hasNext = function() {
+    return this._i < this._parts.length;
 };
 
 /**
@@ -78,7 +78,7 @@ PropertyValueIterator.prototype.hasNext = function(){
  * @return {void}
  * @method mark
  */
-PropertyValueIterator.prototype.mark = function(){
+PropertyValueIterator.prototype.mark = function() {
     this._marks.push(this._i);
 };
 
@@ -89,7 +89,7 @@ PropertyValueIterator.prototype.mark = function(){
  * part.
  * @method peek
  */
-PropertyValueIterator.prototype.peek = function(count){
+PropertyValueIterator.prototype.peek = function(count) {
     return this.hasNext() ? this._parts[this._i + (count || 0)] : null;
 };
 
@@ -100,7 +100,7 @@ PropertyValueIterator.prototype.peek = function(count){
  * part.
  * @method next
  */
-PropertyValueIterator.prototype.next = function(){
+PropertyValueIterator.prototype.next = function() {
     return this.hasNext() ? this._parts[this._i++] : null;
 };
 
@@ -111,7 +111,7 @@ PropertyValueIterator.prototype.next = function(){
  * property value or null if there is no previous part.
  * @method previous
  */
-PropertyValueIterator.prototype.previous = function(){
+PropertyValueIterator.prototype.previous = function() {
     return this._i > 0 ? this._parts[--this._i] : null;
 };
 
@@ -120,8 +120,8 @@ PropertyValueIterator.prototype.previous = function(){
  * @return {void}
  * @method restore
  */
-PropertyValueIterator.prototype.restore = function(){
-    if (this._marks.length){
+PropertyValueIterator.prototype.restore = function() {
+    if (this._marks.length) {
         this._i = this._marks.pop();
     }
 };

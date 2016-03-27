@@ -11,7 +11,7 @@ module.exports = SyntaxUnit;
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col, type){
+function SyntaxUnit(text, line, col, type) {
 
 
     /**
@@ -52,7 +52,7 @@ function SyntaxUnit(text, line, col, type){
  * @static
  * @method fromToken
  */
-SyntaxUnit.fromToken = function(token){
+SyntaxUnit.fromToken = function(token) {
     return new SyntaxUnit(token.value, token.startLine, token.startCol);
 };
 
@@ -66,7 +66,7 @@ SyntaxUnit.prototype = {
      * @return {String} The text representation of the unit.
      * @method valueOf
      */
-    valueOf: function(){
+    valueOf: function() {
         return this.toString();
     },
 
@@ -75,7 +75,7 @@ SyntaxUnit.prototype = {
      * @return {String} The text representation of the unit.
      * @method toString
      */
-    toString: function(){
+    toString: function() {
         return this.text;
     }
 

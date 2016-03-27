@@ -5,7 +5,9 @@ var ValidationTypes = module.exports;
 var Matcher = require("./Matcher");
 
 function copy(to, from) {
-    Object.keys(from).forEach(function(prop) { to[prop] = from[prop]; });
+    Object.keys(from).forEach(function(prop) {
+        to[prop] = from[prop];
+    });
 }
 copy(ValidationTypes, {
 
@@ -14,13 +16,13 @@ copy(ValidationTypes, {
             args = literals.split(" | "),
             i, len, found = false;
 
-        for (i=0,len=args.length; i < len && !found; i++){
+        for (i=0, len=args.length; i < len && !found; i++) {
             if (args[i].charAt(0) === "<") {
                 found = this.simple[args[i]](part);
-            } else if (args[i].slice(-2) === "()"){
+            } else if (args[i].slice(-2) === "()") {
                 found = (part.type === "function" &&
                          part.name === args[i].slice(0, -2));
-            } else if (text === args[i].toLowerCase()){
+            } else if (text === args[i].toLowerCase()) {
                 found = true;
             }
         }
@@ -29,11 +31,11 @@ copy(ValidationTypes, {
     },
 
     isSimple: function(type) {
-        return !!this.simple[type];
+        return Boolean(this.simple[type]);
     },
 
     isComplex: function(type) {
-        return !!this.complex[type];
+        return Boolean(this.complex[type]);
     },
 
     describe: function(type) {
@@ -51,7 +53,7 @@ copy(ValidationTypes, {
         var args = types.split(" | "),
             i, len, found = false;
 
-        for (i=0,len=args.length; i < len && !found && expression.hasNext(); i++){
+        for (i=0, len=args.length; i < len && !found && expression.hasNext(); i++) {
             found = this.isType(expression, args[i]);
         }
 
@@ -66,7 +68,7 @@ copy(ValidationTypes, {
         var args = types.split(" || "),
             i, len, found = false;
 
-        for (i=0,len=args.length; i < len && !found; i++){
+        for (i=0, len=args.length; i < len && !found; i++) {
             found = this.isType(expression, args[i]);
         }
 
@@ -101,7 +103,6 @@ copy(ValidationTypes, {
     },
 
 
-
     simple: {
         __proto__: null,
 
@@ -116,7 +117,7 @@ copy(ValidationTypes, {
                 !/^(unset|initial|inherit|will-change|auto|scroll-position|contents)$/i.test(part);
         },
 
-        "<angle>": function(part){
+        "<angle>": function(part) {
             return part.type === "angle";
         },
 
@@ -142,7 +143,7 @@ copy(ValidationTypes, {
 
         "<clip-source>": "<uri>",
 
-        "<color>": function(part){
+        "<color>": function(part) {
             return part.type === "color" || String(part) === "transparent" || String(part) === "currentColor";
         },
 
@@ -160,8 +161,8 @@ copy(ValidationTypes, {
             "min-content | -moz-min-content | -webkit-min-content | " +
             "fit-content | -moz-fit-content | -webkit-fit-content",
 
-        "<feature-tag-value>": function(part){
-            return (part.type === "function" && /^[A-Z0-9]{4}$/i.test(part));
+        "<feature-tag-value>": function(part) {
+            return part.type === "function" && /^[A-Z0-9]{4}$/i.test(part);
         },
 
         // custom() isn't actually in the spec
@@ -205,8 +206,8 @@ copy(ValidationTypes, {
 
         "<geometry-box>": "<shape-box> | fill-box | stroke-box | view-box",
 
-        "<glyph-angle>": function(part){
-            return part.type === "angle" && part.units === 'deg';
+        "<glyph-angle>": function(part) {
+            return part.type === "angle" && part.units === "deg";
         },
 
         "<gradient>": function(part) {
@@ -218,29 +219,29 @@ copy(ValidationTypes, {
             "icc-color() | icc-named-color()",
 
         //any identifier
-        "<ident>": function(part){
+        "<ident>": function(part) {
             return part.type === "identifier" || part.wasIdent;
         },
 
-        "<ident-not-generic-family>": function(part){
+        "<ident-not-generic-family>": function(part) {
             return this["<ident>"](part) && !this["<generic-family>"](part);
         },
 
         "<image>": "<uri>",
 
-        "<integer>": function(part){
+        "<integer>": function(part) {
             return part.type === "integer";
         },
 
-        "<length>": function(part){
-            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)){
+        "<length>": function(part) {
+            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)) {
                 return true;
-            }else{
+            } else {
                 return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
             }
         },
 
-        "<line>": function(part){
+        "<line>": function(part) {
             return part.type === "integer";
         },
 
@@ -248,31 +249,31 @@ copy(ValidationTypes, {
 
         "<margin-width>": "<length> | <percentage> | auto",
 
-        "<miterlimit>": function(part){
+        "<miterlimit>": function(part) {
             return this["<number>"](part) && part.value >= 1;
         },
 
-        "<nonnegative-length-or-percentage>": function(part){
+        "<nonnegative-length-or-percentage>": function(part) {
             return (this["<length>"](part) || this["<percentage>"](part)) &&
                 (String(part) === "0" || part.type === "function" || (part.value) >= 0);
         },
 
-        "<nonnegative-number-or-percentage>": function(part){
+        "<nonnegative-number-or-percentage>": function(part) {
             return (this["<number>"](part) || this["<percentage>"](part)) &&
                 (String(part) === "0" || part.type === "function" || (part.value) >= 0);
         },
 
-        "<number>": function(part){
+        "<number>": function(part) {
             return part.type === "number" || this["<integer>"](part);
         },
 
-        "<opacity-value>": function(part){
+        "<opacity-value>": function(part) {
             return this["<number>"](part) && part.value >= 0 && part.value <= 1;
         },
 
         "<padding-width>": "<nonnegative-length-or-percentage>",
 
-        "<percentage>": function(part){
+        "<percentage>": function(part) {
             return part.type === "percentage" || String(part) === "0";
         },
 
@@ -291,7 +292,7 @@ copy(ValidationTypes, {
                 !/^(none|unset|initial|inherit)$/i.test(part);
         },
 
-        "<string>": function(part){
+        "<string>": function(part) {
             return part.type === "string";
         },
 
@@ -299,7 +300,7 @@ copy(ValidationTypes, {
             return part.type === "time";
         },
 
-        "<uri>": function(part){
+        "<uri>": function(part) {
             return part.type === "uri";
         },
 
@@ -430,7 +431,7 @@ copy(ValidationTypes, {
         "<shadow>":
         //inset? && [ <length>{2,4} && <color>? ]
         Matcher.many([true /* length is required */],
-                     Matcher.cast("<length>").braces(2,4), "inset", "<color>"),
+                     Matcher.cast("<length>").braces(2, 4), "inset", "<color>"),
 
         "<text-decoration>":
             "none | [ underline || overline || line-through || blink ]",

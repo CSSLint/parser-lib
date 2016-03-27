@@ -10,7 +10,7 @@ var PropertyValueIterator = require("./PropertyValueIterator");
 
 var Validation = module.exports = {
 
-    validate: function(property, value){
+    validate: function(property, value) {
 
         //normalize name
         var name        = property.toString().toLowerCase(),
@@ -19,14 +19,14 @@ var Validation = module.exports = {
             part;
 
         if (!spec) {
-            if (name.indexOf("-") !== 0){    //vendor prefixed are ok
+            if (name.indexOf("-") !== 0) {    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
-        } else if (typeof spec !== "number"){
+        } else if (typeof spec !== "number") {
 
             // All properties accept some CSS-wide values.
             // https://drafts.csswg.org/css-values-3/#common-keywords
-            if (ValidationTypes.isAny(expression, "inherit | initial | unset")){
+            if (ValidationTypes.isAny(expression, "inherit | initial | unset")) {
                 if (expression.hasNext()) {
                     part = expression.next();
                     throw new ValidationError("Expected end of value but found '" + part + "'.", part.line, part.col);

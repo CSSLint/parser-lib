@@ -15,7 +15,7 @@ var SelectorPart = require("./SelectorPart");
  * @param {int} c Number of classes and pseudo classes
  * @param {int} d Number of element names and pseudo elements
  */
-function Specificity(a, b, c, d){
+function Specificity(a, b, c, d) {
     this.a = a;
     this.b = b;
     this.c = c;
@@ -31,14 +31,14 @@ Specificity.prototype = {
      * @return {int} -1 if the other specificity is larger, 1 if smaller, 0 if equal.
      * @method compare
      */
-    compare: function(other){
+    compare: function(other) {
         var comps = ["a", "b", "c", "d"],
             i, len;
 
-        for (i=0, len=comps.length; i < len; i++){
-            if (this[comps[i]] < other[comps[i]]){
+        for (i=0, len=comps.length; i < len; i++) {
+            if (this[comps[i]] < other[comps[i]]) {
                 return -1;
-            } else if (this[comps[i]] > other[comps[i]]){
+            } else if (this[comps[i]] > other[comps[i]]) {
                 return 1;
             }
         }
@@ -51,7 +51,7 @@ Specificity.prototype = {
      * @return {int} The numeric value for the specificity.
      * @method valueOf
      */
-    valueOf: function(){
+    valueOf: function() {
         return (this.a * 1000) + (this.b * 100) + (this.c * 10) + this.d;
     },
 
@@ -60,7 +60,7 @@ Specificity.prototype = {
      * @return {String} The string representation of specificity.
      * @method toString
      */
-    toString: function(){
+    toString: function() {
         return this.a + "," + this.b + "," + this.c + "," + this.d;
     }
 
@@ -73,13 +73,13 @@ Specificity.prototype = {
  * @static
  * @method calculate
  */
-Specificity.calculate = function(selector){
+Specificity.calculate = function(selector) {
 
     var i, len,
         part,
         b=0, c=0, d=0;
 
-    function updateValues(part){
+    function updateValues(part) {
 
         var i, j, len, num,
             elementName = part.elementName ? part.elementName.text : "",
@@ -89,9 +89,9 @@ Specificity.calculate = function(selector){
             d++;
         }
 
-        for (i=0, len=part.modifiers.length; i < len; i++){
+        for (i=0, len=part.modifiers.length; i < len; i++) {
             modifier = part.modifiers[i];
-            switch(modifier.type){
+            switch (modifier.type) {
                 case "class":
                 case "attribute":
                     c++;
@@ -102,7 +102,7 @@ Specificity.calculate = function(selector){
                     break;
 
                 case "pseudo":
-                    if (Pseudos.isElement(modifier.text)){
+                    if (Pseudos.isElement(modifier.text)) {
                         d++;
                     } else {
                         c++;
@@ -110,17 +110,17 @@ Specificity.calculate = function(selector){
                     break;
 
                 case "not":
-                    for (j=0, num=modifier.args.length; j < num; j++){
+                    for (j=0, num=modifier.args.length; j < num; j++) {
                         updateValues(modifier.args[j]);
                     }
             }
-         }
+        }
     }
 
-    for (i=0, len=selector.parts.length; i < len; i++){
+    for (i=0, len=selector.parts.length; i < len; i++) {
         part = selector.parts[i];
 
-        if (part instanceof SelectorPart){
+        if (part instanceof SelectorPart) {
             updateValues(part);
         }
     }

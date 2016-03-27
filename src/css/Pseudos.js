@@ -11,6 +11,6 @@ var Pseudos = module.exports = {
 Pseudos.ELEMENT = 1;
 Pseudos.CLASS = 2;
 
-Pseudos.isElement = function(pseudo){
+Pseudos.isElement = function(pseudo) {
     return pseudo.indexOf("::") === 0 || Pseudos[pseudo.toLowerCase()] === Pseudos.ELEMENT;
 };

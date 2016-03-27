@@ -22,7 +22,7 @@ var Parser = require("./Parser");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorPart(elementName, modifiers, text, line, col){
+function SelectorPart(elementName, modifiers, text, line, col) {
 
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_PART_TYPE);
 

@@ -18,7 +18,7 @@ var Parser = require("./Parser");
  * @extends parserlib.util.SyntaxUnit
  * @constructor
  */
-function PropertyValue(parts, line, col){
+function PropertyValue(parts, line, col) {
 
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.PROPERTY_VALUE_TYPE);
 

@@ -12,7 +12,8 @@
   "nonew":      true,
   "predef":     ["-SyntaxError"],
   "proto":      true,
+  "quotmark":   "double",
   "strict":     true,
   "undef":      true,
-  "unused":     "vars"
+  "unused":     true
 }

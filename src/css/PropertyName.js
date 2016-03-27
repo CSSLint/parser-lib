@@ -17,7 +17,7 @@ var Parser = require("./Parser");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function PropertyName(text, hack, line, col){
+function PropertyName(text, hack, line, col) {
 
     SyntaxUnit.call(this, text, line, col, Parser.PROPERTY_NAME_TYPE);
 
@@ -32,6 +32,6 @@ function PropertyName(text, hack, line, col){
 
 PropertyName.prototype = new SyntaxUnit();
 PropertyName.prototype.constructor = PropertyName;
-PropertyName.prototype.toString = function(){
+PropertyName.prototype.toString = function() {
     return (this.hack ? this.hack : "") + this.text;
 };

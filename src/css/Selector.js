@@ -18,7 +18,7 @@ var Specificity = require("./Specificity");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function Selector(parts, line, col){
+function Selector(parts, line, col) {
 
     SyntaxUnit.call(this, parts.join(" "), line, col, Parser.SELECTOR_TYPE);
 

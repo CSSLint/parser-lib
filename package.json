@@ -26,10 +26,11 @@
   "main": "./src/index.js",
   "scripts": {
     "coverage": "ytestrunner -c",
-    "pretest": "jshint src tests scripts",
+    "lint": "jshint scripts src tests",
+    "pretest": "npm run lint",
     "build": "node scripts/build.js",
     "test-yuitest": "ytestrunner",
-    "test": "npm run test-yuitest",
+    "test": "npm run lint && npm run test-yuitest",
     "prepublish": "npm test"
   },
   "devDependencies": {

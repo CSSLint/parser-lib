@@ -18,7 +18,7 @@ var Parser = require("./Parser");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SelectorSubPart(text, type, line, col){
+function SelectorSubPart(text, type, line, col) {
 
     SyntaxUnit.call(this, text, line, col, Parser.SELECTOR_SUB_PART_TYPE);
 

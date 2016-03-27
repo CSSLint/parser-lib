@@ -8,7 +8,7 @@ module.exports = EventTarget;
  * @class EventTarget
  * @constructor
  */
-function EventTarget(){
+function EventTarget() {
 
     /**
      * The array of listeners for various events.
@@ -31,8 +31,8 @@ EventTarget.prototype = {
      * @return {void}
      * @method addListener
      */
-    addListener: function(type, listener){
-        if (!this._listeners[type]){
+    addListener: function(type, listener) {
+        if (!this._listeners[type]) {
             this._listeners[type] = [];
         }
 
@@ -46,23 +46,23 @@ EventTarget.prototype = {
      * @return {void}
      * @method fire
      */
-    fire: function(event){
-        if (typeof event === "string"){
+    fire: function(event) {
+        if (typeof event === "string") {
             event = { type: event };
         }
-        if (typeof event.target !== "undefined"){
+        if (typeof event.target !== "undefined") {
             event.target = this;
         }
 
-        if (typeof event.type === "undefined"){
+        if (typeof event.type === "undefined") {
             throw new Error("Event object missing 'type' property.");
         }
 
-        if (this._listeners[event.type]){
+        if (this._listeners[event.type]) {
 
             //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
-            for (var i=0, len=listeners.length; i < len; i++){
+            for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
@@ -75,11 +75,11 @@ EventTarget.prototype = {
      * @return {void}
      * @method removeListener
      */
-    removeListener: function(type, listener){
-        if (this._listeners[type]){
+    removeListener: function(type, listener) {
+        if (this._listeners[type]) {
             var listeners = this._listeners[type];
-            for (var i=0, len=listeners.length; i < len; i++){
-                if (listeners[i] === listener){
+            for (var i=0, len=listeners.length; i < len; i++) {
+                if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;
                 }

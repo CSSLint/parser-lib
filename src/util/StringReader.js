@@ -9,7 +9,7 @@ module.exports = StringReader;
  * @constructor
  * @param {String} text The text to read.
  */
-function StringReader(text){
+function StringReader(text) {
 
     /**
      * The input text with line endings normalized.
@@ -48,7 +48,7 @@ function StringReader(text){
 
 StringReader.prototype = {
 
-    //restore constructor
+    // restore constructor
     constructor: StringReader,
 
     //-------------------------------------------------------------------------
@@ -60,7 +60,7 @@ StringReader.prototype = {
      * @return {int} The column of the character to be read next.
      * @method getCol
      */
-    getCol: function(){
+    getCol: function() {
         return this._col;
     },
 
@@ -69,8 +69,8 @@ StringReader.prototype = {
      * @return {int} The row of the character to be read next.
      * @method getLine
      */
-    getLine: function(){
-        return this._line ;
+    getLine: function() {
+        return this._line;
     },
 
     /**
@@ -78,8 +78,8 @@ StringReader.prototype = {
      * @return {Boolean} True if there's no more input, false otherwise.
      * @method eof
      */
-    eof: function(){
-        return (this._cursor === this._input.length);
+    eof: function() {
+        return this._cursor === this._input.length;
     },
 
     //-------------------------------------------------------------------------
@@ -92,14 +92,14 @@ StringReader.prototype = {
      * @return {String} The next character or null if there is no next character.
      * @method peek
      */
-    peek: function(count){
+    peek: function(count) {
         var c = null;
-        count = (typeof count === "undefined" ? 1 : count);
+        count = typeof count === "undefined" ? 1 : count;
 
-        //if we're not at the end of the input...
-        if (this._cursor < this._input.length){
+        // if we're not at the end of the input...
+        if (this._cursor < this._input.length) {
 
-            //get character and increment cursor and column
+            // get character and increment cursor and column
             c = this._input.charAt(this._cursor + count - 1);
         }
 
@@ -112,22 +112,22 @@ StringReader.prototype = {
      * @return {String} The next character or null if there is no next character.
      * @method read
      */
-    read: function(){
+    read: function() {
         var c = null;
 
-        //if we're not at the end of the input...
-        if (this._cursor < this._input.length){
+        // if we're not at the end of the input...
+        if (this._cursor < this._input.length) {
 
-            //if the last character was a newline, increment row count
-            //and reset column count
-            if (this._input.charAt(this._cursor) === "\n"){
+            // if the last character was a newline, increment row count
+            // and reset column count
+            if (this._input.charAt(this._cursor) === "\n") {
                 this._line++;
                 this._col=1;
             } else {
                 this._col++;
             }
 
-            //get character and increment cursor and column
+            // get character and increment cursor and column
             c = this._input.charAt(this._cursor++);
         }
 
@@ -143,7 +143,7 @@ StringReader.prototype = {
      * @method mark
      * @return {void}
      */
-    mark: function(){
+    mark: function() {
         this._bookmark = {
             cursor: this._cursor,
             line:   this._line,
@@ -151,8 +151,8 @@ StringReader.prototype = {
         };
     },
 
-    reset: function(){
-        if (this._bookmark){
+    reset: function() {
+        if (this._bookmark) {
             this._cursor = this._bookmark.cursor;
             this._line = this._bookmark.line;
             this._col = this._bookmark.col;
@@ -172,7 +172,7 @@ StringReader.prototype = {
      * @throws Error when the string pattern is not found.
      * @method readTo
      */
-    readTo: function(pattern){
+    readTo: function(pattern) {
 
         var buffer = "",
             c;
@@ -182,9 +182,9 @@ StringReader.prototype = {
          * Then, buffer must end with the pattern or else reach the
          * end of the input.
          */
-        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) !== buffer.length - pattern.length){
+        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) !== buffer.length - pattern.length) {
             c = this.read();
-            if (c){
+            if (c) {
                 buffer += c;
             } else {
                 throw new Error("Expected \"" + pattern + "\" at line " + this._line  + ", col " + this._col + ".");
@@ -205,12 +205,12 @@ StringReader.prototype = {
      *      filter check.
      * @method readWhile
      */
-    readWhile: function(filter){
+    readWhile: function(filter) {
 
         var buffer = "",
             c = this.peek();
 
-        while(c !== null && filter(c)){
+        while (c !== null && filter(c)) {
             buffer += this.read();
             c = this.peek();
         }
@@ -231,18 +231,18 @@ StringReader.prototype = {
      *      null if there was no match.
      * @method readMatch
      */
-    readMatch: function(matcher){
+    readMatch: function(matcher) {
 
         var source = this._input.substring(this._cursor),
             value = null;
 
-        //if it's a string, just do a straight match
-        if (typeof matcher === "string"){
-            if (source.slice(0, matcher.length) === matcher){
+        // if it's a string, just do a straight match
+        if (typeof matcher === "string") {
+            if (source.slice(0, matcher.length) === matcher) {
                 value = this.readCount(matcher.length);
             }
-        } else if (matcher instanceof RegExp){
-            if (matcher.test(source)){
+        } else if (matcher instanceof RegExp) {
+            if (matcher.test(source)) {
                 value = this.readCount(RegExp.lastMatch.length);
             }
         }
@@ -258,10 +258,10 @@ StringReader.prototype = {
      * @return {String} The string made up the read characters.
      * @method readCount
      */
-    readCount: function(count){
+    readCount: function(count) {
         var buffer = "";
 
-        while(count--){
+        while (count--) {
             buffer += this.read();
         }
 

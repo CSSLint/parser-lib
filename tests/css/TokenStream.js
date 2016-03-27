@@ -5,21 +5,21 @@ var YUITest = require("yuitest"),
     TokenStream = parserlib.css.TokenStream,
     CSSTokens = parserlib.css.Tokens;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
     //-------------------------------------------------------------------------
 
-    function CSSTokenTestCase(info){
+    function CSSTokenTestCase(info) {
 
         YUITest.TestCase.call(this, info);
         this.patterns = info.patterns;
 
-        for (var prop in this.patterns){
-            if (this.patterns.hasOwnProperty(prop)){
-                this["testPattern: " + prop] = function(prop){
-                    return function(){
+        for (var prop in this.patterns) {
+            if (this.patterns.hasOwnProperty(prop)) {
+                this["testPattern: " + prop] = function(prop) {
+                    return function() {
                         this._testPattern(prop, this.patterns[prop]);
                     };
                 }(prop);
@@ -29,24 +29,21 @@ var YUITest = require("yuitest"),
 
     CSSTokenTestCase.prototype = new YUITest.TestCase();
 
-    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs){
+    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs) {
         var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
 
-        for (var i=0, len=outputs.length; i < len; i++){
-            tt = tokenStream.get((outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined));
-            Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+        for (var i=0, len=outputs.length; i < len; i++) {
+            tt = tokenStream.get(outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined);
+            Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
 
         //if there was an invalid token, stop here
-        if (tt > -1){
+        if (tt > -1) {
             tt = tokenStream.get();
-            Assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+            Assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
     };
-
-
-
 
 
     //-------------------------------------------------------------------------
@@ -131,7 +128,7 @@ var YUITest = require("yuitest"),
             "'hello\""      : [CSSTokens.INVALID],
             "\"hello'"      : [CSSTokens.INVALID],
             "'hello"        : [CSSTokens.INVALID],
-            "'hel\\\'lo'"   : [CSSTokens.STRING],
+            "'hel\\'lo'"    : [CSSTokens.STRING],
             "\"hel\\\"lo\"" : [CSSTokens.STRING]
         }
     }));
@@ -148,10 +145,10 @@ var YUITest = require("yuitest"),
             "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
             "#h\\0fllo"         : [CSSTokens.HASH],
             "#ffeeff"           : [CSSTokens.HASH],
-            "#\\31 a2b3c"        : [CSSTokens.HASH],
-            "#r0\\.5"            : [CSSTokens.HASH],
+            "#\\31 a2b3c"       : [CSSTokens.HASH],
+            "#r0\\.5"           : [CSSTokens.HASH],
             // Invalid escape sequence
-            "#a\\\r"             : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
+            "#a\\\r"            : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
         }
     }));
 
@@ -159,7 +156,7 @@ var YUITest = require("yuitest"),
     // Tests for at-rules
     //-------------------------------------------------------------------------
 
-    (function(){
+    (function() {
 
         var atRules = {
             "@charset"      : CSSTokens.CHARSET_SYM,
@@ -203,7 +200,7 @@ var YUITest = require("yuitest"),
 
         var patterns;
 
-        for (var prop in atRules){ // jshint ignore:line
+        for (var prop in atRules) { // jshint ignore:line
             patterns = {};
 
             patterns[prop] = [atRules[prop]];
@@ -349,7 +346,6 @@ var YUITest = require("yuitest"),
             ".5cH"      : [CSSTokens.LENGTH],
 
 
-
             "5deg"       : [CSSTokens.ANGLE],
             "50.0DEG"    : [CSSTokens.ANGLE],
             ".5Deg"      : [CSSTokens.ANGLE],
@@ -440,8 +436,8 @@ var YUITest = require("yuitest"),
 
             //IE filters - not sure how to handle these yet
             "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
-            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN]
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN]
         }
     }));
 

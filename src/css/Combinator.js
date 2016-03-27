@@ -16,7 +16,7 @@ var Parser = require("./Parser");
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function Combinator(text, line, col){
+function Combinator(text, line, col) {
 
     SyntaxUnit.call(this, text, line, col, Parser.COMBINATOR_TYPE);
 
@@ -28,13 +28,13 @@ function Combinator(text, line, col){
     this.type = "unknown";
 
     //pretty simple
-    if (/^\s+$/.test(text)){
+    if (/^\s+$/.test(text)) {
         this.type = "descendant";
-    } else if (text === ">"){
+    } else if (text === ">") {
         this.type = "child";
-    } else if (text === "+"){
+    } else if (text === "+") {
         this.type = "adjacent-sibling";
-    } else if (text === "~"){
+    } else if (text === "~") {
         this.type = "sibling";
     }
 

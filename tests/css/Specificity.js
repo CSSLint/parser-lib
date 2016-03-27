@@ -5,13 +5,13 @@ var YUITest = require("yuitest"),
     Parser = parserlib.css.Parser,
     Specificity = parserlib.css.Specificity;
 
-(function(){
+(function() {
 
     YUITest.TestRunner.add(new YUITest.TestCase({
 
         name: "Specificity Tests",
 
-        testSpecificity1: function(){
+        testSpecificity1: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("*"),
                 specificity = Specificity.calculate(selector);
@@ -20,7 +20,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,0", specificity.toString());
         },
 
-        testSpecificity2: function(){
+        testSpecificity2: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li"),
                 specificity = Specificity.calculate(selector);
@@ -29,7 +29,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,1", specificity.toString());
         },
 
-        testSpecificity3: function(){
+        testSpecificity3: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li:first-line"),
                 specificity = Specificity.calculate(selector);
@@ -38,7 +38,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,2", specificity.toString());
         },
 
-        testSpecificity4: function(){
+        testSpecificity4: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul li"),
                 specificity = Specificity.calculate(selector);
@@ -48,7 +48,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity5: function(){
+        testSpecificity5: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul ol+li"),
                 specificity = Specificity.calculate(selector);
@@ -58,7 +58,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity6: function(){
+        testSpecificity6: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("h1 + *[rel=up]"),
                 specificity = Specificity.calculate(selector);
@@ -68,7 +68,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity7: function(){
+        testSpecificity7: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul ol li.red"),
                 specificity = Specificity.calculate(selector);
@@ -78,7 +78,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity8: function(){
+        testSpecificity8: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li.red.level"),
                 specificity = Specificity.calculate(selector);
@@ -88,7 +88,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity9: function(){
+        testSpecificity9: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector(".f00"),
                 specificity = Specificity.calculate(selector);
@@ -98,7 +98,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity10: function(){
+        testSpecificity10: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("div p.foo"),
                 specificity = Specificity.calculate(selector);
@@ -108,7 +108,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity11: function(){
+        testSpecificity11: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("#foo"),
                 specificity = Specificity.calculate(selector);
@@ -118,7 +118,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity12: function(){
+        testSpecificity12: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("body #foo .foo p"),
                 specificity = Specificity.calculate(selector);
@@ -128,7 +128,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity13: function(){
+        testSpecificity13: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("#s12:not(FOO)"),
                 specificity = Specificity.calculate(selector);

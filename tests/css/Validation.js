@@ -4,46 +4,46 @@ var YUITest = require("yuitest"),
     parserlib = require("../../"),
     Parser = parserlib.css.Parser;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
     //-------------------------------------------------------------------------
 
-    function ValidationTestCase(info){
+    function ValidationTestCase(info) {
         var i, len, prop, msg;
 
         YUITest.TestCase.call(this, info);
         // initial | inherit | unset are always valid property values.
-        this.valid = [ 'initial', 'inherit', 'unset' ].concat(info.valid);
+        this.valid = [ "initial", "inherit", "unset" ].concat(info.valid);
         this.invalid = info.invalid;
         this.property = info.property;
         this.name = "Tests for " + this.property;
         this._should.error = {};
 
-        for (i=0, len=this.valid.length; i < len; i++){
-            this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value){
-                return function(){
+        for (i=0, len=this.valid.length; i < len; i++) {
+            this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value) {
+                return function() {
                     this._testValidValue(value);
                 };
             }(this.valid[i]);
         }
 
-        for (prop in this.invalid){
-            if (this.invalid.hasOwnProperty(prop)){
-                this["'" + prop + "' is an invalid value for '" + this.property + "'"] = function(value, message){
-                    return function(){
+        for (prop in this.invalid) {
+            if (this.invalid.hasOwnProperty(prop)) {
+                this["'" + prop + "' is an invalid value for '" + this.property + "'"] = function(value, message) {
+                    return function() {
                         this._testInvalidValue(value, message);
                     };
                 }(prop, this.invalid[prop]);
             }
         }
 
-        for (prop in this.error){
-            if (this.error.hasOwnProperty(prop)){
+        for (prop in this.error) {
+            if (this.error.hasOwnProperty(prop)) {
                 msg = "'" + prop + "' is an invalid value for '" + this.property + "'";
-                this[msg] = function(value){
-                    return function(){
+                this[msg] = function(value) {
+                    return function() {
                         this._testSyntaxError(value);
                     };
                 }(prop);
@@ -54,24 +54,24 @@ var YUITest = require("yuitest"),
 
     ValidationTestCase.prototype = new YUITest.TestCase();
 
-    ValidationTestCase.prototype._testValidValue = function(value){
+    ValidationTestCase.prototype._testValidValue = function(value) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
-        parser.addListener("property", function(event){
+        parser.addListener("property", function(event) {
             Assert.isNull(event.invalid);
         });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
-    ValidationTestCase.prototype._testInvalidValue = function(value, message){
+    ValidationTestCase.prototype._testInvalidValue = function(value, message) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
-        parser.addListener("property", function(event){
+        parser.addListener("property", function(event) {
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
         });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
-    ValidationTestCase.prototype._testSyntaxError = function(value){
+    ValidationTestCase.prototype._testSyntaxError = function(value) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
@@ -115,7 +115,7 @@ var YUITest = require("yuitest"),
             "reverse",
             "alternate",
             "alternate-reverse",
-            "alternate, reverse, normal",
+            "alternate, reverse, normal"
         ],
 
         invalid: {
@@ -226,7 +226,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -282,7 +282,7 @@ var YUITest = require("yuitest"),
             "foo"                 : "Expected (<position>#) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
             "left center right"   : "Expected end of value but found 'right'.",
-            "center 3em right 10%": "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'."
         }
     }));
 
@@ -381,7 +381,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>{1,4}) but found 'foo'.",
-            "invert" : "Expected (<color>{1,4}) but found 'invert'.",
+            "invert" : "Expected (<color>{1,4}) but found 'invert'."
         }
     }));
 
@@ -396,7 +396,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -411,7 +411,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -426,7 +426,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -441,7 +441,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -456,7 +456,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -471,7 +471,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -508,7 +508,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"   : "Expected (<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?) but found 'foo'.",
-            "5px x" : "Expected end of value but found 'x'.",
+            "5px x" : "Expected end of value but found 'x'."
         }
     }));
 
@@ -539,7 +539,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -554,7 +554,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -565,7 +565,7 @@ var YUITest = require("yuitest"),
             "1px",
             "1px 1px",
             "1px 1px 1px",
-            "1px 1px 1px 1px",
+            "1px 1px 1px 1px"
         ],
 
         invalid: {
@@ -659,7 +659,7 @@ var YUITest = require("yuitest"),
 
         valid: [
             "rect(10%, 85%, 90%, 15%)",
-            'auto'
+            "auto"
         ],
 
         invalid: {
@@ -716,7 +716,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -911,7 +911,7 @@ var YUITest = require("yuitest"),
         valid: [
             "Futura, sans-serif",
             "-Futura, sans-serif",
-            '"New Century Schoolbook", serif',
+            "\"New Century Schoolbook\", serif",
             "'21st Century', fantasy",
             "serif",
             "sans-serif",
@@ -920,14 +920,14 @@ var YUITest = require("yuitest"),
             "monospace",
             // solve problem by quoting
             "'Red/Black', sans-serif",
-            '"Lucida\\", Grande", sans-serif',
+            "\"Lucida\\\", Grande\", sans-serif",
             "'Ahem!}', sans-serif",
-            '"test@foo", sans-serif',
+            "\"test@foo\", sans-serif",
             "'#POUND', sans-serif",
             "'Hawaii 5-0', sans-serif",
             // solve problem by escaping
             "Red\\/Black, sans-serif",
-            '\\"Lucida\\", Grande, sans-serif',
+            "\\\"Lucida\\\", Grande, sans-serif",
             "Ahem\\!, sans-serif",
             "test\\@foo, sans-serif",
             "\\#POUND, sans-serif",
@@ -1437,7 +1437,7 @@ var YUITest = require("yuitest"),
             "right top 5%",
             "top 3em center",
             "center top 3em",
-            "top 3em right 10%",
+            "top 3em right 10%"
         ],
 
         invalid: {

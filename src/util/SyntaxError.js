@@ -11,7 +11,7 @@ module.exports = SyntaxError;
  * @param {int} line The line at which the error occurred.
  * @param {int} col The column at which the error occurred.
  */
-function SyntaxError(message, line, col){
+function SyntaxError(message, line, col) {
     Error.call(this);
     this.name = this.constructor.name;
 

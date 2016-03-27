@@ -11,7 +11,7 @@ module.exports = ValidationError;
  * @param {int} line The line at which the error occurred.
  * @param {int} col The column at which the error occurred.
  */
-function ValidationError(message, line, col){
+function ValidationError(message, line, col) {
 
     /**
      * The column at which the error occurred.

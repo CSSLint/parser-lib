@@ -25,7 +25,6 @@
   ],
   "main": "./src/index.js",
   "scripts": {
-    "changelog": "node scripts/changelog.js",
     "coverage": "ytestrunner -c",
     "pretest": "jshint src tests scripts",
     "build": "node scripts/build.js",

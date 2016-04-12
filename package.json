@@ -42,5 +42,9 @@
     "shelljs": "^0.6.0",
     "ytestrunner": "^0.3.3",
     "yuitest": "^0.7.9"
-  }
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
 }

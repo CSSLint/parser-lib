@@ -84,6 +84,22 @@ var YUITest = require("yuitest"),
     var suite = new YUITest.TestSuite("Validation Tests");
 
     suite.add(new ValidationTestCase({
+        property: "animation-direction",
+
+        valid: [
+            "normal",
+            "reverse",
+            "alternate",
+            "alternate-reverse",
+            "alternate, reverse, normal",
+        ],
+
+        invalid: {
+            "1px" : "Expected (<single-animation-direction>#) but found '1px'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-fill-mode",
 
         valid: [

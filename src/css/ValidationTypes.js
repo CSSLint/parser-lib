@@ -282,6 +282,9 @@ copy(ValidationTypes, {
 
         "<shape-box>": "<box> | margin-box",
 
+        "<single-animation-direction>":
+            "normal | reverse | alternate | alternate-reverse",
+
         "<single-animation-name>": function(part) {
             return this["<ident>"](part) &&
                 /^-?[a-z_][-a-z0-9_]+$/i.test(part) &&

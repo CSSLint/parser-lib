@@ -16,7 +16,7 @@ var Properties = module.exports = {
     "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
     "animation"                     : 1,
     "animation-delay"               : "<time>#",
-    "animation-direction"           : "[ normal | alternate ]#",
+    "animation-direction"           : "<single-animation-direction>#",
     "animation-duration"            : "<time>#",
     "animation-fill-mode"           : "[ none | forwards | backwards | both ]#",
     "animation-iteration-count"     : "[ <number> | infinite ]#",

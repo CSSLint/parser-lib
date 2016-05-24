@@ -144,7 +144,10 @@ var Properties = module.exports = {
     "clip-path"                     : "<clip-source> | <clip-path> | none",
     "clip-rule"                     : "nonzero | evenodd",
     "color"                         : "<color>",
+    "color-interpolation"           : "auto | sRGB | linearRGB",
+    "color-interpolation-filters"   : "auto | sRGB | linearRGB",
     "color-profile"                 : 1,
+    "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
     "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
     "column-gap"                    : "<length> | normal",
@@ -178,6 +181,7 @@ var Properties = module.exports = {
     //E
     "elevation"                     : "<angle> | below | level | above | higher | lower",
     "empty-cells"                   : "show | hide",
+    "enable-background"             : 1,
 
     //F
     "fill"                          : "<paint>",
@@ -208,6 +212,8 @@ var Properties = module.exports = {
     "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
     "float"                         : "left | right | none",
     "float-offset"                  : 1,
+    "flood-color"                   : 1,
+    "flood-opacity"                 : "<opacity-value>",
     "font"                          : "<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar",
     "font-family"                   : "<font-family>",
     "font-feature-settings"         : "<feature-tag-value> | normal",
@@ -269,7 +275,7 @@ var Properties = module.exports = {
     //I
     "icon"                          : 1,
     "image-orientation"             : "angle | auto",
-    "image-rendering"               : 1,
+    "image-rendering"               : "auto | optimizeSpeed | optimizeQuality",
     "image-resolution"              : 1,
     "ime-mode"                      : "auto | normal | active | inactive | disabled",
     "inline-box-align"              : "last | <integer>",
@@ -277,6 +283,9 @@ var Properties = module.exports = {
     //J
     "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
     "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
+
+    //K
+    "kerning"                       : "auto | <length>",
 
     //L
     "left"                          : "<margin-width>",
@@ -301,11 +310,16 @@ var Properties = module.exports = {
     "mark"                          : 1,
     "mark-after"                    : 1,
     "mark-before"                   : 1,
+    "marker"                        : 1,
+    "marker-end"                    : 1,
+    "marker-mid"                    : 1,
+    "marker-start"                  : 1,
     "marks"                         : 1,
     "marquee-direction"             : 1,
     "marquee-play-count"            : 1,
     "marquee-speed"                 : 1,
     "marquee-style"                 : 1,
+    "mask"                          : 1,
     "max-height"                    : "<length> | <percentage> | <content-sizing> | none",
     "max-width"                     : "<length> | <percentage> | <content-sizing> | none",
     "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
@@ -381,6 +395,7 @@ var Properties = module.exports = {
     "ruby-span"                     : 1,
 
     //S
+    "shape-rendering"               : "auto | optimizeSpeed | crispEdges | geometricPrecision",
     "size"                          : 1,
     "speak"                         : "normal | none | spell-out",
     "speak-header"                  : "once | always",
@@ -388,6 +403,8 @@ var Properties = module.exports = {
     "speak-punctuation"             : "code | none",
     "speech-rate"                   : 1,
     "src"                           : 1,
+    "stop-color"                    : 1,
+    "stop-opacity"                  : "<opacity-value>",
     "stress"                        : 1,
     "string-set"                    : 1,
     "stroke"                        : "<paint>",
@@ -405,9 +422,9 @@ var Properties = module.exports = {
     "target-name"                   : 1,
     "target-new"                    : 1,
     "target-position"               : 1,
-    "text-anchor"                   : "start | middle | end",
     "text-align"                    : "left | right | center | justify | match-parent | start | end" ,
     "text-align-last"               : 1,
+    "text-anchor"                   : "start | middle | end",
     "text-decoration"               : "<text-decoration>",
     "text-emphasis"                 : 1,
     "text-height"                   : 1,

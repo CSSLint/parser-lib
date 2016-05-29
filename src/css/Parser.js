@@ -87,7 +87,7 @@ Parser.prototype = function(){
                  *  : [ CHARSET_SYM S* STRING S* ';' ]?
                  *    [S|CDO|CDC]* [ import [S|CDO|CDC]* ]*
                  *    [ namespace [S|CDO|CDC]* ]*
-                 *    [ [ ruleset | media | page | font_face | keyframes ] [S|CDO|CDC]* ]*
+                 *    [ [ ruleset | media | page | font_face | keyframes_rule | supports_rule ] [S|CDO|CDC]* ]*
                  *  ;
                  */
 
@@ -525,6 +525,8 @@ Parser.prototype = function(){
                         this._viewport();
                     } else if (tokenStream.peek() === Tokens.DOCUMENT_SYM){
                         this._document();
+                    } else if (tokenStream.peek() === Tokens.SUPPORTS_SYM) {
+                        this._supports();
                     } else if (!this._ruleset()){
                         break;
                     }

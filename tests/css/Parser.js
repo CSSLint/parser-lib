@@ -1622,6 +1622,18 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
+        testMediaWithSupports: function(){
+            var parser = new Parser({ strict: true});
+            var valid = true;
+
+            parser.addListener("error", function() {
+                valid = false;
+            });
+
+            parser.parse("@media { @supports (display: table-cell) {} }");
+            Assert.isTrue(valid);
+        },
+
         testMediaWithTypeOnly: function(){
             var parser = new Parser({ strict: true});
             var valid = true;

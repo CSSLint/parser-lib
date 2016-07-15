@@ -10,7 +10,7 @@
   "homepage": "https://github.com/CSSLint/parser-lib",
   "repository": {
     "type": "git",
-    "url": "http://github.com/CSSLint/parser-lib.git"
+    "url": "https://github.com/CSSLint/parser-lib.git"
   },
   "bugs": {
     "url": "https://github.com/CSSLint/parser-lib/issues"

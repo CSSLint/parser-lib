@@ -410,13 +410,13 @@ var YUITest = require("yuitest"),
             "url('foo.jpg')"    : [CSSTokens.URI],
             "url(\"foo.jpg\")"  : [CSSTokens.URI],
 
-            "url(http://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
-            "url('http://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
+            "url(https://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
+            "url('https://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
+            "url(\"https://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
 
-            "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
-            "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
+            "url(https://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
+            "url('https://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
+            "url(\"https://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
 
             //invalid URLs
             "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],

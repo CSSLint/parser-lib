@@ -1233,42 +1233,42 @@ var YUITest = require("yuitest"),
 
         testURIValue: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(http://www.yahoo.com)");
+            var result = parser.parsePropertyValue("url(https://yahoo.com)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
         testURIValue2: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url('http://www.yahoo.com')");
+            var result = parser.parsePropertyValue("url('https://yahoo.com')");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
         testURIValue3: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(\"http://www.yahoo.com\")");
+            var result = parser.parsePropertyValue("url(\"https://yahoo.com\")");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
         testURIValue4: function(){
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(http\\03a\r\n//www.yahoo.com)");
+            var result = parser.parsePropertyValue("url(https\\03a\r\n//yahoo.com)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
         testStringValue: function(){
@@ -1784,7 +1784,7 @@ var YUITest = require("yuitest"),
                 valid = false;
             });
 
-            parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url(https://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1796,7 +1796,7 @@ var YUITest = require("yuitest"),
                 valid = false;
             });
 
-            parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url-prefix(https://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -1832,7 +1832,7 @@ var YUITest = require("yuitest"),
                 valid = false;
             });
 
-            parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
+            parser.parse("@document url-prefix(https://www.w3.org/), domain(w3.org) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
@@ -2245,9 +2245,9 @@ var YUITest = require("yuitest"),
             var parser = new Parser({ strict: true});
             parser.addListener("import", function(event){
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import url(http://www.yahoo.com);");
+            parser.parse("@import url(https://yahoo.com);");
         },
 
 
@@ -2255,18 +2255,18 @@ var YUITest = require("yuitest"),
             var parser = new Parser({ strict: true});
             parser.addListener("import", function(event){
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import url('http://www.yahoo.com');");
+            parser.parse("@import url('https://yahoo.com');");
         },
 
         "Test @import address": function(){
             var parser = new Parser();
             parser.addListener("import", function(event){
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import 'http://www.yahoo.com';");
+            parser.parse("@import 'https://yahoo.com';");
         }
     }));
 

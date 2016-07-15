@@ -148,7 +148,7 @@ var Properties = module.exports = {
     "color-interpolation-filters"   : "auto | sRGB | linearRGB",
     "color-profile"                 : 1,
     "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
-    "column-count"                  : "<integer> | auto",                      //http://www.w3.org/TR/css3-multicol/
+    "column-count"                  : "<integer> | auto",                      //https://www.w3.org/TR/css3-multicol/
     "column-fill"                   : "auto | balance",
     "column-gap"                    : "<length> | normal",
     "column-rule"                   : "<border-width> || <border-style> || <color>",
@@ -467,7 +467,7 @@ var Properties = module.exports = {
     "volume"                        : 1,
 
     //W
-    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap", //http://perishablepress.com/wrapping-content/
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap",   // https://perishablepress.com/wrapping-content/
     "white-space-collapse"          : 1,
     "widows"                        : "<integer>",
     "width"                         : "<length> | <percentage> | <content-sizing> | auto",

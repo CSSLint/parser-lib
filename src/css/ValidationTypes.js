@@ -153,7 +153,7 @@ copy(ValidationTypes, {
 
         "<content>": "content()",
 
-        // http://www.w3.org/TR/css3-sizing/#width-height-keywords
+        // https://www.w3.org/TR/css3-sizing/#width-height-keywords
         "<content-sizing>":
             "fill-available | -moz-available | -webkit-fill-available | " +
             "max-content | -moz-max-content | -webkit-max-content | " +
@@ -352,7 +352,7 @@ copy(ValidationTypes, {
 
         "<filter-function-list>": "[ <filter-function> | <uri> ]+",
 
-        // http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
+        // https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-property
         "<flex>":
             "none | [ <flex-grow> <flex-shrink>? || <flex-basis> ]",
 

@@ -1134,7 +1134,7 @@ var YUITest = require("yuitest"),
 
             valid: [
                 "1",
-                // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
+                // From https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
                 "0 auto",
                 "0 1 auto",
                 "auto",
@@ -1187,7 +1187,7 @@ var YUITest = require("yuitest"),
             property: prop_name,
 
             valid: [
-                // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
+                // from https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
                 "row",
                 "column wrap",
                 "row-reverse wrap-reverse",

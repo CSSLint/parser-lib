@@ -3,7 +3,7 @@
 var Tokens = module.exports = [
 
     /*
-     * The following token names are defined in CSS3 Grammar: http://www.w3.org/TR/css3-syntax/#lexical
+     * The following token names are defined in CSS3 Grammar: https://www.w3.org/TR/css3-syntax/#lexical
      */
 
     //HTML-style comments
@@ -62,7 +62,7 @@ var Tokens = module.exports = [
     { name: "UNICODE_RANGE"},
 
     /*
-     * The following token names are defined in CSS3 Selectors: http://www.w3.org/TR/css3-selectors/#selector-syntax
+     * The following token names are defined in CSS3 Selectors: https://www.w3.org/TR/css3-selectors/#selector-syntax
      */
 
     //invalid string
@@ -98,7 +98,7 @@ var Tokens = module.exports = [
     { name: "RIGHTBOTTOM_SYM", text: "@right-bottom"},
 
     /*
-     * The following token names are defined in CSS3 Media Queries: http://www.w3.org/TR/css3-mediaqueries/#syntax
+     * The following token names are defined in CSS3 Media Queries: https://www.w3.org/TR/css3-mediaqueries/#syntax
      */
     /*{ name: "MEDIA_ONLY", state: "media"},
     { name: "MEDIA_NOT", state: "media"},

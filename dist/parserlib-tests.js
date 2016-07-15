@@ -1,6 +1,6 @@
 /*!
 Parser-Lib
-Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
+Copyright (c) 2009-2016 Nicholas C. Zakas. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v0.2.5, Build time: 10-February-2016 16:42:35 */
+/* Version v1.0.0, Build time: 15-July-2016 12:36:10 */
 (function () {
 var require = function(x) {
 if (x==='yuitest') { return YUITest; }
@@ -37,7 +37,7 @@ var YUITest = require("yuitest"),
     SelectorPart = parserlib.css.SelectorPart,
     Parser = parserlib.css.Parser;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // Base Test Suite
@@ -49,7 +49,7 @@ var YUITest = require("yuitest"),
 
         name: "Type Selector Tests",
 
-        testSimpleTypeSelector: function(){
+        testSimpleTypeSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li");
 
@@ -65,7 +65,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(1, result.specificity.valueOf());
         },
 
-        testSimpleTypeSelectorPlusNamespace: function(){
+        testSimpleTypeSelectorPlusNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("svg|rect");
 
@@ -80,7 +80,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(1, result.specificity.valueOf());
         },
 
-        testSimpleTypeSelectorPlusBlankNamespace: function(){
+        testSimpleTypeSelectorPlusBlankNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("|rect");
 
@@ -94,7 +94,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(1, result.specificity.valueOf());
         },
 
-        testSimpleTypeSelectorPlusUniversalNamespace: function(){
+        testSimpleTypeSelectorPlusUniversalNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("*|rect");
 
@@ -113,7 +113,7 @@ var YUITest = require("yuitest"),
 
         name: "Universal Selector Tests",
 
-        testSimpleUniversalSelector: function(){
+        testSimpleUniversalSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("*");
 
@@ -127,7 +127,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0, result.specificity.valueOf());
         },
 
-        testSimpleUniversalSelectorPlusNamespace: function(){
+        testSimpleUniversalSelectorPlusNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("svg|*");
 
@@ -141,7 +141,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0, result.specificity.valueOf());
         },
 
-        testSimpleUniversalSelectorPlusBlankNamespace: function(){
+        testSimpleUniversalSelectorPlusBlankNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("|*");
 
@@ -155,7 +155,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0, result.specificity.valueOf());
         },
 
-        testSimpleUniversalSelectorPlusUniversalNamespace: function(){
+        testSimpleUniversalSelectorPlusUniversalNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("*|*");
 
@@ -175,7 +175,7 @@ var YUITest = require("yuitest"),
 
         name: "Attribute Selector Tests",
 
-        testAttributePresenceSelector: function(){
+        testAttributePresenceSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[class]");
 
@@ -194,7 +194,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeEquivalenceSelector: function(){
+        testAttributeEquivalenceSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[class=\"selected\"]");
 
@@ -210,7 +210,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(11, result.specificity.valueOf());
         },
 
-        testAttributeEquivalenceSelectorNoString: function(){
+        testAttributeEquivalenceSelectorNoString: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[class=selected]");
 
@@ -227,7 +227,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeContainsSelector: function(){
+        testAttributeContainsSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[class~=\"selected\"]");
 
@@ -244,7 +244,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeDashMatchSelector: function(){
+        testAttributeDashMatchSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[class|=\"selected\"]");
 
@@ -261,7 +261,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeStartMatchSelector: function(){
+        testAttributeStartMatchSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("object[type^=\"image/\"]");
 
@@ -277,7 +277,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(11, result.specificity.valueOf());
         },
 
-        testAttributeEndMatchSelector: function(){
+        testAttributeEndMatchSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("a[href$=\".html\"]");
 
@@ -293,7 +293,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(11, result.specificity.valueOf());
         },
 
-        testAttributeContainsMatchSelector: function(){
+        testAttributeContainsMatchSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("p[title*=\"hello\"]");
 
@@ -309,7 +309,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(11, result.specificity.valueOf());
         },
 
-        testAttributeEquivalenceSelectorNamespace: function(){
+        testAttributeEquivalenceSelectorNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[html|class=selected]");
 
@@ -326,7 +326,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeEquivalenceSelectorUniversalNamespace: function(){
+        testAttributeEquivalenceSelectorUniversalNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[*|class=selected]");
 
@@ -343,7 +343,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testAttributeEquivalenceSelectorDefaultNamespace: function(){
+        testAttributeEquivalenceSelectorDefaultNamespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li[|class=selected]");
 
@@ -366,7 +366,7 @@ var YUITest = require("yuitest"),
 
         name: "Class Selector Tests",
 
-        testSimpleClassSelector: function(){
+        testSimpleClassSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector(".selected");
 
@@ -384,7 +384,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testCompoundClassSelector: function(){
+        testCompoundClassSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector(".selected.foo");
 
@@ -401,14 +401,14 @@ var YUITest = require("yuitest"),
             Assert.areEqual(".foo", result.parts[0].modifiers[1].text, "Modifier text should be '.foo'.");
         },
 
-        testSimpleClassSelectorWithElementName: function(){
+        testSimpleClassSelectorWithElementName: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.selected");
 
             Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
             Assert.areEqual(1, result.parts.length, "Selector should have one parts.");
             Assert.isInstanceOf(SelectorPart, result.parts[0], "First part should be a SelectorPart.");
-            Assert.areEqual("li",result.parts[0].elementName, "Element name should be null.");
+            Assert.areEqual("li", result.parts[0].elementName, "Element name should be null.");
             Assert.areEqual(1, result.parts[0].modifiers.length, "Element should have one modifier.");
             Assert.areEqual("class", result.parts[0].modifiers[0].type, "Modifier type should be 'class'.");
             Assert.areEqual(".selected", result.parts[0].modifiers[0].text, "Modifier text should be '.selected'.");
@@ -417,7 +417,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testCompoundClassSelectorWithElementName: function(){
+        testCompoundClassSelectorWithElementName: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.selected.foo");
 
@@ -442,7 +442,7 @@ var YUITest = require("yuitest"),
 
         name: "ID Selector Tests",
 
-        testSimpleIDSelector: function(){
+        testSimpleIDSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("#header");
 
@@ -455,7 +455,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("#header", result.parts[0].modifiers[0].text, "Modifier text should be '#header'.");
         },
 
-        testSimpleIDSelectorWithElementName: function(){
+        testSimpleIDSelectorWithElementName: function() {
             var parser = new Parser();
             var result = parser.parseSelector("div#header");
 
@@ -473,7 +473,18 @@ var YUITest = require("yuitest"),
 
         name: "Pseudo Class Selector Tests",
 
-        testSimplePseudoClassSelector: function(){
+        _should: {
+            error: {
+                testInvalidPseudoClassSelector: "Expected a `FUNCTION` or `IDENT` after colon at line 1, col 2."
+            }
+        },
+
+        testInvalidPseudoClassSelector: function() {
+            var parser = new Parser();
+            parser.parseSelector("a:");
+        },
+
+        testSimplePseudoClassSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("a:hover");
 
@@ -486,7 +497,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":hover", result.parts[0].modifiers[0].text, "Modifier text should be ':hover'.");
         },
 
-        testMultiplePseudoClassSelectors: function(){
+        testMultiplePseudoClassSelectors: function() {
             var parser = new Parser();
             var result = parser.parseSelector("a:focus:hover");
 
@@ -501,7 +512,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":hover", result.parts[0].modifiers[1].text, "Modifier text should be ':hover'.");
         },
 
-        testPseudoClassFunctionSelector: function(){
+        testPseudoClassFunctionSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("html:lang(fr-be)");
 
@@ -514,7 +525,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":lang(fr-be)", result.parts[0].modifiers[0].text, "Modifier text should be ':lang(fr-be)'.");
         },
 
-        testPseudoClassNthSelector: function(){
+        testPseudoClassNthSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:nth-child(2n+1)");
 
@@ -527,7 +538,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":nth-child(2n+1)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(2n+1)'.");
         },
 
-        testPseudoClassNthSelector2: function(){
+        testPseudoClassNthSelector2: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:nth-child(even)");
 
@@ -540,7 +551,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":nth-child(even)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(even)'.");
         },
 
-        testPseudoClassNthSelector3: function(){
+        testPseudoClassNthSelector3: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:nth-child(5)");
 
@@ -553,7 +564,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":nth-child(5)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-child(5)'.");
         },
 
-        testPseudoClassNthSelector4: function(){
+        testPseudoClassNthSelector4: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:nth-of-type(5)");
 
@@ -566,7 +577,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":nth-of-type(5)", result.parts[0].modifiers[0].text, "Modifier text should be ':nth-of-type(5)'.");
         },
 
-        testPseudoClassLastChildSelector: function(){
+        testPseudoClassLastChildSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:last-child");
 
@@ -579,7 +590,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(":last-child", result.parts[0].modifiers[0].text, "Modifier text should be ':last-child'.");
         },
 
-        testPseudoClassNotSelector: function(){
+        testPseudoClassNotSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("button:not([DISABLED])");
 
@@ -601,7 +612,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("attribute", arg.modifiers[0].type);
         },
 
-        testPseudoClassNotSelector2: function(){
+        testPseudoClassNotSelector2: function() {
             var parser = new Parser();
             var result = parser.parseSelector("button:not(foo)");
 
@@ -629,7 +640,7 @@ var YUITest = require("yuitest"),
 
         name: "Pseudo Element Selector Tests",
 
-        testSimplePseudoElementSelector: function(){
+        testSimplePseudoElementSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("p::first-line");
 
@@ -648,7 +659,7 @@ var YUITest = require("yuitest"),
         name: "Combinators",
 
 
-        testChildCombinator: function(){
+        testChildCombinator: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover > p");
 
@@ -667,7 +678,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testChildCombinatorNoSpaces: function(){
+        testChildCombinatorNoSpaces: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover>p");
 
@@ -686,7 +697,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testChildCombinatorOneSpaceBefore: function(){
+        testChildCombinatorOneSpaceBefore: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover >p");
 
@@ -705,7 +716,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testChildCombinatorOneSpaceAfter: function(){
+        testChildCombinatorOneSpaceAfter: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover> p");
 
@@ -724,7 +735,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testAdjacentSiblingCombinator: function(){
+        testAdjacentSiblingCombinator: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover + p");
 
@@ -743,7 +754,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testGeneralSiblingCombinator: function(){
+        testGeneralSiblingCombinator: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover ~ p");
 
@@ -762,7 +773,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testDescendantCombinator: function(){
+        testDescendantCombinator: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover p");
 
@@ -789,7 +800,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(17, result.parts[2].elementName.col, "Column should be 17.");
         },
 
-        testDescendantCombinatorWithTrailingWhitespace: function(){
+        testDescendantCombinatorWithTrailingWhitespace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover p ");
 
@@ -807,7 +818,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("p", result.parts[2].elementName);
         },
 
-        testWithCombinator: function(){
+        testWithCombinator: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li.inline:hover > p");
 
@@ -820,7 +831,7 @@ var YUITest = require("yuitest"),
             Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
         },
 
-        testWithNthChild: function(){
+        testWithNthChild: function() {
             var parser = new Parser();
             var result = parser.parseSelector("tr:nth-child(2n+1) a");
 
@@ -842,7 +853,7 @@ var YUITest = require("yuitest"),
 
         name: "Complex Cases",
 
-        testWithComplexSelector: function(){
+        testWithComplexSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("body > h2:nth-of-type(n+2):nth-last-of-type(n+2)");
 
@@ -858,7 +869,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(8, result.parts[2].col, "Column should be 8.");
         },
 
-        testWithComplexSelector2: function(){
+        testWithComplexSelector2: function() {
             var parser = new Parser();
             var result = parser.parseSelector("body > h2:not(:first-of-type):not(:last-of-type)");
 
@@ -870,7 +881,7 @@ var YUITest = require("yuitest"),
             Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
         },
 
-        testWithComplexSelector3: function(){
+        testWithComplexSelector3: function() {
             var parser = new Parser();
             var result = parser.parseSelector("html|*:not(:link):not(:visited)");
 
@@ -882,7 +893,7 @@ var YUITest = require("yuitest"),
             //Assert.isInstanceOf(SelectorPart, result.parts[2], "Third part should be a SelectorPart.");
         },
 
-        testWithMultipartSelector: function(){
+        testWithMultipartSelector: function() {
             var parser = new Parser();
             var result = parser.parseSelector("ul li a span");
 
@@ -904,7 +915,6 @@ var YUITest = require("yuitest"),
         }
 
 
-
     }));
 
 
@@ -913,7 +923,7 @@ var YUITest = require("yuitest"),
         name: "Media Queries",
 
 
-        testSimpleMediaQuery: function(){
+        testSimpleMediaQuery: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("print");
 
@@ -926,7 +936,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("print", result.text);
         },
 
-        testSimpleMediaQueryNot: function(){
+        testSimpleMediaQueryNot: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("not print");
 
@@ -939,7 +949,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("not print", result.text);
         },
 
-        testSimpleMediaQueryOnly: function(){
+        testSimpleMediaQueryOnly: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("only print");
 
@@ -952,7 +962,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("only print", result.text);
         },
 
-        testComplexMediaQuery: function(){
+        testComplexMediaQuery: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("screen and (max-weight: 3kg) and (color)");
 
@@ -972,7 +982,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testComplexMediaQuery2: function(){
+        testComplexMediaQuery2: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("only screen and (max-device-width: 768px) and (orientation:portrait)");
 
@@ -989,7 +999,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("only screen and (max-device-width:768px) and (orientation:portrait)", result.text);
         },
 
-        testComplexMediaQueryWithDevicePixelRatioAsFraction: function(){
+        testComplexMediaQueryWithDevicePixelRatioAsFraction: function() {
             var parser = new Parser();
             var result = parser.parseMediaQuery("only screen and (-o-device-pixel-ratio: 3/2) and (-webkit-device-pixel-ratio: 1.5)");
 
@@ -1013,7 +1023,7 @@ var YUITest = require("yuitest"),
 
         name: "Property Values",
 
-        testIdentifierValue: function(){
+        testIdentifierValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("foo");
 
@@ -1022,9 +1032,9 @@ var YUITest = require("yuitest"),
             Assert.areEqual("identifier", result.parts[0].type);
         },
 
-        testIdentifierValue2: function(){
+        testIdentifierValue2: function() {
             var parser = new Parser();
-			// Identifiers can even start with digits, iff they are escaped.
+            // Identifiers can even start with digits, iff they are escaped.
             var result = parser.parsePropertyValue("\\30 \\0000307");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1033,7 +1043,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(true, result.parts[0].wasIdent);
         },
 
-        testDimensionValuePx: function(){
+        testDimensionValuePx: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("1px");
 
@@ -1044,7 +1054,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("px", result.parts[0].units);
         },
 
-        testDimensionValue: function(){
+        testDimensionValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("1ch");
 
@@ -1055,7 +1065,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("ch", result.parts[0].units);
         },
 
-        testViewportRelativeHeightValue: function(){
+        testViewportRelativeHeightValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vh");
 
@@ -1066,7 +1076,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("vh", result.parts[0].units);
         },
 
-        testViewportRelativeWidthValue: function(){
+        testViewportRelativeWidthValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vw");
 
@@ -1077,7 +1087,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("vw", result.parts[0].units);
         },
 
-        testViewportRelativeMaxValue: function(){
+        testViewportRelativeMaxValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vmax");
 
@@ -1088,7 +1098,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("vmax", result.parts[0].units);
         },
 
-        testViewportRelativeMinValue: function(){
+        testViewportRelativeMinValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vmin");
 
@@ -1099,7 +1109,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("vmin", result.parts[0].units);
         },
 
-        testPercentageValue: function(){
+        testPercentageValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("25.4%");
 
@@ -1109,7 +1119,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(25.4, result.parts[0].value);
         },
 
-        testIntegerValue: function(){
+        testIntegerValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("25");
 
@@ -1119,7 +1129,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(25, result.parts[0].value);
         },
 
-        testNumberValue: function(){
+        testNumberValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("25.0");
 
@@ -1129,7 +1139,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(25, result.parts[0].value);
         },
 
-        testHexColorValue: function(){
+        testHexColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("#ffeedd");
 
@@ -1141,7 +1151,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(221, result.parts[0].blue);
         },
 
-        testRGBColorValue: function(){
+        testRGBColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("rgb(255, 238 , 221)");
 
@@ -1153,7 +1163,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(221, result.parts[0].blue);
         },
 
-        testRGBColorValue2: function(){
+        testRGBColorValue2: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("rgb(100%,50%, 75%)");
 
@@ -1165,7 +1175,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(191.25, result.parts[0].blue);
         },
 
-        testRGBAColorValue: function(){
+        testRGBAColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("rgba(255, 238 , 221, 0.3)");
 
@@ -1178,7 +1188,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0.3, result.parts[0].alpha);
         },
 
-        testRGBAColorValue2: function(){
+        testRGBAColorValue2: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("rgba(100%,50%, 75%, 0.5)");
 
@@ -1191,7 +1201,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0.5, result.parts[0].alpha);
         },
 
-        testHSLColorValue: function(){
+        testHSLColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("hsl(100,50%, 75%)");
 
@@ -1203,7 +1213,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0.75, result.parts[0].lightness);
         },
 
-        testHSLAColorValue: function(){
+        testHSLAColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("hsla(100,50%, 75%, 0.5)");
 
@@ -1216,7 +1226,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0.5, result.parts[0].alpha);
         },
 
-        testColorValue: function(){
+        testColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("red");
 
@@ -1228,7 +1238,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0, result.parts[0].blue);
         },
 
-        testColorValue2: function(){
+        testColorValue2: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("\\r\\45 d");
 
@@ -1240,7 +1250,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(0, result.parts[0].blue);
         },
 
-        testCSS2SystemColorValue: function(){
+        testCSS2SystemColorValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("InfoText");
 
@@ -1249,47 +1259,47 @@ var YUITest = require("yuitest"),
             Assert.areEqual("color", result.parts[0].type);
         },
 
-        testURIValue: function(){
+        testURIValue: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(http://www.yahoo.com)");
+            var result = parser.parsePropertyValue("url(https://yahoo.com)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
-        testURIValue2: function(){
+        testURIValue2: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url('http://www.yahoo.com')");
+            var result = parser.parsePropertyValue("url('https://yahoo.com')");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
-        testURIValue3: function(){
+        testURIValue3: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(\"http://www.yahoo.com\")");
+            var result = parser.parsePropertyValue("url(\"https://yahoo.com\")");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
-        testURIValue4: function(){
+        testURIValue4: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("url(http\\03a\r\n//www.yahoo.com)");
+            var result = parser.parsePropertyValue("url(https\\03a\r\n//yahoo.com)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("uri", result.parts[0].type);
-            Assert.areEqual("http://www.yahoo.com", result.parts[0].uri);
+            Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
-        testStringValue: function(){
+        testStringValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("'Hello world!'");
 
@@ -1299,7 +1309,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("Hello world!", result.parts[0].value);
         },
 
-        testStringValue2: function(){
+        testStringValue2: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("\"Hello world!\"");
 
@@ -1309,27 +1319,27 @@ var YUITest = require("yuitest"),
             Assert.areEqual("Hello world!", result.parts[0].value);
         },
 
-        testStringValue3: function(){
+        testStringValue3: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("\"Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\\\"\'\\\n\\\r\n\\\r\\\f\\41\"");
+            var result = parser.parsePropertyValue("\"Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\\\"'\\\n\\\r\n\\\r\\\f\\41\"");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("string", result.parts[0].type);
-            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"'A", result.parts[0].value);
         },
 
-        testStringValue4: function(){
+        testStringValue4: function() {
             var parser = new Parser();
-            var result = parser.parsePropertyValue("\'Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\"\\\'\\\n\\\r\n\\\r\\\f\\41\'");
+            var result = parser.parsePropertyValue("'Chapter\\A \\0a\t\\00A\r\\000a\n\\0000A\f\\00000a\r\n\\00000AFour\"\\'\\\n\\\r\n\\\r\\\f\\41'");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
             Assert.areEqual(1, result.parts.length);
             Assert.areEqual("string", result.parts[0].type);
-            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"\'A", result.parts[0].value);
+            Assert.areEqual("Chapter\n\n\n\n\n\n\nFour\"'A", result.parts[0].value);
         },
 
-        testValueWithOperators: function(){
+        testValueWithOperators: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("10px / 1em");
 
@@ -1350,7 +1360,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("em", result.parts[2].units);
         },
 
-        testValueWithOperators2: function(){
+        testValueWithOperators2: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("1em/1.5em \"Times New Roman\", Times, serif");
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1392,35 +1402,34 @@ var YUITest = require("yuitest"),
         }
 
 
-
     }));
 
     suite.add(new YUITest.TestCase({
 
         name: "Rules",
 
-        testRuleWithOnePartSelector: function(){
+        testRuleWithOnePartSelector: function() {
             var parser = new Parser();
             var result = parser.parseRule("p { color: red; }");
 
             Assert.isObject(result, "Parse should have completed.");
         },
 
-        testRuleWithTwoPartSelector: function(){
+        testRuleWithTwoPartSelector: function() {
             var parser = new Parser();
             var result = parser.parseRule("p li { color: red; }");
 
             Assert.isObject(result, "Parse should have completed.");
         },
 
-        testRuleWithThreePartSelector: function(){
+        testRuleWithThreePartSelector: function() {
             var parser = new Parser();
             var result = parser.parseRule("p li a{ color: red; }");
 
             Assert.isObject(result, "Parse should have completed.");
         },
 
-        testRuleWithFourPartSelector: function(){
+        testRuleWithFourPartSelector: function() {
             var parser = new Parser();
             var result = parser.parseRule("p li a span { color: red; }");
 
@@ -1438,7 +1447,7 @@ var YUITest = require("yuitest"),
             }
         },
 
-        testWithCommentAndSpaces: function(){
+        testWithCommentAndSpaces: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li /*booya*/ p");
 
@@ -1452,7 +1461,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(3, result.parts.length, "Should be three parts.");
         },
 
-        testWithCommentAndTrailingSpace: function(){
+        testWithCommentAndTrailingSpace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li/*booya*/ p");
 
@@ -1466,7 +1475,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(3, result.parts.length, "Should be three parts.");
         },
 
-        testWithCommentAndLeadingSpace: function(){
+        testWithCommentAndLeadingSpace: function() {
             var parser = new Parser();
             var result = parser.parseSelector("li /*booya*/p");
 
@@ -1480,8 +1489,8 @@ var YUITest = require("yuitest"),
             Assert.areEqual(3, result.parts.length, "Should be three parts.");
         },
 
-        testIEFilter: function(){
-            var parser = new Parser({ieFilters:true});
+        testIEFilter: function() {
+            var parser = new Parser({ ieFilters:true });
             var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.Wave(strength=100)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1489,8 +1498,8 @@ var YUITest = require("yuitest"),
             Assert.areEqual("function", result.parts[0].type);
         },
 
-        testIEFilter2: function(){
-            var parser = new Parser({ieFilters:true});
+        testIEFilter2: function() {
+            var parser = new Parser({ ieFilters:true });
             var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, src=http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png, sizingMethod=image)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1499,8 +1508,8 @@ var YUITest = require("yuitest"),
 
         },
 
-        testIEFilter3: function(){
-            var parser = new Parser({ieFilters:true});
+        testIEFilter3: function() {
+            var parser = new Parser({ ieFilters:true });
             var result = parser.parsePropertyValue("progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='http://l.yimg.com/ne/home/metro/pa/map/gugimap_btn_mapview.png', sizingMethod='image')");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1509,8 +1518,8 @@ var YUITest = require("yuitest"),
 
         },
 
-        testIEFilter4: function(){
-            var parser = new Parser({ieFilters:true});
+        testIEFilter4: function() {
+            var parser = new Parser({ ieFilters:true });
             var result = parser.parsePropertyValue("alpha(opacity=10)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
@@ -1519,14 +1528,12 @@ var YUITest = require("yuitest"),
             Assert.areEqual("function", result.parts[0].type);
         },
 
-        testIEFilter5: function(){
+        testIEFilter5: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("alpha(opacity=10)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
         }
-
-
 
 
     }));
@@ -1535,8 +1542,8 @@ var YUITest = require("yuitest"),
 
         name: "Animation Parsing Tests",
 
-        testWebKitKeyFrames: function(){
-            var parser = new Parser({strict:true}),
+        testWebKitKeyFrames: function() {
+            var parser = new Parser({ strict:true }),
                 called = false;
 
             parser.addListener("startkeyframes", function(event) {
@@ -1550,11 +1557,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(called);  //just don't want an error
         },
 
-        testMozKeyFrames: function(){
-            var parser = new Parser({strict:true});
+        testMozKeyFrames: function() {
+            var parser = new Parser({ strict:true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1562,11 +1569,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testKeyFrames: function(){
-            var parser = new Parser({strict:true});
+        testKeyFrames: function() {
+            var parser = new Parser({ strict:true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1574,11 +1581,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testKeyFramesFromTo: function(){
-            var parser = new Parser({strict:true});
+        testKeyFramesFromTo: function() {
+            var parser = new Parser({ strict:true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1586,11 +1593,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testKeyFramesWithWhitespace: function(){
-            var parser = new Parser({strict:true});
+        testKeyFramesWithWhitespace: function() {
+            var parser = new Parser({ strict:true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1604,11 +1611,11 @@ var YUITest = require("yuitest"),
 
         name: "General Parsing Tests",
 
-        testMediaWithPage: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithPage: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1616,11 +1623,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithFontFace: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithFontFace: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1628,11 +1635,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithViewport: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithViewport: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1640,11 +1647,23 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithTypeOnly: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithSupports: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
+                valid = false;
+            });
+
+            parser.parse("@media { @supports (display: table-cell) {} }");
+            Assert.isTrue(valid);
+        },
+
+        testMediaWithTypeOnly: function() {
+            var parser = new Parser({ strict: true });
+            var valid = true;
+
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1652,11 +1671,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithTypesOnly: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithTypesOnly: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1664,11 +1683,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithSimpleExpression: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithSimpleExpression: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1676,11 +1695,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithComplexExpression: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithComplexExpression: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1688,11 +1707,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithSimpleExpressionWithSpaces: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithSimpleExpressionWithSpaces: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1700,11 +1719,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMediaWithComplexExpressionWithSpaces: function(){
-            var parser = new Parser({ strict: true});
+        testMediaWithComplexExpressionWithSpaces: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1712,11 +1731,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testViewport: function(){
-            var parser = new Parser({ strict: true});
+        testViewport: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1724,11 +1743,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMSViewport: function(){
-            var parser = new Parser({ strict: true});
+        testMSViewport: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1736,11 +1755,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMSViewportInsideDeviceWidth: function(){
-            var parser = new Parser({ strict: true});
+        testMSViewportInsideDeviceWidth: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1748,11 +1767,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testMSViewportInsideDeviceHeight: function(){
-            var parser = new Parser({ strict: true});
+        testMSViewportInsideDeviceHeight: function() {
+            var parser = new Parser({ strict: true });
             var valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1760,8 +1779,8 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testViewportEventFires: function(){
-            var parser = new Parser({ strict:true}),
+        testViewportEventFires: function() {
+            var parser = new Parser({ strict:true }),
                 calledStart = false,
                 calledEnd = false;
 
@@ -1782,35 +1801,35 @@ var YUITest = require("yuitest"),
             Assert.isTrue(calledEnd);  //just don't want an error
         },
 
-        testDocumentUrl: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentUrl: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
-            parser.parse("@document url(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url(https://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
-        testDocumentUrlPrefix: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentUrlPrefix: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
-            parser.parse("@document url-prefix(http://www.w3.org/) { p { color: red; } }");
+            parser.parse("@document url-prefix(https://www.w3.org/) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
-        testDocumentDomain: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentDomain: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1818,11 +1837,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentRegexp: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentRegexp: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1830,23 +1849,23 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentMultipleFunctions: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentMultipleFunctions: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
-            parser.parse("@document url-prefix(http://www.w3.org/), domain(w3.org) { p { color: red; } }");
+            parser.parse("@document url-prefix(https://www.w3.org/), domain(w3.org) { p { color: red; } }");
             Assert.isTrue(valid);
         },
 
-        testMozDocument: function(){
-            var parser = new Parser({ strict: true}),
+        testMozDocument: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1854,11 +1873,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentWithPage: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentWithPage: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1866,11 +1885,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentWithMedia: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentWithMedia: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1878,11 +1897,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentWithFontFace: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentWithFontFace: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1890,11 +1909,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentWithViewport: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentWithViewport: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1902,11 +1921,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentWithKeyframes: function(){
-            var parser = new Parser({ strict: true}),
+        testDocumentWithKeyframes: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1914,8 +1933,8 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testDocumentEventFires: function(){
-            var parser = new Parser({ strict:true}),
+        testDocumentEventFires: function() {
+            var parser = new Parser({ strict:true }),
                 calledStart = false,
                 calledEnd = false;
 
@@ -1936,8 +1955,8 @@ var YUITest = require("yuitest"),
             Assert.isTrue(calledEnd);  //just don't want an error
         },
 
-        testClassesWithEscapes: function(){
-            var parser = new Parser({strict:true});
+        testClassesWithEscapes: function() {
+            var parser = new Parser({ strict:true });
             var result = parser.parseSelector("#\\31 a2b3c");
 
             Assert.isInstanceOf(Selector, result, "Result should be an instance of Selector.");
@@ -1946,11 +1965,11 @@ var YUITest = require("yuitest"),
             Assert.areEqual(1, result.parts.length, "Should be one part.");
         },
 
-        testSupportsWithSingleCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsWithSingleCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1959,11 +1978,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsWithSingleNotCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsWithSingleNotCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1972,11 +1991,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsWithNestedNotCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsWithNestedNotCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1985,11 +2004,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsAndCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsAndCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -1998,11 +2017,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsAndFollowedByNotCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsAndFollowedByNotCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2011,11 +2030,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsNotFollowedByAndCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsNotFollowedByAndCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2024,11 +2043,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsAndAndAndCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsAndAndAndCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2037,11 +2056,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsOrCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsOrCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2050,11 +2069,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsOrFollowedByNotCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsOrFollowedByNotCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2063,11 +2082,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsNotFollowedByOrCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsNotFollowedByOrCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2076,11 +2095,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsAndWithNestedOrCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsAndWithNestedOrCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2089,11 +2108,11 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
-        testSupportsAndWithNestedComplexOrCondition: function(){
-            var parser = new Parser({ strict: true}),
+        testSupportsAndWithNestedComplexOrCondition: function() {
+            var parser = new Parser({ strict: true }),
                 valid = true;
 
-            parser.addListener("error", function(event) {
+            parser.addListener("error", function() {
                 valid = false;
             });
 
@@ -2107,8 +2126,8 @@ var YUITest = require("yuitest"),
 
         name: "Rule Parsing Tests",
 
-        "Test parsing property-value pair": function(){
-            var parser = new Parser({ strict: true});
+        "Test parsing property-value pair": function() {
+            var parser = new Parser({ strict: true });
             var result = parser.parsePropertyValue("#fff");
 
             Assert.areEqual("#fff", result.toString());
@@ -2120,9 +2139,9 @@ var YUITest = require("yuitest"),
             Assert.areEqual("color", result.parts[0].type);
         },
 
-        "Test rule with one property": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test rule with one property": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("color", event.property.toString());
                 Assert.areEqual("#fff", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2135,9 +2154,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    color: #fff;\n}");
         },
 
-       "Test rule with star hack property": function(){
-            var parser = new Parser({ strict: true, starHack: true});
-            parser.addListener("property", function(event){
+        "Test rule with star hack property": function() {
+            var parser = new Parser({ strict: true, starHack: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("*color", event.property.toString());
                 Assert.areEqual("color", event.property.text);
                 Assert.areEqual("*", event.property.hack.toString(), "Property should be marked as with star hack");
@@ -2152,9 +2171,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    *color: #fff;\n}");
         },
 
-       "Test rule with underscore hack property": function(){
-            var parser = new Parser({ strict: true, underscoreHack: true});
-            parser.addListener("property", function(event){
+        "Test rule with underscore hack property": function() {
+            var parser = new Parser({ strict: true, underscoreHack: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("_color", event.property.toString());
                 Assert.areEqual("color", event.property.text);
                 Assert.areEqual("_", event.property.hack.toString(), "Property should be marked as with underscore hack");
@@ -2169,9 +2188,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    _color: #fff;\n}");
         },
 
-        "Test rule with space after property name": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test rule with space after property name": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("color", event.property.toString());
                 Assert.areEqual("#fff", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2184,9 +2203,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    color : #fff;\n}");
         },
 
-        "Test rule with one property and !important": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test rule with one property and !important": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("color", event.property.toString());
                 Assert.areEqual("#fff", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2200,9 +2219,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    color: #fff !important;\n}");
         },
 
-        "Test rule with leading semicolon": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test rule with leading semicolon": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("color", event.property.toString());
                 Assert.areEqual("#fff", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2215,9 +2234,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n;   color: #fff;\n}");
         },
 
-        "Test rule vendor prefix value": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test rule vendor prefix value": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("white-space", event.property.toString());
                 Assert.areEqual("-moz-pre-wrap", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2231,9 +2250,9 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n;   white-space: -moz-pre-wrap;\n}");
         },
 
-        "Test display -moz-inline-stack": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("property", function(event){
+        "Test display -moz-inline-stack": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
                 Assert.areEqual("display", event.property.toString());
                 Assert.areEqual("-moz-inline-stack", event.value.toString());
                 Assert.areEqual(5, event.property.col, "Property column should be 5.");
@@ -2247,32 +2266,32 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    display: -moz-inline-stack;\n}");
         },
 
-        "Test @import uri without quotes": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("import", function(event){
+        "Test @import uri without quotes": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("import", function(event) {
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import url(http://www.yahoo.com);");
+            parser.parse("@import url(https://yahoo.com);");
         },
 
 
-        "Test @import uri with quotes": function(){
-            var parser = new Parser({ strict: true});
-            parser.addListener("import", function(event){
+        "Test @import uri with quotes": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("import", function(event) {
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import url('http://www.yahoo.com');");
+            parser.parse("@import url('https://yahoo.com');");
         },
 
-        "Test @import address": function(){
+        "Test @import address": function() {
             var parser = new Parser();
-            parser.addListener("import", function(event){
+            parser.addListener("import", function(event) {
                 Assert.areEqual("import", event.type);
-                Assert.areEqual("http://www.yahoo.com", event.uri);
+                Assert.areEqual("https://yahoo.com", event.uri);
             });
-            parser.parse("@import 'http://www.yahoo.com';");
+            parser.parse("@import 'https://yahoo.com';");
         }
     }));
 
@@ -2280,10 +2299,12 @@ var YUITest = require("yuitest"),
 
         name: "Invalid CSS Parsing Tests",
 
-        "Test parsing invalid celector": function(){
+        "Test parsing invalid celector": function() {
             var error;
             var parser = new Parser();
-            parser.addListener("error", function(e){error = e;});
+            parser.addListener("error", function(e) {
+                error = e;
+            });
             parser.parse("c++{}");
 
             Assert.areEqual("error", error.type);
@@ -2305,13 +2326,13 @@ var YUITest = require("yuitest"),
     Parser = parserlib.css.Parser,
     Specificity = parserlib.css.Specificity;
 
-(function(){
+(function() {
 
     YUITest.TestRunner.add(new YUITest.TestCase({
 
         name: "Specificity Tests",
 
-        testSpecificity1: function(){
+        testSpecificity1: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("*"),
                 specificity = Specificity.calculate(selector);
@@ -2320,7 +2341,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,0", specificity.toString());
         },
 
-        testSpecificity2: function(){
+        testSpecificity2: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li"),
                 specificity = Specificity.calculate(selector);
@@ -2329,7 +2350,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,1", specificity.toString());
         },
 
-        testSpecificity3: function(){
+        testSpecificity3: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li:first-line"),
                 specificity = Specificity.calculate(selector);
@@ -2338,7 +2359,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual("0,0,0,2", specificity.toString());
         },
 
-        testSpecificity4: function(){
+        testSpecificity4: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul li"),
                 specificity = Specificity.calculate(selector);
@@ -2348,7 +2369,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity5: function(){
+        testSpecificity5: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul ol+li"),
                 specificity = Specificity.calculate(selector);
@@ -2358,7 +2379,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity6: function(){
+        testSpecificity6: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("h1 + *[rel=up]"),
                 specificity = Specificity.calculate(selector);
@@ -2368,7 +2389,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity7: function(){
+        testSpecificity7: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("ul ol li.red"),
                 specificity = Specificity.calculate(selector);
@@ -2378,7 +2399,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity8: function(){
+        testSpecificity8: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("li.red.level"),
                 specificity = Specificity.calculate(selector);
@@ -2388,7 +2409,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity9: function(){
+        testSpecificity9: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector(".f00"),
                 specificity = Specificity.calculate(selector);
@@ -2398,7 +2419,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity10: function(){
+        testSpecificity10: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("div p.foo"),
                 specificity = Specificity.calculate(selector);
@@ -2408,7 +2429,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity11: function(){
+        testSpecificity11: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("#foo"),
                 specificity = Specificity.calculate(selector);
@@ -2418,7 +2439,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity12: function(){
+        testSpecificity12: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("body #foo .foo p"),
                 specificity = Specificity.calculate(selector);
@@ -2428,7 +2449,7 @@ var YUITest = require("yuitest"),
 
         },
 
-        testSpecificity13: function(){
+        testSpecificity13: function() {
             var parser = new Parser(),
                 selector = parser.parseSelector("#s12:not(FOO)"),
                 specificity = Specificity.calculate(selector);
@@ -2443,6 +2464,7 @@ var YUITest = require("yuitest"),
 
 
 })();
+
 },{"../../":undefined,"yuitest":undefined}],"test2":[function(require,module,exports){
 "use strict";
 var YUITest = require("yuitest"),
@@ -2451,21 +2473,21 @@ var YUITest = require("yuitest"),
     TokenStream = parserlib.css.TokenStream,
     CSSTokens = parserlib.css.Tokens;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
     //-------------------------------------------------------------------------
 
-    function CSSTokenTestCase(info){
+    function CSSTokenTestCase(info) {
 
         YUITest.TestCase.call(this, info);
         this.patterns = info.patterns;
 
-        for (var prop in this.patterns){
-            if (this.patterns.hasOwnProperty(prop)){
-                this["testPattern: " + prop] = function(prop){
-                    return function(){
+        for (var prop in this.patterns) {
+            if (this.patterns.hasOwnProperty(prop)) {
+                this["testPattern: " + prop] = function(prop) {
+                    return function() {
                         this._testPattern(prop, this.patterns[prop]);
                     };
                 }(prop);
@@ -2475,24 +2497,21 @@ var YUITest = require("yuitest"),
 
     CSSTokenTestCase.prototype = new YUITest.TestCase();
 
-    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs){
+    CSSTokenTestCase.prototype._testPattern = function(pattern, outputs) {
         var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
 
-        for (var i=0, len=outputs.length; i < len; i++){
-            tt = tokenStream.get((outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined));
-            Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+        for (var i=0, len=outputs.length; i < len; i++) {
+            tt = tokenStream.get(outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined);
+            Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
 
         //if there was an invalid token, stop here
-        if (tt > -1){
+        if (tt > -1) {
             tt = tokenStream.get();
-            Assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + ( tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
+            Assert.areEqual(CSSTokens.EOF, tt, "Expected end of input but found token " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
     };
-
-
-
 
 
     //-------------------------------------------------------------------------
@@ -2577,7 +2596,7 @@ var YUITest = require("yuitest"),
             "'hello\""      : [CSSTokens.INVALID],
             "\"hello'"      : [CSSTokens.INVALID],
             "'hello"        : [CSSTokens.INVALID],
-            "'hel\\\'lo'"   : [CSSTokens.STRING],
+            "'hel\\'lo'"    : [CSSTokens.STRING],
             "\"hel\\\"lo\"" : [CSSTokens.STRING]
         }
     }));
@@ -2594,10 +2613,10 @@ var YUITest = require("yuitest"),
             "#name'"            : [CSSTokens.HASH, CSSTokens.INVALID],
             "#h\\0fllo"         : [CSSTokens.HASH],
             "#ffeeff"           : [CSSTokens.HASH],
-            "#\\31 a2b3c"        : [CSSTokens.HASH],
-            "#r0\\.5"            : [CSSTokens.HASH],
+            "#\\31 a2b3c"       : [CSSTokens.HASH],
+            "#r0\\.5"           : [CSSTokens.HASH],
             // Invalid escape sequence
-            "#a\\\r"             : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
+            "#a\\\r"            : [CSSTokens.HASH, CSSTokens.CHAR, CSSTokens.S]
         }
     }));
 
@@ -2605,7 +2624,7 @@ var YUITest = require("yuitest"),
     // Tests for at-rules
     //-------------------------------------------------------------------------
 
-    (function(){
+    (function() {
 
         var atRules = {
             "@charset"      : CSSTokens.CHARSET_SYM,
@@ -2649,7 +2668,7 @@ var YUITest = require("yuitest"),
 
         var patterns;
 
-        for (var prop in atRules){ // jshint ignore:line
+        for (var prop in atRules) { // jshint ignore:line
             patterns = {};
 
             patterns[prop] = [atRules[prop]];
@@ -2795,7 +2814,6 @@ var YUITest = require("yuitest"),
             ".5cH"      : [CSSTokens.LENGTH],
 
 
-
             "5deg"       : [CSSTokens.ANGLE],
             "50.0DEG"    : [CSSTokens.ANGLE],
             ".5Deg"      : [CSSTokens.ANGLE],
@@ -2856,13 +2874,13 @@ var YUITest = require("yuitest"),
             "url('foo.jpg')"    : [CSSTokens.URI],
             "url(\"foo.jpg\")"  : [CSSTokens.URI],
 
-            "url(http://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
-            "url('http://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
+            "url(https://www.nczonline.net/favicon.ico)":    [CSSTokens.URI],
+            "url('https://www.nczonline.net/favicon.ico')":  [CSSTokens.URI],
+            "url(\"https://www.nczonline.net/favicon.ico\")":[CSSTokens.URI],
 
-            "url(http://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
-            "url('http://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
-            "url(\"http://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
+            "url(https://www.nczonline.net/favicon.ico?a=b&c=d)":    [CSSTokens.URI],
+            "url('https://www.nczonline.net/favicon.ico?a=b&c=d')":  [CSSTokens.URI],
+            "url(\"https://www.nczonline.net/favicon.ico?a=b&c=d\")":[CSSTokens.URI],
 
             //invalid URLs
             "url('booya\")"     : [CSSTokens.FUNCTION, CSSTokens.INVALID],
@@ -2886,8 +2904,8 @@ var YUITest = require("yuitest"),
 
             //IE filters - not sure how to handle these yet
             "progid:DXImageTransform.Microsoft.Wave(strength=100)"                  : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
-            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN],
-            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER,CSSTokens.RPAREN]
+            "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)"    : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "progid:DXImageTransform.Microsoft.Iris(irisstyle='STAR', duration=4)"   : [CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.STRING, CSSTokens.COMMA, CSSTokens.S, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN]
         }
     }));
 
@@ -3040,46 +3058,46 @@ var YUITest = require("yuitest"),
     parserlib = require("../../"),
     Parser = parserlib.css.Parser;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // New testcase type to make it easier to test patterns
     //-------------------------------------------------------------------------
 
-    function ValidationTestCase(info){
+    function ValidationTestCase(info) {
         var i, len, prop, msg;
 
         YUITest.TestCase.call(this, info);
         // initial | inherit | unset are always valid property values.
-        this.valid = [ 'initial', 'inherit', 'unset' ].concat(info.valid);
+        this.valid = [ "initial", "inherit", "unset" ].concat(info.valid);
         this.invalid = info.invalid;
         this.property = info.property;
         this.name = "Tests for " + this.property;
         this._should.error = {};
 
-        for (i=0, len=this.valid.length; i < len; i++){
-            this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value){
-                return function(){
+        for (i=0, len=this.valid.length; i < len; i++) {
+            this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value) {
+                return function() {
                     this._testValidValue(value);
                 };
             }(this.valid[i]);
         }
 
-        for (prop in this.invalid){
-            if (this.invalid.hasOwnProperty(prop)){
-                this["'" + prop + "' is an invalid value for '" + this.property + "'"] = function(value, message){
-                    return function(){
+        for (prop in this.invalid) {
+            if (this.invalid.hasOwnProperty(prop)) {
+                this["'" + prop + "' is an invalid value for '" + this.property + "'"] = function(value, message) {
+                    return function() {
                         this._testInvalidValue(value, message);
                     };
                 }(prop, this.invalid[prop]);
             }
         }
 
-        for (prop in this.error){
-            if (this.error.hasOwnProperty(prop)){
+        for (prop in this.error) {
+            if (this.error.hasOwnProperty(prop)) {
                 msg = "'" + prop + "' is an invalid value for '" + this.property + "'";
-                this[msg] = function(value){
-                    return function(){
+                this[msg] = function(value) {
+                    return function() {
                         this._testSyntaxError(value);
                     };
                 }(prop);
@@ -3090,24 +3108,24 @@ var YUITest = require("yuitest"),
 
     ValidationTestCase.prototype = new YUITest.TestCase();
 
-    ValidationTestCase.prototype._testValidValue = function(value){
+    ValidationTestCase.prototype._testValidValue = function(value) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
-        parser.addListener("property", function(event){
+        parser.addListener("property", function(event) {
             Assert.isNull(event.invalid);
         });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
-    ValidationTestCase.prototype._testInvalidValue = function(value, message){
+    ValidationTestCase.prototype._testInvalidValue = function(value, message) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
-        parser.addListener("property", function(event){
+        parser.addListener("property", function(event) {
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
         });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
-    ValidationTestCase.prototype._testSyntaxError = function(value){
+    ValidationTestCase.prototype._testSyntaxError = function(value) {
         var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
@@ -3118,6 +3136,46 @@ var YUITest = require("yuitest"),
     //-------------------------------------------------------------------------
 
     var suite = new YUITest.TestSuite("Validation Tests");
+
+    suite.add(new ValidationTestCase({
+        property: "alignment-baseline",
+
+        valid: [
+            "auto",
+            "baseline",
+            "use-script",
+            "before-edge",
+            "text-before-edge",
+            "after-edge",
+            "text-after-edge",
+            "central",
+            "middle",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "animation-direction",
+
+        valid: [
+            "normal",
+            "reverse",
+            "alternate",
+            "alternate-reverse",
+            "alternate, reverse, normal"
+        ],
+
+        invalid: {
+            "1px" : "Expected (<single-animation-direction>#) but found '1px'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "animation-fill-mode",
@@ -3222,7 +3280,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -3278,7 +3336,7 @@ var YUITest = require("yuitest"),
             "foo"                 : "Expected (<position>#) but found 'foo'.",
             "10% left"            : "Expected end of value but found 'left'.",
             "left center right"   : "Expected end of value but found 'right'.",
-            "center 3em right 10%": "Expected end of value but found 'right'.",
+            "center 3em right 10%": "Expected end of value but found 'right'."
         }
     }));
 
@@ -3332,8 +3390,21 @@ var YUITest = require("yuitest"),
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "baseline-shift",
 
+        valid: [
+            "baseline",
+            "sub",
+            "super",
+            "5%",
+            "2px"
+        ],
 
+        invalid: {
+            "foo" : "Expected (baseline | sub | super | <percentage> | <length>) but found 'foo'."
+        }
+    }));
 
     suite.add(new ValidationTestCase({
         property: "border",
@@ -3364,7 +3435,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>{1,4}) but found 'foo'.",
-            "invert" : "Expected (<color>{1,4}) but found 'invert'.",
+            "invert" : "Expected (<color>{1,4}) but found 'invert'."
         }
     }));
 
@@ -3379,7 +3450,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -3394,7 +3465,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -3409,7 +3480,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -3424,7 +3495,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
         }
     }));
 
@@ -3439,7 +3510,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -3454,7 +3525,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -3491,7 +3562,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"   : "Expected (<nonnegative-length-or-percentage>{1,4} [ / <nonnegative-length-or-percentage>{1,4} ]?) but found 'foo'.",
-            "5px x" : "Expected end of value but found 'x'.",
+            "5px x" : "Expected end of value but found 'x'."
         }
     }));
 
@@ -3522,7 +3593,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -3537,7 +3608,7 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo"       : "Expected ([ <length> | <percentage> ]{1,2}) but found 'foo'.",
-            "5px 5px 7px" : "Expected end of value but found '7px'.",
+            "5px 5px 7px" : "Expected end of value but found '7px'."
         }
     }));
 
@@ -3548,7 +3619,7 @@ var YUITest = require("yuitest"),
             "1px",
             "1px 1px",
             "1px 1px 1px",
-            "1px 1px 1px 1px",
+            "1px 1px 1px 1px"
         ],
 
         invalid: {
@@ -3642,7 +3713,7 @@ var YUITest = require("yuitest"),
 
         valid: [
             "rect(10%, 85%, 90%, 15%)",
-            'auto'
+            "auto"
         ],
 
         invalid: {
@@ -3699,7 +3770,49 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<color>) but found 'foo'.",
-            "invert" : "Expected (<color>) but found 'invert'.",
+            "invert" : "Expected (<color>) but found 'invert'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-interpolation",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-interpolation-filters",
+
+        valid: [
+            "auto",
+            "sRGB",
+            "linearRGB"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | sRGB | linearRGB) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "color-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality) but found 'foo'."
         }
     }));
 
@@ -3762,6 +3875,61 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "dominant-baseline",
+
+        valid: [
+            "auto",
+            "use-script",
+            "no-change",
+            "reset-size",
+            "ideographic",
+            "alphabetic",
+            "hanging",
+            "mathematical",
+            "central",
+            "middle",
+            "text-after-edge",
+            "text-before-edge"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "fill-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "flood-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "-0.75" : "Expected (<opacity-value>) but found '-0.75'.",
+            "12" : "Expected (<opacity-value>) but found '12'.",
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "font",
 
         valid: [
@@ -3797,7 +3965,7 @@ var YUITest = require("yuitest"),
         valid: [
             "Futura, sans-serif",
             "-Futura, sans-serif",
-            '"New Century Schoolbook", serif',
+            "\"New Century Schoolbook\", serif",
             "'21st Century', fantasy",
             "serif",
             "sans-serif",
@@ -3806,14 +3974,14 @@ var YUITest = require("yuitest"),
             "monospace",
             // solve problem by quoting
             "'Red/Black', sans-serif",
-            '"Lucida\\", Grande", sans-serif',
+            "\"Lucida\\\", Grande\", sans-serif",
             "'Ahem!}', sans-serif",
-            '"test@foo", sans-serif',
+            "\"test@foo\", sans-serif",
             "'#POUND', sans-serif",
             "'Hawaii 5-0', sans-serif",
             // solve problem by escaping
             "Red\\/Black, sans-serif",
-            '\\"Lucida\\", Grande, sans-serif',
+            "\\\"Lucida\\\", Grande, sans-serif",
             "Ahem\\!, sans-serif",
             "test\\@foo, sans-serif",
             "\\#POUND, sans-serif",
@@ -3904,6 +4072,35 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "image-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "optimizeQuality"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | optimizeQuality) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "kerning",
+
+        valid: [
+            "auto",
+            "0.1em",
+            "1px"
+        ],
+
+        invalid: {
+            "5%" : "Expected (auto | <length>) but found '5%'.",
+            "foo" : "Expected (auto | <length>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "min-height",
 
         valid: [
@@ -3991,7 +4188,7 @@ var YUITest = require("yuitest"),
 
             valid: [
                 "1",
-                // From http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
+                // From https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-common
                 "0 auto",
                 "0 1 auto",
                 "auto",
@@ -4044,7 +4241,7 @@ var YUITest = require("yuitest"),
             property: prop_name,
 
             valid: [
-                // from http://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
+                // from https://www.w3.org/TR/2014/WD-css-flexbox-1-20140325/#flex-flow-property
                 "row",
                 "column wrap",
                 "row-reverse wrap-reverse",
@@ -4136,6 +4333,62 @@ var YUITest = require("yuitest"),
         invalid: {
             "70rad" : "Expected (auto | <glyph-angle>) but found '70rad'.",
             "4grad" : "Expected (auto | <glyph-angle>) but found '4grad'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "shape-rendering",
+
+        valid: [
+            "auto",
+            "optimizeSpeed",
+            "crispEdges",
+            "geometricPrecision"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | optimizeSpeed | crispEdges | geometricPrecision) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stop-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-opacity",
+
+        valid: [
+            "0",
+            "0.5",
+            "1"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<opacity-value>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "stroke-width",
+
+        valid: [
+            "5%",
+            "2px"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<percentage> | <length>) but found 'foo'."
         }
     }));
 
@@ -4238,7 +4491,7 @@ var YUITest = require("yuitest"),
             "right top 5%",
             "top 3em center",
             "center top 3em",
-            "top 3em right 10%",
+            "top 3em right 10%"
         ],
 
         invalid: {
@@ -4561,7 +4814,7 @@ var YUITest = require("yuitest"),
     parserlib = require("../../"),
     StringReader = parserlib.util.StringReader;
 
-(function(){
+(function() {
 
     //-------------------------------------------------------------------------
     // Base Test Suite
@@ -4584,7 +4837,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a string with no new lines works.
          */
-        testLinearReadWithOneLine: function(){
+        testLinearReadWithOneLine: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString),
                 i = 0,
@@ -4593,7 +4846,7 @@ var YUITest = require("yuitest"),
             Assert.areEqual(1, reader.getCol(), "Column should be 1.");
             c = reader.read();
 
-            while(c){
+            while (c) {
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
                 Assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
                 c = reader.read();
@@ -4607,15 +4860,15 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a multi-line string works.
          */
-        testLinearReadWithTwoLines: function(){
+        testLinearReadWithTwoLines: function() {
             var testString = "Hello world!\nNice day, isn't it?",
                 reader = new StringReader(testString),
                 i = 0,
                 c = reader.read();
 
-            while(c){
+            while (c) {
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
-                if (c === "\n"){
+                if (c === "\n") {
                     Assert.areEqual(2, reader.getLine(), "Should now be on second row.");
                     Assert.areEqual(1, reader.getCol(), "The new line should cause you to go to first char in second row.");
                 }
@@ -4630,7 +4883,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a multi-line string properly tracks rows and cols.
          */
-        testLinearReadWithTwoLinesTrackCols: function(){
+        testLinearReadWithTwoLinesTrackCols: function() {
             var testString = "Hello world!\nNice day, isn't it?",
                 reader = new StringReader(testString);
 
@@ -4645,13 +4898,13 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a multi-line string works when the last character is a new-line.
          */
-        testLinearReadWithTwoLinesAndDanglingNewLine: function(){
+        testLinearReadWithTwoLinesAndDanglingNewLine: function() {
             var testString = "Hello world!\nNice day, isn't it?\n",
                 reader = new StringReader(testString),
                 i = 0,
                 c = reader.read();
 
-            while(c){
+            while (c) {
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
                 c = reader.read();
                 i++;
@@ -4659,8 +4912,6 @@ var YUITest = require("yuitest"),
 
             Assert.isNull(c, "Last character read should be null.");
         }
-
-
 
 
     }));
@@ -4681,7 +4932,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a string with no new lines works.
          */
-        testLinearReadToWithOneLine: function(){
+        testLinearReadToWithOneLine: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
@@ -4693,7 +4944,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that reading a multi-line string works.
          */
-        testLinearReadToWithTwoLines: function(){
+        testLinearReadToWithTwoLines: function() {
             var testString = "Hello world!\nNice day, isn't it?",
                 reader = new StringReader(testString);
 
@@ -4721,11 +4972,11 @@ var YUITest = require("yuitest"),
         /*
          * Tests that the entire string can be read..
          */
-        testReadWhileSimple: function(){
+        testReadWhileSimple: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
-            var result = reader.readWhile(function(){
+            var result = reader.readWhile(function() {
                 return true;
             });
 
@@ -4737,16 +4988,16 @@ var YUITest = require("yuitest"),
         /*
          * Tests that the filter function works.
          */
-        testReadWhileFilter: function(){
+        testReadWhileFilter: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
-            var result = reader.readWhile(function(c){
-                return c !== ' ';
+            var result = reader.readWhile(function(c) {
+                return c !== " ";
             });
 
-            Assert.areEqual('Hello', result);
-            Assert.areEqual(reader.peek(), ' ');
+            Assert.areEqual("Hello", result);
+            Assert.areEqual(reader.peek(), " ");
             Assert.areEqual(1, reader.getLine());
             Assert.areEqual(6, reader.getCol());
         }
@@ -4768,7 +5019,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that a set number of characters are read correctly.
          */
-        testReadCountSimple: function(){
+        testReadCountSimple: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
@@ -4797,7 +5048,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that a text pattern is read correctly.
          */
-        testReadMatchSimple: function(){
+        testReadMatchSimple: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
@@ -4813,7 +5064,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that a regex pattern is read correctly.
          */
-        testReadMatchRegEx: function(){
+        testReadMatchRegEx: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
@@ -4828,7 +5079,6 @@ var YUITest = require("yuitest"),
 
 
     }));
-
 
 
     //-------------------------------------------------------------------------
@@ -4847,7 +5097,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that eof() works after reading to end of string.
          */
-        testTestEofSimple: function(){
+        testTestEofSimple: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 
@@ -4874,7 +5124,7 @@ var YUITest = require("yuitest"),
         /*
          * Tests that mark() and reset() preserve lines/cols correctly.
          */
-        testMarkResetSimple: function(){
+        testMarkResetSimple: function() {
             var testString = "Hello world!",
                 reader = new StringReader(testString);
 

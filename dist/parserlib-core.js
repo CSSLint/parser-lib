@@ -1,6 +1,6 @@
 /*!
 Parser-Lib
-Copyright (c) 2009-2011 Nicholas C. Zakas. All rights reserved.
+Copyright (c) 2009-2016 Nicholas C. Zakas. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v0.2.5, Build time: 10-February-2016 16:42:35 */
+/* Version v1.0.0, Build time: 15-July-2016 12:36:10 */
 var parserlib = (function () {
 var require;
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"parserlib-core":[function(require,module,exports){
@@ -45,7 +45,7 @@ module.exports = EventTarget;
  * @class EventTarget
  * @constructor
  */
-function EventTarget(){
+function EventTarget() {
 
     /**
      * The array of listeners for various events.
@@ -68,8 +68,8 @@ EventTarget.prototype = {
      * @return {void}
      * @method addListener
      */
-    addListener: function(type, listener){
-        if (!this._listeners[type]){
+    addListener: function(type, listener) {
+        if (!this._listeners[type]) {
             this._listeners[type] = [];
         }
 
@@ -83,23 +83,23 @@ EventTarget.prototype = {
      * @return {void}
      * @method fire
      */
-    fire: function(event){
-        if (typeof event === "string"){
+    fire: function(event) {
+        if (typeof event === "string") {
             event = { type: event };
         }
-        if (typeof event.target !== "undefined"){
+        if (typeof event.target !== "undefined") {
             event.target = this;
         }
 
-        if (typeof event.type === "undefined"){
+        if (typeof event.type === "undefined") {
             throw new Error("Event object missing 'type' property.");
         }
 
-        if (this._listeners[event.type]){
+        if (this._listeners[event.type]) {
 
             //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
-            for (var i=0, len=listeners.length; i < len; i++){
+            for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
@@ -112,11 +112,11 @@ EventTarget.prototype = {
      * @return {void}
      * @method removeListener
      */
-    removeListener: function(type, listener){
-        if (this._listeners[type]){
+    removeListener: function(type, listener) {
+        if (this._listeners[type]) {
             var listeners = this._listeners[type];
-            for (var i=0, len=listeners.length; i < len; i++){
-                if (listeners[i] === listener){
+            for (var i=0, len=listeners.length; i < len; i++) {
+                if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;
                 }
@@ -143,7 +143,7 @@ var SyntaxError = require("./SyntaxError");
  * @param {String|StringReader} input The text to tokenize or a reader from
  *      which to read the input.
  */
-function TokenStreamBase(input, tokenData){
+function TokenStreamBase(input, tokenData) {
 
     /**
      * The string reader for easy access to the text.
@@ -151,7 +151,7 @@ function TokenStreamBase(input, tokenData){
      * @property _reader
      * @private
      */
-    this._reader = new StringReader(input ? input.toString() : '');
+    this._reader = new StringReader(input ? input.toString() : "");
 
     /**
      * Token object for the last consumed token.
@@ -197,7 +197,7 @@ function TokenStreamBase(input, tokenData){
  * @method createTokenData
  * @static
  */
-TokenStreamBase.createTokenData = function(tokens){
+TokenStreamBase.createTokenData = function(tokens) {
 
     var nameMap     = [],
         typeMap     = Object.create(null),
@@ -206,21 +206,21 @@ TokenStreamBase.createTokenData = function(tokens){
         len            = tokenData.length+1;
 
     tokenData.UNKNOWN = -1;
-    tokenData.unshift({name:"EOF"});
+    tokenData.unshift({ name:"EOF" });
 
-    for (; i < len; i++){
+    for (; i < len; i++) {
         nameMap.push(tokenData[i].name);
         tokenData[tokenData[i].name] = i;
-        if (tokenData[i].text){
+        if (tokenData[i].text) {
             typeMap[tokenData[i].text] = i;
         }
     }
 
-    tokenData.name = function(tt){
+    tokenData.name = function(tt) {
         return nameMap[tt];
     };
 
-    tokenData.type = function(c){
+    tokenData.type = function(c) {
         return typeMap[c];
     };
 
@@ -250,10 +250,10 @@ TokenStreamBase.prototype = {
      * @return {Boolean} True if the token type matches, false if not.
      * @method match
      */
-    match: function(tokenTypes, channel){
+    match: function(tokenTypes, channel) {
 
         //always convert to an array, makes things easier
-        if (!(tokenTypes instanceof Array)){
+        if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
 
@@ -261,8 +261,8 @@ TokenStreamBase.prototype = {
             i   = 0,
             len = tokenTypes.length;
 
-        while(i < len){
-            if (tt === tokenTypes[i++]){
+        while (i < len) {
+            if (tt === tokenTypes[i++]) {
                 return true;
             }
         }
@@ -278,21 +278,19 @@ TokenStreamBase.prototype = {
      * @param {int|int[]} tokenTypes Either a single token type or an array of
      *      token types that the next token should be. If an array is passed,
      *      it's assumed that the token must be one of these.
-     * @param {variant} channel (Optional) The channel to read from. If not
-     *      provided, reads from the default (unnamed) channel.
      * @return {void}
      * @method mustMatch
      */
-    mustMatch: function(tokenTypes, channel){
+    mustMatch: function(tokenTypes) {
 
         var token;
 
         //always convert to an array, makes things easier
-        if (!(tokenTypes instanceof Array)){
+        if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
 
-        if (!this.match.apply(this, arguments)){
+        if (!this.match.apply(this, arguments)) {
             token = this.LT(1);
             throw new SyntaxError("Expected " + this._tokenData[tokenTypes[0]].name +
                 " at line " + token.startLine + ", col " + token.startCol + ".", token.startLine, token.startCol);
@@ -314,9 +312,9 @@ TokenStreamBase.prototype = {
      * @return {void}
      * @method advance
      */
-    advance: function(tokenTypes, channel){
+    advance: function(tokenTypes, channel) {
 
-        while(this.LA(0) !== 0 && !this.match(tokenTypes, channel)){
+        while (this.LA(0) !== 0 && !this.match(tokenTypes, channel)) {
             this.get();
         }
 
@@ -328,7 +326,7 @@ TokenStreamBase.prototype = {
      * @return {int} The token type of the token that was just consumed.
      * @method get
      */
-    get: function(channel){
+    get: function(channel) {
 
         var tokenInfo   = this._tokenData,
             i           =0,
@@ -336,15 +334,15 @@ TokenStreamBase.prototype = {
             info;
 
         //check the lookahead buffer first
-        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length){
+        if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length) {
 
             i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
 
             //obey channels logic
-            while((info.channel !== undefined && channel !== info.channel) &&
-                    this._ltIndex < this._lt.length){
+            while ((info.channel !== undefined && channel !== info.channel) &&
+                    this._ltIndex < this._lt.length) {
                 this._token = this._lt[this._ltIndex++];
                 info = tokenInfo[this._token.type];
                 i++;
@@ -352,7 +350,7 @@ TokenStreamBase.prototype = {
 
             //here be dragons
             if ((info.channel === undefined || channel === info.channel) &&
-                    this._ltIndex <= this._lt.length){
+                    this._ltIndex <= this._lt.length) {
                 this._ltIndexCache.push(i);
                 return this._token.type;
             }
@@ -362,7 +360,7 @@ TokenStreamBase.prototype = {
         token = this._getToken();
 
         //if it should be hidden, don't save a token
-        if (token.type > -1 && !tokenInfo[token.type].hide){
+        if (token.type > -1 && !tokenInfo[token.type].hide) {
 
             //apply token channel
             token.channel = tokenInfo[token.type].channel;
@@ -375,12 +373,12 @@ TokenStreamBase.prototype = {
             this._ltIndexCache.push(this._lt.length - this._ltIndex + i);
 
             //keep the buffer under 5 items
-            if (this._lt.length > 5){
+            if (this._lt.length > 5) {
                 this._lt.shift();
             }
 
             //also keep the shift buffer under 5 items
-            if (this._ltIndexCache.length > 5){
+            if (this._ltIndexCache.length > 5) {
                 this._ltIndexCache.shift();
             }
 
@@ -396,7 +394,7 @@ TokenStreamBase.prototype = {
         info = tokenInfo[token.type];
         if (info &&
                 (info.hide ||
-                (info.channel !== undefined && channel !== info.channel))){
+                (info.channel !== undefined && channel !== info.channel))) {
             return this.get(channel);
         } else {
             //return just the type
@@ -414,29 +412,29 @@ TokenStreamBase.prototype = {
      * @return {int} The token type of the token in the given position.
      * @method LA
      */
-    LA: function(index){
+    LA: function(index) {
         var total = index,
             tt;
-        if (index > 0){
+        if (index > 0) {
             //TODO: Store 5 somewhere
-            if (index > 5){
+            if (index > 5) {
                 throw new Error("Too much lookahead.");
             }
 
             //get all those tokens
-            while(total){
+            while (total) {
                 tt = this.get();
                 total--;
             }
 
             //unget all those tokens
-            while(total < index){
+            while (total < index) {
                 this.unget();
                 total++;
             }
-        } else if (index < 0){
+        } else if (index < 0) {
 
-            if(this._lt[this._ltIndex+index]){
+            if (this._lt[this._ltIndex+index]) {
                 tt = this._lt[this._ltIndex+index].type;
             } else {
                 throw new Error("Too much lookbehind.");
@@ -460,7 +458,7 @@ TokenStreamBase.prototype = {
      * @return {Object} The token of the token in the given position.
      * @method LA
      */
-    LT: function(index){
+    LT: function(index) {
 
         //lookahead first to prime the token buffer
         this.LA(index);
@@ -475,7 +473,7 @@ TokenStreamBase.prototype = {
      * @return {int} The token type of the next token in the stream.
      * @method peek
      */
-    peek: function(){
+    peek: function() {
         return this.LA(1);
     },
 
@@ -484,7 +482,7 @@ TokenStreamBase.prototype = {
      * @return {Token} The token object for the last consumed token.
      * @method token
      */
-    token: function(){
+    token: function() {
         return this._token;
     },
 
@@ -495,8 +493,8 @@ TokenStreamBase.prototype = {
      *      invalid token type.
      * @method tokenName
      */
-    tokenName: function(tokenType){
-        if (tokenType < 0 || tokenType > this._tokenData.length){
+    tokenName: function(tokenType) {
+        if (tokenType < 0 || tokenType > this._tokenData.length) {
             return "UNKNOWN_TOKEN";
         } else {
             return this._tokenData[tokenType].name;
@@ -510,7 +508,7 @@ TokenStreamBase.prototype = {
      *      for an unknown token.
      * @method tokenName
      */
-    tokenType: function(tokenName){
+    tokenType: function(tokenName) {
         return this._tokenData[tokenName] || -1;
     },
 
@@ -518,9 +516,9 @@ TokenStreamBase.prototype = {
      * Returns the last consumed token to the token stream.
      * @method unget
      */
-    unget: function(){
-        //if (this._ltIndex > -1){
-        if (this._ltIndexCache.length){
+    unget: function() {
+        //if (this._ltIndex > -1) {
+        if (this._ltIndexCache.length) {
             this._ltIndex -= this._ltIndexCache.pop();//--;
             this._token = this._lt[this._ltIndex - 1];
         } else {
@@ -545,7 +543,7 @@ module.exports = SyntaxError;
  * @param {int} line The line at which the error occurred.
  * @param {int} col The column at which the error occurred.
  */
-function SyntaxError(message, line, col){
+function SyntaxError(message, line, col) {
     Error.call(this);
     this.name = this.constructor.name;
 
@@ -588,7 +586,7 @@ module.exports = StringReader;
  * @constructor
  * @param {String} text The text to read.
  */
-function StringReader(text){
+function StringReader(text) {
 
     /**
      * The input text with line endings normalized.
@@ -627,7 +625,7 @@ function StringReader(text){
 
 StringReader.prototype = {
 
-    //restore constructor
+    // restore constructor
     constructor: StringReader,
 
     //-------------------------------------------------------------------------
@@ -639,7 +637,7 @@ StringReader.prototype = {
      * @return {int} The column of the character to be read next.
      * @method getCol
      */
-    getCol: function(){
+    getCol: function() {
         return this._col;
     },
 
@@ -648,8 +646,8 @@ StringReader.prototype = {
      * @return {int} The row of the character to be read next.
      * @method getLine
      */
-    getLine: function(){
-        return this._line ;
+    getLine: function() {
+        return this._line;
     },
 
     /**
@@ -657,8 +655,8 @@ StringReader.prototype = {
      * @return {Boolean} True if there's no more input, false otherwise.
      * @method eof
      */
-    eof: function(){
-        return (this._cursor === this._input.length);
+    eof: function() {
+        return this._cursor === this._input.length;
     },
 
     //-------------------------------------------------------------------------
@@ -671,14 +669,14 @@ StringReader.prototype = {
      * @return {String} The next character or null if there is no next character.
      * @method peek
      */
-    peek: function(count){
+    peek: function(count) {
         var c = null;
-        count = (typeof count === "undefined" ? 1 : count);
+        count = typeof count === "undefined" ? 1 : count;
 
-        //if we're not at the end of the input...
-        if (this._cursor < this._input.length){
+        // if we're not at the end of the input...
+        if (this._cursor < this._input.length) {
 
-            //get character and increment cursor and column
+            // get character and increment cursor and column
             c = this._input.charAt(this._cursor + count - 1);
         }
 
@@ -691,22 +689,22 @@ StringReader.prototype = {
      * @return {String} The next character or null if there is no next character.
      * @method read
      */
-    read: function(){
+    read: function() {
         var c = null;
 
-        //if we're not at the end of the input...
-        if (this._cursor < this._input.length){
+        // if we're not at the end of the input...
+        if (this._cursor < this._input.length) {
 
-            //if the last character was a newline, increment row count
-            //and reset column count
-            if (this._input.charAt(this._cursor) === "\n"){
+            // if the last character was a newline, increment row count
+            // and reset column count
+            if (this._input.charAt(this._cursor) === "\n") {
                 this._line++;
                 this._col=1;
             } else {
                 this._col++;
             }
 
-            //get character and increment cursor and column
+            // get character and increment cursor and column
             c = this._input.charAt(this._cursor++);
         }
 
@@ -722,7 +720,7 @@ StringReader.prototype = {
      * @method mark
      * @return {void}
      */
-    mark: function(){
+    mark: function() {
         this._bookmark = {
             cursor: this._cursor,
             line:   this._line,
@@ -730,8 +728,8 @@ StringReader.prototype = {
         };
     },
 
-    reset: function(){
-        if (this._bookmark){
+    reset: function() {
+        if (this._bookmark) {
             this._cursor = this._bookmark.cursor;
             this._line = this._bookmark.line;
             this._col = this._bookmark.col;
@@ -751,7 +749,7 @@ StringReader.prototype = {
      * @throws Error when the string pattern is not found.
      * @method readTo
      */
-    readTo: function(pattern){
+    readTo: function(pattern) {
 
         var buffer = "",
             c;
@@ -761,9 +759,9 @@ StringReader.prototype = {
          * Then, buffer must end with the pattern or else reach the
          * end of the input.
          */
-        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) !== buffer.length - pattern.length){
+        while (buffer.length < pattern.length || buffer.lastIndexOf(pattern) !== buffer.length - pattern.length) {
             c = this.read();
-            if (c){
+            if (c) {
                 buffer += c;
             } else {
                 throw new Error("Expected \"" + pattern + "\" at line " + this._line  + ", col " + this._col + ".");
@@ -784,12 +782,12 @@ StringReader.prototype = {
      *      filter check.
      * @method readWhile
      */
-    readWhile: function(filter){
+    readWhile: function(filter) {
 
         var buffer = "",
             c = this.peek();
 
-        while(c !== null && filter(c)){
+        while (c !== null && filter(c)) {
             buffer += this.read();
             c = this.peek();
         }
@@ -810,18 +808,18 @@ StringReader.prototype = {
      *      null if there was no match.
      * @method readMatch
      */
-    readMatch: function(matcher){
+    readMatch: function(matcher) {
 
         var source = this._input.substring(this._cursor),
             value = null;
 
-        //if it's a string, just do a straight match
-        if (typeof matcher === "string"){
-            if (source.slice(0, matcher.length) === matcher){
+        // if it's a string, just do a straight match
+        if (typeof matcher === "string") {
+            if (source.slice(0, matcher.length) === matcher) {
                 value = this.readCount(matcher.length);
             }
-        } else if (matcher instanceof RegExp){
-            if (matcher.test(source)){
+        } else if (matcher instanceof RegExp) {
+            if (matcher.test(source)) {
                 value = this.readCount(RegExp.lastMatch.length);
             }
         }
@@ -837,10 +835,10 @@ StringReader.prototype = {
      * @return {String} The string made up the read characters.
      * @method readCount
      */
-    readCount: function(count){
+    readCount: function(count) {
         var buffer = "";
 
-        while(count--){
+        while (count--) {
             buffer += this.read();
         }
 
@@ -863,7 +861,7 @@ module.exports = SyntaxUnit;
  * @param {int} line The line of text on which the unit resides.
  * @param {int} col The column of text on which the unit resides.
  */
-function SyntaxUnit(text, line, col, type){
+function SyntaxUnit(text, line, col, type) {
 
 
     /**
@@ -904,7 +902,7 @@ function SyntaxUnit(text, line, col, type){
  * @static
  * @method fromToken
  */
-SyntaxUnit.fromToken = function(token){
+SyntaxUnit.fromToken = function(token) {
     return new SyntaxUnit(token.value, token.startLine, token.startCol);
 };
 
@@ -918,7 +916,7 @@ SyntaxUnit.prototype = {
      * @return {String} The text representation of the unit.
      * @method valueOf
      */
-    valueOf: function(){
+    valueOf: function() {
         return this.toString();
     },
 
@@ -927,7 +925,7 @@ SyntaxUnit.prototype = {
      * @return {String} The text representation of the unit.
      * @method toString
      */
-    toString: function(){
+    toString: function() {
         return this.text;
     }
 

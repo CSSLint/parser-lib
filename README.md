@@ -1,6 +1,6 @@
 # CSS Parser
 
-[![build status](https://secure.travis-ci.org/CSSLint/parser-lib.svg)](http://travis-ci.org/CSSLint/parser-lib)
+[![build status](https://secure.travis-ci.org/CSSLint/parser-lib.svg?branch=master)](https://travis-ci.org/CSSLint/parser-lib)
 
 ## Introduction
 
@@ -30,6 +30,7 @@ var parser = new parserlib.css.Parser();
 
 Alternatively, you can copy a single file version of the parser from
 `dist/node-parserlib.js` to your own project, and use it as follows:
+
 ```js
 var parserlib = require("./node-parserlib");
 ```
@@ -38,6 +39,7 @@ var parserlib = require("./node-parserlib");
 
 To use the CSS parser in a Rhino script, copy the file
 `dist/parserlib.js` to your project and then include it at the beginning:
+
 ```js
 load("parserlib.js");
 ```
@@ -45,14 +47,18 @@ load("parserlib.js");
 ### HTML page
 
 To use the CSS parser on an HTML page, you can either include the entire library on your page:
+
 ```html
 <script src="parserlib.js"></script>
 ```
+
 Or include it as its component parts, the ParserLib core and the CSS parser:
+
 ```html
 <script src="parserlib-core.js"></script>
 <script src="parserlib-css.js"></script>
 ```
+
 Note that parsing large JavaScript files may cause the browser to
 become unresponsive.  All three of these files are located in the
 `dist` directory.
@@ -60,9 +66,11 @@ become unresponsive.  All three of these files are located in the
 ## Basic usage
 
 You can create a new instance of the parser by using the following code:
+
 ```js
 var parser = new parserlib.css.Parser();
 ```
+
 The constructor accepts an options object that specifies additional features the parser should use. The available options are:
 
 * `starHack` - set to true to treat properties with a leading asterisk as if the asterisk wasn't there. Default is false.

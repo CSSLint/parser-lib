@@ -661,7 +661,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             if (/^em$|^ex$|^px$|^gd$|^rem$|^vw$|^vh$|^vmax$|^vmin$|^ch$|^cm$|^mm$|^in$|^pt$|^pc$/i.test(ident)) {
                 tt = Tokens.LENGTH;
-            } else if (/^deg|^rad$|^grad$/i.test(ident)) {
+            } else if (/^deg|^rad$|^grad$|^turn$/i.test(ident)) {
                 tt = Tokens.ANGLE;
             } else if (/^ms$|^s$/i.test(ident)) {
                 tt = Tokens.TIME;
@@ -1045,4 +1045,3 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
     }
 });
-

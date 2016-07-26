@@ -68,6 +68,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
             case "deg":
             case "rad":
             case "grad":
+            case "turn":
                 this.type = "angle";
                 break;
 

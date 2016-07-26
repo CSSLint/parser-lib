@@ -358,6 +358,10 @@ var YUITest = require("yuitest"),
             "50.0GRAD"   : [CSSTokens.ANGLE],
             ".5Grad"     : [CSSTokens.ANGLE],
 
+            "5turn"      : [CSSTokens.ANGLE],
+            "50.0TURN"   : [CSSTokens.ANGLE],
+            ".5turn"     : [CSSTokens.ANGLE],
+
             "5ms"           : [CSSTokens.TIME],
             "50.0MS"        : [CSSTokens.TIME],
             ".5Ms"          : [CSSTokens.TIME],

@@ -1702,6 +1702,18 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
+        testMediaWithNestedMedia: function() {
+            var parser = new Parser({ strict: true });
+            var valid = true;
+
+            parser.addListener("error", function() {
+                valid = false;
+            });
+
+            parser.parse("@media print { #navigation { display: none } @media (max-width: 12cm) { .note { float: none } } }");
+            Assert.isTrue(valid);
+        },
+
         testViewport: function() {
             var parser = new Parser({ strict: true });
             var valid = true;

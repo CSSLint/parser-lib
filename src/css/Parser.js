@@ -527,6 +527,8 @@ Parser.prototype = function() {
                         this._document();
                     } else if (tokenStream.peek() === Tokens.SUPPORTS_SYM) {
                         this._supports();
+                    } else if (tokenStream.peek() === Tokens.MEDIA_SYM) {
+                        this._media();
                     } else if (!this._ruleset()) {
                         break;
                     }

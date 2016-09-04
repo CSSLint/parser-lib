@@ -108,6 +108,20 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "all",
+
+        valid: [
+            "unset",
+            "initial",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (initial | inherit | unset) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "animation-direction",
 
         valid: [

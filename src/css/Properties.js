@@ -9,6 +9,7 @@ var Properties = module.exports = {
     "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
     "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
     "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "all"                           : "initial | inherit | unset",
     "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
     "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",

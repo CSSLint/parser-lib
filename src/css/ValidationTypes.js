@@ -433,8 +433,14 @@ copy(ValidationTypes, {
         Matcher.many([true /* length is required */],
                      Matcher.cast("<length>").braces(2, 4), "inset", "<color>"),
 
-        "<text-decoration>":
+        "<text-decoration-color>":
+           "<color>",
+
+        "<text-decoration-line>":
             "none | [ underline || overline || line-through || blink ]",
+
+        "<text-decoration-style>":
+            "solid | double | dotted | dashed | wavy",
 
         "<will-change>":
             "auto | <animateable-feature>#",

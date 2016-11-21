@@ -46,7 +46,8 @@ load("parserlib.js");
 
 ### HTML page
 
-To use the CSS parser on an HTML page, you can either include the entire library on your page:
+To use the CSS parser on an HTML page, you can either include the entire
+library on your page:
 
 ```html
 <script src="parserlib.js"></script>
@@ -71,12 +72,17 @@ You can create a new instance of the parser by using the following code:
 var parser = new parserlib.css.Parser();
 ```
 
-The constructor accepts an options object that specifies additional features the parser should use. The available options are:
+The constructor accepts an options object that specifies additional features
+the parser should use. The available options are:
 
-* `starHack` - set to true to treat properties with a leading asterisk as if the asterisk wasn't there. Default is false.
-* `underscoreHack` - set to true to treat properties with a leading underscore as if the underscore wasn't there. Default is false.
-* `ieFilters` - set to true to accept IE < 8 style `filter` properties. Default is false.
-* `strict` - set to true to disable error recovery and stop on the first syntax error. Default is false.
+* `starHack` - set to true to treat properties with a leading asterisk as if
+  the asterisk wasn't there. Default is `false`.
+* `underscoreHack` - set to true to treat properties with a leading underscore
+  as if the underscore wasn't there. Default is `false`.
+* `ieFilters` - set to true to accept IE < 8 style `filter` properties.
+  Default is `false`.
+* `strict` - set to true to disable error recovery and stop on the first
+  syntax error. Default is `false`.
 
 Here's an example with some options set:
 
@@ -90,11 +96,14 @@ You can then parse a string of CSS code by passing into the `parse()` method:
 parser.parse(someCSSText);
 ```
 
-The `parse()` method throws an error if a non-recoverable syntax error occurs, otherwise it finishes silently.
-This method does not return a value nor does it build up an abstract syntax tree (AST) for you,
-it simply parses the CSS text and fires events at important moments along the parse.
+The `parse()` method throws an error if a non-recoverable syntax error occurs,
+otherwise it finishes silently.
+This method does not return a value nor does it build up an abstract syntax
+tree (AST) for you, it simply parses the CSS text and fires events at important
+moments along the parse.
 
-Note: The `parseStyleSheet()` method is provided for compatibility with SAC-based APIs but does the exact same thing as `parse()`.
+Note: The `parseStyleSheet()` method is provided for compatibility with
+SAC-based APIs but does the exact same thing as `parse()`.
 
 ## Understanding syntax units
 
@@ -103,9 +112,10 @@ These types are designed to give you easy access to all relevant parts of the CS
 
 ### Media Queries
 
-The `parserlib.css.MediaFeature` type represents a specific media feature in a media query,
-such as `(orientation: portrait)` or `(color)`. Essentially, this type of object represents
-anything enclosed in parentheses in a media query. Object of this type have the following properties:
+The `parserlib.css.MediaFeature` type represents a specific media feature in a
+media query, such as `(orientation: portrait)` or `(color)`. Essentially, this
+type of object represents anything enclosed in parentheses in a media query.
+Object of this type have the following properties:
 
 * `name` - the name of the media feature such as "orientation"
 * `value` - the value of the media feature (may be `null`)
@@ -146,7 +156,8 @@ this type of object wraps the various parts into a single interface. Each instan
 
 The `parts` array always has at least one item.
 
-The `parserlib.css.PropertyValuePart` type represents an individual part of a property value. Each instance has the following properties:
+The `parserlib.css.PropertyValuePart` type represents an individual part of a
+property value. Each instance has the following properties:
 
 * `type` - the type of value part ("unknown", "dimension", "percentage", "integer", "number", "color", "uri",  "string", "identifier" or "operator")
 
@@ -162,18 +173,20 @@ The parts are "1em" (dimension), "/" (operator), "1.5em" (dimension), "Times New
 
 ### Selectors
 
-The `parserlib.css.Selector` type represents a single selector. Each instance has a `parts` property,
-which is an array of `parserlib.css.SelectorPart` objects, which represent atomic parts of the selector,
-and `parserlib.css.Combinator` objects, which represent combinators in the selector.
+The `parserlib.css.Selector` type represents a single selector. Each instance
+has a `parts` property, which is an array of `parserlib.css.SelectorPart` objects,
+which represent atomic parts of the selector, and `parserlib.css.Combinator`
+objects, which represent combinators in the selector.
 Consider the following selector:
 
 ```css
 li.selected > a:hover
 ```
 
-This selector has three parts: `li.selected`, `>`, and `a:hover`. The first part is a `SelectorPart`,
-the second is a `Combinator`, and the third is a `SelectorPart`. Each `SelectorPart` is made up
-of an optional element name followed by an ID, class, attribute condition, pseudo class, and/or pseudo element.
+This selector has three parts: `li.selected`, `>`, and `a:hover`. The first
+part is a `SelectorPart`, the second is a `Combinator`, and the third is a
+`SelectorPart`. Each `SelectorPart` is made up of an optional element name
+followed by an ID, class, attribute condition, pseudo class, and/or pseudo element.
 
 Each instance of `parserlib.css.SelectorPart` has an `elementName` property, which represents
 the element name as a `parserlib.css.SelectorSubPart` object or `null` if there isn't one,
@@ -185,7 +198,6 @@ of `SelectorPart` arguments that were passed to `not()`.
 
 Each instance of `parserlib.css.Combinator` has an additional `type` property that indicates
 the type of combinator: "descendant", "child", "sibling", or "adjacent-sibling".
-
 
 ## Using events
 
@@ -214,20 +226,20 @@ There is no additional information provided for these events. Example:
 
 ```js
 parser.addListener("startstylesheet", function() {
-    console.log("Starting to parse style sheet");
+    console.log("Starting to parse stylesheet");
 });
 
 parser.addListener("endstylesheet", function() {
-    console.log("Finished parsing style sheet");
+    console.log("Finished parsing stylesheet");
 });
 ```
 
 ### `charset` event
 
-The `charset` event fires when the `@charset` directive is found in a style sheet.
-Since `@charset` is required to appear first in a style sheet, any other occurances
+The `charset` event fires when the `@charset` directive is found in a stylesheet.
+Since `@charset` is required to appear first in a stylesheet, any other occurances
 cause a syntax error. The `charset` event provides an `event` object with a property
-called `charset`, which contains the name of the character set for the style sheet. Example:
+called `charset`, which contains the name of the character set for the stylesheet. Example:
 
 ```js
 parser.addListener("charset", function(event) {
@@ -237,7 +249,7 @@ parser.addListener("charset", function(event) {
 
 ### `namespace` event
 
-The `namespace` event fires when the `@namespace` directive is found in a style sheet.
+The `namespace` event fires when the `@namespace` directive is found in a stylesheet.
 The `namespace` event provides an `event` object with two properties: `prefix`,
 which is the namespace prefix, and `uri`, which is the namespace URI. Example:
 
@@ -249,7 +261,7 @@ parser.addListener("namespace", function(event) {
 
 ### `import` event
 
-The `import` event fires when the `@import` directive is found in a style sheet.
+The `import` event fires when the `@import` directive is found in a stylesheet.
 The `import` event provides an `event` object with two properties: `uri`,
 which is the URI to import, and `media`, which is an array of media queries
 for which this URI applies. The `media` array contains zero or more
@@ -279,8 +291,8 @@ parser.addListener("endfontface", function(event) {
 
 ### `startpage` and `endpage` events
 
-The `startpage` event fires when `@page` is encountered and the `endpage` event fires
-just after the closing right brace (`}`) is encountered after `@page`.
+The `startpage` event fires when `@page` is encountered and the `endpage` event
+fires just after the closing right brace (`}`) is encountered after `@page`.
 The `event` object has two properties: `id`, which is the page ID, and `pseudo`,
 which is the page pseudo class. Example:
 
@@ -313,9 +325,9 @@ parser.addListener("endpagemargin", function(event) {
 
 ### `startmedia` and `endmedia` events
 
-The `startmedia` event fires when `@media` is encountered and the `endmedia` event fires
-just after the closing right brace (`}`) is encountered after `@media`.
-The `event` object has one property, `media`, which is an array of
+The `startmedia` event fires when `@media` is encountered and the `endmedia`
+event fires just after the closing right brace (`}`) is encountered after
+`@media`. The `event` object has one property, `media`, which is an array of
 `parserlib.css.MediaQuery` objects. Example:
 
 ```js
@@ -418,17 +430,19 @@ parser.addListener("error", function(event) {
 The CSS parser's goal is to be on-par with error recovery of CSS parsers in browsers.
 To that end, the following error recovery mechanisms are in place:
 
-* **Properties** - a syntactically incorrect property definition will be skipped over completely. For instance, the second property below is dropped:
+* **Properties** - a syntactically incorrect property definition will be
+  skipped over completely. For instance, the second property below is dropped:
 
 ```css
 a:hover {
     color: red;
-    font:: Helvetica;    /* dropped! */
+    font:: Helvetica;   /* dropped! */
     text-decoration: underline;
 }
 ```
 
-* **Selectors** - if there's a syntax error in *any* selector, the entire rule is skipped over. For instance, the following rule is completely skipped:
+* **Selectors** - if there's a syntax error in *any* selector, the entire rule
+  is skipped over. For instance, the following rule is completely skipped:
 
 ```css
 a:hover, foo ... bar {
@@ -438,11 +452,14 @@ a:hover, foo ... bar {
 }
 ```
 
-* **@ Rules** - there are certain @ rules that are only valid in certain contexts. The parser will skip over `@charset`, `@namespace`, and `@import` if they're found anywhere other than the beginning of the input.
+* **@ Rules** - there are certain @ rules that are only valid in certain
+  contexts. The parser will skip over `@charset`, `@namespace`, and `@import`
+  if they're found anywhere other than the beginning of the input.
 
-* **Unknown @ Rules** - any @ rules that isn't recognized is automatically skipped, meaning the entire block after it is not parsed.
+* **Unknown @ Rules** - any @ rules that isn't recognized is automatically
+  skipped, meaning the entire block after it is not parsed.
 
 ## Running Tests
 
-You can run the tests via `npm test` from the repository's root.  You
+You can run the tests via `npm test` from the repository's root. You
 may need to run `npm install` first to install the necessary dependencies.

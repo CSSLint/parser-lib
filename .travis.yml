@@ -9,4 +9,8 @@ node_js:
   - "7"
 
 matrix:
-    fast_finish: true
+  fast_finish: true
+
+cache:
+  directories:
+    - node_modules

@@ -40,7 +40,7 @@
     "factor-bundle": "^2.5.0",
     "jshint": "^2.9.1",
     "moment": "^2.11.2",
-    "shelljs": "^0.6.0",
+    "shelljs": "^0.7.5",
     "ytestrunner": "^0.3.3",
     "yuitest": "^0.7.9"
   },

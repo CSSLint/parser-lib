@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v1.0.0, Build time: 15-July-2016 12:36:10 */
+/* Version v1.1.0, Build time: 6-December-2016 10:31:29 */
 (function () {
 var require = parserlib._require;
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"parserlib":[function(require,module,exports){
@@ -630,6 +630,8 @@ Parser.prototype = function() {
                         this._document();
                     } else if (tokenStream.peek() === Tokens.SUPPORTS_SYM) {
                         this._supports();
+                    } else if (tokenStream.peek() === Tokens.MEDIA_SYM) {
+                        this._media();
                     } else if (!this._ruleset()) {
                         break;
                     }
@@ -2912,6 +2914,7 @@ var Properties = module.exports = {
     "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
     "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
     "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "all"                           : "initial | inherit | unset",
     "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
     "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
     "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
@@ -2957,7 +2960,12 @@ var Properties = module.exports = {
     "-o-animation-name"                : "[ none | <single-animation-name> ]#",
     "-o-animation-play-state"          : "[ running | paused ]#",
 
-    "appearance"                    : "icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal | none",
+    "appearance"                    : "none | auto",
+    "-moz-appearance"               : "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
+    "-ms-appearance"                : "none | icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
+    "-webkit-appearance"            : "none | button | button-bevel | caps-lock-indicator | caret | checkbox | default-button | listbox	| listitem | media-fullscreen-button | media-mute-button | media-play-button | media-seek-back-button	| media-seek-forward-button	| media-slider | media-sliderthumb | menulist	| menulist-button	| menulist-text	| menulist-textfield | push-button	| radio	| searchfield	| searchfield-cancel-button	| searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical	| square-button	| textarea	| textfield	| scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical",
+    "-o-appearance"                 : "none | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
+
     "azimuth"                       : "<azimuth>",
 
     //B
@@ -3328,7 +3336,10 @@ var Properties = module.exports = {
     "text-align"                    : "left | right | center | justify | match-parent | start | end",
     "text-align-last"               : 1,
     "text-anchor"                   : "start | middle | end",
-    "text-decoration"               : "<text-decoration>",
+    "text-decoration"               : "<text-decoration-line> || <text-decoration-style> || <text-decoration-color>",
+    "text-decoration-color"         : "<text-decoration-color>",
+    "text-decoration-line"          : "<text-decoration-line>",
+    "text-decoration-style"         : "<text-decoration-style>",
     "text-emphasis"                 : 1,
     "text-height"                   : 1,
     "text-indent"                   : "<length> | <percentage>",
@@ -4178,8 +4189,14 @@ copy(ValidationTypes, {
         Matcher.many([true /* length is required */],
                      Matcher.cast("<length>").braces(2, 4), "inset", "<color>"),
 
-        "<text-decoration>":
+        "<text-decoration-color>":
+           "<color>",
+
+        "<text-decoration-line>":
             "none | [ underline || overline || line-through || blink ]",
+
+        "<text-decoration-style>":
+            "solid | double | dotted | dashed | wavy",
 
         "<will-change>":
             "auto | <animateable-feature>#",
@@ -4879,7 +4896,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             if (/^em$|^ex$|^px$|^gd$|^rem$|^vw$|^vh$|^vmax$|^vmin$|^ch$|^cm$|^mm$|^in$|^pt$|^pc$/i.test(ident)) {
                 tt = Tokens.LENGTH;
-            } else if (/^deg|^rad$|^grad$/i.test(ident)) {
+            } else if (/^deg|^rad$|^grad$|^turn$/i.test(ident)) {
                 tt = Tokens.ANGLE;
             } else if (/^ms$|^s$/i.test(ident)) {
                 tt = Tokens.TIME;
@@ -5264,7 +5281,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     }
 });
 
-
 },{"../util/TokenStreamBase":27,"./PropertyValuePart":11,"./Tokens":18}],15:[function(require,module,exports){
 "use strict";
 
@@ -5626,6 +5642,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
             case "deg":
             case "rad":
             case "grad":
+            case "turn":
                 this.type = "angle";
                 break;
 

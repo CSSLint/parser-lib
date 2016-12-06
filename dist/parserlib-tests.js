@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v1.0.0, Build time: 15-July-2016 12:36:10 */
+/* Version v1.1.0, Build time: 6-December-2016 10:31:29 */
 (function () {
 var require = function(x) {
 if (x==='yuitest') { return YUITest; }
@@ -1731,6 +1731,18 @@ var YUITest = require("yuitest"),
             Assert.isTrue(valid);
         },
 
+        testMediaWithNestedMedia: function() {
+            var parser = new Parser({ strict: true });
+            var valid = true;
+
+            parser.addListener("error", function() {
+                valid = false;
+            });
+
+            parser.parse("@media print { #navigation { display: none } @media (max-width: 12cm) { .note { float: none } } }");
+            Assert.isTrue(valid);
+        },
+
         testViewport: function() {
             var parser = new Parser({ strict: true });
             var valid = true;
@@ -2826,6 +2838,10 @@ var YUITest = require("yuitest"),
             "50.0GRAD"   : [CSSTokens.ANGLE],
             ".5Grad"     : [CSSTokens.ANGLE],
 
+            "5turn"      : [CSSTokens.ANGLE],
+            "50.0TURN"   : [CSSTokens.ANGLE],
+            ".5turn"     : [CSSTokens.ANGLE],
+
             "5ms"           : [CSSTokens.TIME],
             "50.0MS"        : [CSSTokens.TIME],
             ".5Ms"          : [CSSTokens.TIME],
@@ -3158,6 +3174,20 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "all",
+
+        valid: [
+            "unset",
+            "initial",
+            "inherit"
+        ],
+
+        invalid: {
+            "foo" : "Expected (initial | inherit | unset) but found 'foo'."
         }
     }));
 
@@ -4428,6 +4458,45 @@ var YUITest = require("yuitest"),
         property: "text-decoration",
 
         valid: [
+          "none",
+          "underline red",
+          "underline wavy red",
+          "wavy",
+          "wavy red",
+          "red"
+        ],
+
+        invalid: {
+            "underline underline" : "Expected end of value but found 'underline'.",
+            "underline wavy dotted": "Expected end of value but found 'dotted'.",
+            "underline wavy red purple": "Expected end of value but found 'purple'.",
+            "wavy dotted": "Expected end of value but found 'dotted'.",
+            "wavy red purple": "Expected end of value but found 'purple'.",
+            "red purple": "Expected end of value but found 'purple'.",
+            "foo" : "Expected (<text-decoration-line> || <text-decoration-style> || <text-decoration-color>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration-color",
+
+        valid: [
+            "red",
+            "#f00",
+            "transparent",
+            "rgba(255, 128, 128, 0.5)"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<color>) but found 'foo'.",
+            "invert" : "Expected (<color>) but found 'invert'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration-line",
+
+        valid: [
             "none",
             "underline",
             "underline overline line-through blink"
@@ -4439,6 +4508,23 @@ var YUITest = require("yuitest"),
             "inherit blink" : "Expected end of value but found 'blink'.",
             "overline inherit" : "Expected end of value but found 'inherit'.",
             "foo" : "Expected (none | underline || overline || line-through || blink) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration-style",
+
+        valid: [
+            "solid",
+            "double",
+            "dotted",
+            "dashed",
+            "wavy"
+        ],
+
+        invalid: {
+            "solid double" : "Expected end of value but found 'double'.",
+            "foo" : "Expected (solid | double | dotted | dashed | wavy) but found 'foo'."
         }
     }));
 

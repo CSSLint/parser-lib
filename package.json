@@ -28,7 +28,7 @@
     "build": "node scripts/build.js",
     "coverage": "ytestrunner -c",
     "lint": "jshint scripts src tests",
-    "prepublish": "npm run build && npm test",
+    "prepublish": "npm test",
     "pretest": "npm run lint",
     "test": "npm run test-yuitest",
     "test-yuitest": "ytestrunner"

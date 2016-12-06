@@ -25,13 +25,13 @@
   ],
   "main": "./src/index.js",
   "scripts": {
+    "build": "node scripts/build.js",
     "coverage": "ytestrunner -c",
     "lint": "jshint scripts src tests",
+    "prepublish": "npm run build && npm test",
     "pretest": "npm run lint",
-    "build": "node scripts/build.js",
-    "test-yuitest": "ytestrunner",
-    "test": "npm run lint && npm run test-yuitest",
-    "prepublish": "npm test"
+    "test": "npm run test-yuitest",
+    "test-yuitest": "ytestrunner"
   },
   "devDependencies": {
     "babybird": "0.0.1",

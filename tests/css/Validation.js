@@ -1,4 +1,5 @@
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -21,7 +22,7 @@ var YUITest = require("yuitest"),
         this.name = "Tests for " + this.property;
         this._should.error = {};
 
-        for (i=0, len=this.valid.length; i < len; i++) {
+        for (i = 0, len = this.valid.length; i < len; i++) {
             this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value) {
                 return function() {
                     this._testValidValue(value);
@@ -55,7 +56,11 @@ var YUITest = require("yuitest"),
     ValidationTestCase.prototype = new YUITest.TestCase();
 
     ValidationTestCase.prototype._testValidValue = function(value) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.addListener("property", function(event) {
             Assert.isNull(event.invalid);
         });
@@ -63,7 +68,11 @@ var YUITest = require("yuitest"),
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.addListener("property", function(event) {
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
@@ -72,7 +81,11 @@ var YUITest = require("yuitest"),
     };
 
     ValidationTestCase.prototype._testSyntaxError = function(value) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
@@ -1388,12 +1401,12 @@ var YUITest = require("yuitest"),
         property: "text-decoration",
 
         valid: [
-          "none",
-          "underline red",
-          "underline wavy red",
-          "wavy",
-          "wavy red",
-          "red"
+            "none",
+            "underline red",
+            "underline wavy red",
+            "wavy",
+            "wavy red",
+            "red"
         ],
 
         invalid: {

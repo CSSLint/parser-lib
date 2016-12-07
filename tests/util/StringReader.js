@@ -1,7 +1,8 @@
 "use strict";
+
 var YUITest = require("yuitest"),
-    Assert = YUITest.Assert,
     parserlib = require("../../"),
+    Assert = YUITest.Assert,
     StringReader = parserlib.util.StringReader;
 
 (function() {
@@ -38,7 +39,7 @@ var YUITest = require("yuitest"),
 
             while (c) {
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
-                Assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
+                Assert.areEqual(i + 2, reader.getCol(), "Column should be " + (i + 2) + ".");
                 c = reader.read();
                 i++;
             }

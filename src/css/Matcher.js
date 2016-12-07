@@ -46,7 +46,7 @@ Matcher.parse = function(str) {
         var result = reader.readMatch(matcher);
         if (result === null) {
             throw new SyntaxError(
-                "Expected "+matcher, reader.getLine(), reader.getCol());
+                "Expected " + matcher, reader.getLine(), reader.getCol());
         }
         return result;
     };
@@ -98,7 +98,7 @@ Matcher.parse = function(str) {
             eat(/^\s*,\s*/);
             var max = eat(/^\d+/);
             eat(/^\s*\}/);
-            return m.braces(+min, +max);
+            return m.braces(Number(min), Number(max));
         }
         return m;
     };
@@ -241,7 +241,7 @@ Matcher.many = function(required) {
                     seen[i] = true;
                     // Increase matchCount iff this was a required element
                     // (or if all the elements are optional)
-                    if (tryMatch(matchCount + ((required === false || required[i]) ? 1 : 0))) {
+                    if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
                         expression.drop();
                         return true;
                     }
@@ -314,19 +314,39 @@ Matcher.oror = function() {
 Matcher.prototype = {
     constructor: Matcher,
     // These are expected to be overridden in every instance.
-    match: function() { throw new Error("unimplemented"); },
-    toString: function() { throw new Error("unimplemented"); },
+    match: function() {
+        throw new Error("unimplemented");
+    },
+    toString: function() {
+        throw new Error("unimplemented");
+    },
     // This returns a standalone function to do the matching.
-    func: function() { return this.match.bind(this); },
+    func: function() {
+        return this.match.bind(this);
+    },
     // Basic combinators
-    then: function(m) { return Matcher.seq(this, m); },
-    or: function(m) { return Matcher.alt(this, m); },
-    andand: function(m) { return Matcher.many(true, this, m); },
-    oror: function(m) { return Matcher.many(false, this, m); },
+    then: function(m) {
+        return Matcher.seq(this, m);
+    },
+    or: function(m) {
+        return Matcher.alt(this, m);
+    },
+    andand: function(m) {
+        return Matcher.many(true, this, m);
+    },
+    oror: function(m) {
+        return Matcher.many(false, this, m);
+    },
     // Component value multipliers
-    star: function() { return this.braces(0, Infinity, "*"); },
-    plus: function() { return this.braces(1, Infinity, "+"); },
-    question: function() { return this.braces(0, 1, "?"); },
+    star: function() {
+        return this.braces(0, Infinity, "*");
+    },
+    plus: function() {
+        return this.braces(1, Infinity, "+");
+    },
+    question: function() {
+        return this.braces(0, 1, "?");
+    },
     hash: function() {
         return this.braces(1, Infinity, "#", Matcher.cast(","));
     },

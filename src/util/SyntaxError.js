@@ -38,6 +38,6 @@ function SyntaxError(message, line, col) {
 
 }
 
-//inherit from Error
+// inherit from Error
 SyntaxError.prototype = Object.create(Error.prototype); // jshint ignore:line
 SyntaxError.prototype.constructor = SyntaxError; // jshint ignore:line

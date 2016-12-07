@@ -1,6 +1,6 @@
-"use strict";
-
 /* exported Validation */
+
+"use strict";
 
 var Matcher = require("./Matcher");
 var Properties = require("./Properties");
@@ -12,14 +12,14 @@ var Validation = module.exports = {
 
     validate: function(property, value) {
 
-        //normalize name
+        // normalize name
         var name        = property.toString().toLowerCase(),
             expression  = new PropertyValueIterator(value),
             spec        = Properties[name],
             part;
 
         if (!spec) {
-            if (name.indexOf("-") !== 0) {    //vendor prefixed are ok
+            if (name.indexOf("-") !== 0) {    // vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
         } else if (typeof spec !== "number") {

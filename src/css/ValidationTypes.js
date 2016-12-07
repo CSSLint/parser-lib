@@ -14,9 +14,11 @@ copy(ValidationTypes, {
     isLiteral: function (part, literals) {
         var text = part.text.toString().toLowerCase(),
             args = literals.split(" | "),
-            i, len, found = false;
+            i,
+            len,
+            found = false;
 
-        for (i=0, len=args.length; i < len && !found; i++) {
+        for (i = 0, len = args.length; i < len && !found; i++) {
             if (args[i].charAt(0) === "<") {
                 found = this.simple[args[i]](part);
             } else if (args[i].slice(-2) === "()") {
@@ -51,9 +53,11 @@ copy(ValidationTypes, {
      */
     isAny: function (expression, types) {
         var args = types.split(" | "),
-            i, len, found = false;
+            i,
+            len,
+            found = false;
 
-        for (i=0, len=args.length; i < len && !found && expression.hasNext(); i++) {
+        for (i = 0, len = args.length; i < len && !found && expression.hasNext(); i++) {
             found = this.isType(expression, args[i]);
         }
 
@@ -66,13 +70,15 @@ copy(ValidationTypes, {
      */
     isAnyOfGroup: function(expression, types) {
         var args = types.split(" || "),
-            i, len, found = false;
+            i,
+            len,
+            found = false;
 
-        for (i=0, len=args.length; i < len && !found; i++) {
+        for (i = 0, len = args.length; i < len && !found; i++) {
             found = this.isType(expression, args[i]);
         }
 
-        return found ? args[i-1] : false;
+        return found ? args[i - 1] : false;
     },
 
     /**
@@ -211,14 +217,14 @@ copy(ValidationTypes, {
         },
 
         "<gradient>": function(part) {
-            return part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
+            return part.type === "function" && /^(?:-(?:ms|moz|o|webkit)-)?(?:repeating-)?(?:radial-|linear-)?gradient/i.test(part);
         },
 
         "<icccolor>":
             "cielab() | cielch() | cielchab() | " +
             "icc-color() | icc-named-color()",
 
-        //any identifier
+        // any identifier
         "<ident>": function(part) {
             return part.type === "identifier" || part.wasIdent;
         },
@@ -234,7 +240,7 @@ copy(ValidationTypes, {
         },
 
         "<length>": function(part) {
-            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)) {
+            if (part.type === "function" && /^(?:-(?:ms|moz|o|webkit)-)?calc/i.test(part)) {
                 return true;
             } else {
                 return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
@@ -315,7 +321,7 @@ copy(ValidationTypes, {
             " | " +
             "[ [ left-side | far-left | left | center-left | center | " +
             "center-right | right | far-right | right-side ] || behind ]" +
-            " | "+
+            " | " +
             "leftwards | rightwards",
 
         "<bg-position>": "<position>#",

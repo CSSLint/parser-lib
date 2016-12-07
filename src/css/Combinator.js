@@ -27,7 +27,7 @@ function Combinator(text, line, col) {
      */
     this.type = "unknown";
 
-    //pretty simple
+    // pretty simple
     if (/^\s+$/.test(text)) {
         this.type = "descendant";
     } else if (text === ">") {

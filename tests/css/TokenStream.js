@@ -1,4 +1,5 @@
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -33,7 +34,7 @@ var YUITest = require("yuitest"),
         var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
 
-        for (var i=0, len=outputs.length; i < len; i++) {
+        for (var i = 0, len = outputs.length; i < len; i++) {
             tt = tokenStream.get(outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined);
             Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }

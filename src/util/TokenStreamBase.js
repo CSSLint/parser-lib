@@ -71,9 +71,9 @@ TokenStreamBase.createTokenData = function(tokens) {
 
     var nameMap     = [],
         typeMap     = Object.create(null),
-        tokenData     = tokens.concat([]),
-        i            = 0,
-        len            = tokenData.length+1;
+        tokenData   = tokens.concat([]),
+        i           = 0,
+        len         = tokenData.length + 1;
 
     tokenData.UNKNOWN = -1;
     tokenData.unshift({ name:"EOF" });
@@ -122,7 +122,7 @@ TokenStreamBase.prototype = {
      */
     match: function(tokenTypes, channel) {
 
-        //always convert to an array, makes things easier
+        // always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -137,7 +137,7 @@ TokenStreamBase.prototype = {
             }
         }
 
-        //no match found, put the token back
+        // no match found, put the token back
         this.unget();
         return false;
     },
@@ -155,7 +155,7 @@ TokenStreamBase.prototype = {
 
         var token;
 
-        //always convert to an array, makes things easier
+        // always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -198,61 +198,61 @@ TokenStreamBase.prototype = {
      */
     get: function(channel) {
 
-        var tokenInfo   = this._tokenData,
-            i           =0,
+        var tokenInfo = this._tokenData,
+            i         = 0,
             token,
             info;
 
-        //check the lookahead buffer first
+        // check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length) {
 
             i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
 
-            //obey channels logic
-            while ((info.channel !== undefined && channel !== info.channel) &&
+            // obey channels logic
+            while ((typeof info.channel !== "undefined" && channel !== info.channel) &&
                     this._ltIndex < this._lt.length) {
                 this._token = this._lt[this._ltIndex++];
                 info = tokenInfo[this._token.type];
                 i++;
             }
 
-            //here be dragons
-            if ((info.channel === undefined || channel === info.channel) &&
+            // here be dragons
+            if ((typeof info.channel === "undefined" || channel === info.channel) &&
                     this._ltIndex <= this._lt.length) {
                 this._ltIndexCache.push(i);
                 return this._token.type;
             }
         }
 
-        //call token retriever method
+        // call token retriever method
         token = this._getToken();
 
-        //if it should be hidden, don't save a token
+        // if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide) {
 
-            //apply token channel
+            // apply token channel
             token.channel = tokenInfo[token.type].channel;
 
-            //save for later
+            // save for later
             this._token = token;
             this._lt.push(token);
 
-            //save space that will be moved (must be done before array is truncated)
+            // save space that will be moved (must be done before array is truncated)
             this._ltIndexCache.push(this._lt.length - this._ltIndex + i);
 
-            //keep the buffer under 5 items
+            // keep the buffer under 5 items
             if (this._lt.length > 5) {
                 this._lt.shift();
             }
 
-            //also keep the shift buffer under 5 items
+            // also keep the shift buffer under 5 items
             if (this._ltIndexCache.length > 5) {
                 this._ltIndexCache.shift();
             }
 
-            //update lookahead index
+            // update lookahead index
             this._ltIndex = this._lt.length;
         }
 
@@ -264,10 +264,10 @@ TokenStreamBase.prototype = {
         info = tokenInfo[token.type];
         if (info &&
                 (info.hide ||
-                (info.channel !== undefined && channel !== info.channel))) {
+                (typeof info.channel !== "undefined" && channel !== info.channel))) {
             return this.get(channel);
         } else {
-            //return just the type
+            // return just the type
             return token.type;
         }
     },
@@ -286,26 +286,26 @@ TokenStreamBase.prototype = {
         var total = index,
             tt;
         if (index > 0) {
-            //TODO: Store 5 somewhere
+            // TODO: Store 5 somewhere
             if (index > 5) {
                 throw new Error("Too much lookahead.");
             }
 
-            //get all those tokens
+            // get all those tokens
             while (total) {
                 tt = this.get();
                 total--;
             }
 
-            //unget all those tokens
+            // unget all those tokens
             while (total < index) {
                 this.unget();
                 total++;
             }
         } else if (index < 0) {
 
-            if (this._lt[this._ltIndex+index]) {
-                tt = this._lt[this._ltIndex+index].type;
+            if (this._lt[this._ltIndex + index]) {
+                tt = this._lt[this._ltIndex + index].type;
             } else {
                 throw new Error("Too much lookbehind.");
             }
@@ -330,11 +330,11 @@ TokenStreamBase.prototype = {
      */
     LT: function(index) {
 
-        //lookahead first to prime the token buffer
+        // lookahead first to prime the token buffer
         this.LA(index);
 
-        //now find the token, subtract one because _ltIndex is already at the next index
-        return this._lt[this._ltIndex+index-1];
+        // now find the token, subtract one because _ltIndex is already at the next index
+        return this._lt[this._ltIndex + index - 1];
     },
 
     /**

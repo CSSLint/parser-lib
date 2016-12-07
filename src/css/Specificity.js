@@ -35,7 +35,7 @@ Specificity.prototype = {
         var comps = ["a", "b", "c", "d"],
             i, len;
 
-        for (i=0, len=comps.length; i < len; i++) {
+        for (i = 0, len = comps.length; i < len; i++) {
             if (this[comps[i]] < other[comps[i]]) {
                 return -1;
             } else if (this[comps[i]] > other[comps[i]]) {
@@ -75,9 +75,12 @@ Specificity.prototype = {
  */
 Specificity.calculate = function(selector) {
 
-    var i, len,
+    var i,
+        len,
         part,
-        b=0, c=0, d=0;
+        b = 0,
+        c = 0,
+        d = 0;
 
     function updateValues(part) {
 
@@ -85,11 +88,11 @@ Specificity.calculate = function(selector) {
             elementName = part.elementName ? part.elementName.text : "",
             modifier;
 
-        if (elementName && elementName.charAt(elementName.length-1) !== "*") {
+        if (elementName && elementName.charAt(elementName.length - 1) !== "*") {
             d++;
         }
 
-        for (i=0, len=part.modifiers.length; i < len; i++) {
+        for (i = 0, len = part.modifiers.length; i < len; i++) {
             modifier = part.modifiers[i];
             switch (modifier.type) {
                 case "class":
@@ -110,14 +113,14 @@ Specificity.calculate = function(selector) {
                     break;
 
                 case "not":
-                    for (j=0, num=modifier.args.length; j < num; j++) {
+                    for (j = 0, num = modifier.args.length; j < num; j++) {
                         updateValues(modifier.args[j]);
                     }
             }
         }
     }
 
-    for (i=0, len=selector.parts.length; i < len; i++) {
+    for (i = 0, len = selector.parts.length; i < len; i++) {
         part = selector.parts[i];
 
         if (part instanceof SelectorPart) {

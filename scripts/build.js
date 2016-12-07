@@ -129,7 +129,7 @@ function buildTests(filename) {
     return new Promise(function(resolve, reject) {
         var bundle = browserify();
         tests.forEach(function(f, i) {
-            bundle.require(f, { expose: "test"+i });
+            bundle.require(f, { expose: "test" + i });
         });
         bundle.exclude("yuitest");
         bundle.exclude(path.join(srcDir, "index.js"));
@@ -150,7 +150,7 @@ function buildTests(filename) {
             "};",
             src
         ].concat(tests.map(function(f, i) {
-            return "require('test"+i+"');";
+            return "require('test" + i + "');";
         })).concat([
             "})();"
         ]);

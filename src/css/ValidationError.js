@@ -36,5 +36,5 @@ function ValidationError(message, line, col) {
 
 }
 
-//inherit from Error
+// inherit from Error
 ValidationError.prototype = new Error();

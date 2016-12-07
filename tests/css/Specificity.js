@@ -1,4 +1,5 @@
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),

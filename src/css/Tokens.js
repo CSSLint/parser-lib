@@ -185,12 +185,12 @@ var Tokens = module.exports = [
 
     Tokens.UNKNOWN = -1;
     Tokens.unshift({ name:"EOF" });
-    for (var i=0, len = Tokens.length; i < len; i++) {
+    for (var i = 0, len = Tokens.length; i < len; i++) {
         nameMap.push(Tokens[i].name);
         Tokens[Tokens[i].name] = i;
         if (Tokens[i].text) {
             if (Tokens[i].text instanceof Array) {
-                for (var j=0; j < Tokens[i].text.length; j++) {
+                for (var j = 0; j < Tokens[i].text.length; j++) {
                     typeMap[Tokens[i].text[j]] = i;
                 }
             } else {

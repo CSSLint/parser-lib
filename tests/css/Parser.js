@@ -1,4 +1,5 @@
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -2138,7 +2139,10 @@ var YUITest = require("yuitest"),
         },
 
         "Test rule with star hack property": function() {
-            var parser = new Parser({ strict: true, starHack: true });
+            var parser = new Parser({
+                strict: true,
+                starHack: true
+            });
             parser.addListener("property", function(event) {
                 Assert.areEqual("*color", event.property.toString());
                 Assert.areEqual("color", event.property.text);
@@ -2155,7 +2159,10 @@ var YUITest = require("yuitest"),
         },
 
         "Test rule with underscore hack property": function() {
-            var parser = new Parser({ strict: true, underscoreHack: true });
+            var parser = new Parser({
+                strict: true,
+                underscoreHack: true
+            });
             parser.addListener("property", function(event) {
                 Assert.areEqual("_color", event.property.toString());
                 Assert.areEqual("color", event.property.text);

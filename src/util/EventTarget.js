@@ -21,7 +21,7 @@ function EventTarget() {
 
 EventTarget.prototype = {
 
-    //restore constructor
+    // restore constructor
     constructor: EventTarget,
 
     /**
@@ -60,9 +60,9 @@ EventTarget.prototype = {
 
         if (this._listeners[event.type]) {
 
-            //create a copy of the array and use that so listeners can't chane
+            // create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
-            for (var i=0, len=listeners.length; i < len; i++) {
+            for (var i = 0, len = listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
@@ -78,7 +78,7 @@ EventTarget.prototype = {
     removeListener: function(type, listener) {
         if (this._listeners[type]) {
             var listeners = this._listeners[type];
-            for (var i=0, len=listeners.length; i < len; i++) {
+            for (var i = 0, len = listeners.length; i < len; i++) {
                 if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;

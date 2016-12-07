@@ -122,7 +122,7 @@ StringReader.prototype = {
             // and reset column count
             if (this._input.charAt(this._cursor) === "\n") {
                 this._line++;
-                this._col=1;
+                this._col = 1;
             } else {
                 this._col++;
             }

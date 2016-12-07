@@ -42,7 +42,7 @@ function isNameChar(c) {
 }
 
 function isIdentStart(c) {
-    return c !== null && (isNameStart(c) || /\-\\/.test(c));
+    return c !== null && (isNameStart(c) || /-\\/.test(c));
 }
 
 function mix(receiver, supplier) {
@@ -176,7 +176,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - PERCENTAGE
                  */
                 case "-":
-                    if (reader.peek() === "-") {  //could be closing HTML-style comment
+                    if (reader.peek() === "-") {  // could be closing HTML-style comment
                         token = this.htmlCommentEndToken(c, startLine, startCol);
                     } else if (isNameStart(reader.peek())) {
                         token = this.identOrFunctionToken(c, startLine, startCol);
@@ -287,8 +287,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             }
 
-            //make sure this token is wanted
-            //TODO: check channel
+            // make sure this token is wanted
+            // TODO: check channel
             break;
         }
 
@@ -363,12 +363,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          */
         reader.mark();
 
-        //try to find the at-keyword
+        // try to find the at-keyword
         ident = this.readName();
         rule = first + ident;
         tt = Tokens.type(rule.toLowerCase());
 
-        //if it's not valid, use the first character only and reset the reader
+        // if it's not valid, use the first character only and reset the reader
         if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
             if (rule.length > 1) {
                 tt = Tokens.UNKNOWN_SYM;
@@ -522,14 +522,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             uriFns  = ["url(", "url-prefix(", "domain("],
             uri;
 
-        //if there's a left paren immediately after, it's a URI or function
+        // if there's a left paren immediately after, it's a URI or function
         if (reader.peek() === "(") {
             ident += reader.read();
             if (uriFns.indexOf(ident.toLowerCase()) > -1) {
                 reader.mark();
                 uri = this.readURI(ident);
                 if (uri === null) {
-                    //didn't find a valid URL or there's no closing paren
+                    // didn't find a valid URL or there's no closing paren
                     reader.reset();
                     tt = Tokens.FUNCTION;
                 } else {
@@ -539,9 +539,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             } else {
                 tt = Tokens.FUNCTION;
             }
-        } else if (reader.peek() === ":") {  //might be an IE function
+        } else if (reader.peek() === ":") {  // might be an IE function
 
-            //IE-specific functions always being with progid:
+            // IE-specific functions always being with progid:
             if (ident.toLowerCase() === "progid") {
                 ident += reader.readTo("(");
                 tt = Tokens.IE_FUNCTION;
@@ -573,15 +573,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         while (c) {
 
-            //there can be a comment in here
+            // there can be a comment in here
             if (c === "/") {
 
-                //if the next character isn't a star, then this isn't a valid !important token
+                // if the next character isn't a star, then this isn't a valid !important token
                 if (reader.peek() !== "*") {
                     break;
                 } else {
                     temp = this.readComment(c);
-                    if (temp === "") {    //broken!
+                    if (temp === "") {    // broken!
                         break;
                     }
                 }
@@ -594,7 +594,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     tt = Tokens.IMPORTANT_SYM;
 
                 }
-                break;  //we're done
+                break;  // we're done
             } else {
                 break;
             }
@@ -708,13 +708,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             if (c === "\\") {
                 c = reader.read();
                 if (c === null) {
-                    break; // premature EOF after backslash
+                    break;  // premature EOF after backslash
                 } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
                     // single-character escape
                     string += c;
                 } else {
                     // read up to six hex digits
-                    for (i=0; isHexDigit(c) && i<6; i++) {
+                    for (i = 0; isHexDigit(c) && i < 6; i++) {
                         string += c;
                         c = reader.read();
                     }
@@ -741,7 +741,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             c = reader.read();
         }
 
-        //if c is null, that means we're out of input and the string was never closed
+        // if c is null, that means we're out of input and the string was never closed
         if (c === null) {
             tt = Tokens.INVALID;
         }
@@ -755,20 +755,20 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             temp,
             tt      = Tokens.CHAR;
 
-        //then it should be a unicode range
+        // then it should be a unicode range
         if (reader.peek() === "+") {
             reader.mark();
             value += reader.read();
             value += this.readUnicodeRangePart(true);
 
-            //ensure there's an actual unicode range here
+            // ensure there's an actual unicode range here
             if (value.length === 2) {
                 reader.reset();
             } else {
 
                 tt = Tokens.UNICODE_RANGE;
 
-                //if there's a ? in the first part, there can't be a second part
+                // if there's a ? in the first part, there can't be a second part
                 if (value.indexOf("?") === -1) {
 
                     if (reader.peek() === "-") {
@@ -776,7 +776,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         temp = reader.read();
                         temp += this.readUnicodeRangePart(false);
 
-                        //if there's not another value, back up and just take the first
+                        // if there's not another value, back up and just take the first
                         if (temp.length === 1) {
                             reader.reset();
                         } else {
@@ -816,14 +816,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             part = "",
             c       = reader.peek();
 
-        //first read hex digits
+        // first read hex digits
         while (isHexDigit(c) && part.length < 6) {
             reader.read();
             part += c;
             c = reader.peek();
         }
 
-        //then read question marks if allowed
+        // then read question marks if allowed
         if (allowQuestionMark) {
             while (c === "?" && part.length < 6) {
                 reader.read();
@@ -832,7 +832,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             }
         }
 
-        //there can't be any other characters after this point
+        // there can't be any other characters after this point
 
         return part;
     },
@@ -853,7 +853,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     readNumber: function(first) {
         var reader  = this._reader,
             number  = first,
-            hasDot  = (first === "."),
+            hasDot  = first === ".",
             c       = reader.peek();
 
 
@@ -890,13 +890,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             inner   = "",
             c       = reader.peek();
 
-        //skip whitespace before
+        // skip whitespace before
         while (c && isWhitespace(c)) {
             reader.read();
             c = reader.peek();
         }
 
-        //it's a string
+        // it's a string
         if (c === "'" || c === "\"") {
             inner = this.readString();
             if (inner !== null) {
@@ -908,13 +908,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         c = reader.peek();
 
-        //skip whitespace after
+        // skip whitespace after
         while (c && isWhitespace(c)) {
             reader.read();
             c = reader.peek();
         }
 
-        //if there was no inner value or the next character isn't closing paren, it's not a URI
+        // if there was no inner value or the next character isn't closing paren, it's not a URI
         if (inner === null || c !== ")") {
             uri = null;
         } else {
@@ -937,7 +937,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             // incorrectly includes the backslash character in the
             // `url` production, although it is correctly omitted in
             // the `baduri1` production.
-            if (nonascii.test(c) || /^[\-!#$%&*-\[\]-~]$/.test(c)) {
+            if (nonascii.test(c) || /^[-!#$%&*-[\]-~]$/.test(c)) {
                 url += c;
                 reader.read();
             } else if (c === "\\") {
@@ -1029,7 +1029,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             while (c) {
                 comment += c;
 
-                //look for end of comment
+                // look for end of comment
                 if (comment.length > 2 && c === "*" && reader.peek() === "/") {
                     comment += reader.read();
                     break;

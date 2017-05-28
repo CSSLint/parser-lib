@@ -1986,6 +1986,11 @@ Parser.prototype = function() {
                     functionText = tokenStream.token().value;
                     this._readWhitespace();
                     expr = this._expr(true);
+                    if (expr === null) {
+                      // the FUNCTION is set if there's a ( . It doesn't check for a closing ) in identOrFunctionToken in TokenStream..
+                      // if there's nothing between the brackets, expr is null
+                      throw new SyntaxError("Expected an expression in the function on line " + tokenStream.token().startLine + ", col " + tokenStream.token().startCol + ".", tokenStream.token().startLine, tokenStream.token().startCol);
+                    }
                     functionText += expr;
 
                     // START: Horrible hack in case it's an IE filter
@@ -2009,7 +2014,7 @@ Parser.prototype = function() {
 
                             //functionText += this._term();
                             lt = tokenStream.peek();
-                            while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN) {
+                            while (lt !== Tokens.COMMA && lt !== Tokens.S && lt !== Tokens.RPAREN && lt !== Tokens.EOF) {
                                 tokenStream.get();
                                 functionText += tokenStream.token().value;
                                 lt = tokenStream.peek();

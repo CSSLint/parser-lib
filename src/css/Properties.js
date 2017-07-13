@@ -460,7 +460,7 @@ var Properties = module.exports = {
     // U
     "unicode-bidi"                      : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
     "user-modify"                       : "read-only | read-write | write-only",
-    "user-select"                       : "none | text | toggle | element | elements | all",
+    "user-select"                       : "none | auto | text | all | contain | element | elements | toggle",
 
     // V
     "vertical-align"                    : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",

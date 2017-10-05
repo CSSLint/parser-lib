@@ -10,3 +10,6 @@ Desktop.ini
 # NPM files
 npm-debug.log
 node_modules
+
+# IDE files
+.idea

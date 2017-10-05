@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v1.1.0, Build time: 6-December-2016 10:31:29 */
+/* Version v1.1.2, Build time: 5-October-2017 13:33:04 */
 (function () {
 var require = function(x) {
 if (x==='yuitest') { return YUITest; }
@@ -28,6 +28,7 @@ return parserlib;
 };
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"test0":[function(require,module,exports){
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -2167,7 +2168,10 @@ var YUITest = require("yuitest"),
         },
 
         "Test rule with star hack property": function() {
-            var parser = new Parser({ strict: true, starHack: true });
+            var parser = new Parser({
+                strict: true,
+                starHack: true
+            });
             parser.addListener("property", function(event) {
                 Assert.areEqual("*color", event.property.toString());
                 Assert.areEqual("color", event.property.text);
@@ -2184,7 +2188,10 @@ var YUITest = require("yuitest"),
         },
 
         "Test rule with underscore hack property": function() {
-            var parser = new Parser({ strict: true, underscoreHack: true });
+            var parser = new Parser({
+                strict: true,
+                underscoreHack: true
+            });
             parser.addListener("property", function(event) {
                 Assert.areEqual("_color", event.property.toString());
                 Assert.areEqual("color", event.property.text);
@@ -2332,6 +2339,7 @@ var YUITest = require("yuitest"),
 
 },{"../../":undefined,"yuitest":undefined}],"test1":[function(require,module,exports){
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -2479,6 +2487,7 @@ var YUITest = require("yuitest"),
 
 },{"../../":undefined,"yuitest":undefined}],"test2":[function(require,module,exports){
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -2513,7 +2522,7 @@ var YUITest = require("yuitest"),
         var tokenStream = new TokenStream(pattern, CSSTokens);
         var tt;
 
-        for (var i=0, len=outputs.length; i < len; i++) {
+        for (var i = 0, len = outputs.length; i < len; i++) {
             tt = tokenStream.get(outputs[i] > -1 ? CSSTokens[outputs[i]].channel : undefined);
             Assert.areEqual(outputs[i], tt, "Token type should be " + CSSTokens.name(outputs[i]) + " but was " + CSSTokens.name(tt) + " (" + (tokenStream.token() ? tokenStream.token().value : "unknown") + ").");
         }
@@ -3069,6 +3078,7 @@ var YUITest = require("yuitest"),
 
 },{"../../":undefined,"yuitest":undefined}],"test3":[function(require,module,exports){
 "use strict";
+
 var YUITest = require("yuitest"),
     Assert = YUITest.Assert,
     parserlib = require("../../"),
@@ -3091,7 +3101,7 @@ var YUITest = require("yuitest"),
         this.name = "Tests for " + this.property;
         this._should.error = {};
 
-        for (i=0, len=this.valid.length; i < len; i++) {
+        for (i = 0, len = this.valid.length; i < len; i++) {
             this["'" + this.valid[i] + "' is a valid value for '" + this.property + "'"] = function(value) {
                 return function() {
                     this._testValidValue(value);
@@ -3125,7 +3135,11 @@ var YUITest = require("yuitest"),
     ValidationTestCase.prototype = new YUITest.TestCase();
 
     ValidationTestCase.prototype._testValidValue = function(value) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.addListener("property", function(event) {
             Assert.isNull(event.invalid);
         });
@@ -3133,7 +3147,11 @@ var YUITest = require("yuitest"),
     };
 
     ValidationTestCase.prototype._testInvalidValue = function(value, message) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.addListener("property", function(event) {
             Assert.isNotNull(event.invalid);
             Assert.areEqual(message, event.invalid.message);
@@ -3142,7 +3160,11 @@ var YUITest = require("yuitest"),
     };
 
     ValidationTestCase.prototype._testSyntaxError = function(value) {
-        var parser = new Parser({ strict: true, starHack: true, underscoreHack: true });
+        var parser = new Parser({
+            strict: true,
+            starHack: true,
+            underscoreHack: true
+        });
         parser.parse(".foo { " + this.property + ":" + value + "}");
     };
 
@@ -4458,12 +4480,12 @@ var YUITest = require("yuitest"),
         property: "text-decoration",
 
         valid: [
-          "none",
-          "underline red",
-          "underline wavy red",
-          "wavy",
-          "wavy red",
-          "red"
+            "none",
+            "underline red",
+            "underline wavy red",
+            "wavy",
+            "wavy red",
+            "red"
         ],
 
         invalid: {
@@ -4895,9 +4917,10 @@ var YUITest = require("yuitest"),
 
 },{"../../":undefined,"yuitest":undefined}],"test4":[function(require,module,exports){
 "use strict";
+
 var YUITest = require("yuitest"),
-    Assert = YUITest.Assert,
     parserlib = require("../../"),
+    Assert = YUITest.Assert,
     StringReader = parserlib.util.StringReader;
 
 (function() {
@@ -4934,7 +4957,7 @@ var YUITest = require("yuitest"),
 
             while (c) {
                 Assert.areEqual(testString.charAt(i), c, "Character at position " + i + " is incorrect.");
-                Assert.areEqual(i+2, reader.getCol(), "Column should be " + (i+2) + ".");
+                Assert.areEqual(i + 2, reader.getCol(), "Column should be " + (i + 2) + ".");
                 c = reader.read();
                 i++;
             }

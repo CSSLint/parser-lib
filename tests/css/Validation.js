@@ -503,6 +503,20 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "border-image-repeat",
+
+        valid: [
+            "stretch",
+            "round stretch"
+        ],
+
+        invalid: {
+            "foo": "Expected ([ stretch | repeat | round | space ]{1,2}) but found 'foo'.",
+            "round stretch foo": "Expected end of value but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "border-image-slice",
 
         valid: [

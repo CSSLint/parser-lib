@@ -20,195 +20,195 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v1.1.2, Build time: 5-October-2017 13:33:04 */
+/* Version v1.1.0, Build time: 6-December-2016 10:31:29 */
 var parserlib = (function () {
 var require;
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/* exported Colors */
-
 "use strict";
 
+/* exported Colors */
+
 var Colors = module.exports = {
-    __proto__               : null,
-    aliceblue               : "#f0f8ff",
-    antiquewhite            : "#faebd7",
-    aqua                    : "#00ffff",
-    aquamarine              : "#7fffd4",
-    azure                   : "#f0ffff",
-    beige                   : "#f5f5dc",
-    bisque                  : "#ffe4c4",
-    black                   : "#000000",
-    blanchedalmond          : "#ffebcd",
-    blue                    : "#0000ff",
-    blueviolet              : "#8a2be2",
-    brown                   : "#a52a2a",
-    burlywood               : "#deb887",
-    cadetblue               : "#5f9ea0",
-    chartreuse              : "#7fff00",
-    chocolate               : "#d2691e",
-    coral                   : "#ff7f50",
-    cornflowerblue          : "#6495ed",
-    cornsilk                : "#fff8dc",
-    crimson                 : "#dc143c",
-    cyan                    : "#00ffff",
-    darkblue                : "#00008b",
-    darkcyan                : "#008b8b",
-    darkgoldenrod           : "#b8860b",
-    darkgray                : "#a9a9a9",
-    darkgreen               : "#006400",
-    darkgrey                : "#a9a9a9",
-    darkkhaki               : "#bdb76b",
-    darkmagenta             : "#8b008b",
-    darkolivegreen          : "#556b2f",
-    darkorange              : "#ff8c00",
-    darkorchid              : "#9932cc",
-    darkred                 : "#8b0000",
-    darksalmon              : "#e9967a",
-    darkseagreen            : "#8fbc8f",
-    darkslateblue           : "#483d8b",
-    darkslategray           : "#2f4f4f",
-    darkslategrey           : "#2f4f4f",
-    darkturquoise           : "#00ced1",
-    darkviolet              : "#9400d3",
-    deeppink                : "#ff1493",
-    deepskyblue             : "#00bfff",
-    dimgray                 : "#696969",
-    dimgrey                 : "#696969",
-    dodgerblue              : "#1e90ff",
-    firebrick               : "#b22222",
-    floralwhite             : "#fffaf0",
-    forestgreen             : "#228b22",
-    fuchsia                 : "#ff00ff",
-    gainsboro               : "#dcdcdc",
-    ghostwhite              : "#f8f8ff",
-    gold                    : "#ffd700",
-    goldenrod               : "#daa520",
-    gray                    : "#808080",
-    green                   : "#008000",
-    greenyellow             : "#adff2f",
-    grey                    : "#808080",
-    honeydew                : "#f0fff0",
-    hotpink                 : "#ff69b4",
-    indianred               : "#cd5c5c",
-    indigo                  : "#4b0082",
-    ivory                   : "#fffff0",
-    khaki                   : "#f0e68c",
-    lavender                : "#e6e6fa",
-    lavenderblush           : "#fff0f5",
-    lawngreen               : "#7cfc00",
-    lemonchiffon            : "#fffacd",
-    lightblue               : "#add8e6",
-    lightcoral              : "#f08080",
-    lightcyan               : "#e0ffff",
-    lightgoldenrodyellow    : "#fafad2",
-    lightgray               : "#d3d3d3",
-    lightgreen              : "#90ee90",
-    lightgrey               : "#d3d3d3",
-    lightpink               : "#ffb6c1",
-    lightsalmon             : "#ffa07a",
-    lightseagreen           : "#20b2aa",
-    lightskyblue            : "#87cefa",
-    lightslategray          : "#778899",
-    lightslategrey          : "#778899",
-    lightsteelblue          : "#b0c4de",
-    lightyellow             : "#ffffe0",
-    lime                    : "#00ff00",
-    limegreen               : "#32cd32",
-    linen                   : "#faf0e6",
-    magenta                 : "#ff00ff",
-    maroon                  : "#800000",
-    mediumaquamarine        : "#66cdaa",
-    mediumblue              : "#0000cd",
-    mediumorchid            : "#ba55d3",
-    mediumpurple            : "#9370d8",
-    mediumseagreen          : "#3cb371",
-    mediumslateblue         : "#7b68ee",
-    mediumspringgreen       : "#00fa9a",
-    mediumturquoise         : "#48d1cc",
-    mediumvioletred         : "#c71585",
-    midnightblue            : "#191970",
-    mintcream               : "#f5fffa",
-    mistyrose               : "#ffe4e1",
-    moccasin                : "#ffe4b5",
-    navajowhite             : "#ffdead",
-    navy                    : "#000080",
-    oldlace                 : "#fdf5e6",
-    olive                   : "#808000",
-    olivedrab               : "#6b8e23",
-    orange                  : "#ffa500",
-    orangered               : "#ff4500",
-    orchid                  : "#da70d6",
-    palegoldenrod           : "#eee8aa",
-    palegreen               : "#98fb98",
-    paleturquoise           : "#afeeee",
-    palevioletred           : "#d87093",
-    papayawhip              : "#ffefd5",
-    peachpuff               : "#ffdab9",
-    peru                    : "#cd853f",
-    pink                    : "#ffc0cb",
-    plum                    : "#dda0dd",
-    powderblue              : "#b0e0e6",
-    purple                  : "#800080",
-    red                     : "#ff0000",
-    rosybrown               : "#bc8f8f",
-    royalblue               : "#4169e1",
-    saddlebrown             : "#8b4513",
-    salmon                  : "#fa8072",
-    sandybrown              : "#f4a460",
-    seagreen                : "#2e8b57",
-    seashell                : "#fff5ee",
-    sienna                  : "#a0522d",
-    silver                  : "#c0c0c0",
-    skyblue                 : "#87ceeb",
-    slateblue               : "#6a5acd",
-    slategray               : "#708090",
-    slategrey               : "#708090",
-    snow                    : "#fffafa",
-    springgreen             : "#00ff7f",
-    steelblue               : "#4682b4",
-    tan                     : "#d2b48c",
-    teal                    : "#008080",
-    thistle                 : "#d8bfd8",
-    tomato                  : "#ff6347",
-    turquoise               : "#40e0d0",
-    violet                  : "#ee82ee",
-    wheat                   : "#f5deb3",
-    white                   : "#ffffff",
-    whitesmoke              : "#f5f5f5",
-    yellow                  : "#ffff00",
-    yellowgreen             : "#9acd32",
-    // 'currentColor' color keyword https: //www.w3.org/TR/css3-color/#currentcolor
-    currentColor            : "The value of the 'color' property.",
-    // CSS2 system colors https: //www.w3.org/TR/css3-color/#css2-system
-    activeBorder            : "Active window border.",
-    activecaption           : "Active window caption.",
-    appworkspace            : "Background color of multiple document interface.",
-    background              : "Desktop background.",
-    buttonface              : "The face background color for 3-D elements that appear 3-D due to one layer of surrounding border.",
-    buttonhighlight         : "The color of the border facing the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
-    buttonshadow            : "The color of the border away from the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
-    buttontext              : "Text on push buttons.",
-    captiontext             : "Text in caption, size box, and scrollbar arrow box.",
-    graytext                : "Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
-    greytext                : "Greyed (disabled) text. This color is set to #000 if the current display driver does not support a solid grey color.",
-    highlight               : "Item(s) selected in a control.",
-    highlighttext           : "Text of item(s) selected in a control.",
-    inactiveborder          : "Inactive window border.",
-    inactivecaption         : "Inactive window caption.",
-    inactivecaptiontext     : "Color of text in an inactive caption.",
-    infobackground          : "Background color for tooltip controls.",
-    infotext                : "Text color for tooltip controls.",
-    menu                    : "Menu background.",
-    menutext                : "Text in menus.",
-    scrollbar               : "Scroll bar gray area.",
-    threeddarkshadow        : "The color of the darker (generally outer) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
-    threedface              : "The face background color for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
-    threedhighlight         : "The color of the lighter (generally outer) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
-    threedlightshadow       : "The color of the darker (generally inner) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
-    threedshadow            : "The color of the lighter (generally inner) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
-    window                  : "Window background.",
-    windowframe             : "Window frame.",
-    windowtext              : "Text in windows."
+    __proto__       :null,
+    aliceblue       :"#f0f8ff",
+    antiquewhite    :"#faebd7",
+    aqua            :"#00ffff",
+    aquamarine      :"#7fffd4",
+    azure           :"#f0ffff",
+    beige           :"#f5f5dc",
+    bisque          :"#ffe4c4",
+    black           :"#000000",
+    blanchedalmond  :"#ffebcd",
+    blue            :"#0000ff",
+    blueviolet      :"#8a2be2",
+    brown           :"#a52a2a",
+    burlywood       :"#deb887",
+    cadetblue       :"#5f9ea0",
+    chartreuse      :"#7fff00",
+    chocolate       :"#d2691e",
+    coral           :"#ff7f50",
+    cornflowerblue  :"#6495ed",
+    cornsilk        :"#fff8dc",
+    crimson         :"#dc143c",
+    cyan            :"#00ffff",
+    darkblue        :"#00008b",
+    darkcyan        :"#008b8b",
+    darkgoldenrod   :"#b8860b",
+    darkgray        :"#a9a9a9",
+    darkgrey        :"#a9a9a9",
+    darkgreen       :"#006400",
+    darkkhaki       :"#bdb76b",
+    darkmagenta     :"#8b008b",
+    darkolivegreen  :"#556b2f",
+    darkorange      :"#ff8c00",
+    darkorchid      :"#9932cc",
+    darkred         :"#8b0000",
+    darksalmon      :"#e9967a",
+    darkseagreen    :"#8fbc8f",
+    darkslateblue   :"#483d8b",
+    darkslategray   :"#2f4f4f",
+    darkslategrey   :"#2f4f4f",
+    darkturquoise   :"#00ced1",
+    darkviolet      :"#9400d3",
+    deeppink        :"#ff1493",
+    deepskyblue     :"#00bfff",
+    dimgray         :"#696969",
+    dimgrey         :"#696969",
+    dodgerblue      :"#1e90ff",
+    firebrick       :"#b22222",
+    floralwhite     :"#fffaf0",
+    forestgreen     :"#228b22",
+    fuchsia         :"#ff00ff",
+    gainsboro       :"#dcdcdc",
+    ghostwhite      :"#f8f8ff",
+    gold            :"#ffd700",
+    goldenrod       :"#daa520",
+    gray            :"#808080",
+    grey            :"#808080",
+    green           :"#008000",
+    greenyellow     :"#adff2f",
+    honeydew        :"#f0fff0",
+    hotpink         :"#ff69b4",
+    indianred       :"#cd5c5c",
+    indigo          :"#4b0082",
+    ivory           :"#fffff0",
+    khaki           :"#f0e68c",
+    lavender        :"#e6e6fa",
+    lavenderblush   :"#fff0f5",
+    lawngreen       :"#7cfc00",
+    lemonchiffon    :"#fffacd",
+    lightblue       :"#add8e6",
+    lightcoral      :"#f08080",
+    lightcyan       :"#e0ffff",
+    lightgoldenrodyellow  :"#fafad2",
+    lightgray       :"#d3d3d3",
+    lightgrey       :"#d3d3d3",
+    lightgreen      :"#90ee90",
+    lightpink       :"#ffb6c1",
+    lightsalmon     :"#ffa07a",
+    lightseagreen   :"#20b2aa",
+    lightskyblue    :"#87cefa",
+    lightslategray  :"#778899",
+    lightslategrey  :"#778899",
+    lightsteelblue  :"#b0c4de",
+    lightyellow     :"#ffffe0",
+    lime            :"#00ff00",
+    limegreen       :"#32cd32",
+    linen           :"#faf0e6",
+    magenta         :"#ff00ff",
+    maroon          :"#800000",
+    mediumaquamarine:"#66cdaa",
+    mediumblue      :"#0000cd",
+    mediumorchid    :"#ba55d3",
+    mediumpurple    :"#9370d8",
+    mediumseagreen  :"#3cb371",
+    mediumslateblue :"#7b68ee",
+    mediumspringgreen   :"#00fa9a",
+    mediumturquoise :"#48d1cc",
+    mediumvioletred :"#c71585",
+    midnightblue    :"#191970",
+    mintcream       :"#f5fffa",
+    mistyrose       :"#ffe4e1",
+    moccasin        :"#ffe4b5",
+    navajowhite     :"#ffdead",
+    navy            :"#000080",
+    oldlace         :"#fdf5e6",
+    olive           :"#808000",
+    olivedrab       :"#6b8e23",
+    orange          :"#ffa500",
+    orangered       :"#ff4500",
+    orchid          :"#da70d6",
+    palegoldenrod   :"#eee8aa",
+    palegreen       :"#98fb98",
+    paleturquoise   :"#afeeee",
+    palevioletred   :"#d87093",
+    papayawhip      :"#ffefd5",
+    peachpuff       :"#ffdab9",
+    peru            :"#cd853f",
+    pink            :"#ffc0cb",
+    plum            :"#dda0dd",
+    powderblue      :"#b0e0e6",
+    purple          :"#800080",
+    red             :"#ff0000",
+    rosybrown       :"#bc8f8f",
+    royalblue       :"#4169e1",
+    saddlebrown     :"#8b4513",
+    salmon          :"#fa8072",
+    sandybrown      :"#f4a460",
+    seagreen        :"#2e8b57",
+    seashell        :"#fff5ee",
+    sienna          :"#a0522d",
+    silver          :"#c0c0c0",
+    skyblue         :"#87ceeb",
+    slateblue       :"#6a5acd",
+    slategray       :"#708090",
+    slategrey       :"#708090",
+    snow            :"#fffafa",
+    springgreen     :"#00ff7f",
+    steelblue       :"#4682b4",
+    tan             :"#d2b48c",
+    teal            :"#008080",
+    thistle         :"#d8bfd8",
+    tomato          :"#ff6347",
+    turquoise       :"#40e0d0",
+    violet          :"#ee82ee",
+    wheat           :"#f5deb3",
+    white           :"#ffffff",
+    whitesmoke      :"#f5f5f5",
+    yellow          :"#ffff00",
+    yellowgreen     :"#9acd32",
+    //'currentColor' color keyword https://www.w3.org/TR/css3-color/#currentcolor
+    currentColor        :"The value of the 'color' property.",
+    //CSS2 system colors https://www.w3.org/TR/css3-color/#css2-system
+    activeBorder        :"Active window border.",
+    activecaption       :"Active window caption.",
+    appworkspace        :"Background color of multiple document interface.",
+    background          :"Desktop background.",
+    buttonface          :"The face background color for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonhighlight     :"The color of the border facing the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttonshadow        :"The color of the border away from the light source for 3-D elements that appear 3-D due to one layer of surrounding border.",
+    buttontext          :"Text on push buttons.",
+    captiontext         :"Text in caption, size box, and scrollbar arrow box.",
+    graytext            :"Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
+    greytext            :"Greyed (disabled) text. This color is set to #000 if the current display driver does not support a solid grey color.",
+    highlight           :"Item(s) selected in a control.",
+    highlighttext       :"Text of item(s) selected in a control.",
+    inactiveborder      :"Inactive window border.",
+    inactivecaption     :"Inactive window caption.",
+    inactivecaptiontext :"Color of text in an inactive caption.",
+    infobackground      :"Background color for tooltip controls.",
+    infotext            :"Text color for tooltip controls.",
+    menu                :"Menu background.",
+    menutext            :"Text in menus.",
+    scrollbar           :"Scroll bar gray area.",
+    threeddarkshadow    :"The color of the darker (generally outer) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedface          :"The face background color for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedhighlight     :"The color of the lighter (generally outer) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedlightshadow   :"The color of the darker (generally inner) of the two borders facing the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    threedshadow        :"The color of the lighter (generally inner) of the two borders away from the light source for 3-D elements that appear 3-D due to two concentric layers of surrounding border.",
+    window              :"Window background.",
+    windowframe         :"Window frame.",
+    windowtext          :"Text in windows."
 };
 
 },{}],2:[function(require,module,exports){
@@ -241,7 +241,7 @@ function Combinator(text, line, col) {
      */
     this.type = "unknown";
 
-    // pretty simple
+    //pretty simple
     if (/^\s+$/.test(text)) {
         this.type = "descendant";
     } else if (text === ">") {
@@ -307,7 +307,7 @@ Matcher.parse = function(str) {
         var result = reader.readMatch(matcher);
         if (result === null) {
             throw new SyntaxError(
-                "Expected " + matcher, reader.getLine(), reader.getCol());
+                "Expected "+matcher, reader.getLine(), reader.getCol());
         }
         return result;
     };
@@ -359,7 +359,7 @@ Matcher.parse = function(str) {
             eat(/^\s*,\s*/);
             var max = eat(/^\d+/);
             eat(/^\s*\}/);
-            return m.braces(Number(min), Number(max));
+            return m.braces(+min, +max);
         }
         return m;
     };
@@ -502,7 +502,7 @@ Matcher.many = function(required) {
                     seen[i] = true;
                     // Increase matchCount iff this was a required element
                     // (or if all the elements are optional)
-                    if (tryMatch(matchCount + (required === false || required[i] ? 1 : 0))) {
+                    if (tryMatch(matchCount + ((required === false || required[i]) ? 1 : 0))) {
                         expression.drop();
                         return true;
                     }
@@ -575,39 +575,19 @@ Matcher.oror = function() {
 Matcher.prototype = {
     constructor: Matcher,
     // These are expected to be overridden in every instance.
-    match: function() {
-        throw new Error("unimplemented");
-    },
-    toString: function() {
-        throw new Error("unimplemented");
-    },
+    match: function() { throw new Error("unimplemented"); },
+    toString: function() { throw new Error("unimplemented"); },
     // This returns a standalone function to do the matching.
-    func: function() {
-        return this.match.bind(this);
-    },
+    func: function() { return this.match.bind(this); },
     // Basic combinators
-    then: function(m) {
-        return Matcher.seq(this, m);
-    },
-    or: function(m) {
-        return Matcher.alt(this, m);
-    },
-    andand: function(m) {
-        return Matcher.many(true, this, m);
-    },
-    oror: function(m) {
-        return Matcher.many(false, this, m);
-    },
+    then: function(m) { return Matcher.seq(this, m); },
+    or: function(m) { return Matcher.alt(this, m); },
+    andand: function(m) { return Matcher.many(true, this, m); },
+    oror: function(m) { return Matcher.many(false, this, m); },
     // Component value multipliers
-    star: function() {
-        return this.braces(0, Infinity, "*");
-    },
-    plus: function() {
-        return this.braces(1, Infinity, "+");
-    },
-    question: function() {
-        return this.braces(0, 1, "?");
-    },
+    star: function() { return this.braces(0, Infinity, "*"); },
+    plus: function() { return this.braces(1, Infinity, "+"); },
+    question: function() { return this.braces(0, 1, "?"); },
     hash: function() {
         return this.braces(1, Infinity, "#", Matcher.cast(","));
     },
@@ -699,7 +679,7 @@ var Parser = require("./Parser");
  */
 function MediaQuery(modifier, mediaType, features, line, col) {
 
-    SyntaxUnit.call(this, (modifier ? modifier + " " : "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
+    SyntaxUnit.call(this, (modifier ? modifier + " ": "") + (mediaType ? mediaType : "") + (mediaType && features.length > 0 ? " and " : "") + features.join(" and "), line, col, Parser.MEDIA_QUERY_TYPE);
 
     /**
      * The media modifier ("not" or "only")
@@ -764,7 +744,7 @@ var Validation = require("./Validation");
  */
 function Parser(options) {
 
-    // inherit event functionality
+    //inherit event functionality
     EventTarget.call(this);
 
 
@@ -773,7 +753,7 @@ function Parser(options) {
     this._tokenStream = null;
 }
 
-// Static constants
+//Static constants
 Parser.DEFAULT_TYPE = 0;
 Parser.COMBINATOR_TYPE = 1;
 Parser.MEDIA_FEATURE_TYPE = 2;
@@ -787,15 +767,15 @@ Parser.SELECTOR_SUB_PART_TYPE = 9;
 
 Parser.prototype = function() {
 
-    var proto = new EventTarget(),  // new prototype
+    var proto = new EventTarget(),  //new prototype
         prop,
         additions =  {
             __proto__: null,
 
-            // restore constructor
+            //restore constructor
             constructor: Parser,
 
-            // instance constants - yuck
+            //instance constants - yuck
             DEFAULT_TYPE : 0,
             COMBINATOR_TYPE : 1,
             MEDIA_FEATURE_TYPE : 2,
@@ -829,27 +809,27 @@ Parser.prototype = function() {
 
                 this.fire("startstylesheet");
 
-                // try to read character set
+                //try to read character set
                 this._charset();
 
                 this._skipCruft();
 
-                // try to read imports - may be more than one
+                //try to read imports - may be more than one
                 while (tokenStream.peek() === Tokens.IMPORT_SYM) {
                     this._import();
                     this._skipCruft();
                 }
 
-                // try to read namespaces - may be more than one
+                //try to read namespaces - may be more than one
                 while (tokenStream.peek() === Tokens.NAMESPACE_SYM) {
                     this._namespace();
                     this._skipCruft();
                 }
 
-                // get the next token
+                //get the next token
                 tt = tokenStream.peek();
 
-                // try to read the rest
+                //try to read the rest
                 while (tt > Tokens.EOF) {
 
                     try {
@@ -883,11 +863,11 @@ Parser.prototype = function() {
                                 this._supports();
                                 this._skipCruft();
                                 break;
-                            case Tokens.UNKNOWN_SYM:  // unknown @ rule
+                            case Tokens.UNKNOWN_SYM:  //unknown @ rule
                                 tokenStream.get();
                                 if (!this.options.strict) {
 
-                                    // fire error event
+                                    //fire error event
                                     this.fire({
                                         type:       "error",
                                         error:      null,
@@ -896,10 +876,10 @@ Parser.prototype = function() {
                                         col:        tokenStream.LT(0).startCol
                                     });
 
-                                    // skip braces
-                                    count = 0;
+                                    //skip braces
+                                    count=0;
                                     while (tokenStream.advance([Tokens.LBRACE, Tokens.RBRACE]) === Tokens.LBRACE) {
-                                        count++;    // keep track of nesting depth
+                                        count++;    //keep track of nesting depth
                                     }
 
                                     while (count) {
@@ -908,7 +888,7 @@ Parser.prototype = function() {
                                     }
 
                                 } else {
-                                    // not a syntax error, rethrow it
+                                    //not a syntax error, rethrow it
                                     throw new SyntaxError("Unknown @ rule.", tokenStream.LT(0).startLine, tokenStream.LT(0).startCol);
                                 }
                                 break;
@@ -918,7 +898,7 @@ Parser.prototype = function() {
                             default:
                                 if (!this._ruleset()) {
 
-                                    // error handling for known issues
+                                    //error handling for known issues
                                     switch (tt) {
                                         case Tokens.CHARSET_SYM:
                                             token = tokenStream.LT(1);
@@ -933,7 +913,7 @@ Parser.prototype = function() {
                                             this._namespace(false);
                                             throw new SyntaxError("@namespace not allowed here.", token.startLine, token.startCol);
                                         default:
-                                            tokenStream.get();  // get the last token
+                                            tokenStream.get();  //get the last token
                                             this._unexpectedToken(tokenStream.token());
                                     }
 
@@ -1006,21 +986,21 @@ Parser.prototype = function() {
                     importToken,
                     mediaList   = [];
 
-                // read import symbol
+                //read import symbol
                 tokenStream.mustMatch(Tokens.IMPORT_SYM);
                 importToken = tokenStream.token();
                 this._readWhitespace();
 
                 tokenStream.mustMatch([Tokens.STRING, Tokens.URI]);
 
-                // grab the URI value
+                //grab the URI value
                 uri = tokenStream.token().value.replace(/^(?:url\()?["']?([^"']+?)["']?\)?$/, "$1");
 
                 this._readWhitespace();
 
                 mediaList = this._media_query_list();
 
-                // must end with a semicolon
+                //must end with a semicolon
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
 
@@ -1048,13 +1028,13 @@ Parser.prototype = function() {
                     prefix,
                     uri;
 
-                // read import symbol
+                //read import symbol
                 tokenStream.mustMatch(Tokens.NAMESPACE_SYM);
                 line = tokenStream.token().startLine;
                 col = tokenStream.token().startCol;
                 this._readWhitespace();
 
-                // it's a namespace prefix - no _namespace_prefix() method because it's just an IDENT
+                //it's a namespace prefix - no _namespace_prefix() method because it's just an IDENT
                 if (tokenStream.match(Tokens.IDENT)) {
                     prefix = tokenStream.token().value;
                     this._readWhitespace();
@@ -1065,12 +1045,12 @@ Parser.prototype = function() {
                     tokenStream.mustMatch(Tokens.URI);
                 }*/
 
-                // grab the URI value
+                //grab the URI value
                 uri = tokenStream.token().value.replace(/(?:url\()?["']([^"']+)["']\)?/, "$1");
 
                 this._readWhitespace();
 
-                // must end with a semicolon
+                //must end with a semicolon
                 tokenStream.mustMatch(Tokens.SEMICOLON);
                 this._readWhitespace();
 
@@ -1226,9 +1206,9 @@ Parser.prototype = function() {
                 var tokenStream     = this._tokenStream,
                     line,
                     col,
-                    mediaList;  // = [];
+                    mediaList;//       = [];
 
-                // look for @media
+                //look for @media
                 tokenStream.mustMatch(Tokens.MEDIA_SYM);
                 line = tokenStream.token().startLine;
                 col = tokenStream.token().startCol;
@@ -1277,7 +1257,7 @@ Parser.prototype = function() {
             },
 
 
-            // CSS3 Media Queries
+            //CSS3 Media Queries
             _media_query_list: function() {
                 /*
                  * media_query_list
@@ -1323,7 +1303,7 @@ Parser.prototype = function() {
                 if (tokenStream.match(Tokens.IDENT)) {
                     ident = tokenStream.token().value.toLowerCase();
 
-                    // since there's no custom tokens for these, need to manually check
+                    //since there's no custom tokens for these, need to manually check
                     if (ident !== "only" && ident !== "not") {
                         tokenStream.unget();
                         ident = null;
@@ -1363,7 +1343,7 @@ Parser.prototype = function() {
                 return new MediaQuery(ident, type, expressions, token.startLine, token.startCol);
             },
 
-            // CSS3 Media Queries
+            //CSS3 Media Queries
             _media_type: function() {
                 /*
                  * media_type
@@ -1409,7 +1389,7 @@ Parser.prototype = function() {
                 return new MediaFeature(feature, expression ? new SyntaxUnit(expression, token.startLine, token.startCol) : null);
             },
 
-            // CSS3 Media Queries
+            //CSS3 Media Queries
             _media_feature: function() {
                 /*
                  * media_feature
@@ -1425,7 +1405,7 @@ Parser.prototype = function() {
                 return SyntaxUnit.fromToken(tokenStream.token());
             },
 
-            // CSS3 Paged Media
+            //CSS3 Paged Media
             _page: function() {
                 /*
                  * page:
@@ -1439,7 +1419,7 @@ Parser.prototype = function() {
                     identifier  = null,
                     pseudoPage  = null;
 
-                // look for @page
+                //look for @page
                 tokenStream.mustMatch(Tokens.PAGE_SYM);
                 line = tokenStream.token().startLine;
                 col = tokenStream.token().startCol;
@@ -1449,13 +1429,13 @@ Parser.prototype = function() {
                 if (tokenStream.match(Tokens.IDENT)) {
                     identifier = tokenStream.token().value;
 
-                    // The value 'auto' may not be used as a page name and MUST be treated as a syntax error.
+                    //The value 'auto' may not be used as a page name and MUST be treated as a syntax error.
                     if (identifier.toLowerCase() === "auto") {
                         this._unexpectedToken(tokenStream.token());
                     }
                 }
 
-                // see if there's a colon upcoming
+                //see if there's a colon upcoming
                 if (tokenStream.peek() === Tokens.COLON) {
                     pseudoPage = this._pseudo_page();
                 }
@@ -1482,7 +1462,7 @@ Parser.prototype = function() {
 
             },
 
-            // CSS3 Paged Media
+            //CSS3 Paged Media
             _margin: function() {
                 /*
                  * margin :
@@ -1519,7 +1499,7 @@ Parser.prototype = function() {
                 }
             },
 
-            // CSS3 Paged Media
+            //CSS3 Paged Media
             _margin_sym: function() {
 
                 /*
@@ -1546,12 +1526,12 @@ Parser.prototype = function() {
                 var tokenStream = this._tokenStream;
 
                 if (tokenStream.match([Tokens.TOPLEFTCORNER_SYM, Tokens.TOPLEFT_SYM,
-                    Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
-                    Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM,
-                    Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
-                    Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM,
-                    Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
-                    Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM])) {
+                        Tokens.TOPCENTER_SYM, Tokens.TOPRIGHT_SYM, Tokens.TOPRIGHTCORNER_SYM,
+                        Tokens.BOTTOMLEFTCORNER_SYM, Tokens.BOTTOMLEFT_SYM,
+                        Tokens.BOTTOMCENTER_SYM, Tokens.BOTTOMRIGHT_SYM,
+                        Tokens.BOTTOMRIGHTCORNER_SYM, Tokens.LEFTTOP_SYM,
+                        Tokens.LEFTMIDDLE_SYM, Tokens.LEFTBOTTOM_SYM, Tokens.RIGHTTOP_SYM,
+                        Tokens.RIGHTMIDDLE_SYM, Tokens.RIGHTBOTTOM_SYM])) {
                     return SyntaxUnit.fromToken(tokenStream.token());
                 } else {
                     return null;
@@ -1571,7 +1551,7 @@ Parser.prototype = function() {
                 tokenStream.mustMatch(Tokens.COLON);
                 tokenStream.mustMatch(Tokens.IDENT);
 
-                // TODO: CSS3 Paged Media says only "left", "center", and "right" are allowed
+                //TODO: CSS3 Paged Media says only "left", "center", and "right" are allowed
 
                 return tokenStream.token().value;
             },
@@ -1587,7 +1567,7 @@ Parser.prototype = function() {
                     line,
                     col;
 
-                // look for @page
+                //look for @page
                 tokenStream.mustMatch(Tokens.FONT_FACE_SYM);
                 line = tokenStream.token().startLine;
                 col = tokenStream.token().startCol;
@@ -1658,7 +1638,7 @@ Parser.prototype = function() {
 
                 tokenStream.mustMatch(Tokens.DOCUMENT_SYM);
                 token = tokenStream.token();
-                if (/^@-([^-]+)-/.test(token.value)) {
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
                     prefix = RegExp.$1;
                 }
 
@@ -1754,7 +1734,7 @@ Parser.prototype = function() {
                     token       = null;
 
                 if (tokenStream.match([Tokens.SLASH, Tokens.COMMA]) ||
-                    inFunction && tokenStream.match([Tokens.PLUS, Tokens.STAR, Tokens.MINUS])) {
+                    (inFunction && tokenStream.match([Tokens.PLUS, Tokens.STAR, Tokens.MINUS]))) {
                     token =  tokenStream.token();
                     this._readWhitespace();
                 }
@@ -1816,7 +1796,7 @@ Parser.prototype = function() {
                     line,
                     col;
 
-                // check for star hack - throws error if not allowed
+                //check for star hack - throws error if not allowed
                 if (tokenStream.peek() === Tokens.STAR && this.options.starHack) {
                     tokenStream.get();
                     token = tokenStream.token();
@@ -1829,20 +1809,20 @@ Parser.prototype = function() {
                     token = tokenStream.token();
                     tokenValue = token.value;
 
-                    // check for underscore hack - no error if not allowed because it's valid CSS syntax
+                    //check for underscore hack - no error if not allowed because it's valid CSS syntax
                     if (tokenValue.charAt(0) === "_" && this.options.underscoreHack) {
                         hack = "_";
                         tokenValue = tokenValue.substring(1);
                     }
 
-                    value = new PropertyName(tokenValue, hack, line || token.startLine, col || token.startCol);
+                    value = new PropertyName(tokenValue, hack, (line||token.startLine), (col||token.startCol));
                     this._readWhitespace();
                 }
 
                 return value;
             },
 
-            // Augmented with CSS3 Selectors
+            //Augmented with CSS3 Selectors
             _ruleset: function() {
                 /*
                  * ruleset
@@ -1865,7 +1845,7 @@ Parser.prototype = function() {
                 } catch (ex) {
                     if (ex instanceof SyntaxError && !this.options.strict) {
 
-                        // fire error event
+                        //fire error event
                         this.fire({
                             type:       "error",
                             error:      ex,
@@ -1874,25 +1854,25 @@ Parser.prototype = function() {
                             col:        ex.col
                         });
 
-                        // skip over everything until closing brace
+                        //skip over everything until closing brace
                         tt = tokenStream.advance([Tokens.RBRACE]);
                         if (tt === Tokens.RBRACE) {
-                            // if there's a right brace, the rule is finished so don't do anything
+                            //if there's a right brace, the rule is finished so don't do anything
                         } else {
-                            // otherwise, rethrow the error because it wasn't handled properly
+                            //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
                         }
 
                     } else {
-                        // not a syntax error, rethrow it
+                        //not a syntax error, rethrow it
                         throw ex;
                     }
 
-                    // trigger parser to continue
+                    //trigger parser to continue
                     return true;
                 }
 
-                // if it got here, all selectors parsed
+                //if it got here, all selectors parsed
                 if (selectors) {
 
                     this.fire({
@@ -1917,7 +1897,7 @@ Parser.prototype = function() {
 
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _selectors_group: function() {
 
                 /*
@@ -1947,7 +1927,7 @@ Parser.prototype = function() {
                 return selectors.length ? selectors : null;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _selector: function() {
                 /*
                  * selector
@@ -1961,7 +1941,7 @@ Parser.prototype = function() {
                     combinator  = null,
                     ws          = null;
 
-                // if there's no simple selector, then there's no selector
+                //if there's no simple selector, then there's no selector
                 nextSelector = this._simple_selector_sequence();
                 if (nextSelector === null) {
                     return null;
@@ -1971,33 +1951,33 @@ Parser.prototype = function() {
 
                 do {
 
-                    // look for a combinator
+                    //look for a combinator
                     combinator = this._combinator();
 
                     if (combinator !== null) {
                         selector.push(combinator);
                         nextSelector = this._simple_selector_sequence();
 
-                        // there must be a next selector
+                        //there must be a next selector
                         if (nextSelector === null) {
                             this._unexpectedToken(tokenStream.LT(1));
                         } else {
 
-                            // nextSelector is an instance of SelectorPart
+                            //nextSelector is an instance of SelectorPart
                             selector.push(nextSelector);
                         }
                     } else {
 
-                        // if there's not whitespace, we're done
+                        //if there's not whitespace, we're done
                         if (this._readWhitespace()) {
 
-                            // add whitespace separator
+                            //add whitespace separator
                             ws = new Combinator(tokenStream.token().value, tokenStream.token().startLine, tokenStream.token().startCol);
 
                             //combinator is not required
                             combinator = this._combinator();
 
-                            // selector is required if there's a combinator
+                            //selector is required if there's a combinator
                             nextSelector = this._simple_selector_sequence();
                             if (nextSelector === null) {
                                 if (combinator !== null) {
@@ -2023,7 +2003,7 @@ Parser.prototype = function() {
                 return new Selector(selector, selector[0].line, selector[0].col);
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _simple_selector_sequence: function() {
                 /*
                  * simple_selector_sequence
@@ -2035,16 +2015,16 @@ Parser.prototype = function() {
 
                 var tokenStream = this._tokenStream,
 
-                    // parts of a simple selector
+                    //parts of a simple selector
                     elementName = null,
                     modifiers   = [],
 
-                    // complete selector text
-                    selectorText = "",
+                    //complete selector text
+                    selectorText= "",
 
-                    // the different parts after the element name to search for
+                    //the different parts after the element name to search for
                     components  = [
-                        // HASH
+                        //HASH
                         function() {
                             return tokenStream.match(Tokens.HASH) ?
                                     new SelectorSubPart(tokenStream.token().value, "id", tokenStream.token().startLine, tokenStream.token().startCol) :
@@ -2062,7 +2042,7 @@ Parser.prototype = function() {
                     col;
 
 
-                // get starting line and column for the selector
+                //get starting line and column for the selector
                 line = tokenStream.LT(1).startLine;
                 col = tokenStream.LT(1).startCol;
 
@@ -2077,19 +2057,19 @@ Parser.prototype = function() {
 
                 while (true) {
 
-                    // whitespace means we're done
+                    //whitespace means we're done
                     if (tokenStream.peek() === Tokens.S) {
                         break;
                     }
 
-                    // check for each component
+                    //check for each component
                     while (i < len && component === null) {
                         component = components[i++].call(this);
                     }
 
                     if (component === null) {
 
-                        // we don't have a selector
+                        //we don't have a selector
                         if (selectorText === "") {
                             return null;
                         } else {
@@ -2109,7 +2089,7 @@ Parser.prototype = function() {
                         null;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _type_selector: function() {
                 /*
                  * type_selector
@@ -2145,7 +2125,7 @@ Parser.prototype = function() {
                 }
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _class: function() {
                 /*
                  * class
@@ -2166,7 +2146,7 @@ Parser.prototype = function() {
 
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _element_name: function() {
                 /*
                  * element_name
@@ -2186,7 +2166,7 @@ Parser.prototype = function() {
                 }
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _namespace_prefix: function() {
                 /*
                  * namespace_prefix
@@ -2196,7 +2176,7 @@ Parser.prototype = function() {
                 var tokenStream = this._tokenStream,
                     value       = "";
 
-                // verify that this is a namespace prefix
+                //verify that this is a namespace prefix
                 if (tokenStream.LA(1) === Tokens.PIPE || tokenStream.LA(2) === Tokens.PIPE) {
 
                     if (tokenStream.match([Tokens.IDENT, Tokens.STAR])) {
@@ -2211,7 +2191,7 @@ Parser.prototype = function() {
                 return value.length ? value : null;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _universal: function() {
                 /*
                  * universal
@@ -2235,7 +2215,7 @@ Parser.prototype = function() {
 
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _attrib: function() {
                 /*
                  * attrib
@@ -2271,7 +2251,7 @@ Parser.prototype = function() {
                     value += this._readWhitespace();
 
                     if (tokenStream.match([Tokens.PREFIXMATCH, Tokens.SUFFIXMATCH, Tokens.SUBSTRINGMATCH,
-                        Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])) {
+                            Tokens.EQUALS, Tokens.INCLUDES, Tokens.DASHMATCH])) {
 
                         value += tokenStream.token().value;
                         value += this._readWhitespace();
@@ -2289,7 +2269,7 @@ Parser.prototype = function() {
                 }
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _pseudo: function() {
 
                 /*
@@ -2332,7 +2312,7 @@ Parser.prototype = function() {
                 return pseudo;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _functional_pseudo: function() {
                 /*
                  * functional_pseudo
@@ -2354,7 +2334,7 @@ Parser.prototype = function() {
                 return value;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _expression: function() {
                 /*
                  * expression
@@ -2366,9 +2346,9 @@ Parser.prototype = function() {
                     value       = "";
 
                 while (tokenStream.match([Tokens.PLUS, Tokens.MINUS, Tokens.DIMENSION,
-                    Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
-                    Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
-                    Tokens.RESOLUTION, Tokens.SLASH])) {
+                        Tokens.NUMBER, Tokens.STRING, Tokens.IDENT, Tokens.LENGTH,
+                        Tokens.FREQ, Tokens.ANGLE, Tokens.TIME,
+                        Tokens.RESOLUTION, Tokens.SLASH])) {
 
                     value += tokenStream.token().value;
                     value += this._readWhitespace();
@@ -2378,7 +2358,7 @@ Parser.prototype = function() {
 
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _negation: function() {
                 /*
                  * negation
@@ -2411,7 +2391,7 @@ Parser.prototype = function() {
                 return subpart;
             },
 
-            // CSS3 Selectors
+            //CSS3 Selectors
             _negation_arg: function() {
                 /*
                  * negation_arg
@@ -2448,12 +2428,12 @@ Parser.prototype = function() {
                     i++;
                 }
 
-                // must be a negation arg
+                //must be a negation arg
                 if (arg === null) {
                     this._unexpectedToken(tokenStream.LT(1));
                 }
 
-                // it's an element name
+                //it's an element name
                 if (arg.type === "elementName") {
                     part = new SelectorPart(arg, [], arg.toString(), line, col);
                 } else {
@@ -2472,12 +2452,12 @@ Parser.prototype = function() {
                  *   ;
                  */
 
-                var tokenStream  = this._tokenStream,
-                    property     = null,
-                    expr         = null,
-                    prio         = null,
-                    invalid      = null,
-                    propertyName = "";
+                var tokenStream = this._tokenStream,
+                    property    = null,
+                    expr        = null,
+                    prio        = null,
+                    invalid     = null,
+                    propertyName= "";
 
                 property = this._property();
                 if (property !== null) {
@@ -2487,7 +2467,7 @@ Parser.prototype = function() {
 
                     expr = this._expr();
 
-                    // if there's no parts for the value, it's an error
+                    //if there's no parts for the value, it's an error
                     if (!expr || expr.length === 0) {
                         this._unexpectedToken(tokenStream.LT(1));
                     }
@@ -2562,11 +2542,11 @@ Parser.prototype = function() {
                     do {
                         operator = this._operator(inFunction);
 
-                        // if there's an operator, keep building up the value parts
+                        //if there's an operator, keep building up the value parts
                         if (operator) {
                             values.push(operator);
                         } /*else {
-                            // if there's not an operator, you have a full value
+                            //if there's not an operator, you have a full value
                             values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                             valueParts = [];
                         }*/
@@ -2581,7 +2561,7 @@ Parser.prototype = function() {
                     } while (true);
                 }
 
-                // cleanup
+                //cleanup
                 /*if (valueParts.length) {
                     values.push(new PropertyValue(valueParts, valueParts[0].line, valueParts[0].col));
                 }*/
@@ -2609,14 +2589,14 @@ Parser.prototype = function() {
                     line,
                     col;
 
-                // returns the operator or null
+                //returns the operator or null
                 unary = this._unary_operator();
                 if (unary !== null) {
                     line = tokenStream.token().startLine;
                     col = tokenStream.token().startCol;
                 }
 
-                // exception for IE filters
+                //exception for IE filters
                 if (tokenStream.peek() === Tokens.IE_FUNCTION && this.options.ieFilters) {
 
                     value = this._ie_function();
@@ -2625,7 +2605,7 @@ Parser.prototype = function() {
                         col = tokenStream.token().startCol;
                     }
 
-                // see if it's a simple block
+                //see if it's a simple block
                 } else if (inFunction && tokenStream.match([Tokens.LPAREN, Tokens.LBRACE, Tokens.LBRACKET])) {
 
                     token = tokenStream.token();
@@ -2639,10 +2619,10 @@ Parser.prototype = function() {
                     value += endChar;
                     this._readWhitespace();
 
-                // see if there's a simple match
+                //see if there's a simple match
                 } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
-                    Tokens.ANGLE, Tokens.TIME,
-                    Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])) {
+                        Tokens.ANGLE, Tokens.TIME,
+                        Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])) {
 
                     value = tokenStream.token().value;
                     if (unary === null) {
@@ -2655,17 +2635,17 @@ Parser.prototype = function() {
                     this._readWhitespace();
                 } else {
 
-                    // see if it's a color
+                    //see if it's a color
                     token = this._hexcolor();
                     if (token === null) {
 
-                        // if there's no unary, get the start of the next token for line/col info
+                        //if there's no unary, get the start of the next token for line/col info
                         if (unary === null) {
                             line = tokenStream.LT(1).startLine;
                             col = tokenStream.LT(1).startCol;
                         }
 
-                        // has to be a function
+                        //has to be a function
                         if (value === null) {
 
                             /*
@@ -2719,7 +2699,7 @@ Parser.prototype = function() {
                     expr = this._expr(true);
                     functionText += expr;
 
-                    // START: Horrible hack in case it's an IE filter
+                    //START: Horrible hack in case it's an IE filter
                     if (this.options.ieFilters && tokenStream.peek() === Tokens.EQUALS) {
                         do {
 
@@ -2727,7 +2707,7 @@ Parser.prototype = function() {
                                 functionText += tokenStream.token().value;
                             }
 
-                            // might be second time in the loop
+                            //might be second time in the loop
                             if (tokenStream.LA(0) === Tokens.COMMA) {
                                 functionText += tokenStream.token().value;
                             }
@@ -2748,7 +2728,7 @@ Parser.prototype = function() {
                         } while (tokenStream.match([Tokens.COMMA, Tokens.S]));
                     }
 
-                    // END: Horrible Hack
+                    //END: Horrible Hack
 
                     tokenStream.match(Tokens.RPAREN);
                     functionText += ")";
@@ -2770,7 +2750,7 @@ Parser.prototype = function() {
                     functionText = null,
                     lt;
 
-                // IE function can begin like a regular function, too
+                //IE function can begin like a regular function, too
                 if (tokenStream.match([Tokens.IE_FUNCTION, Tokens.FUNCTION])) {
                     functionText = tokenStream.token().value;
 
@@ -2780,7 +2760,7 @@ Parser.prototype = function() {
                             functionText += tokenStream.token().value;
                         }
 
-                        // might be second time in the loop
+                        //might be second time in the loop
                         if (tokenStream.LA(0) === Tokens.COMMA) {
                             functionText += tokenStream.token().value;
                         }
@@ -2825,7 +2805,7 @@ Parser.prototype = function() {
 
                 if (tokenStream.match(Tokens.HASH)) {
 
-                    // need to do some validation here
+                    //need to do some validation here
 
                     token = tokenStream.token();
                     color = token.value;
@@ -2857,7 +2837,7 @@ Parser.prototype = function() {
 
                 tokenStream.mustMatch(Tokens.KEYFRAMES_SYM);
                 token = tokenStream.token();
-                if (/^@-([^-]+)-/.test(token.value)) {
+                if (/^@\-([^\-]+)\-/.test(token.value)) {
                     prefix = RegExp.$1;
                 }
 
@@ -2878,7 +2858,7 @@ Parser.prototype = function() {
                 this._readWhitespace();
                 tt = tokenStream.peek();
 
-                // check for key
+                //check for key
                 while (tt === Tokens.IDENT || tt === Tokens.PERCENTAGE) {
                     this._keyframe_rule();
                     this._readWhitespace();
@@ -2951,7 +2931,7 @@ Parser.prototype = function() {
                 var tokenStream = this._tokenStream,
                     keyList = [];
 
-                // must be least one key
+                //must be least one key
                 keyList.push(this._key());
 
                 this._readWhitespace();
@@ -2990,7 +2970,7 @@ Parser.prototype = function() {
                     tokenStream.unget();
                 }
 
-                // if it gets here, there wasn't a valid token, so time to explode
+                //if it gets here, there wasn't a valid token, so time to explode
                 this._unexpectedToken(tokenStream.LT(1));
             },
 
@@ -3007,7 +2987,7 @@ Parser.prototype = function() {
              */
             _skipCruft: function() {
                 while (this._tokenStream.match([Tokens.S, Tokens.CDO, Tokens.CDC])) {
-                    // noop
+                    //noop
                 }
             },
 
@@ -3050,7 +3030,7 @@ Parser.prototype = function() {
                     while (true) {
 
                         if (tokenStream.match(Tokens.SEMICOLON) || (readMargins && this._margin())) {
-                            // noop
+                            //noop
                         } else if (this._declaration()) {
                             if (!tokenStream.match(Tokens.SEMICOLON)) {
                                 break;
@@ -3059,7 +3039,7 @@ Parser.prototype = function() {
                             break;
                         }
 
-                        //if ((!this._margin() && !this._declaration()) || !tokenStream.match(Tokens.SEMICOLON)) {
+                        //if ((!this._margin() && !this._declaration()) || !tokenStream.match(Tokens.SEMICOLON)){
                         //    break;
                         //}
                         this._readWhitespace();
@@ -3071,7 +3051,7 @@ Parser.prototype = function() {
                 } catch (ex) {
                     if (ex instanceof SyntaxError && !this.options.strict) {
 
-                        // fire error event
+                        //fire error event
                         this.fire({
                             type:       "error",
                             error:      ex,
@@ -3080,19 +3060,19 @@ Parser.prototype = function() {
                             col:        ex.col
                         });
 
-                        // see if there's another declaration
+                        //see if there's another declaration
                         tt = tokenStream.advance([Tokens.SEMICOLON, Tokens.RBRACE]);
                         if (tt === Tokens.SEMICOLON) {
-                            // if there's a semicolon, then there might be another declaration
+                            //if there's a semicolon, then there might be another declaration
                             this._readDeclarations(false, readMargins);
                         } else if (tt !== Tokens.RBRACE) {
-                            // if there's a right brace, the rule is finished so don't do anything
-                            // otherwise, rethrow the error because it wasn't handled properly
+                            //if there's a right brace, the rule is finished so don't do anything
+                            //otherwise, rethrow the error because it wasn't handled properly
                             throw ex;
                         }
 
                     } else {
-                        // not a syntax error, rethrow it
+                        //not a syntax error, rethrow it
                         throw ex;
                     }
                 }
@@ -3161,7 +3141,7 @@ Parser.prototype = function() {
             },
 
             parseStyleSheet: function(input) {
-                // just passthrough
+                //just passthrough
                 return this.parse(input);
             },
 
@@ -3169,10 +3149,10 @@ Parser.prototype = function() {
                 this._tokenStream = new TokenStream(input, Tokens);
                 var result = this._media_query();
 
-                // if there's anything more, then it's an invalid selector
+                //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
 
-                // otherwise return result
+                //otherwise return result
                 return result;
             },
 
@@ -3189,13 +3169,13 @@ Parser.prototype = function() {
 
                 var result = this._expr();
 
-                // okay to have a trailing white space
+                //okay to have a trailing white space
                 this._readWhitespace();
 
-                // if there's anything more, then it's an invalid selector
+                //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
 
-                // otherwise return result
+                //otherwise return result
                 return result;
             },
 
@@ -3209,18 +3189,18 @@ Parser.prototype = function() {
             parseRule: function(input) {
                 this._tokenStream = new TokenStream(input, Tokens);
 
-                // skip any leading white space
+                //skip any leading white space
                 this._readWhitespace();
 
                 var result = this._ruleset();
 
-                // skip any trailing white space
+                //skip any trailing white space
                 this._readWhitespace();
 
-                // if there's anything more, then it's an invalid selector
+                //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
 
-                // otherwise return result
+                //otherwise return result
                 return result;
             },
 
@@ -3235,18 +3215,18 @@ Parser.prototype = function() {
 
                 this._tokenStream = new TokenStream(input, Tokens);
 
-                // skip any leading white space
+                //skip any leading white space
                 this._readWhitespace();
 
                 var result = this._selector();
 
-                // skip any trailing white space
+                //skip any trailing white space
                 this._readWhitespace();
 
-                // if there's anything more, then it's an invalid selector
+                //if there's anything more, then it's an invalid selector
                 this._verifyEnd();
 
-                // otherwise return result
+                //otherwise return result
                 return result;
             },
 
@@ -3258,13 +3238,13 @@ Parser.prototype = function() {
              * @method parseStyleAttribute
              */
             parseStyleAttribute: function(input) {
-                input += "}";   // for error recovery in _readDeclarations()
+                input += "}"; // for error recovery in _readDeclarations()
                 this._tokenStream = new TokenStream(input, Tokens);
                 this._readDeclarations();
             }
         };
 
-    // copy over onto prototype
+    //copy over onto prototype
     for (prop in additions) {
         if (Object.prototype.hasOwnProperty.call(additions, prop)) {
             proto[prop] = additions[prop];
@@ -3283,40 +3263,40 @@ nth
 */
 
 },{"../util/EventTarget":23,"../util/SyntaxError":25,"../util/SyntaxUnit":26,"./Combinator":2,"./MediaFeature":4,"./MediaQuery":5,"./PropertyName":8,"./PropertyValue":9,"./PropertyValuePart":11,"./Selector":13,"./SelectorPart":14,"./SelectorSubPart":15,"./TokenStream":17,"./Tokens":18,"./Validation":19}],7:[function(require,module,exports){
-/* exported Properties */
-
 "use strict";
+
+/* exported Properties */
 
 var Properties = module.exports = {
     __proto__: null,
 
-    // A
-    "align-items"                       : "flex-start | flex-end | center | baseline | stretch",
-    "align-content"                     : "flex-start | flex-end | center | space-between | space-around | stretch",
-    "align-self"                        : "auto | flex-start | flex-end | center | baseline | stretch",
-    "all"                               : "initial | inherit | unset",
-    "-webkit-align-items"               : "flex-start | flex-end | center | baseline | stretch",
-    "-webkit-align-content"             : "flex-start | flex-end | center | space-between | space-around | stretch",
-    "-webkit-align-self"                : "auto | flex-start | flex-end | center | baseline | stretch",
-    "alignment-adjust"                  : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
-    "alignment-baseline"                : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
-    "animation"                         : 1,
-    "animation-delay"                   : "<time>#",
-    "animation-direction"               : "<single-animation-direction>#",
-    "animation-duration"                : "<time>#",
-    "animation-fill-mode"               : "[ none | forwards | backwards | both ]#",
-    "animation-iteration-count"         : "[ <number> | infinite ]#",
-    "animation-name"                    : "[ none | <single-animation-name> ]#",
-    "animation-play-state"              : "[ running | paused ]#",
-    "animation-timing-function"         : 1,
+    //A
+    "align-items"                   : "flex-start | flex-end | center | baseline | stretch",
+    "align-content"                 : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "align-self"                    : "auto | flex-start | flex-end | center | baseline | stretch",
+    "all"                           : "initial | inherit | unset",
+    "-webkit-align-items"           : "flex-start | flex-end | center | baseline | stretch",
+    "-webkit-align-content"         : "flex-start | flex-end | center | space-between | space-around | stretch",
+    "-webkit-align-self"            : "auto | flex-start | flex-end | center | baseline | stretch",
+    "alignment-adjust"              : "auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | <percentage> | <length>",
+    "alignment-baseline"            : "auto | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "animation"                     : 1,
+    "animation-delay"               : "<time>#",
+    "animation-direction"           : "<single-animation-direction>#",
+    "animation-duration"            : "<time>#",
+    "animation-fill-mode"           : "[ none | forwards | backwards | both ]#",
+    "animation-iteration-count"     : "[ <number> | infinite ]#",
+    "animation-name"                : "[ none | <single-animation-name> ]#",
+    "animation-play-state"          : "[ running | paused ]#",
+    "animation-timing-function"     : 1,
 
-    // vendor prefixed
-    "-moz-animation-delay"              : "<time>#",
-    "-moz-animation-direction"          : "[ normal | alternate ]#",
-    "-moz-animation-duration"           : "<time>#",
-    "-moz-animation-iteration-count"    : "[ <number> | infinite ]#",
-    "-moz-animation-name"               : "[ none | <single-animation-name> ]#",
-    "-moz-animation-play-state"         : "[ running | paused ]#",
+    //vendor prefixed
+    "-moz-animation-delay"               : "<time>#",
+    "-moz-animation-direction"           : "[ normal | alternate ]#",
+    "-moz-animation-duration"            : "<time>#",
+    "-moz-animation-iteration-count"     : "[ <number> | infinite ]#",
+    "-moz-animation-name"                : "[ none | <single-animation-name> ]#",
+    "-moz-animation-play-state"          : "[ running | paused ]#",
 
     "-ms-animation-delay"               : "<time>#",
     "-ms-animation-direction"           : "[ normal | alternate ]#",
@@ -3325,455 +3305,455 @@ var Properties = module.exports = {
     "-ms-animation-name"                : "[ none | <single-animation-name> ]#",
     "-ms-animation-play-state"          : "[ running | paused ]#",
 
-    "-webkit-animation-delay"           : "<time>#",
-    "-webkit-animation-direction"       : "[ normal | alternate ]#",
-    "-webkit-animation-duration"        : "<time>#",
-    "-webkit-animation-fill-mode"       : "[ none | forwards | backwards | both ]#",
-    "-webkit-animation-iteration-count" : "[ <number> | infinite ]#",
-    "-webkit-animation-name"            : "[ none | <single-animation-name> ]#",
-    "-webkit-animation-play-state"      : "[ running | paused ]#",
+    "-webkit-animation-delay"               : "<time>#",
+    "-webkit-animation-direction"           : "[ normal | alternate ]#",
+    "-webkit-animation-duration"            : "<time>#",
+    "-webkit-animation-fill-mode"           : "[ none | forwards | backwards | both ]#",
+    "-webkit-animation-iteration-count"     : "[ <number> | infinite ]#",
+    "-webkit-animation-name"                : "[ none | <single-animation-name> ]#",
+    "-webkit-animation-play-state"          : "[ running | paused ]#",
 
-    "-o-animation-delay"                : "<time>#",
-    "-o-animation-direction"            : "[ normal | alternate ]#",
-    "-o-animation-duration"             : "<time>#",
-    "-o-animation-iteration-count"      : "[ <number> | infinite ]#",
-    "-o-animation-name"                 : "[ none | <single-animation-name> ]#",
-    "-o-animation-play-state"           : "[ running | paused ]#",
+    "-o-animation-delay"               : "<time>#",
+    "-o-animation-direction"           : "[ normal | alternate ]#",
+    "-o-animation-duration"            : "<time>#",
+    "-o-animation-iteration-count"     : "[ <number> | infinite ]#",
+    "-o-animation-name"                : "[ none | <single-animation-name> ]#",
+    "-o-animation-play-state"          : "[ running | paused ]#",
 
-    "appearance"                        : "none | auto",
-    "-moz-appearance"                   : "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
-    "-ms-appearance"                    : "none | icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
-    "-webkit-appearance"                : "none | button | button-bevel | caps-lock-indicator | caret | checkbox | default-button | listbox | listitem | media-fullscreen-button | media-mute-button | media-play-button | media-seek-back-button | media-seek-forward-button | media-slider | media-sliderthumb | menulist | menulist-button | menulist-text | menulist-textfield | push-button | radio | searchfield | searchfield-cancel-button | searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical | square-button | textarea | textfield | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical",
-    "-o-appearance"                     : "none | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
+    "appearance"                    : "none | auto",
+    "-moz-appearance"               : "none | button | button-arrow-down | button-arrow-next | button-arrow-previous | button-arrow-up | button-bevel | button-focus | caret | checkbox | checkbox-container | checkbox-label | checkmenuitem | dualbutton | groupbox | listbox | listitem | menuarrow | menubar | menucheckbox | menuimage | menuitem | menuitemtext | menulist | menulist-button | menulist-text | menulist-textfield | menupopup | menuradio | menuseparator | meterbar | meterchunk | progressbar | progressbar-vertical | progresschunk | progresschunk-vertical | radio | radio-container | radio-label | radiomenuitem | range | range-thumb | resizer | resizerpanel | scale-horizontal | scalethumbend | scalethumb-horizontal | scalethumbstart | scalethumbtick | scalethumb-vertical | scale-vertical | scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical | searchfield | separator | sheet | spinner | spinner-downbutton | spinner-textfield | spinner-upbutton | splitter | statusbar | statusbarpanel | tab | tabpanel | tabpanels | tab-scroll-arrow-back | tab-scroll-arrow-forward | textfield | textfield-multiline | toolbar | toolbarbutton | toolbarbutton-dropdown | toolbargripper | toolbox | tooltip | treeheader | treeheadercell | treeheadersortarrow | treeitem | treeline | treetwisty | treetwistyopen | treeview | -moz-mac-unified-toolbar | -moz-win-borderless-glass | -moz-win-browsertabbar-toolbox | -moz-win-communicationstext | -moz-win-communications-toolbox | -moz-win-exclude-glass | -moz-win-glass | -moz-win-mediatext | -moz-win-media-toolbox | -moz-window-button-box | -moz-window-button-box-maximized | -moz-window-button-close | -moz-window-button-maximize | -moz-window-button-minimize | -moz-window-button-restore | -moz-window-frame-bottom | -moz-window-frame-left | -moz-window-frame-right | -moz-window-titlebar | -moz-window-titlebar-maximized",
+    "-ms-appearance"                : "none | icon | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
+    "-webkit-appearance"            : "none | button | button-bevel | caps-lock-indicator | caret | checkbox | default-button | listbox	| listitem | media-fullscreen-button | media-mute-button | media-play-button | media-seek-back-button	| media-seek-forward-button	| media-slider | media-sliderthumb | menulist	| menulist-button	| menulist-text	| menulist-textfield | push-button	| radio	| searchfield	| searchfield-cancel-button	| searchfield-decoration | searchfield-results-button | searchfield-results-decoration | slider-horizontal | slider-vertical | sliderthumb-horizontal | sliderthumb-vertical	| square-button	| textarea	| textfield	| scrollbarbutton-down | scrollbarbutton-left | scrollbarbutton-right | scrollbarbutton-up | scrollbargripper-horizontal | scrollbargripper-vertical | scrollbarthumb-horizontal | scrollbarthumb-vertical | scrollbartrack-horizontal | scrollbartrack-vertical",
+    "-o-appearance"                 : "none | window | desktop | workspace | document | tooltip | dialog | button | push-button | hyperlink | radio | radio-button | checkbox | menu-item | tab | menu | menubar | pull-down-menu | pop-up-menu | list-menu | radio-group | checkbox-group | outline-tree | range | field | combo-box | signature | password | normal",
 
-    "azimuth"                           : "<azimuth>",
+    "azimuth"                       : "<azimuth>",
 
-    // B
-    "backface-visibility"               : "visible | hidden",
-    "background"                        : 1,
-    "background-attachment"             : "<attachment>#",
-    "background-clip"                   : "<box>#",
-    "background-color"                  : "<color>",
-    "background-image"                  : "<bg-image>#",
-    "background-origin"                 : "<box>#",
-    "background-position"               : "<bg-position>",
-    "background-repeat"                 : "<repeat-style>#",
-    "background-size"                   : "<bg-size>#",
-    "baseline-shift"                    : "baseline | sub | super | <percentage> | <length>",
-    "behavior"                          : 1,
-    "binding"                           : 1,
-    "bleed"                             : "<length>",
-    "bookmark-label"                    : "<content> | <attr> | <string>",
-    "bookmark-level"                    : "none | <integer>",
-    "bookmark-state"                    : "open | closed",
-    "bookmark-target"                   : "none | <uri> | <attr>",
-    "border"                            : "<border-width> || <border-style> || <color>",
-    "border-bottom"                     : "<border-width> || <border-style> || <color>",
-    "border-bottom-color"               : "<color>",
-    "border-bottom-left-radius"         :  "<x-one-radius>",
-    "border-bottom-right-radius"        :  "<x-one-radius>",
-    "border-bottom-style"               : "<border-style>",
-    "border-bottom-width"               : "<border-width>",
-    "border-collapse"                   : "collapse | separate",
-    "border-color"                      : "<color>{1,4}",
-    "border-image"                      : 1,
-    "border-image-outset"               : "[ <length> | <number> ]{1,4}",
-    "border-image-repeat"               : "[ stretch | repeat | round ]{1,2}",
-    "border-image-slice"                : "<border-image-slice>",
-    "border-image-source"               : "<image> | none",
-    "border-image-width"                : "[ <length> | <percentage> | <number> | auto ]{1,4}",
-    "border-left"                       : "<border-width> || <border-style> || <color>",
-    "border-left-color"                 : "<color>",
-    "border-left-style"                 : "<border-style>",
-    "border-left-width"                 : "<border-width>",
-    "border-radius"                     : "<border-radius>",
-    "border-right"                      : "<border-width> || <border-style> || <color>",
-    "border-right-color"                : "<color>",
-    "border-right-style"                : "<border-style>",
-    "border-right-width"                : "<border-width>",
-    "border-spacing"                    : "<length>{1,2}",
-    "border-style"                      : "<border-style>{1,4}",
-    "border-top"                        : "<border-width> || <border-style> || <color>",
-    "border-top-color"                  : "<color>",
-    "border-top-left-radius"            : "<x-one-radius>",
-    "border-top-right-radius"           : "<x-one-radius>",
-    "border-top-style"                  : "<border-style>",
-    "border-top-width"                  : "<border-width>",
-    "border-width"                      : "<border-width>{1,4}",
-    "bottom"                            : "<margin-width>",
-    "-moz-box-align"                    : "start | end | center | baseline | stretch",
-    "-moz-box-decoration-break"         : "slice | clone",
-    "-moz-box-direction"                : "normal | reverse",
-    "-moz-box-flex"                     : "<number>",
-    "-moz-box-flex-group"               : "<integer>",
-    "-moz-box-lines"                    : "single | multiple",
-    "-moz-box-ordinal-group"            : "<integer>",
-    "-moz-box-orient"                   : "horizontal | vertical | inline-axis | block-axis",
-    "-moz-box-pack"                     : "start | end | center | justify",
-    "-o-box-decoration-break"           : "slice | clone",
-    "-webkit-box-align"                 : "start | end | center | baseline | stretch",
-    "-webkit-box-decoration-break"      : "slice | clone",
-    "-webkit-box-direction"             : "normal | reverse",
-    "-webkit-box-flex"                  : "<number>",
-    "-webkit-box-flex-group"            : "<integer>",
-    "-webkit-box-lines"                 : "single | multiple",
-    "-webkit-box-ordinal-group"         : "<integer>",
-    "-webkit-box-orient"                : "horizontal | vertical | inline-axis | block-axis",
-    "-webkit-box-pack"                  : "start | end | center | justify",
-    "box-decoration-break"              : "slice | clone",
-    "box-shadow"                        : "<box-shadow>",
-    "box-sizing"                        : "content-box | border-box",
-    "break-after"                       : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
-    "break-before"                      : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
-    "break-inside"                      : "auto | avoid | avoid-page | avoid-column",
+    //B
+    "backface-visibility"           : "visible | hidden",
+    "background"                    : 1,
+    "background-attachment"         : "<attachment>#",
+    "background-clip"               : "<box>#",
+    "background-color"              : "<color>",
+    "background-image"              : "<bg-image>#",
+    "background-origin"             : "<box>#",
+    "background-position"           : "<bg-position>",
+    "background-repeat"             : "<repeat-style>#",
+    "background-size"               : "<bg-size>#",
+    "baseline-shift"                : "baseline | sub | super | <percentage> | <length>",
+    "behavior"                      : 1,
+    "binding"                       : 1,
+    "bleed"                         : "<length>",
+    "bookmark-label"                : "<content> | <attr> | <string>",
+    "bookmark-level"                : "none | <integer>",
+    "bookmark-state"                : "open | closed",
+    "bookmark-target"               : "none | <uri> | <attr>",
+    "border"                        : "<border-width> || <border-style> || <color>",
+    "border-bottom"                 : "<border-width> || <border-style> || <color>",
+    "border-bottom-color"           : "<color>",
+    "border-bottom-left-radius"     :  "<x-one-radius>",
+    "border-bottom-right-radius"    :  "<x-one-radius>",
+    "border-bottom-style"           : "<border-style>",
+    "border-bottom-width"           : "<border-width>",
+    "border-collapse"               : "collapse | separate",
+    "border-color"                  : "<color>{1,4}",
+    "border-image"                  : 1,
+    "border-image-outset"           : "[ <length> | <number> ]{1,4}",
+    "border-image-repeat"           : "[ stretch | repeat | round ]{1,2}",
+    "border-image-slice"            : "<border-image-slice>",
+    "border-image-source"           : "<image> | none",
+    "border-image-width"            : "[ <length> | <percentage> | <number> | auto ]{1,4}",
+    "border-left"                   : "<border-width> || <border-style> || <color>",
+    "border-left-color"             : "<color>",
+    "border-left-style"             : "<border-style>",
+    "border-left-width"             : "<border-width>",
+    "border-radius"                 : "<border-radius>",
+    "border-right"                  : "<border-width> || <border-style> || <color>",
+    "border-right-color"            : "<color>",
+    "border-right-style"            : "<border-style>",
+    "border-right-width"            : "<border-width>",
+    "border-spacing"                : "<length>{1,2}",
+    "border-style"                  : "<border-style>{1,4}",
+    "border-top"                    : "<border-width> || <border-style> || <color>",
+    "border-top-color"              : "<color>",
+    "border-top-left-radius"        : "<x-one-radius>",
+    "border-top-right-radius"       : "<x-one-radius>",
+    "border-top-style"              : "<border-style>",
+    "border-top-width"              : "<border-width>",
+    "border-width"                  : "<border-width>{1,4}",
+    "bottom"                        : "<margin-width>",
+    "-moz-box-align"                : "start | end | center | baseline | stretch",
+    "-moz-box-decoration-break"     : "slice | clone",
+    "-moz-box-direction"            : "normal | reverse",
+    "-moz-box-flex"                 : "<number>",
+    "-moz-box-flex-group"           : "<integer>",
+    "-moz-box-lines"                : "single | multiple",
+    "-moz-box-ordinal-group"        : "<integer>",
+    "-moz-box-orient"               : "horizontal | vertical | inline-axis | block-axis",
+    "-moz-box-pack"                 : "start | end | center | justify",
+    "-o-box-decoration-break"       : "slice | clone",
+    "-webkit-box-align"             : "start | end | center | baseline | stretch",
+    "-webkit-box-decoration-break"  : "slice | clone",
+    "-webkit-box-direction"         : "normal | reverse",
+    "-webkit-box-flex"              : "<number>",
+    "-webkit-box-flex-group"        : "<integer>",
+    "-webkit-box-lines"             : "single | multiple",
+    "-webkit-box-ordinal-group"     : "<integer>",
+    "-webkit-box-orient"            : "horizontal | vertical | inline-axis | block-axis",
+    "-webkit-box-pack"              : "start | end | center | justify",
+    "box-decoration-break"          : "slice | clone",
+    "box-shadow"                    : "<box-shadow>",
+    "box-sizing"                    : "content-box | border-box",
+    "break-after"                   : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-before"                  : "auto | always | avoid | left | right | page | column | avoid-page | avoid-column",
+    "break-inside"                  : "auto | avoid | avoid-page | avoid-column",
 
-    // C
-    "caption-side"                      : "top | bottom",
-    "clear"                             : "none | right | left | both",
-    "clip"                              : "<shape> | auto",
-    "-webkit-clip-path"                 : "<clip-source> | <clip-path> | none",
-    "clip-path"                         : "<clip-source> | <clip-path> | none",
-    "clip-rule"                         : "nonzero | evenodd",
-    "color"                             : "<color>",
-    "color-interpolation"               : "auto | sRGB | linearRGB",
-    "color-interpolation-filters"       : "auto | sRGB | linearRGB",
-    "color-profile"                     : 1,
-    "color-rendering"                   : "auto | optimizeSpeed | optimizeQuality",
-    "column-count"                      : "<integer> | auto",                       // https    ://www.w3.org/TR/css3-multicol/
-    "column-fill"                       : "auto | balance",
-    "column-gap"                        : "<length> | normal",
-    "column-rule"                       : "<border-width> || <border-style> || <color>",
-    "column-rule-color"                 : "<color>",
-    "column-rule-style"                 : "<border-style>",
-    "column-rule-width"                 : "<border-width>",
-    "column-span"                       : "none | all",
-    "column-width"                      : "<length> | auto",
-    "columns"                           : 1,
-    "content"                           : 1,
-    "counter-increment"                 : 1,
-    "counter-reset"                     : 1,
-    "crop"                              : "<shape> | auto",
-    "cue"                               : "cue-after | cue-before",
-    "cue-after"                         : 1,
-    "cue-before"                        : 1,
-    "cursor"                            : 1,
+    //C
+    "caption-side"                  : "top | bottom",
+    "clear"                         : "none | right | left | both",
+    "clip"                          : "<shape> | auto",
+    "-webkit-clip-path"             : "<clip-source> | <clip-path> | none",
+    "clip-path"                     : "<clip-source> | <clip-path> | none",
+    "clip-rule"                     : "nonzero | evenodd",
+    "color"                         : "<color>",
+    "color-interpolation"           : "auto | sRGB | linearRGB",
+    "color-interpolation-filters"   : "auto | sRGB | linearRGB",
+    "color-profile"                 : 1,
+    "color-rendering"               : "auto | optimizeSpeed | optimizeQuality",
+    "column-count"                  : "<integer> | auto",                      //https://www.w3.org/TR/css3-multicol/
+    "column-fill"                   : "auto | balance",
+    "column-gap"                    : "<length> | normal",
+    "column-rule"                   : "<border-width> || <border-style> || <color>",
+    "column-rule-color"             : "<color>",
+    "column-rule-style"             : "<border-style>",
+    "column-rule-width"             : "<border-width>",
+    "column-span"                   : "none | all",
+    "column-width"                  : "<length> | auto",
+    "columns"                       : 1,
+    "content"                       : 1,
+    "counter-increment"             : 1,
+    "counter-reset"                 : 1,
+    "crop"                          : "<shape> | auto",
+    "cue"                           : "cue-after | cue-before",
+    "cue-after"                     : 1,
+    "cue-before"                    : 1,
+    "cursor"                        : 1,
 
-    // D
-    "direction"                         : "ltr | rtl",
-    "display"                           : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
-    "dominant-baseline"                 : "auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge",
-    "drop-initial-after-adjust"         : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
-    "drop-initial-after-align"          : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
-    "drop-initial-before-adjust"        : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
-    "drop-initial-before-align"         : "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
-    "drop-initial-size"                 : "auto | line | <length> | <percentage>",
-    "drop-initial-value"                : "<integer>",
+    //D
+    "direction"                     : "ltr | rtl",
+    "display"                       : "inline | block | list-item | inline-block | table | inline-table | table-row-group | table-header-group | table-footer-group | table-row | table-column-group | table-column | table-cell | table-caption | grid | inline-grid | run-in | ruby | ruby-base | ruby-text | ruby-base-container | ruby-text-container | contents | none | -moz-box | -moz-inline-block | -moz-inline-box | -moz-inline-grid | -moz-inline-stack | -moz-inline-table | -moz-grid | -moz-grid-group | -moz-grid-line | -moz-groupbox | -moz-deck | -moz-popup | -moz-stack | -moz-marker | -webkit-box | -webkit-inline-box | -ms-flexbox | -ms-inline-flexbox | flex | -webkit-flex | inline-flex | -webkit-inline-flex",
+    "dominant-baseline"             : "auto | use-script | no-change | reset-size | ideographic | alphabetic | hanging | mathematical | central | middle | text-after-edge | text-before-edge",
+    "drop-initial-after-adjust"     : "central | middle | after-edge | text-after-edge | ideographic | alphabetic | mathematical | <percentage> | <length>",
+    "drop-initial-after-align"      : "baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-before-adjust"    : "before-edge | text-before-edge | central | middle | hanging | mathematical | <percentage> | <length>",
+    "drop-initial-before-align"     : "caps-height | baseline | use-script | before-edge | text-before-edge | after-edge | text-after-edge | central | middle | ideographic | alphabetic | hanging | mathematical",
+    "drop-initial-size"             : "auto | line | <length> | <percentage>",
+    "drop-initial-value"            : "<integer>",
 
-    // E
-    "elevation"                         : "<angle> | below | level | above | higher | lower",
-    "empty-cells"                       : "show | hide",
-    "enable-background"                 : 1,
+    //E
+    "elevation"                     : "<angle> | below | level | above | higher | lower",
+    "empty-cells"                   : "show | hide",
+    "enable-background"             : 1,
 
-    // F
-    "fill"                              : "<paint>",
-    "fill-opacity"                      : "<opacity-value>",
-    "fill-rule"                         : "nonzero | evenodd",
-    "filter"                            : "<filter-function-list> | none",
-    "fit"                               : "fill | hidden | meet | slice",
-    "fit-position"                      : 1,
-    "flex"                              : "<flex>",
-    "flex-basis"                        : "<width>",
-    "flex-direction"                    : "row | row-reverse | column | column-reverse",
-    "flex-flow"                         : "<flex-direction> || <flex-wrap>",
-    "flex-grow"                         : "<number>",
-    "flex-shrink"                       : "<number>",
-    "flex-wrap"                         : "nowrap | wrap | wrap-reverse",
-    "-webkit-flex"                      : "<flex>",
-    "-webkit-flex-basis"                : "<width>",
-    "-webkit-flex-direction"            : "row | row-reverse | column | column-reverse",
-    "-webkit-flex-flow"                 : "<flex-direction> || <flex-wrap>",
-    "-webkit-flex-grow"                 : "<number>",
-    "-webkit-flex-shrink"               : "<number>",
-    "-webkit-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
-    "-ms-flex"                          : "<flex>",
-    "-ms-flex-align"                    : "start | end | center | stretch | baseline",
-    "-ms-flex-direction"                : "row | row-reverse | column | column-reverse",
-    "-ms-flex-order"                    : "<number>",
-    "-ms-flex-pack"                     : "start | end | center | justify",
-    "-ms-flex-wrap"                     : "nowrap | wrap | wrap-reverse",
-    "float"                             : "left | right | none",
-    "float-offset"                      : 1,
-    "flood-color"                       : 1,
-    "flood-opacity"                     : "<opacity-value>",
-    "font"                              : "<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar",
-    "font-family"                       : "<font-family>",
-    "font-feature-settings"             : "<feature-tag-value> | normal",
-    "font-kerning"                      : "auto | normal | none",
-    "font-size"                         : "<font-size>",
-    "font-size-adjust"                  : "<number> | none",
-    "font-stretch"                      : "<font-stretch>",
-    "font-style"                        : "<font-style>",
-    "font-variant"                      : "<font-variant> | normal | none",
-    "font-variant-alternates"           : "<font-variant-alternates> | normal",
-    "font-variant-caps"                 : "<font-variant-caps> | normal",
-    "font-variant-east-asian"           : "<font-variant-east-asian> | normal",
-    "font-variant-ligatures"            : "<font-variant-ligatures> | normal | none",
-    "font-variant-numeric"              : "<font-variant-numeric> | normal",
-    "font-variant-position"             : "normal | sub | super",
-    "font-weight"                       : "<font-weight>",
+    //F
+    "fill"                          : "<paint>",
+    "fill-opacity"                  : "<opacity-value>",
+    "fill-rule"                     : "nonzero | evenodd",
+    "filter"                        : "<filter-function-list> | none",
+    "fit"                           : "fill | hidden | meet | slice",
+    "fit-position"                  : 1,
+    "flex"                          : "<flex>",
+    "flex-basis"                    : "<width>",
+    "flex-direction"                : "row | row-reverse | column | column-reverse",
+    "flex-flow"                     : "<flex-direction> || <flex-wrap>",
+    "flex-grow"                     : "<number>",
+    "flex-shrink"                   : "<number>",
+    "flex-wrap"                     : "nowrap | wrap | wrap-reverse",
+    "-webkit-flex"                  : "<flex>",
+    "-webkit-flex-basis"            : "<width>",
+    "-webkit-flex-direction"        : "row | row-reverse | column | column-reverse",
+    "-webkit-flex-flow"             : "<flex-direction> || <flex-wrap>",
+    "-webkit-flex-grow"             : "<number>",
+    "-webkit-flex-shrink"           : "<number>",
+    "-webkit-flex-wrap"             : "nowrap | wrap | wrap-reverse",
+    "-ms-flex"                      : "<flex>",
+    "-ms-flex-align"                : "start | end | center | stretch | baseline",
+    "-ms-flex-direction"            : "row | row-reverse | column | column-reverse",
+    "-ms-flex-order"                : "<number>",
+    "-ms-flex-pack"                 : "start | end | center | justify",
+    "-ms-flex-wrap"                 : "nowrap | wrap | wrap-reverse",
+    "float"                         : "left | right | none",
+    "float-offset"                  : 1,
+    "flood-color"                   : 1,
+    "flood-opacity"                 : "<opacity-value>",
+    "font"                          : "<font-shorthand> | caption | icon | menu | message-box | small-caption | status-bar",
+    "font-family"                   : "<font-family>",
+    "font-feature-settings"         : "<feature-tag-value> | normal",
+    "font-kerning"                  : "auto | normal | none",
+    "font-size"                     : "<font-size>",
+    "font-size-adjust"              : "<number> | none",
+    "font-stretch"                  : "<font-stretch>",
+    "font-style"                    : "<font-style>",
+    "font-variant"                  : "<font-variant> | normal | none",
+    "font-variant-alternates"       : "<font-variant-alternates> | normal",
+    "font-variant-caps"             : "<font-variant-caps> | normal",
+    "font-variant-east-asian"       : "<font-variant-east-asian> | normal",
+    "font-variant-ligatures"        : "<font-variant-ligatures> | normal | none",
+    "font-variant-numeric"          : "<font-variant-numeric> | normal",
+    "font-variant-position"         : "normal | sub | super",
+    "font-weight"                   : "<font-weight>",
 
-    // G
-    "glyph-orientation-horizontal"      : "<glyph-angle>",
-    "glyph-orientation-vertical"        : "auto | <glyph-angle>",
-    "grid"                              : 1,
-    "grid-area"                         : 1,
-    "grid-auto-columns"                 : 1,
-    "grid-auto-flow"                    : 1,
-    "grid-auto-position"                : 1,
-    "grid-auto-rows"                    : 1,
-    "grid-cell-stacking"                : "columns | rows | layer",
-    "grid-column"                       : 1,
-    "grid-columns"                      : 1,
-    "grid-column-align"                 : "start | end | center | stretch",
-    "grid-column-sizing"                : 1,
-    "grid-column-start"                 : 1,
-    "grid-column-end"                   : 1,
-    "grid-column-span"                  : "<integer>",
-    "grid-flow"                         : "none | rows | columns",
-    "grid-layer"                        : "<integer>",
-    "grid-row"                          : 1,
-    "grid-rows"                         : 1,
-    "grid-row-align"                    : "start | end | center | stretch",
-    "grid-row-start"                    : 1,
-    "grid-row-end"                      : 1,
-    "grid-row-span"                     : "<integer>",
-    "grid-row-sizing"                   : 1,
-    "grid-template"                     : 1,
-    "grid-template-areas"               : 1,
-    "grid-template-columns"             : 1,
-    "grid-template-rows"                : 1,
+    //G
+    "glyph-orientation-horizontal"  : "<glyph-angle>",
+    "glyph-orientation-vertical"    : "auto | <glyph-angle>",
+    "grid"                          : 1,
+    "grid-area"                     : 1,
+    "grid-auto-columns"             : 1,
+    "grid-auto-flow"                : 1,
+    "grid-auto-position"            : 1,
+    "grid-auto-rows"                : 1,
+    "grid-cell-stacking"            : "columns | rows | layer",
+    "grid-column"                   : 1,
+    "grid-columns"                  : 1,
+    "grid-column-align"             : "start | end | center | stretch",
+    "grid-column-sizing"            : 1,
+    "grid-column-start"             : 1,
+    "grid-column-end"               : 1,
+    "grid-column-span"              : "<integer>",
+    "grid-flow"                     : "none | rows | columns",
+    "grid-layer"                    : "<integer>",
+    "grid-row"                      : 1,
+    "grid-rows"                     : 1,
+    "grid-row-align"                : "start | end | center | stretch",
+    "grid-row-start"                : 1,
+    "grid-row-end"                  : 1,
+    "grid-row-span"                 : "<integer>",
+    "grid-row-sizing"               : 1,
+    "grid-template"                 : 1,
+    "grid-template-areas"           : 1,
+    "grid-template-columns"         : 1,
+    "grid-template-rows"            : 1,
 
-    // H
-    "hanging-punctuation"               : 1,
-    "height"                            : "<margin-width> | <content-sizing>",
-    "hyphenate-after"                   : "<integer> | auto",
-    "hyphenate-before"                  : "<integer> | auto",
-    "hyphenate-character"               : "<string> | auto",
-    "hyphenate-lines"                   : "no-limit | <integer>",
-    "hyphenate-resource"                : 1,
-    "hyphens"                           : "none | manual | auto",
+    //H
+    "hanging-punctuation"           : 1,
+    "height"                        : "<margin-width> | <content-sizing>",
+    "hyphenate-after"               : "<integer> | auto",
+    "hyphenate-before"              : "<integer> | auto",
+    "hyphenate-character"           : "<string> | auto",
+    "hyphenate-lines"               : "no-limit | <integer>",
+    "hyphenate-resource"            : 1,
+    "hyphens"                       : "none | manual | auto",
 
-    // I
-    "icon"                              : 1,
-    "image-orientation"                 : "angle | auto",
-    "image-rendering"                   : "auto | optimizeSpeed | optimizeQuality",
-    "image-resolution"                  : 1,
-    "ime-mode"                          : "auto | normal | active | inactive | disabled",
-    "inline-box-align"                  : "last | <integer>",
+    //I
+    "icon"                          : 1,
+    "image-orientation"             : "angle | auto",
+    "image-rendering"               : "auto | optimizeSpeed | optimizeQuality",
+    "image-resolution"              : 1,
+    "ime-mode"                      : "auto | normal | active | inactive | disabled",
+    "inline-box-align"              : "last | <integer>",
 
-    // J
-    "justify-content"                   : "flex-start | flex-end | center | space-between | space-around",
-    "-webkit-justify-content"           : "flex-start | flex-end | center | space-between | space-around",
+    //J
+    "justify-content"               : "flex-start | flex-end | center | space-between | space-around",
+    "-webkit-justify-content"       : "flex-start | flex-end | center | space-between | space-around",
 
-    // K
-    "kerning"                           : "auto | <length>",
+    //K
+    "kerning"                       : "auto | <length>",
 
-    // L
-    "left"                              : "<margin-width>",
-    "letter-spacing"                    : "<length> | normal",
-    "line-height"                       : "<line-height>",
-    "line-break"                        : "auto | loose | normal | strict",
-    "line-stacking"                     : 1,
-    "line-stacking-ruby"                : "exclude-ruby | include-ruby",
-    "line-stacking-shift"               : "consider-shifts | disregard-shifts",
-    "line-stacking-strategy"            : "inline-line-height | block-line-height | max-height | grid-height",
-    "list-style"                        : 1,
-    "list-style-image"                  : "<uri> | none",
-    "list-style-position"               : "inside | outside",
-    "list-style-type"                   : "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none",
+    //L
+    "left"                          : "<margin-width>",
+    "letter-spacing"                : "<length> | normal",
+    "line-height"                   : "<line-height>",
+    "line-break"                    : "auto | loose | normal | strict",
+    "line-stacking"                 : 1,
+    "line-stacking-ruby"            : "exclude-ruby | include-ruby",
+    "line-stacking-shift"           : "consider-shifts | disregard-shifts",
+    "line-stacking-strategy"        : "inline-line-height | block-line-height | max-height | grid-height",
+    "list-style"                    : 1,
+    "list-style-image"              : "<uri> | none",
+    "list-style-position"           : "inside | outside",
+    "list-style-type"               : "disc | circle | square | decimal | decimal-leading-zero | lower-roman | upper-roman | lower-greek | lower-latin | upper-latin | armenian | georgian | lower-alpha | upper-alpha | none",
 
-    // M
-    "margin"                            : "<margin-width>{1,4}",
-    "margin-bottom"                     : "<margin-width>",
-    "margin-left"                       : "<margin-width>",
-    "margin-right"                      : "<margin-width>",
-    "margin-top"                        : "<margin-width>",
-    "mark"                              : 1,
-    "mark-after"                        : 1,
-    "mark-before"                       : 1,
-    "marker"                            : 1,
-    "marker-end"                        : 1,
-    "marker-mid"                        : 1,
-    "marker-start"                      : 1,
-    "marks"                             : 1,
-    "marquee-direction"                 : 1,
-    "marquee-play-count"                : 1,
-    "marquee-speed"                     : 1,
-    "marquee-style"                     : 1,
-    "mask"                              : 1,
-    "max-height"                        : "<length> | <percentage> | <content-sizing> | none",
-    "max-width"                         : "<length> | <percentage> | <content-sizing> | none",
-    "min-height"                        : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
-    "min-width"                         : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
-    "move-to"                           : 1,
+    //M
+    "margin"                        : "<margin-width>{1,4}",
+    "margin-bottom"                 : "<margin-width>",
+    "margin-left"                   : "<margin-width>",
+    "margin-right"                  : "<margin-width>",
+    "margin-top"                    : "<margin-width>",
+    "mark"                          : 1,
+    "mark-after"                    : 1,
+    "mark-before"                   : 1,
+    "marker"                        : 1,
+    "marker-end"                    : 1,
+    "marker-mid"                    : 1,
+    "marker-start"                  : 1,
+    "marks"                         : 1,
+    "marquee-direction"             : 1,
+    "marquee-play-count"            : 1,
+    "marquee-speed"                 : 1,
+    "marquee-style"                 : 1,
+    "mask"                          : 1,
+    "max-height"                    : "<length> | <percentage> | <content-sizing> | none",
+    "max-width"                     : "<length> | <percentage> | <content-sizing> | none",
+    "min-height"                    : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "min-width"                     : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "move-to"                       : 1,
 
-    // N
-    "nav-down"                          : 1,
-    "nav-index"                         : 1,
-    "nav-left"                          : 1,
-    "nav-right"                         : 1,
-    "nav-up"                            : 1,
+    //N
+    "nav-down"                      : 1,
+    "nav-index"                     : 1,
+    "nav-left"                      : 1,
+    "nav-right"                     : 1,
+    "nav-up"                        : 1,
 
-    // O
-    "object-fit"                        : "fill | contain | cover | none | scale-down",
-    "object-position"                   : "<position>",
-    "opacity"                           : "<opacity-value>",
-    "order"                             : "<integer>",
-    "-webkit-order"                     : "<integer>",
-    "orphans"                           : "<integer>",
-    "outline"                           : 1,
-    "outline-color"                     : "<color> | invert",
-    "outline-offset"                    : 1,
-    "outline-style"                     : "<border-style>",
-    "outline-width"                     : "<border-width>",
-    "overflow"                          : "visible | hidden | scroll | auto",
-    "overflow-style"                    : 1,
-    "overflow-wrap"                     : "normal | break-word",
-    "overflow-x"                        : 1,
-    "overflow-y"                        : 1,
+    //O
+    "object-fit"                    : "fill | contain | cover | none | scale-down",
+    "object-position"               : "<position>",
+    "opacity"                       : "<opacity-value>",
+    "order"                         : "<integer>",
+    "-webkit-order"                 : "<integer>",
+    "orphans"                       : "<integer>",
+    "outline"                       : 1,
+    "outline-color"                 : "<color> | invert",
+    "outline-offset"                : 1,
+    "outline-style"                 : "<border-style>",
+    "outline-width"                 : "<border-width>",
+    "overflow"                      : "visible | hidden | scroll | auto",
+    "overflow-style"                : 1,
+    "overflow-wrap"                 : "normal | break-word",
+    "overflow-x"                    : 1,
+    "overflow-y"                    : 1,
 
-    // P
-    "padding"                           : "<padding-width>{1,4}",
-    "padding-bottom"                    : "<padding-width>",
-    "padding-left"                      : "<padding-width>",
-    "padding-right"                     : "<padding-width>",
-    "padding-top"                       : "<padding-width>",
-    "page"                              : 1,
-    "page-break-after"                  : "auto | always | avoid | left | right",
-    "page-break-before"                 : "auto | always | avoid | left | right",
-    "page-break-inside"                 : "auto | avoid",
-    "page-policy"                       : 1,
-    "pause"                             : 1,
-    "pause-after"                       : 1,
-    "pause-before"                      : 1,
-    "perspective"                       : 1,
-    "perspective-origin"                : 1,
-    "phonemes"                          : 1,
-    "pitch"                             : 1,
-    "pitch-range"                       : 1,
-    "play-during"                       : 1,
-    "pointer-events"                    : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
-    "position"                          : "static | relative | absolute | fixed | sticky | -webkit-sticky",
-    "presentation-level"                : 1,
-    "punctuation-trim"                  : 1,
+    //P
+    "padding"                       : "<padding-width>{1,4}",
+    "padding-bottom"                : "<padding-width>",
+    "padding-left"                  : "<padding-width>",
+    "padding-right"                 : "<padding-width>",
+    "padding-top"                   : "<padding-width>",
+    "page"                          : 1,
+    "page-break-after"              : "auto | always | avoid | left | right",
+    "page-break-before"             : "auto | always | avoid | left | right",
+    "page-break-inside"             : "auto | avoid",
+    "page-policy"                   : 1,
+    "pause"                         : 1,
+    "pause-after"                   : 1,
+    "pause-before"                  : 1,
+    "perspective"                   : 1,
+    "perspective-origin"            : 1,
+    "phonemes"                      : 1,
+    "pitch"                         : 1,
+    "pitch-range"                   : 1,
+    "play-during"                   : 1,
+    "pointer-events"                : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
+    "position"                      : "static | relative | absolute | fixed",
+    "presentation-level"            : 1,
+    "punctuation-trim"              : 1,
 
-    // Q
-    "quotes"                            : 1,
+    //Q
+    "quotes"                        : 1,
 
-    // R
-    "rendering-intent"                  : 1,
-    "resize"                            : 1,
-    "rest"                              : 1,
-    "rest-after"                        : 1,
-    "rest-before"                       : 1,
-    "richness"                          : 1,
-    "right"                             : "<margin-width>",
-    "rotation"                          : 1,
-    "rotation-point"                    : 1,
-    "ruby-align"                        : 1,
-    "ruby-overhang"                     : 1,
-    "ruby-position"                     : 1,
-    "ruby-span"                         : 1,
+    //R
+    "rendering-intent"              : 1,
+    "resize"                        : 1,
+    "rest"                          : 1,
+    "rest-after"                    : 1,
+    "rest-before"                   : 1,
+    "richness"                      : 1,
+    "right"                         : "<margin-width>",
+    "rotation"                      : 1,
+    "rotation-point"                : 1,
+    "ruby-align"                    : 1,
+    "ruby-overhang"                 : 1,
+    "ruby-position"                 : 1,
+    "ruby-span"                     : 1,
 
-    // S
-    "shape-rendering"                   : "auto | optimizeSpeed | crispEdges | geometricPrecision",
-    "size"                              : 1,
-    "speak"                             : "normal | none | spell-out",
-    "speak-header"                      : "once | always",
-    "speak-numeral"                     : "digits | continuous",
-    "speak-punctuation"                 : "code | none",
-    "speech-rate"                       : 1,
-    "src"                               : 1,
-    "stop-color"                        : 1,
-    "stop-opacity"                      : "<opacity-value>",
-    "stress"                            : 1,
-    "string-set"                        : 1,
-    "stroke"                            : "<paint>",
-    "stroke-dasharray"                  : "none | <dasharray>",
-    "stroke-dashoffset"                 : "<percentage> | <length>",
-    "stroke-linecap"                    : "butt | round | square",
-    "stroke-linejoin"                   : "miter | round | bevel",
-    "stroke-miterlimit"                 : "<miterlimit>",
-    "stroke-opacity"                    : "<opacity-value>",
-    "stroke-width"                      : "<percentage> | <length>",
+    //S
+    "shape-rendering"               : "auto | optimizeSpeed | crispEdges | geometricPrecision",
+    "size"                          : 1,
+    "speak"                         : "normal | none | spell-out",
+    "speak-header"                  : "once | always",
+    "speak-numeral"                 : "digits | continuous",
+    "speak-punctuation"             : "code | none",
+    "speech-rate"                   : 1,
+    "src"                           : 1,
+    "stop-color"                    : 1,
+    "stop-opacity"                  : "<opacity-value>",
+    "stress"                        : 1,
+    "string-set"                    : 1,
+    "stroke"                        : "<paint>",
+    "stroke-dasharray"              : "none | <dasharray>",
+    "stroke-dashoffset"             : "<percentage> | <length>",
+    "stroke-linecap"                : "butt | round | square",
+    "stroke-linejoin"               : "miter | round | bevel",
+    "stroke-miterlimit"             : "<miterlimit>",
+    "stroke-opacity"                : "<opacity-value>",
+    "stroke-width"                  : "<percentage> | <length>",
 
-    "table-layout"                      : "auto | fixed",
-    "tab-size"                          : "<integer> | <length>",
-    "target"                            : 1,
-    "target-name"                       : 1,
-    "target-new"                        : 1,
-    "target-position"                   : 1,
-    "text-align"                        : "left | right | center | justify | match-parent | start | end",
-    "text-align-last"                   : 1,
-    "text-anchor"                       : "start | middle | end",
-    "text-decoration"                   : "<text-decoration-line> || <text-decoration-style> || <text-decoration-color>",
-    "text-decoration-color"             : "<text-decoration-color>",
-    "text-decoration-line"              : "<text-decoration-line>",
-    "text-decoration-style"             : "<text-decoration-style>",
-    "text-emphasis"                     : 1,
-    "text-height"                       : 1,
-    "text-indent"                       : "<length> | <percentage>",
-    "text-justify"                      : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
-    "text-outline"                      : 1,
-    "text-overflow"                     : 1,
-    "text-rendering"                    : "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
-    "text-shadow"                       : 1,
-    "text-transform"                    : "capitalize | uppercase | lowercase | none",
-    "text-wrap"                         : "normal | none | avoid",
-    "top"                               : "<margin-width>",
-    "-ms-touch-action"                  : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
-    "touch-action"                      : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
-    "transform"                         : 1,
-    "transform-origin"                  : 1,
-    "transform-style"                   : 1,
-    "transition"                        : 1,
-    "transition-delay"                  : 1,
-    "transition-duration"               : 1,
-    "transition-property"               : 1,
-    "transition-timing-function"        : 1,
+    "table-layout"                  : "auto | fixed",
+    "tab-size"                      : "<integer> | <length>",
+    "target"                        : 1,
+    "target-name"                   : 1,
+    "target-new"                    : 1,
+    "target-position"               : 1,
+    "text-align"                    : "left | right | center | justify | match-parent | start | end",
+    "text-align-last"               : 1,
+    "text-anchor"                   : "start | middle | end",
+    "text-decoration"               : "<text-decoration-line> || <text-decoration-style> || <text-decoration-color>",
+    "text-decoration-color"         : "<text-decoration-color>",
+    "text-decoration-line"          : "<text-decoration-line>",
+    "text-decoration-style"         : "<text-decoration-style>",
+    "text-emphasis"                 : 1,
+    "text-height"                   : 1,
+    "text-indent"                   : "<length> | <percentage>",
+    "text-justify"                  : "auto | none | inter-word | inter-ideograph | inter-cluster | distribute | kashida",
+    "text-outline"                  : 1,
+    "text-overflow"                 : 1,
+    "text-rendering"                : "auto | optimizeSpeed | optimizeLegibility | geometricPrecision",
+    "text-shadow"                   : 1,
+    "text-transform"                : "capitalize | uppercase | lowercase | none",
+    "text-wrap"                     : "normal | none | avoid",
+    "top"                           : "<margin-width>",
+    "-ms-touch-action"              : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
+    "touch-action"                  : "auto | none | pan-x | pan-y | pan-left | pan-right | pan-up | pan-down | manipulation",
+    "transform"                     : 1,
+    "transform-origin"              : 1,
+    "transform-style"               : 1,
+    "transition"                    : 1,
+    "transition-delay"              : 1,
+    "transition-duration"           : 1,
+    "transition-property"           : 1,
+    "transition-timing-function"    : 1,
 
-    // U
-    "unicode-bidi"                      : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
-    "user-modify"                       : "read-only | read-write | write-only",
-    "user-select"                       : "none | text | toggle | element | elements | all",
+    //U
+    "unicode-bidi"                  : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
+    "user-modify"                   : "read-only | read-write | write-only",
+    "user-select"                   : "none | text | toggle | element | elements | all",
 
-    // V
-    "vertical-align"                    : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
-    "visibility"                        : "visible | hidden | collapse",
-    "voice-balance"                     : 1,
-    "voice-duration"                    : 1,
-    "voice-family"                      : 1,
-    "voice-pitch"                       : 1,
-    "voice-pitch-range"                 : 1,
-    "voice-rate"                        : 1,
-    "voice-stress"                      : 1,
-    "voice-volume"                      : 1,
-    "volume"                            : 1,
+    //V
+    "vertical-align"                : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",
+    "visibility"                    : "visible | hidden | collapse",
+    "voice-balance"                 : 1,
+    "voice-duration"                : 1,
+    "voice-family"                  : 1,
+    "voice-pitch"                   : 1,
+    "voice-pitch-range"             : 1,
+    "voice-rate"                    : 1,
+    "voice-stress"                  : 1,
+    "voice-volume"                  : 1,
+    "volume"                        : 1,
 
-    // W
-    "white-space"                       : "normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap",   // https    ://perishablepress.com/wrapping-content/
-    "white-space-collapse"              : 1,
-    "widows"                            : "<integer>",
-    "width"                             : "<length> | <percentage> | <content-sizing> | auto",
-    "will-change"                       : "<will-change>",
-    "word-break"                        : "normal | keep-all | break-all",
-    "word-spacing"                      : "<length> | normal",
-    "word-wrap"                         : "normal | break-word",
-    "writing-mode"                      : "horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb",
+    //W
+    "white-space"                   : "normal | pre | nowrap | pre-wrap | pre-line | -pre-wrap | -o-pre-wrap | -moz-pre-wrap | -hp-pre-wrap",   // https://perishablepress.com/wrapping-content/
+    "white-space-collapse"          : 1,
+    "widows"                        : "<integer>",
+    "width"                         : "<length> | <percentage> | <content-sizing> | auto",
+    "will-change"                   : "<will-change>",
+    "word-break"                    : "normal | keep-all | break-all",
+    "word-spacing"                  : "<length> | normal",
+    "word-wrap"                     : "normal | break-word",
+    "writing-mode"                  : "horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb",
 
-    // Z
-    "z-index"                           : "<integer> | auto",
-    "zoom"                              : "<number> | <percentage> | normal"
+    //Z
+    "z-index"                       : "<integer> | auto",
+    "zoom"                          : "<number> | <percentage> | normal"
 };
 
 },{}],8:[function(require,module,exports){
@@ -4025,17 +4005,17 @@ function PropertyValuePart(text, line, col, optionalHint) {
      */
     this.type = "unknown";
 
-    // figure out what type of data it is
+    //figure out what type of data it is
 
     var temp;
 
-    // it is a measurement?
-    if (/^([+-]?[\d.]+)([a-z]+)$/i.test(text)) {  // dimension
+    //it is a measurement?
+    if (/^([+\-]?[\d\.]+)([a-z]+)$/i.test(text)) {  //dimension
         this.type = "dimension";
-        this.value = Number(RegExp.$1);
+        this.value = +RegExp.$1;
         this.units = RegExp.$2;
 
-        // try to narrow down
+        //try to narrow down
         switch (this.units.toLowerCase()) {
 
             case "em":
@@ -4085,82 +4065,82 @@ function PropertyValuePart(text, line, col, optionalHint) {
 
         }
 
-    } else if (/^([+-]?[\d.]+)%$/i.test(text)) {  // percentage
+    } else if (/^([+\-]?[\d\.]+)%$/i.test(text)) {  //percentage
         this.type = "percentage";
-        this.value = Number(RegExp.$1);
-    } else if (/^([+-]?\d+)$/i.test(text)) {  // integer
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?\d+)$/i.test(text)) {  //integer
         this.type = "integer";
-        this.value = Number(RegExp.$1);
-    } else if (/^([+-]?[\d.]+)$/i.test(text)) {  // number
+        this.value = +RegExp.$1;
+    } else if (/^([+\-]?[\d\.]+)$/i.test(text)) {  //number
         this.type = "number";
-        this.value = Number(RegExp.$1);
+        this.value = +RegExp.$1;
 
-    } else if (/^#([a-f0-9]{3,6})/i.test(text)) {  // hexcolor
+    } else if (/^#([a-f0-9]{3,6})/i.test(text)) {  //hexcolor
         this.type = "color";
         temp = RegExp.$1;
         if (temp.length === 3) {
-            this.red    = parseInt(temp.charAt(0) + temp.charAt(0), 16);
-            this.green  = parseInt(temp.charAt(1) + temp.charAt(1), 16);
-            this.blue   = parseInt(temp.charAt(2) + temp.charAt(2), 16);
+            this.red    = parseInt(temp.charAt(0)+temp.charAt(0), 16);
+            this.green  = parseInt(temp.charAt(1)+temp.charAt(1), 16);
+            this.blue   = parseInt(temp.charAt(2)+temp.charAt(2), 16);
         } else {
             this.red    = parseInt(temp.substring(0, 2), 16);
             this.green  = parseInt(temp.substring(2, 4), 16);
             this.blue   = parseInt(temp.substring(4, 6), 16);
         }
-    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)) { // rgb() color with absolute numbers
+    } else if (/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i.test(text)) { //rgb() color with absolute numbers
         this.type   = "color";
-        this.red    = Number(RegExp.$1);
-        this.green  = Number(RegExp.$2);
-        this.blue   = Number(RegExp.$3);
-    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { // rgb() color with percentages
+        this.red    = +RegExp.$1;
+        this.green  = +RegExp.$2;
+        this.blue   = +RegExp.$3;
+    } else if (/^rgb\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { //rgb() color with percentages
         this.type   = "color";
-        this.red    = Number(RegExp.$1) * 255 / 100;
-        this.green  = Number(RegExp.$2) * 255 / 100;
-        this.blue   = Number(RegExp.$3) * 255 / 100;
-    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)/i.test(text)) { // rgba() color with absolute numbers
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+    } else if (/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with absolute numbers
         this.type   = "color";
-        this.red    = Number(RegExp.$1);
-        this.green  = Number(RegExp.$2);
-        this.blue   = Number(RegExp.$3);
-        this.alpha  = Number(RegExp.$4);
-    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)/i.test(text)) { // rgba() color with percentages
+        this.red    = +RegExp.$1;
+        this.green  = +RegExp.$2;
+        this.blue   = +RegExp.$3;
+        this.alpha  = +RegExp.$4;
+    } else if (/^rgba\(\s*(\d+)%\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //rgba() color with percentages
         this.type   = "color";
-        this.red    = Number(RegExp.$1) * 255 / 100;
-        this.green  = Number(RegExp.$2) * 255 / 100;
-        this.blue   = Number(RegExp.$3) * 255 / 100;
-        this.alpha  = Number(RegExp.$4);
-    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { // hsl()
+        this.red    = +RegExp.$1 * 255 / 100;
+        this.green  = +RegExp.$2 * 255 / 100;
+        this.blue   = +RegExp.$3 * 255 / 100;
+        this.alpha  = +RegExp.$4;
+    } else if (/^hsl\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*\)/i.test(text)) { //hsl()
         this.type   = "color";
-        this.hue    = Number(RegExp.$1);
-        this.saturation = Number(RegExp.$2) / 100;
-        this.lightness  = Number(RegExp.$3) / 100;
-    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d.]+)\s*\)/i.test(text)) { // hsla() color with percentages
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;
+    } else if (/^hsla\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*,\s*([\d\.]+)\s*\)/i.test(text)) { //hsla() color with percentages
         this.type   = "color";
-        this.hue    = Number(RegExp.$1);
-        this.saturation = Number(RegExp.$2) / 100;
-        this.lightness  = Number(RegExp.$3) / 100;
-        this.alpha  = Number(RegExp.$4);
-    } else if (/^url\(("([^\\"]|\.)*")\)/i.test(text)) { // URI
+        this.hue    = +RegExp.$1;
+        this.saturation = +RegExp.$2 / 100;
+        this.lightness  = +RegExp.$3 / 100;
+        this.alpha  = +RegExp.$4;
+    } else if (/^url\(("([^\\"]|\\.)*")\)/i.test(text)) { //URI
         // generated by TokenStream.readURI, so always double-quoted.
         this.type   = "uri";
         this.uri    = PropertyValuePart.parseString(RegExp.$1);
-    } else if (/^([^(]+)\(/i.test(text)) {
+    } else if (/^([^\(]+)\(/i.test(text)) {
         this.type   = "function";
         this.name   = RegExp.$1;
         this.value  = text;
-    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {    // double-quoted string
+    } else if (/^"([^\n\r\f\\"]|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*"/i.test(text)) {    //double-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {    // single-quoted string
+    } else if (/^'([^\n\r\f\\']|\\\r\n|\\[^\r0-9a-f]|\\[0-9a-f]{1,6}(\r\n|[ \n\r\t\f])?)*'/i.test(text)) {    //single-quoted string
         this.type   = "string";
         this.value  = PropertyValuePart.parseString(text);
-    } else if (Colors[text.toLowerCase()]) {  // named color
+    } else if (Colors[text.toLowerCase()]) {  //named color
         this.type   = "color";
         temp        = Colors[text.toLowerCase()].substring(1);
         this.red    = parseInt(temp.substring(0, 2), 16);
         this.green  = parseInt(temp.substring(2, 4), 16);
         this.blue   = parseInt(temp.substring(4, 6), 16);
-    } else if (/^[,/]$/.test(text)) {
+    } else if (/^[,\/]$/.test(text)) {
         this.type   = "operator";
         this.value  = text;
     } else if (/^-?[a-z_\u00A0-\uFFFF][a-z0-9\-_\u00A0-\uFFFF]*$/i.test(text)) {
@@ -4437,7 +4417,7 @@ Specificity.prototype = {
         var comps = ["a", "b", "c", "d"],
             i, len;
 
-        for (i = 0, len = comps.length; i < len; i++) {
+        for (i=0, len=comps.length; i < len; i++) {
             if (this[comps[i]] < other[comps[i]]) {
                 return -1;
             } else if (this[comps[i]] > other[comps[i]]) {
@@ -4477,12 +4457,9 @@ Specificity.prototype = {
  */
 Specificity.calculate = function(selector) {
 
-    var i,
-        len,
+    var i, len,
         part,
-        b = 0,
-        c = 0,
-        d = 0;
+        b=0, c=0, d=0;
 
     function updateValues(part) {
 
@@ -4490,11 +4467,11 @@ Specificity.calculate = function(selector) {
             elementName = part.elementName ? part.elementName.text : "",
             modifier;
 
-        if (elementName && elementName.charAt(elementName.length - 1) !== "*") {
+        if (elementName && elementName.charAt(elementName.length-1) !== "*") {
             d++;
         }
 
-        for (i = 0, len = part.modifiers.length; i < len; i++) {
+        for (i=0, len=part.modifiers.length; i < len; i++) {
             modifier = part.modifiers[i];
             switch (modifier.type) {
                 case "class":
@@ -4515,14 +4492,14 @@ Specificity.calculate = function(selector) {
                     break;
 
                 case "not":
-                    for (j = 0, num = modifier.args.length; j < num; j++) {
+                    for (j=0, num=modifier.args.length; j < num; j++) {
                         updateValues(modifier.args[j]);
                     }
             }
         }
     }
 
-    for (i = 0, len = selector.parts.length; i < len; i++) {
+    for (i=0, len=selector.parts.length; i < len; i++) {
         part = selector.parts[i];
 
         if (part instanceof SelectorPart) {
@@ -4578,7 +4555,7 @@ function isNameChar(c) {
 }
 
 function isIdentStart(c) {
-    return c !== null && (isNameStart(c) || /-\\/.test(c));
+    return c !== null && (isNameStart(c) || /\-\\/.test(c));
 }
 
 function mix(receiver, supplier) {
@@ -4712,7 +4689,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  * - PERCENTAGE
                  */
                 case "-":
-                    if (reader.peek() === "-") {  // could be closing HTML-style comment
+                    if (reader.peek() === "-") {  //could be closing HTML-style comment
                         token = this.htmlCommentEndToken(c, startLine, startCol);
                     } else if (isNameStart(reader.peek())) {
                         token = this.identOrFunctionToken(c, startLine, startCol);
@@ -4823,8 +4800,8 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
             }
 
-            // make sure this token is wanted
-            // TODO: check channel
+            //make sure this token is wanted
+            //TODO: check channel
             break;
         }
 
@@ -4899,12 +4876,12 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
          */
         reader.mark();
 
-        // try to find the at-keyword
+        //try to find the at-keyword
         ident = this.readName();
         rule = first + ident;
         tt = Tokens.type(rule.toLowerCase());
 
-        // if it's not valid, use the first character only and reset the reader
+        //if it's not valid, use the first character only and reset the reader
         if (tt === Tokens.CHAR || tt === Tokens.UNKNOWN) {
             if (rule.length > 1) {
                 tt = Tokens.UNKNOWN_SYM;
@@ -5058,14 +5035,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             uriFns  = ["url(", "url-prefix(", "domain("],
             uri;
 
-        // if there's a left paren immediately after, it's a URI or function
+        //if there's a left paren immediately after, it's a URI or function
         if (reader.peek() === "(") {
             ident += reader.read();
             if (uriFns.indexOf(ident.toLowerCase()) > -1) {
                 reader.mark();
                 uri = this.readURI(ident);
                 if (uri === null) {
-                    // didn't find a valid URL or there's no closing paren
+                    //didn't find a valid URL or there's no closing paren
                     reader.reset();
                     tt = Tokens.FUNCTION;
                 } else {
@@ -5075,9 +5052,9 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             } else {
                 tt = Tokens.FUNCTION;
             }
-        } else if (reader.peek() === ":") {  // might be an IE function
+        } else if (reader.peek() === ":") {  //might be an IE function
 
-            // IE-specific functions always being with progid:
+            //IE-specific functions always being with progid:
             if (ident.toLowerCase() === "progid") {
                 ident += reader.readTo("(");
                 tt = Tokens.IE_FUNCTION;
@@ -5109,15 +5086,15 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         while (c) {
 
-            // there can be a comment in here
+            //there can be a comment in here
             if (c === "/") {
 
-                // if the next character isn't a star, then this isn't a valid !important token
+                //if the next character isn't a star, then this isn't a valid !important token
                 if (reader.peek() !== "*") {
                     break;
                 } else {
                     temp = this.readComment(c);
-                    if (temp === "") {    // broken!
+                    if (temp === "") {    //broken!
                         break;
                     }
                 }
@@ -5130,7 +5107,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                     tt = Tokens.IMPORTANT_SYM;
 
                 }
-                break;  // we're done
+                break;  //we're done
             } else {
                 break;
             }
@@ -5244,13 +5221,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             if (c === "\\") {
                 c = reader.read();
                 if (c === null) {
-                    break;  // premature EOF after backslash
+                    break; // premature EOF after backslash
                 } else if (/[^\r\n\f0-9a-f]/i.test(c)) {
                     // single-character escape
                     string += c;
                 } else {
                     // read up to six hex digits
-                    for (i = 0; isHexDigit(c) && i < 6; i++) {
+                    for (i=0; isHexDigit(c) && i<6; i++) {
                         string += c;
                         c = reader.read();
                     }
@@ -5277,7 +5254,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             c = reader.read();
         }
 
-        // if c is null, that means we're out of input and the string was never closed
+        //if c is null, that means we're out of input and the string was never closed
         if (c === null) {
             tt = Tokens.INVALID;
         }
@@ -5291,20 +5268,20 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             temp,
             tt      = Tokens.CHAR;
 
-        // then it should be a unicode range
+        //then it should be a unicode range
         if (reader.peek() === "+") {
             reader.mark();
             value += reader.read();
             value += this.readUnicodeRangePart(true);
 
-            // ensure there's an actual unicode range here
+            //ensure there's an actual unicode range here
             if (value.length === 2) {
                 reader.reset();
             } else {
 
                 tt = Tokens.UNICODE_RANGE;
 
-                // if there's a ? in the first part, there can't be a second part
+                //if there's a ? in the first part, there can't be a second part
                 if (value.indexOf("?") === -1) {
 
                     if (reader.peek() === "-") {
@@ -5312,7 +5289,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                         temp = reader.read();
                         temp += this.readUnicodeRangePart(false);
 
-                        // if there's not another value, back up and just take the first
+                        //if there's not another value, back up and just take the first
                         if (temp.length === 1) {
                             reader.reset();
                         } else {
@@ -5352,14 +5329,14 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             part = "",
             c       = reader.peek();
 
-        // first read hex digits
+        //first read hex digits
         while (isHexDigit(c) && part.length < 6) {
             reader.read();
             part += c;
             c = reader.peek();
         }
 
-        // then read question marks if allowed
+        //then read question marks if allowed
         if (allowQuestionMark) {
             while (c === "?" && part.length < 6) {
                 reader.read();
@@ -5368,7 +5345,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             }
         }
 
-        // there can't be any other characters after this point
+        //there can't be any other characters after this point
 
         return part;
     },
@@ -5389,7 +5366,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     readNumber: function(first) {
         var reader  = this._reader,
             number  = first,
-            hasDot  = first === ".",
+            hasDot  = (first === "."),
             c       = reader.peek();
 
 
@@ -5426,13 +5403,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             inner   = "",
             c       = reader.peek();
 
-        // skip whitespace before
+        //skip whitespace before
         while (c && isWhitespace(c)) {
             reader.read();
             c = reader.peek();
         }
 
-        // it's a string
+        //it's a string
         if (c === "'" || c === "\"") {
             inner = this.readString();
             if (inner !== null) {
@@ -5444,13 +5421,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         c = reader.peek();
 
-        // skip whitespace after
+        //skip whitespace after
         while (c && isWhitespace(c)) {
             reader.read();
             c = reader.peek();
         }
 
-        // if there was no inner value or the next character isn't closing paren, it's not a URI
+        //if there was no inner value or the next character isn't closing paren, it's not a URI
         if (inner === null || c !== ")") {
             uri = null;
         } else {
@@ -5473,7 +5450,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             // incorrectly includes the backslash character in the
             // `url` production, although it is correctly omitted in
             // the `baduri1` production.
-            if (nonascii.test(c) || /^[-!#$%&*-[\]-~]$/.test(c)) {
+            if (nonascii.test(c) || /^[\-!#$%&*-\[\]-~]$/.test(c)) {
                 url += c;
                 reader.read();
             } else if (c === "\\") {
@@ -5565,7 +5542,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             while (c) {
                 comment += c;
 
-                // look for end of comment
+                //look for end of comment
                 if (comment.length > 2 && c === "*" && reader.peek() === "/") {
                     comment += reader.read();
                     break;
@@ -5770,12 +5747,12 @@ var Tokens = module.exports = [
 
     Tokens.UNKNOWN = -1;
     Tokens.unshift({ name:"EOF" });
-    for (var i = 0, len = Tokens.length; i < len; i++) {
+    for (var i=0, len = Tokens.length; i < len; i++) {
         nameMap.push(Tokens[i].name);
         Tokens[Tokens[i].name] = i;
         if (Tokens[i].text) {
             if (Tokens[i].text instanceof Array) {
-                for (var j = 0; j < Tokens[i].text.length; j++) {
+                for (var j=0; j < Tokens[i].text.length; j++) {
                     typeMap[Tokens[i].text[j]] = i;
                 }
             } else {
@@ -5794,9 +5771,9 @@ var Tokens = module.exports = [
 })();
 
 },{}],19:[function(require,module,exports){
-/* exported Validation */
-
 "use strict";
+
+/* exported Validation */
 
 var Matcher = require("./Matcher");
 var Properties = require("./Properties");
@@ -5808,14 +5785,14 @@ var Validation = module.exports = {
 
     validate: function(property, value) {
 
-        // normalize name
+        //normalize name
         var name        = property.toString().toLowerCase(),
             expression  = new PropertyValueIterator(value),
             spec        = Properties[name],
             part;
 
         if (!spec) {
-            if (name.indexOf("-") !== 0) {    // vendor prefixed are ok
+            if (name.indexOf("-") !== 0) {    //vendor prefixed are ok
                 throw new ValidationError("Unknown property '" + property + "'.", property.line, property.col);
             }
         } else if (typeof spec !== "number") {
@@ -5900,7 +5877,7 @@ function ValidationError(message, line, col) {
 
 }
 
-// inherit from Error
+//inherit from Error
 ValidationError.prototype = new Error();
 
 },{}],21:[function(require,module,exports){
@@ -5920,11 +5897,9 @@ copy(ValidationTypes, {
     isLiteral: function (part, literals) {
         var text = part.text.toString().toLowerCase(),
             args = literals.split(" | "),
-            i,
-            len,
-            found = false;
+            i, len, found = false;
 
-        for (i = 0, len = args.length; i < len && !found; i++) {
+        for (i=0, len=args.length; i < len && !found; i++) {
             if (args[i].charAt(0) === "<") {
                 found = this.simple[args[i]](part);
             } else if (args[i].slice(-2) === "()") {
@@ -5959,11 +5934,9 @@ copy(ValidationTypes, {
      */
     isAny: function (expression, types) {
         var args = types.split(" | "),
-            i,
-            len,
-            found = false;
+            i, len, found = false;
 
-        for (i = 0, len = args.length; i < len && !found && expression.hasNext(); i++) {
+        for (i=0, len=args.length; i < len && !found && expression.hasNext(); i++) {
             found = this.isType(expression, args[i]);
         }
 
@@ -5976,15 +5949,13 @@ copy(ValidationTypes, {
      */
     isAnyOfGroup: function(expression, types) {
         var args = types.split(" || "),
-            i,
-            len,
-            found = false;
+            i, len, found = false;
 
-        for (i = 0, len = args.length; i < len && !found; i++) {
+        for (i=0, len=args.length; i < len && !found; i++) {
             found = this.isType(expression, args[i]);
         }
 
-        return found ? args[i - 1] : false;
+        return found ? args[i-1] : false;
     },
 
     /**
@@ -6123,14 +6094,14 @@ copy(ValidationTypes, {
         },
 
         "<gradient>": function(part) {
-            return part.type === "function" && /^(?:-(?:ms|moz|o|webkit)-)?(?:repeating-)?(?:radial-|linear-)?gradient/i.test(part);
+            return part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial\-|linear\-)?gradient/i.test(part);
         },
 
         "<icccolor>":
             "cielab() | cielch() | cielchab() | " +
             "icc-color() | icc-named-color()",
 
-        // any identifier
+        //any identifier
         "<ident>": function(part) {
             return part.type === "identifier" || part.wasIdent;
         },
@@ -6146,7 +6117,7 @@ copy(ValidationTypes, {
         },
 
         "<length>": function(part) {
-            if (part.type === "function" && /^(?:-(?:ms|moz|o|webkit)-)?calc/i.test(part)) {
+            if (part.type === "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?calc/i.test(part)) {
                 return true;
             } else {
                 return part.type === "length" || part.type === "number" || part.type === "integer" || String(part) === "0";
@@ -6227,7 +6198,7 @@ copy(ValidationTypes, {
             " | " +
             "[ [ left-side | far-left | left | center-left | center | " +
             "center-right | right | far-right | right-side ] || behind ]" +
-            " | " +
+            " | "+
             "leftwards | rightwards",
 
         "<bg-position>": "<position>#",
@@ -6434,7 +6405,7 @@ function EventTarget() {
 
 EventTarget.prototype = {
 
-    // restore constructor
+    //restore constructor
     constructor: EventTarget,
 
     /**
@@ -6473,9 +6444,9 @@ EventTarget.prototype = {
 
         if (this._listeners[event.type]) {
 
-            // create a copy of the array and use that so listeners can't chane
+            //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
-            for (var i = 0, len = listeners.length; i < len; i++) {
+            for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
@@ -6491,7 +6462,7 @@ EventTarget.prototype = {
     removeListener: function(type, listener) {
         if (this._listeners[type]) {
             var listeners = this._listeners[type];
-            for (var i = 0, len = listeners.length; i < len; i++) {
+            for (var i=0, len=listeners.length; i < len; i++) {
                 if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;
@@ -6628,7 +6599,7 @@ StringReader.prototype = {
             // and reset column count
             if (this._input.charAt(this._cursor) === "\n") {
                 this._line++;
-                this._col = 1;
+                this._col=1;
             } else {
                 this._col++;
             }
@@ -6817,7 +6788,7 @@ function SyntaxError(message, line, col) {
 
 }
 
-// inherit from Error
+//inherit from Error
 SyntaxError.prototype = Object.create(Error.prototype); // jshint ignore:line
 SyntaxError.prototype.constructor = SyntaxError; // jshint ignore:line
 
@@ -6979,9 +6950,9 @@ TokenStreamBase.createTokenData = function(tokens) {
 
     var nameMap     = [],
         typeMap     = Object.create(null),
-        tokenData   = tokens.concat([]),
-        i           = 0,
-        len         = tokenData.length + 1;
+        tokenData     = tokens.concat([]),
+        i            = 0,
+        len            = tokenData.length+1;
 
     tokenData.UNKNOWN = -1;
     tokenData.unshift({ name:"EOF" });
@@ -7030,7 +7001,7 @@ TokenStreamBase.prototype = {
      */
     match: function(tokenTypes, channel) {
 
-        // always convert to an array, makes things easier
+        //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -7045,7 +7016,7 @@ TokenStreamBase.prototype = {
             }
         }
 
-        // no match found, put the token back
+        //no match found, put the token back
         this.unget();
         return false;
     },
@@ -7063,7 +7034,7 @@ TokenStreamBase.prototype = {
 
         var token;
 
-        // always convert to an array, makes things easier
+        //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -7106,61 +7077,61 @@ TokenStreamBase.prototype = {
      */
     get: function(channel) {
 
-        var tokenInfo = this._tokenData,
-            i         = 0,
+        var tokenInfo   = this._tokenData,
+            i           =0,
             token,
             info;
 
-        // check the lookahead buffer first
+        //check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length) {
 
             i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
 
-            // obey channels logic
-            while ((typeof info.channel !== "undefined" && channel !== info.channel) &&
+            //obey channels logic
+            while ((info.channel !== undefined && channel !== info.channel) &&
                     this._ltIndex < this._lt.length) {
                 this._token = this._lt[this._ltIndex++];
                 info = tokenInfo[this._token.type];
                 i++;
             }
 
-            // here be dragons
-            if ((typeof info.channel === "undefined" || channel === info.channel) &&
+            //here be dragons
+            if ((info.channel === undefined || channel === info.channel) &&
                     this._ltIndex <= this._lt.length) {
                 this._ltIndexCache.push(i);
                 return this._token.type;
             }
         }
 
-        // call token retriever method
+        //call token retriever method
         token = this._getToken();
 
-        // if it should be hidden, don't save a token
+        //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide) {
 
-            // apply token channel
+            //apply token channel
             token.channel = tokenInfo[token.type].channel;
 
-            // save for later
+            //save for later
             this._token = token;
             this._lt.push(token);
 
-            // save space that will be moved (must be done before array is truncated)
+            //save space that will be moved (must be done before array is truncated)
             this._ltIndexCache.push(this._lt.length - this._ltIndex + i);
 
-            // keep the buffer under 5 items
+            //keep the buffer under 5 items
             if (this._lt.length > 5) {
                 this._lt.shift();
             }
 
-            // also keep the shift buffer under 5 items
+            //also keep the shift buffer under 5 items
             if (this._ltIndexCache.length > 5) {
                 this._ltIndexCache.shift();
             }
 
-            // update lookahead index
+            //update lookahead index
             this._ltIndex = this._lt.length;
         }
 
@@ -7172,10 +7143,10 @@ TokenStreamBase.prototype = {
         info = tokenInfo[token.type];
         if (info &&
                 (info.hide ||
-                (typeof info.channel !== "undefined" && channel !== info.channel))) {
+                (info.channel !== undefined && channel !== info.channel))) {
             return this.get(channel);
         } else {
-            // return just the type
+            //return just the type
             return token.type;
         }
     },
@@ -7194,26 +7165,26 @@ TokenStreamBase.prototype = {
         var total = index,
             tt;
         if (index > 0) {
-            // TODO: Store 5 somewhere
+            //TODO: Store 5 somewhere
             if (index > 5) {
                 throw new Error("Too much lookahead.");
             }
 
-            // get all those tokens
+            //get all those tokens
             while (total) {
                 tt = this.get();
                 total--;
             }
 
-            // unget all those tokens
+            //unget all those tokens
             while (total < index) {
                 this.unget();
                 total++;
             }
         } else if (index < 0) {
 
-            if (this._lt[this._ltIndex + index]) {
-                tt = this._lt[this._ltIndex + index].type;
+            if (this._lt[this._ltIndex+index]) {
+                tt = this._lt[this._ltIndex+index].type;
             } else {
                 throw new Error("Too much lookbehind.");
             }
@@ -7238,11 +7209,11 @@ TokenStreamBase.prototype = {
      */
     LT: function(index) {
 
-        // lookahead first to prime the token buffer
+        //lookahead first to prime the token buffer
         this.LA(index);
 
-        // now find the token, subtract one because _ltIndex is already at the next index
-        return this._lt[this._ltIndex + index - 1];
+        //now find the token, subtract one because _ltIndex is already at the next index
+        return this._lt[this._ltIndex+index-1];
     },
 
     /**

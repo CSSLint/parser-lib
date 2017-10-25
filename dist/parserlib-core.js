@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-/* Version v1.1.2, Build time: 5-October-2017 13:33:04 */
+/* Version v1.1.0, Build time: 6-December-2016 10:31:29 */
 var parserlib = (function () {
 var require;
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"parserlib-core":[function(require,module,exports){
@@ -58,7 +58,7 @@ function EventTarget() {
 
 EventTarget.prototype = {
 
-    // restore constructor
+    //restore constructor
     constructor: EventTarget,
 
     /**
@@ -97,9 +97,9 @@ EventTarget.prototype = {
 
         if (this._listeners[event.type]) {
 
-            // create a copy of the array and use that so listeners can't chane
+            //create a copy of the array and use that so listeners can't chane
             var listeners = this._listeners[event.type].concat();
-            for (var i = 0, len = listeners.length; i < len; i++) {
+            for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
@@ -115,7 +115,7 @@ EventTarget.prototype = {
     removeListener: function(type, listener) {
         if (this._listeners[type]) {
             var listeners = this._listeners[type];
-            for (var i = 0, len = listeners.length; i < len; i++) {
+            for (var i=0, len=listeners.length; i < len; i++) {
                 if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;
@@ -201,9 +201,9 @@ TokenStreamBase.createTokenData = function(tokens) {
 
     var nameMap     = [],
         typeMap     = Object.create(null),
-        tokenData   = tokens.concat([]),
-        i           = 0,
-        len         = tokenData.length + 1;
+        tokenData     = tokens.concat([]),
+        i            = 0,
+        len            = tokenData.length+1;
 
     tokenData.UNKNOWN = -1;
     tokenData.unshift({ name:"EOF" });
@@ -252,7 +252,7 @@ TokenStreamBase.prototype = {
      */
     match: function(tokenTypes, channel) {
 
-        // always convert to an array, makes things easier
+        //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -267,7 +267,7 @@ TokenStreamBase.prototype = {
             }
         }
 
-        // no match found, put the token back
+        //no match found, put the token back
         this.unget();
         return false;
     },
@@ -285,7 +285,7 @@ TokenStreamBase.prototype = {
 
         var token;
 
-        // always convert to an array, makes things easier
+        //always convert to an array, makes things easier
         if (!(tokenTypes instanceof Array)) {
             tokenTypes = [tokenTypes];
         }
@@ -328,61 +328,61 @@ TokenStreamBase.prototype = {
      */
     get: function(channel) {
 
-        var tokenInfo = this._tokenData,
-            i         = 0,
+        var tokenInfo   = this._tokenData,
+            i           =0,
             token,
             info;
 
-        // check the lookahead buffer first
+        //check the lookahead buffer first
         if (this._lt.length && this._ltIndex >= 0 && this._ltIndex < this._lt.length) {
 
             i++;
             this._token = this._lt[this._ltIndex++];
             info = tokenInfo[this._token.type];
 
-            // obey channels logic
-            while ((typeof info.channel !== "undefined" && channel !== info.channel) &&
+            //obey channels logic
+            while ((info.channel !== undefined && channel !== info.channel) &&
                     this._ltIndex < this._lt.length) {
                 this._token = this._lt[this._ltIndex++];
                 info = tokenInfo[this._token.type];
                 i++;
             }
 
-            // here be dragons
-            if ((typeof info.channel === "undefined" || channel === info.channel) &&
+            //here be dragons
+            if ((info.channel === undefined || channel === info.channel) &&
                     this._ltIndex <= this._lt.length) {
                 this._ltIndexCache.push(i);
                 return this._token.type;
             }
         }
 
-        // call token retriever method
+        //call token retriever method
         token = this._getToken();
 
-        // if it should be hidden, don't save a token
+        //if it should be hidden, don't save a token
         if (token.type > -1 && !tokenInfo[token.type].hide) {
 
-            // apply token channel
+            //apply token channel
             token.channel = tokenInfo[token.type].channel;
 
-            // save for later
+            //save for later
             this._token = token;
             this._lt.push(token);
 
-            // save space that will be moved (must be done before array is truncated)
+            //save space that will be moved (must be done before array is truncated)
             this._ltIndexCache.push(this._lt.length - this._ltIndex + i);
 
-            // keep the buffer under 5 items
+            //keep the buffer under 5 items
             if (this._lt.length > 5) {
                 this._lt.shift();
             }
 
-            // also keep the shift buffer under 5 items
+            //also keep the shift buffer under 5 items
             if (this._ltIndexCache.length > 5) {
                 this._ltIndexCache.shift();
             }
 
-            // update lookahead index
+            //update lookahead index
             this._ltIndex = this._lt.length;
         }
 
@@ -394,10 +394,10 @@ TokenStreamBase.prototype = {
         info = tokenInfo[token.type];
         if (info &&
                 (info.hide ||
-                (typeof info.channel !== "undefined" && channel !== info.channel))) {
+                (info.channel !== undefined && channel !== info.channel))) {
             return this.get(channel);
         } else {
-            // return just the type
+            //return just the type
             return token.type;
         }
     },
@@ -416,26 +416,26 @@ TokenStreamBase.prototype = {
         var total = index,
             tt;
         if (index > 0) {
-            // TODO: Store 5 somewhere
+            //TODO: Store 5 somewhere
             if (index > 5) {
                 throw new Error("Too much lookahead.");
             }
 
-            // get all those tokens
+            //get all those tokens
             while (total) {
                 tt = this.get();
                 total--;
             }
 
-            // unget all those tokens
+            //unget all those tokens
             while (total < index) {
                 this.unget();
                 total++;
             }
         } else if (index < 0) {
 
-            if (this._lt[this._ltIndex + index]) {
-                tt = this._lt[this._ltIndex + index].type;
+            if (this._lt[this._ltIndex+index]) {
+                tt = this._lt[this._ltIndex+index].type;
             } else {
                 throw new Error("Too much lookbehind.");
             }
@@ -460,11 +460,11 @@ TokenStreamBase.prototype = {
      */
     LT: function(index) {
 
-        // lookahead first to prime the token buffer
+        //lookahead first to prime the token buffer
         this.LA(index);
 
-        // now find the token, subtract one because _ltIndex is already at the next index
-        return this._lt[this._ltIndex + index - 1];
+        //now find the token, subtract one because _ltIndex is already at the next index
+        return this._lt[this._ltIndex+index-1];
     },
 
     /**
@@ -570,7 +570,7 @@ function SyntaxError(message, line, col) {
 
 }
 
-// inherit from Error
+//inherit from Error
 SyntaxError.prototype = Object.create(Error.prototype); // jshint ignore:line
 SyntaxError.prototype.constructor = SyntaxError; // jshint ignore:line
 
@@ -699,7 +699,7 @@ StringReader.prototype = {
             // and reset column count
             if (this._input.charAt(this._cursor) === "\n") {
                 this._line++;
-                this._col = 1;
+                this._col=1;
             } else {
                 this._col++;
             }

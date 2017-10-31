@@ -507,6 +507,9 @@ var YUITest = require("yuitest"),
 
         valid: [
             "stretch",
+            "repeat",
+            "round",
+            "space",
             "round stretch"
         ],
 

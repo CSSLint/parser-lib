@@ -1570,6 +1570,23 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "position",
+
+        valid: [
+            "static",
+            "relative",
+            "absolute",
+            "fixed",
+            "sticky",
+            "-webkit-sticky"
+        ],
+
+        invalid: {
+            "foo" : "Expected (static | relative | absolute | fixed | sticky | -webkit-sticky) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "stroke-dasharray",
 
         valid: [

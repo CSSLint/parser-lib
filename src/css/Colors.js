@@ -164,6 +164,7 @@ var Colors = module.exports = {
     buttontext              : "Text on push buttons.",
     captiontext             : "Text in caption, size box, and scrollbar arrow box.",
     graytext                : "Grayed (disabled) text. This color is set to #000 if the current display driver does not support a solid gray color.",
+    greytext                : "Greyed (disabled) text. This color is set to #000 if the current display driver does not support a solid grey color.",
     highlight               : "Item(s) selected in a control.",
     highlighttext           : "Text of item(s) selected in a control.",
     inactiveborder          : "Inactive window border.",

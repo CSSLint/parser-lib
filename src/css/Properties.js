@@ -214,7 +214,7 @@ var Properties = module.exports = {
     "-ms-flex-align"                    : "start | end | center | stretch | baseline",
     "-ms-flex-direction"                : "row | row-reverse | column | column-reverse",
     "-ms-flex-order"                    : "<number>",
-    "-ms-flex-pack"                     : "start | end | center | justify",
+    "-ms-flex-pack"                     : "start | end | center | justify | distribute",
     "-ms-flex-wrap"                     : "nowrap | wrap | wrap-reverse",
     "float"                             : "left | right | none",
     "float-offset"                      : 1,

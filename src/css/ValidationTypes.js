@@ -167,6 +167,9 @@ copy(ValidationTypes, {
             "min-content | -moz-min-content | -webkit-min-content | " +
             "fit-content | -moz-fit-content | -webkit-fit-content",
 
+        // https://developer.mozilla.org/en-US/docs/Web/SVG/Content_type#Coordinate
+        "<coordinate>": "<length>",
+
         "<feature-tag-value>": function(part) {
             return part.type === "function" && /^[A-Z0-9]{4}$/i.test(part);
         },

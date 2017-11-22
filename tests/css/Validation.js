@@ -790,6 +790,18 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "cx",
+
+        valid: [
+            "2"
+        ],
+
+        invalid: {
+            "foo" : "Expected (<coordinate>) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "display",
 
         valid: [

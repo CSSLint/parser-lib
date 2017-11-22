@@ -93,7 +93,7 @@ var Properties = module.exports = {
     "border-color"                      : "<color>{1,4}",
     "border-image"                      : 1,
     "border-image-outset"               : "[ <length> | <number> ]{1,4}",
-    "border-image-repeat"               : "[ stretch | repeat | round ]{1,2}",
+    "border-image-repeat"               : "[ stretch | repeat | round | space ]{1,2}",
     "border-image-slice"                : "<border-image-slice>",
     "border-image-source"               : "<image> | none",
     "border-image-width"                : "[ <length> | <percentage> | <number> | auto ]{1,4}",
@@ -218,7 +218,7 @@ var Properties = module.exports = {
     "-ms-flex-align"                    : "start | end | center | stretch | baseline",
     "-ms-flex-direction"                : "row | row-reverse | column | column-reverse",
     "-ms-flex-order"                    : "<number>",
-    "-ms-flex-pack"                     : "start | end | center | justify",
+    "-ms-flex-pack"                     : "start | end | center | justify | distribute",
     "-ms-flex-wrap"                     : "nowrap | wrap | wrap-reverse",
     "float"                             : "left | right | none",
     "float-offset"                      : 1,
@@ -465,7 +465,7 @@ var Properties = module.exports = {
     // U
     "unicode-bidi"                      : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
     "user-modify"                       : "read-only | read-write | write-only",
-    "user-select"                       : "none | text | toggle | element | elements | all",
+    "user-select"                       : "auto | text | none | contain | all",
 
     // V
     "vertical-align"                    : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",

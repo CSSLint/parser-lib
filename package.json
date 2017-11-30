@@ -23,7 +23,7 @@
     "style",
     "stylesheet"
   ],
-  "main": "./src/index.js",
+  "main": "./dist/node-parserlib.js",
   "scripts": {
     "build": "node scripts/build.js",
     "coverage": "ytestrunner -c",

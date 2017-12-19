@@ -436,6 +436,7 @@ var Properties = module.exports = {
     "text-decoration-line"              : "<text-decoration-line>",
     "text-decoration-style"             : "<text-decoration-style>",
     "text-decoration-skip"              : "none | [ objects || spaces || ink || edges || box-decoration ]",
+    "-webkit-text-decoration-skip"      : "none | skip",
     "text-emphasis"                     : 1,
     "text-height"                       : 1,
     "text-indent"                       : "<length> | <percentage>",

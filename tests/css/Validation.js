@@ -1511,6 +1511,20 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "-webkit-text-decoration-skip",
+
+        valid: [
+            "none",
+            "skip"
+        ],
+
+        invalid: {
+            "skip foo" : "Expected end of value but found 'foo'.",
+            "foo" : "Expected (none | skip) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [

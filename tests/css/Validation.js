@@ -503,6 +503,23 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "border-image-repeat",
+
+        valid: [
+            "stretch",
+            "repeat",
+            "round",
+            "space",
+            "round stretch"
+        ],
+
+        invalid: {
+            "foo": "Expected ([ stretch | repeat | round | space ]{1,2}) but found 'foo'.",
+            "round stretch foo": "Expected end of value but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "border-image-slice",
 
         valid: [
@@ -1566,6 +1583,23 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "position",
+
+        valid: [
+            "static",
+            "relative",
+            "absolute",
+            "fixed",
+            "sticky",
+            "-webkit-sticky"
+        ],
+
+        invalid: {
+            "foo" : "Expected (static | relative | absolute | fixed | sticky | -webkit-sticky) but found 'foo'."
         }
     }));
 

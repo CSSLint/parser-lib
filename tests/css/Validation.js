@@ -1489,6 +1489,19 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "text-decoration-skip-ink",
+
+        valid: [
+            "auto",
+            "none"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | none) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [

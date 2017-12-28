@@ -435,6 +435,7 @@ var Properties = module.exports = {
     "text-decoration-color"             : "<text-decoration-color>",
     "text-decoration-line"              : "<text-decoration-line>",
     "text-decoration-style"             : "<text-decoration-style>",
+    "text-decoration-skip-ink"          : "auto | none",
     "text-emphasis"                     : 1,
     "text-height"                       : 1,
     "text-indent"                       : "<length> | <percentage>",

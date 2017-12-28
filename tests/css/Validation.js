@@ -1494,19 +1494,16 @@ var YUITest = require("yuitest"),
         valid: [
             "none",
             "objects",
-            "spaces",
-            "ink",
             "edges",
             "box-decoration",
-            "objects spaces",
-            "ink edges box-decoration",
-            "inherit",
-            "initial",
-            "unset"
+            "spaces",
+            "leading-spaces trailing-spaces",
+            "objects leading-spaces trailing-spaces",
+            "objects edges box-decoration"
         ],
 
         invalid: {
-            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+            "foo" : "Expected (none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]) but found 'foo'."
         }
     }));
 
@@ -1515,12 +1512,17 @@ var YUITest = require("yuitest"),
 
         valid: [
             "none",
-            "skip"
-        ],
+            "objects",
+            "edges",
+            "box-decoration",
+            "spaces",
+            "leading-spaces trailing-spaces",
+            "objects leading-spaces trailing-spaces",
+            "objects edges box-decoration"
+    ],
 
         invalid: {
-            "skip foo" : "Expected end of value but found 'foo'.",
-            "foo" : "Expected (none | skip) but found 'foo'."
+            "foo" : "Expected (none | [ objects || [ spaces | [ leading-spaces || trailing-spaces ] ] || edges || box-decoration ]) but found 'foo'."
         }
     }));
 

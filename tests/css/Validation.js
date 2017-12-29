@@ -1489,6 +1489,44 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+        ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "-webkit-text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+    ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [

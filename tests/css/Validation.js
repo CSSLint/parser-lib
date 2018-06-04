@@ -1489,6 +1489,44 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+      property: "text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+        ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "-webkit-text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+        ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-decoration-skip-ink",
 
         valid: [
@@ -1498,6 +1536,24 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (auto | none) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-underline-position",
+
+        valid: [
+            "auto",
+            "under",
+            "left",
+            "right",
+            "under left"
+        ],
+
+        invalid: {
+            "auto under" : "Expected end of value but found 'under'.",
+            "left right" : "Expected end of value but found 'right'.",
+            "foo" : "Expected (auto | [ under || [ left | right ] ]) but found 'foo'."
         }
     }));
 

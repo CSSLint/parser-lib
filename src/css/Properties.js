@@ -437,6 +437,7 @@ var Properties = module.exports = {
     "text-decoration-style"             : "<text-decoration-style>",
     "text-decoration-skip"              : "none | [ objects || spaces || ink || edges || box-decoration ]",
     "-webkit-text-decoration-skip"      : "none | [ objects || spaces || ink || edges || box-decoration ]",
+    "text-underline-position"           : "auto | [ under || [ left | right ] ]",
     "text-emphasis"                     : 1,
     "text-height"                       : 1,
     "text-indent"                       : "<length> | <percentage>",

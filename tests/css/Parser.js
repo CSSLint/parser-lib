@@ -1271,6 +1271,16 @@ var YUITest = require("yuitest"),
             Assert.areEqual("https://yahoo.com", result.parts[0].uri);
         },
 
+        testURIValue5: function() {
+            var parser = new Parser({ strict:true });
+            var result = parser.parsePropertyValue("url(url_with_\\\".png)");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("uri", result.parts[0].type);
+            Assert.areEqual("url_with_\".png", result.parts[0].uri);
+        },
+
         testStringValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("'Hello world!'");
@@ -1372,7 +1382,6 @@ var YUITest = require("yuitest"),
             Assert.areEqual("identifier", result.parts[7].type);
             Assert.areEqual("serif", result.parts[7].value);
         }
-
 
     }));
 

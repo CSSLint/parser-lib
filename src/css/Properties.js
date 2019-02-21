@@ -330,6 +330,7 @@ var Properties = module.exports = {
     "max-width"                         : "<length> | <percentage> | <content-sizing> | none",
     "min-height"                        : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
     "min-width"                         : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "mix-blend-mode"                    : "<blend-mode>",
     "move-to"                           : 1,
 
     // N

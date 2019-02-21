@@ -1114,6 +1114,33 @@ var YUITest = require("yuitest"),
         }
     }));
 
+    suite.add(new ValidationTestCase({
+        property: "mix-blend-mode",
+
+        valid: [
+            "normal",
+            "multiply",
+            "screen",
+            "overlay",
+            "darken",
+            "lighten",
+            "color-dodge",
+            "color-burn",
+            "hard-light",
+            "soft-light",
+            "difference",
+            "exclusion",
+            "hue",
+            "saturation",
+            "color",
+            "luminosity"
+        ],
+
+        invalid: {
+            "foo" : "Expected (normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity) but found 'foo'."
+        }
+    }));
+
     // test <paint>
     suite.add(new ValidationTestCase({
         property: "fill",

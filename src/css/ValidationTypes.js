@@ -329,6 +329,11 @@ copy(ValidationTypes, {
         "<bg-size>":
             "[ <length> | <percentage> | auto ]{1,2} | cover | contain",
 
+        "<blend-mode>":
+            "normal | multiply | screen | overlay | darken | lighten | color-dodge | " +
+            "color-burn | hard-light | soft-light | difference | exclusion | hue | " +
+            "saturation | color | luminosity",
+
         "<border-image-slice>":
         // [<number> | <percentage>]{1,4} && fill?
         // *but* fill can appear between any of the numbers

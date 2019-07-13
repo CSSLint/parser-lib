@@ -191,7 +191,7 @@ var YUITest = require("yuitest"),
         },
 
         error: {
-            "-0num": "Unexpected token '0num' at line 1, col 24."
+            "-0num": "Unexpected token '-0num' at line 1, col 23."
         }
     }));
 
@@ -755,7 +755,7 @@ var YUITest = require("yuitest"),
             "red",
             "#f00",
             "transparent",
-            "currentColor"
+            "currentColor",
         ],
 
         invalid: {
@@ -988,7 +988,7 @@ var YUITest = require("yuitest"),
 
         error: {
             "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
-            "-7Futura, sans-serif" : "Unexpected token '7Futura' at line 1, col 21.",
+            "-7Futura, sans-serif" : "Unexpected token '-7Futura' at line 1, col 20.",
             "Ahem!, sans-serif"    : "Expected RBRACE at line 1, col 24.",
             "test@foo, sans-serif" : "Expected RBRACE at line 1, col 24.",
             "#POUND, sans-serif"   : "Expected a hex color but found '#POUND' at line 1, col 20."

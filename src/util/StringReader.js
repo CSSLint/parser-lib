@@ -165,6 +165,18 @@ StringReader.prototype = {
     //-------------------------------------------------------------------------
 
     /**
+     * Reads a given number of characters without advancing the cursor.
+     * @param {int} count How many characters to look ahead (default is 1).
+     * @return {String} The characters as a string, or an empty string if
+     *     there is no next character.
+     * @method peek
+     */
+    peekCount: function(count) {
+        count = typeof count === "undefined" ? 1 : Math.max(count, 0);
+        return this._input.substring(this._cursor, this._cursor + count);
+    },
+
+    /**
      * Reads up to and including the given string. Throws an error if that
      * string is not found.
      * @param {String} pattern The string to read.

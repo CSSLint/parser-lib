@@ -2,6 +2,7 @@
   "bitwise":    true,
   "curly":      true,
   "eqeqeq":     true,
+  "eqnull":     true,
   "evil":       true,
   "forin":      true,
   "freeze":     true,

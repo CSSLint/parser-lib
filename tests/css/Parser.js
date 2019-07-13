@@ -2138,6 +2138,21 @@ var YUITest = require("yuitest"),
             parser.parse(".foo {\n    color: #fff;\n}");
         },
 
+        "Test rule with custom property": function() {
+            var parser = new Parser({ strict: true });
+            parser.addListener("property", function(event) {
+                Assert.areEqual("--color-Foo_BAR", event.property.toString());
+                Assert.areEqual("#fff", event.value.toString());
+                Assert.areEqual(3, event.property.col, "Property column should be 3.");
+                Assert.areEqual(2, event.property.line, "Property line should be 2.");
+                Assert.areEqual(3, event.col, "Event column should be 3.");
+                Assert.areEqual(2, event.line, "Event line should be 2.");
+                Assert.areEqual(20, event.value.parts[0].col, "First part column should be 20.");
+                Assert.areEqual(2, event.value.parts[0].line, "First part line should be 2.");
+            });
+            parser.parse(".foo {\n  --color-Foo_BAR: #fff;\n}");
+        },
+
         "Test rule with star hack property": function() {
             var parser = new Parser({
                 strict: true,
@@ -2289,7 +2304,33 @@ var YUITest = require("yuitest"),
 
         name: "Invalid CSS Parsing Tests",
 
-        "Test parsing invalid celector": function() {
+        "Test parsing custom property typo": function() {
+            var error;
+            var parser = new Parser();
+            parser.addListener("error", function(e) {
+                error = e;
+            });
+            parser.parse("a:hover{\ncolor:red;\n==myFont:Helvetica;/*dropped*/;\nborder:0\n}");
+
+            Assert.areEqual("error", error.type);
+            Assert.areEqual(3, error.line);
+            Assert.areEqual(1, error.col);
+        },
+
+        "Test parsing invalid property": function() {
+            var error;
+            var parser = new Parser();
+            parser.addListener("error", function(e) {
+                error = e;
+            });
+            parser.parse("a:hover{\ncolor:red;\nfont::Helvetica;/*dropped*/;\nborder:0\n}");
+
+            Assert.areEqual("error", error.type);
+            Assert.areEqual(3, error.line);
+            Assert.areEqual(6, error.col);
+        },
+
+        "Test parsing invalid selector": function() {
             var error;
             var parser = new Parser();
             parser.addListener("error", function(e) {

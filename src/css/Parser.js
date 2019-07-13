@@ -1077,10 +1077,10 @@ Parser.prototype = function() {
                  *   ;
                  */
 
-                var tokenStream = this._tokenStream,
-                    value       = null,
-                    hack        = null,
-                    tokenValue,
+                var tokenStream  = this._tokenStream,
+                    value        = null,
+                    hack         = null,
+                    propertyName = "",
                     token,
                     line,
                     col;
@@ -1094,18 +1094,31 @@ Parser.prototype = function() {
                     col = token.startCol;
                 }
 
+                // consume a single hyphen before finding the identifier, to support custom properties
+                if (tokenStream.peek() === Tokens.MINUS) {
+                    tokenStream.get();
+                    token = tokenStream.token();
+                    propertyName = token.value;
+                    line = token.startLine;
+                    col = token.startCol;
+                }
+
                 if (tokenStream.match(Tokens.IDENT)) {
                     token = tokenStream.token();
-                    tokenValue = token.value;
+                    propertyName += token.value;
 
                     // check for underscore hack - no error if not allowed because it's valid CSS syntax
-                    if (tokenValue.charAt(0) === "_" && this.options.underscoreHack) {
+                    if (propertyName.charAt(0) === "_" && this.options.underscoreHack) {
                         hack = "_";
-                        tokenValue = tokenValue.substring(1);
+                        propertyName = propertyName.substring(1);
                     }
 
-                    value = new PropertyName(tokenValue, hack, line || token.startLine, col || token.startCol);
+                    value = new PropertyName(propertyName, hack, line || token.startLine, col || token.startCol);
                     this._readWhitespace();
+                } else if (tokenStream.peek() === Tokens.RBRACE) {
+                    // Encountered when there are no more properties.
+                } else {
+                    this._unexpectedToken(tokenStream.LT(1));
                 }
 
                 return value;

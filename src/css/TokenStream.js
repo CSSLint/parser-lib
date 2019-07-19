@@ -18,31 +18,31 @@ var h = /^[0-9a-fA-F]$/,
 
 
 function isHexDigit(c) {
-    return c !== null && h.test(c);
+    return c != null && h.test(c);
 }
 
 function isDigit(c) {
-    return c !== null && /\d/.test(c);
+    return c != null && /\d/.test(c);
 }
 
 function isWhitespace(c) {
-    return c !== null && whitespace.test(c);
+    return c != null && whitespace.test(c);
 }
 
 function isNewLine(c) {
-    return c !== null && nl.test(c);
+    return c != null && nl.test(c);
 }
 
 function isNameStart(c) {
-    return c !== null && /[a-z_\u00A0-\uFFFF\\]/i.test(c);
+    return c != null && /[a-z_\u00A0-\uFFFF\\]/i.test(c);
 }
 
 function isNameChar(c) {
-    return c !== null && (isNameStart(c) || /[0-9\-\\]/.test(c));
+    return c != null && (isNameStart(c) || /[0-9\-\\]/.test(c));
 }
 
 function isIdentStart(c) {
-    return c !== null && (isNameStart(c) || /-\\/.test(c));
+    return c != null && (isNameStart(c) || /-\\/.test(c));
 }
 
 function mix(receiver, supplier) {
@@ -52,6 +52,16 @@ function mix(receiver, supplier) {
         }
     }
     return receiver;
+}
+
+function wouldStartIdent(twoCodePoints) {
+    return typeof twoCodePoints === "string" &&
+        (twoCodePoints[0] === "-" && isNameStart(twoCodePoints[1]) || isNameStart(twoCodePoints[0]));
+}
+
+function wouldStartUnsignedNumber(twoCodePoints) {
+    return typeof twoCodePoints === "string" &&
+        (isDigit(twoCodePoints[0]) || (twoCodePoints[0] === "." && isDigit(twoCodePoints[1])));
 }
 
 //-----------------------------------------------------------------------------
@@ -88,7 +98,6 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             startCol    = reader.getCol();
 
         c = reader.read();
-
 
         while (c) {
             switch (c) {
@@ -170,16 +179,31 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 /*
                  * Potential tokens:
                  * - CDC
-                 * - MINUS
                  * - NUMBER
                  * - DIMENSION
                  * - PERCENTAGE
+                 * - IDENT
+                 * - MINUS
                  */
                 case "-":
-                    if (reader.peek() === "-") {  // could be closing HTML-style comment
+                    if (wouldStartUnsignedNumber(reader.peekCount(2))) {
+                        token = this.numberToken(c, startLine, startCol);
+                        break;
+                    } else if (reader.peekCount(2) === "->") {
                         token = this.htmlCommentEndToken(c, startLine, startCol);
-                    } else if (isNameStart(reader.peek())) {
-                        token = this.identOrFunctionToken(c, startLine, startCol);
+                    } else {
+                        token = this._getDefaultToken(c, startLine, startCol);
+                    }
+                    break;
+
+                /*
+                 * Potential tokens:
+                 * - NUMBER
+                 * - PLUS
+                 */
+                case "+":
+                    if (wouldStartUnsignedNumber(reader.peekCount(2))) {
+                        token = this.numberToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
@@ -242,48 +266,13 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 case "u":
                     if (reader.peek() === "+") {
                         token = this.unicodeRangeToken(c, startLine, startCol);
-                        break;
-                    }
-                    /* falls through */
-                default:
-
-                    /*
-                     * Potential tokens:
-                     * - NUMBER
-                     * - DIMENSION
-                     * - LENGTH
-                     * - FREQ
-                     * - TIME
-                     * - EMS
-                     * - EXS
-                     * - ANGLE
-                     */
-                    if (isDigit(c)) {
-                        token = this.numberToken(c, startLine, startCol);
-                    } else
-
-                    /*
-                     * Potential tokens:
-                     * - S
-                     */
-                    if (isWhitespace(c)) {
-                        token = this.whitespaceToken(c, startLine, startCol);
-                    } else
-
-                    /*
-                     * Potential tokens:
-                     * - IDENT
-                     */
-                    if (isIdentStart(c)) {
-                        token = this.identOrFunctionToken(c, startLine, startCol);
                     } else {
-                       /*
-                        * Potential tokens:
-                        * - CHAR
-                        * - PLUS
-                        */
-                        token = this.charToken(c, startLine, startCol);
+                        token = this._getDefaultToken(c, startLine, startCol);
                     }
+                    break;
+
+                default:
+                    token = this._getDefaultToken(c, startLine, startCol);
 
             }
 
@@ -294,6 +283,58 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
         if (!token && c === null) {
             token = this.createToken(Tokens.EOF, null, startLine, startCol);
+        }
+
+        return token;
+    },
+
+    /**
+     * Produces a token based on the given character and location in the
+     * stream, when no other case applies.
+     * Potential tokens:
+     * - NUMBER
+     * - DIMENSION
+     * - LENGTH
+     * - FREQ
+     * - TIME
+     * - EMS
+     * - EXS
+     * - ANGLE
+     * @param {String} c The character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method _getDefaultToken
+     */
+    _getDefaultToken: function(c, startLine, startCol) {
+        var reader = this._reader,
+            token   = null;
+
+        if (isDigit(c)) {
+            token = this.numberToken(c, startLine, startCol);
+        } else
+
+        /*
+         * Potential tokens:
+         * - S
+         */
+        if (isWhitespace(c)) {
+            token = this.whitespaceToken(c, startLine, startCol);
+        } else
+
+        /*
+         * Potential tokens:
+         * - IDENT
+         */
+        if (wouldStartIdent(c + reader.peekCount(1))) {
+            token = this.identOrFunctionToken(c, startLine, startCol);
+        } else {
+           /*
+            * Potential tokens:
+            * - CHAR
+            * - PLUS
+            */
+            token = this.charToken(c, startLine, startCol);
         }
 
         return token;

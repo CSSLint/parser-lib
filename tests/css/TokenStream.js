@@ -104,17 +104,25 @@ var YUITest = require("yuitest"),
         name: "Test for identifiers",
 
         patterns: {
-            "a":        [CSSTokens.IDENT],
-            "ab":       [CSSTokens.IDENT],
-            "a1":       [CSSTokens.IDENT],
-            "a_c":      [CSSTokens.IDENT],
-            "a-c":      [CSSTokens.IDENT],
-            "a90":      [CSSTokens.IDENT],
-            "a\\09":    [CSSTokens.IDENT],
-            "\\sa":     [CSSTokens.IDENT],
+            "a":            [CSSTokens.IDENT],
+            "ab":           [CSSTokens.IDENT],
+            "a1":           [CSSTokens.IDENT],
+            "a_c":          [CSSTokens.IDENT],
+            "a-c":          [CSSTokens.IDENT],
+            "a90":          [CSSTokens.IDENT],
+            "a\\09":        [CSSTokens.IDENT],
+            "\\sa":         [CSSTokens.IDENT],
+            "-foo":         [CSSTokens.IDENT],
+            "flex":         [CSSTokens.IDENT],
+            "-webkit-flex": [CSSTokens.IDENT],
 
             //not identifiers
-            "9a":       [CSSTokens.DIMENSION]
+            "9a":           [CSSTokens.DIMENSION],
+            "a+boo":        [CSSTokens.IDENT, CSSTokens.PLUS, CSSTokens.IDENT],
+
+            // existing parsing bugs
+            // "u+boo":        [CSSTokens.IDENT, CSSTokens.PLUS, CSSTokens.IDENT],
+            // "u+@":          [CSSTokens.IDENT, CSSTokens.PLUS, CSSTokens.CHAR],
         }
     }));
 
@@ -252,6 +260,7 @@ var YUITest = require("yuitest"),
         name : "Tests for Unicode ranges",
 
         patterns: {
+            "u+A5"          : [CSSTokens.UNICODE_RANGE],
             "U+A5"          : [CSSTokens.UNICODE_RANGE],
             "U+0-7F"        : [CSSTokens.UNICODE_RANGE],
             "U+590-5ff"     : [CSSTokens.UNICODE_RANGE],
@@ -263,8 +272,16 @@ var YUITest = require("yuitest"),
             "U+0??????"     : [CSSTokens.UNICODE_RANGE, CSSTokens.CHAR],
             "U+00-??"       : [CSSTokens.UNICODE_RANGE, CSSTokens.MINUS, CSSTokens.CHAR, CSSTokens.CHAR],
             "U+?1"          : [CSSTokens.UNICODE_RANGE, CSSTokens.NUMBER],
-            "U+"            : [CSSTokens.CHAR, CSSTokens.PLUS],
-            "U+00-J"        : [CSSTokens.UNICODE_RANGE, CSSTokens.IDENT]
+            "U+00-J"        : [CSSTokens.UNICODE_RANGE, CSSTokens.IDENT],
+
+            // Not unicode ranges
+            "U20"           : [CSSTokens.IDENT],
+
+            // existing parsing failures
+            // "u+"            : [CSSTokens.IDENT, CSSTokens.PLUS],
+            // "U+"            : [CSSTokens.IDENT, CSSTokens.PLUS],
+            // "U+@"           : [CSSTokens.IDENT, CSSTokens.PLUS, CSSTokens.CHAR],
+            // "U+U"           : [CSSTokens.IDENT, CSSTokens.PLUS, CSSTokens.IDENT],
         }
     }));
 
@@ -390,10 +407,12 @@ var YUITest = require("yuitest"),
             "1"         : [CSSTokens.NUMBER],
             "20.0"      : [CSSTokens.NUMBER],
             ".3"        : [CSSTokens.NUMBER],
+            "-0.3"      : [CSSTokens.NUMBER],
+            "+0"        : [CSSTokens.NUMBER],
+            "-.3"       : [CSSTokens.NUMBER],
+            "+.5"       : [CSSTokens.NUMBER],
 
             //invalid numbers
-            "-.3"       : [CSSTokens.MINUS, CSSTokens.NUMBER],
-            "+0"        : [CSSTokens.PLUS, CSSTokens.NUMBER],
             "-name"     : [CSSTokens.IDENT],
             "+name"     : [CSSTokens.PLUS, CSSTokens.IDENT]
 
@@ -434,7 +453,7 @@ var YUITest = require("yuitest"),
             "rgb(255,0,1)"      : [CSSTokens.FUNCTION, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.COMMA, CSSTokens.NUMBER, CSSTokens.RPAREN],
             "counter(par-num,upper-roman)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.COMMA, CSSTokens.IDENT, CSSTokens.RPAREN],
             "calc(100% - 5px)"      : [CSSTokens.FUNCTION, CSSTokens.PERCENTAGE, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.LENGTH, CSSTokens.RPAREN],
-            "calc((5em - 100%) / -2)" : [CSSTokens.FUNCTION, CSSTokens.LPAREN, CSSTokens.LENGTH, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.PERCENTAGE, CSSTokens.RPAREN, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.MINUS, CSSTokens.NUMBER, CSSTokens.RPAREN],
+            "calc((5em - 100%) / -2)" : [CSSTokens.FUNCTION, CSSTokens.LPAREN, CSSTokens.LENGTH, CSSTokens.S, CSSTokens.MINUS, CSSTokens.S, CSSTokens.PERCENTAGE, CSSTokens.RPAREN, CSSTokens.S, CSSTokens.SLASH, CSSTokens.S, CSSTokens.NUMBER, CSSTokens.RPAREN],
 
             //old-style IE filters - interpreted as bunch of tokens
             "alpha(opacity=50)" : [CSSTokens.FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN],

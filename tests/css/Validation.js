@@ -87,6 +87,7 @@ var YUITest = require("yuitest"),
             underscoreHack: true
         });
         parser.parse(".foo { " + this.property + ":" + value + "}");
+        Assert.pass();
     };
 
 
@@ -187,11 +188,12 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "1px" : "Expected ([ none | <single-animation-name> ]#) but found '1px'.",
-            "--invalid" : "Expected ([ none | <single-animation-name> ]#) but found '--invalid'."
+            "--invalid" : "Expected ([ none | <single-animation-name> ]#) but found '--invalid'.",
+            "-0num": "Expected ([ none | <single-animation-name> ]#) but found '-0num'.",
         },
 
         error: {
-            "-0num": "Unexpected token '-0num' at line 1, col 23."
+            "@foo": "Unexpected token '@foo' at line 1, col 23."
         }
     }));
 
@@ -981,14 +983,14 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "--Futura, sans-serif"   : "Expected ([ <generic-family> | <family-name> ]#) but found '--Futura , sans-serif'.",
+            "47Futura, sans-serif"   : "Expected ([ <generic-family> | <family-name> ]#) but found '47Futura , sans-serif'.",
+            "-7Futura, sans-serif"   : "Expected ([ <generic-family> | <family-name> ]#) but found '-7Futura , sans-serif'.",
             "Red/Black, sans-serif"  : "Expected end of value but found '/'.",
             "'Lucida' Grande, sans-serif" : "Expected end of value but found 'Grande'.",
             "Hawaii 5-0, sans-serif" : "Expected end of value but found '5'."
         },
 
         error: {
-            "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
-            "-7Futura, sans-serif" : "Unexpected token '-7Futura' at line 1, col 20.",
             "Ahem!, sans-serif"    : "Expected RBRACE at line 1, col 24.",
             "test@foo, sans-serif" : "Expected RBRACE at line 1, col 24.",
             "#POUND, sans-serif"   : "Expected a hex color but found '#POUND' at line 1, col 20."
@@ -1058,6 +1060,15 @@ var YUITest = require("yuitest"),
             "normal", "ordinal", "slashed-zero", "lining-nums",
             "lining-nums proportional-nums diagonal-fractions ordinal",
             "oldstyle-nums tabular-nums stacked-fractions slashed-zero"
+        ]
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "grid-template-columns",
+
+        valid: [
+            "100px 1fr", "fit-content(40%)", "repeat(3, 200px)",
+            "100px 1fr max-content minmax(min-content, 1fr)"
         ]
     }));
 

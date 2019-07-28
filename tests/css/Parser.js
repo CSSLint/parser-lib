@@ -1037,6 +1037,32 @@ var YUITest = require("yuitest"),
             Assert.areEqual("ch", result.parts[0].units);
         },
 
+        testDimensionValueFr: function() {
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("2fr");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(1, result.parts.length);
+            Assert.areEqual("flex", result.parts[0].type);
+            Assert.areEqual(2, result.parts[0].value);
+            Assert.areEqual("fr", result.parts[0].units);
+        },
+
+        testDimensionValuePxAndFr: function() {
+            var parser = new Parser();
+            var result = parser.parsePropertyValue("100px 1fr");
+
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual(2, result.parts.length);
+            Assert.areEqual("length", result.parts[0].type);
+            Assert.areEqual(100, result.parts[0].value);
+            Assert.areEqual("px", result.parts[0].units);
+            Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+            Assert.areEqual("flex", result.parts[1].type);
+            Assert.areEqual(1, result.parts[1].value);
+            Assert.areEqual("fr", result.parts[1].units);
+        },
+
         testViewportRelativeHeightValue: function() {
             var parser = new Parser();
             var result = parser.parsePropertyValue("50vh");

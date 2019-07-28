@@ -62,7 +62,7 @@ function PropertyValuePart(text, line, col, optionalHint) {
                 break;
 
             case "fr":
-                this.type = "grid";
+                this.type = "flex";
                 break;
 
             case "deg":

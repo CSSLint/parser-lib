@@ -1876,8 +1876,8 @@ Parser.prototype = function() {
                 /*
                  * term
                  *   : unary_operator?
-                 *     [ NUMBER S* | PERCENTAGE S* | LENGTH S* | ANGLE S* |
-                 *       TIME S* | FREQ S* | function | ie_function ]
+                 *     [ NUMBER S* | PERCENTAGE S* | DIMENSION S* | LENGTH S* |
+                 *       ANGLE S* | TIME S* | FREQ S* | function | ie_function ]
                  *   | STRING S* | IDENT S* | URI S* | UNICODERANGE S* | hexcolor
                  *   ;
                  */
@@ -1922,9 +1922,9 @@ Parser.prototype = function() {
                     this._readWhitespace();
 
                 // see if there's a simple match
-                } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.LENGTH,
-                    Tokens.ANGLE, Tokens.TIME,
-                    Tokens.FREQ, Tokens.STRING, Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])) {
+                } else if (tokenStream.match([Tokens.NUMBER, Tokens.PERCENTAGE, Tokens.DIMENSION,
+                    Tokens.LENGTH, Tokens.ANGLE, Tokens.TIME, Tokens.FREQ, Tokens.STRING,
+                    Tokens.IDENT, Tokens.URI, Tokens.UNICODE_RANGE])) {
 
                     value = tokenStream.token().value;
                     if (unary === null) {

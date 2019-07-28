@@ -41,10 +41,6 @@ function isNameChar(c) {
     return c != null && (isNameStart(c) || /[0-9\-\\]/.test(c));
 }
 
-function isIdentStart(c) {
-    return c != null && (isNameStart(c) || /-\\/.test(c));
-}
-
 function mix(receiver, supplier) {
     for (var prop in supplier) {
         if (Object.prototype.hasOwnProperty.call(supplier, prop)) {
@@ -170,7 +166,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case ".":
                     if (isDigit(reader.peek())) {
-                        token = this.numberToken(c, startLine, startCol);
+                        token = this.numericToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
@@ -187,7 +183,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "-":
                     if (wouldStartUnsignedNumber(reader.peekCount(2))) {
-                        token = this.numberToken(c, startLine, startCol);
+                        token = this.numericToken(c, startLine, startCol);
                         break;
                     } else if (reader.peekCount(2) === "->") {
                         token = this.htmlCommentEndToken(c, startLine, startCol);
@@ -203,7 +199,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                  */
                 case "+":
                     if (wouldStartUnsignedNumber(reader.peekCount(2))) {
-                        token = this.numberToken(c, startLine, startCol);
+                        token = this.numericToken(c, startLine, startCol);
                     } else {
                         token = this.charToken(c, startLine, startCol);
                     }
@@ -290,16 +286,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
 
     /**
      * Produces a token based on the given character and location in the
-     * stream, when no other case applies.
-     * Potential tokens:
-     * - NUMBER
-     * - DIMENSION
-     * - LENGTH
-     * - FREQ
-     * - TIME
-     * - EMS
-     * - EXS
-     * - ANGLE
+     * stream, when no other case applies. Many potential tokens.
      * @param {String} c The character for the token.
      * @param {int} startLine The beginning line for the character.
      * @param {int} startCol The beginning column for the character.
@@ -311,7 +298,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             token   = null;
 
         if (isDigit(c)) {
-            token = this.numberToken(c, startLine, startCol);
+            token = this.numericToken(c, startLine, startCol);
         } else
 
         /*
@@ -679,10 +666,11 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
     },
 
     /**
-     * Produces a number token based on the given character
-     * and location in the stream. This may return a token of
-     * NUMBER, EMS, EXS, LENGTH, ANGLE, TIME, FREQ, DIMENSION,
-     * or PERCENTAGE.
+     * Consume and return a numeric token, as described in the CSS spec:
+     * https://drafts.csswg.org/css-syntax-3/#consume-numeric-token.
+     * This may return a token of NUMBER, PERCENTAGE, or DIMENSION (or for now,
+     * one of LENGTH, ANGLE, TIME, FREQ, FLEX, or RESOLUTION when appropriate).
+     * @deprecated Use `numericToken` instead.
      * @param {String} first The first character for the token.
      * @param {int} startLine The beginning line for the character.
      * @param {int} startCol The beginning column for the character.
@@ -690,16 +678,32 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
      * @method numberToken
      */
     numberToken: function(first, startLine, startCol) {
+      return this.numericToken(first, startLine, startCol);
+    },
+
+    /**
+     * Consume and return a numeric token, as described in the CSS spec:
+     * https://drafts.csswg.org/css-syntax-3/#consume-numeric-token.
+     * This may return a token of NUMBER, PERCENTAGE, or DIMENSION (or for now,
+     * one of LENGTH, ANGLE, TIME, FREQ, FLEX, or RESOLUTION when appropriate).
+     * @param {String} first The first character for the token.
+     * @param {int} startLine The beginning line for the character.
+     * @param {int} startCol The beginning column for the character.
+     * @return {Object} A token object.
+     * @method numericToken
+     */
+    numericToken: function(first, startLine, startCol) {
         var reader  = this._reader,
             value   = this.readNumber(first),
             ident,
-            tt      = Tokens.NUMBER,
-            c       = reader.peek();
+            tt      = Tokens.NUMBER;
 
-        if (isIdentStart(c)) {
+        if (wouldStartIdent(reader.peekCount(2))) {
             ident = this.readName(reader.read());
             value += ident;
 
+            // NOTE: As long as these dimension subtypes exist, these lists must
+            // be kept in sync with those in PropertyValuePart.js.
             if (/^em$|^ex$|^px$|^gd$|^rem$|^vw$|^vh$|^vmax$|^vmin$|^ch$|^cm$|^mm$|^in$|^pt$|^pc$/i.test(ident)) {
                 tt = Tokens.LENGTH;
             } else if (/^deg|^rad$|^grad$|^turn$/i.test(ident)) {
@@ -714,7 +718,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
                 tt = Tokens.DIMENSION;
             }
 
-        } else if (c === "%") {
+        } else if (reader.peek() === "%") {
             value += reader.read();
             tt = Tokens.PERCENTAGE;
         }

@@ -45,14 +45,10 @@ var Tokens = module.exports = [
     // important symbol
     { name: "IMPORTANT_SYM" },
 
-    // measurements
-    { name: "LENGTH" },
-    { name: "ANGLE" },
-    { name: "TIME" },
-    { name: "FREQ" },
-    { name: "DIMENSION" },
-    { name: "PERCENTAGE" },
-    { name: "NUMBER" },
+    // numeric
+    { name: "NUMBER" }, // https://www.w3.org/TR/css-syntax-3/#number-token-diagram
+    { name: "DIMENSION" }, // https://www.w3.org/TR/css-syntax-3/#dimension-token-diagram
+    { name: "PERCENTAGE" }, // https://www.w3.org/TR/css-syntax-3/#percentage-token-diagram
 
     // functions
     { name: "URI" },
@@ -108,6 +104,13 @@ var Tokens = module.exports = [
     /*
      * The following token names are not defined in any CSS specification but are used by the lexer.
      */
+
+    // TODO: Drop these as tokens, so they exist only as PropertyValueParts?
+    // subtypes of dimension: These are not tokens in CSS3 grammar.
+    { name: "LENGTH" }, // https://www.w3.org/TR/css3-values/#lengths
+    { name: "ANGLE" }, // https://www.w3.org/TR/css3-values/#angles
+    { name: "TIME" }, // https://www.w3.org/TR/css3-values/#time
+    { name: "FREQ" }, // https://www.w3.org/TR/css3-values/#frequency
 
     // not a real token, but useful for stupid IE filters
     { name: "IE_FUNCTION" },

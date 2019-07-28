@@ -312,7 +312,7 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new CSSTokenTestCase({
-        name : "Tests for Numbers",
+        name : "Tests for Numbers, Dimensions, and Percentages",
 
         patterns: {
 
@@ -321,7 +321,6 @@ var YUITest = require("yuitest"),
             "4px"       : [CSSTokens.LENGTH],
             "50.0PX"    : [CSSTokens.LENGTH],
             ".6Px"      : [CSSTokens.LENGTH],
-
 
             "7cm"       : [CSSTokens.LENGTH],
             "7CM"       : [CSSTokens.LENGTH],
@@ -363,7 +362,6 @@ var YUITest = require("yuitest"),
             "50.0CH"    : [CSSTokens.LENGTH],
             ".5cH"      : [CSSTokens.LENGTH],
 
-
             "5deg"       : [CSSTokens.ANGLE],
             "50.0DEG"    : [CSSTokens.ANGLE],
             ".5Deg"      : [CSSTokens.ANGLE],
@@ -394,6 +392,10 @@ var YUITest = require("yuitest"),
             "5khz"          : [CSSTokens.FREQ],
             "50.0KHZ"       : [CSSTokens.FREQ],
             ".5kHz"         : [CSSTokens.FREQ],
+
+            "1fr"           : [CSSTokens.DIMENSION],
+            "0fr"           : [CSSTokens.DIMENSION],
+            ".25fr"         : [CSSTokens.DIMENSION],
 
             "5ncz"          : [CSSTokens.DIMENSION],
             "50.0NCZ"       : [CSSTokens.DIMENSION],
@@ -505,6 +507,10 @@ var YUITest = require("yuitest"),
             //regular CSS functions
             "background: red;"       : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
             "background-color: red;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IDENT, CSSTokens.SEMICOLON],
+
+            //multiple value parts
+            "margin: 0 auto 10px;" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.NUMBER, CSSTokens.S, CSSTokens.IDENT, CSSTokens.S, CSSTokens.LENGTH, CSSTokens.SEMICOLON],
+            "grid-template-columns: 100px 1fr max-content minmax(min-content, 1fr);" : [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.LENGTH, CSSTokens.S, CSSTokens.DIMENSION, CSSTokens.S, CSSTokens.IDENT, CSSTokens.S, CSSTokens.FUNCTION, CSSTokens.IDENT,  CSSTokens.COMMA,  CSSTokens.S,  CSSTokens.DIMENSION,  CSSTokens.RPAREN, CSSTokens.SEMICOLON],
 
             "filter: progid:DXImageTransform.Microsoft.Wave(strength=100);": [CSSTokens.IDENT, CSSTokens.COLON, CSSTokens.S, CSSTokens.IE_FUNCTION, CSSTokens.IDENT, CSSTokens.EQUALS, CSSTokens.NUMBER, CSSTokens.RPAREN, CSSTokens.SEMICOLON]
 

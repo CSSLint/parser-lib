@@ -1516,7 +1516,7 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
-        property: "text-decoration-skip",
+      property: "text-decoration-skip",
 
         valid: [
             "none",
@@ -1550,6 +1550,19 @@ var YUITest = require("yuitest"),
         invalid: {
             "none objects" : "Expected end of value but found 'objects'.",
             "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-decoration-skip-ink",
+
+        valid: [
+            "auto",
+            "none"
+        ],
+
+        invalid: {
+            "foo" : "Expected (auto | none) but found 'foo'."
         }
     }));
 

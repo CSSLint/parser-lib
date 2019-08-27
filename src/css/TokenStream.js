@@ -582,7 +582,7 @@ TokenStream.prototype = mix(new TokenStreamBase(), {
             }
         } else if (reader.peek() === ":") {  // might be an IE function
 
-            // IE-specific functions always being with progid:
+            // IE-specific functions always begin with progid:
             if (ident.toLowerCase() === "progid") {
                 ident += reader.readTo("(");
                 tt = Tokens.IE_FUNCTION;

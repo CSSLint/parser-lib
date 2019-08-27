@@ -1415,7 +1415,8 @@ var YUITest = require("yuitest"),
 
         _should: {
             error: {
-                testIEFilter5: "Unexpected token '=' at line 1, col 14."
+                testIEFilter5: "Unexpected token '=' at line 1, col 14.",
+                testFunctionBroken: "Expected an expression in the function on line 1, col 1."
             }
         },
 
@@ -1505,6 +1506,11 @@ var YUITest = require("yuitest"),
             var result = parser.parsePropertyValue("alpha(opacity=10)");
 
             Assert.isInstanceOf(parserlib.css.PropertyValue, result);
+        },
+
+        testFunctionBroken: function() {
+            var parser = new Parser();
+            parser.parsePropertyValue("calc(");
         }
 
 

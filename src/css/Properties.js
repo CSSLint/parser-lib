@@ -144,9 +144,11 @@ var Properties = module.exports = {
 
     // C
     "caption-side"                      : "top | bottom",
+    "calcMode"                          : "discrete | linear | paced | spline",
     "clear"                             : "none | right | left | both",
     "clip"                              : "<shape> | auto",
     "-webkit-clip-path"                 : "<clip-source> | <clip-path> | none",
+    "clipPathUnits"                     : "userSpaceOnUse | objectBoundingBox",
     "clip-path"                         : "<clip-source> | <clip-path> | none",
     "clip-rule"                         : "nonzero | evenodd",
     "color"                             : "<color>",
@@ -172,6 +174,8 @@ var Properties = module.exports = {
     "cue-after"                         : 1,
     "cue-before"                        : 1,
     "cursor"                            : 1,
+    "cx"                                : "<coordinate>",
+    "cy"                                : "<coordinate>",
 
     // D
     "direction"                         : "ltr | rtl",
@@ -387,6 +391,7 @@ var Properties = module.exports = {
     "quotes"                            : 1,
 
     // R
+    "r"                                 : "<length>",
     "rendering-intent"                  : 1,
     "resize"                            : 1,
     "rest"                              : 1,

@@ -94,7 +94,7 @@ var Colors = module.exports = {
     mediumaquamarine        : "#66cdaa",
     mediumblue              : "#0000cd",
     mediumorchid            : "#ba55d3",
-    mediumpurple            : "#9370d8",
+    mediumpurple            : "#9370db",
     mediumseagreen          : "#3cb371",
     mediumslateblue         : "#7b68ee",
     mediumspringgreen       : "#00fa9a",
@@ -115,7 +115,7 @@ var Colors = module.exports = {
     palegoldenrod           : "#eee8aa",
     palegreen               : "#98fb98",
     paleturquoise           : "#afeeee",
-    palevioletred           : "#d87093",
+    palevioletred           : "#db7093",
     papayawhip              : "#ffefd5",
     peachpuff               : "#ffdab9",
     peru                    : "#cd853f",
@@ -123,6 +123,7 @@ var Colors = module.exports = {
     plum                    : "#dda0dd",
     powderblue              : "#b0e0e6",
     purple                  : "#800080",
+    rebeccapurple           : "#663399",
     red                     : "#ff0000",
     rosybrown               : "#bc8f8f",
     royalblue               : "#4169e1",
@@ -153,8 +154,8 @@ var Colors = module.exports = {
     yellowgreen             : "#9acd32",
     // 'currentColor' color keyword https: //www.w3.org/TR/css3-color/#currentcolor
     currentColor            : "The value of the 'color' property.",
-    // CSS2 system colors https: //www.w3.org/TR/css3-color/#css2-system
-    activeBorder            : "Active window border.",
+    // CSS2 system colors https://www.w3.org/TR/css3-color/#css2-system
+    activeborder            : "Active window border.",
     activecaption           : "Active window caption.",
     appworkspace            : "Background color of multiple document interface.",
     background              : "Desktop background.",

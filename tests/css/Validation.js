@@ -191,7 +191,7 @@ var YUITest = require("yuitest"),
         },
 
         error: {
-            "-0num": "Unexpected token '0num' at line 1, col 24."
+            "-0num": "Unexpected token '-0num' at line 1, col 23."
         }
     }));
 
@@ -503,6 +503,23 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "border-image-repeat",
+
+        valid: [
+            "stretch",
+            "repeat",
+            "round",
+            "space",
+            "round stretch"
+        ],
+
+        invalid: {
+            "foo": "Expected ([ stretch | repeat | round | space ]{1,2}) but found 'foo'.",
+            "round stretch foo": "Expected end of value but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "border-image-slice",
 
         valid: [
@@ -738,7 +755,7 @@ var YUITest = require("yuitest"),
             "red",
             "#f00",
             "transparent",
-            "currentColor"
+            "currentColor",
         ],
 
         invalid: {
@@ -971,7 +988,7 @@ var YUITest = require("yuitest"),
 
         error: {
             "47Futura, sans-serif" : "Unexpected token '47Futura' at line 1, col 20.",
-            "-7Futura, sans-serif" : "Unexpected token '7Futura' at line 1, col 21.",
+            "-7Futura, sans-serif" : "Unexpected token '-7Futura' at line 1, col 20.",
             "Ahem!, sans-serif"    : "Expected RBRACE at line 1, col 24.",
             "test@foo, sans-serif" : "Expected RBRACE at line 1, col 24.",
             "#POUND, sans-serif"   : "Expected a hex color but found '#POUND' at line 1, col 20."
@@ -1094,6 +1111,33 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "mix-blend-mode",
+
+        valid: [
+            "normal",
+            "multiply",
+            "screen",
+            "overlay",
+            "darken",
+            "lighten",
+            "color-dodge",
+            "color-burn",
+            "hard-light",
+            "soft-light",
+            "difference",
+            "exclusion",
+            "hue",
+            "saturation",
+            "color",
+            "luminosity"
+        ],
+
+        invalid: {
+            "foo" : "Expected (normal | multiply | screen | overlay | darken | lighten | color-dodge | color-burn | hard-light | soft-light | difference | exclusion | hue | saturation | color | luminosity) but found 'foo'."
         }
     }));
 
@@ -1472,6 +1516,62 @@ var YUITest = require("yuitest"),
     }));
 
     suite.add(new ValidationTestCase({
+        property: "text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+        ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "-webkit-text-decoration-skip",
+
+        valid: [
+            "none",
+            "objects",
+            "spaces",
+            "ink",
+            "edges",
+            "box-decoration",
+            "objects spaces ink"
+        ],
+
+        invalid: {
+            "none objects" : "Expected end of value but found 'objects'.",
+            "foo" : "Expected (none | [ objects || spaces || ink || edges || box-decoration ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "text-underline-position",
+
+        valid: [
+            "auto",
+            "under",
+            "left",
+            "right",
+            "under left"
+        ],
+
+        invalid: {
+            "auto under" : "Expected end of value but found 'under'.",
+            "left right" : "Expected end of value but found 'right'.",
+            "foo" : "Expected (auto | [ under || [ left | right ] ]) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
         property: "text-rendering",
 
         valid: [
@@ -1566,6 +1666,23 @@ var YUITest = require("yuitest"),
 
         invalid: {
             "foo" : "Expected (auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all) but found 'foo'."
+        }
+    }));
+
+    suite.add(new ValidationTestCase({
+        property: "position",
+
+        valid: [
+            "static",
+            "relative",
+            "absolute",
+            "fixed",
+            "sticky",
+            "-webkit-sticky"
+        ],
+
+        invalid: {
+            "foo" : "Expected (static | relative | absolute | fixed | sticky | -webkit-sticky) but found 'foo'."
         }
     }));
 

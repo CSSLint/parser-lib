@@ -93,7 +93,7 @@ var Properties = module.exports = {
     "border-color"                      : "<color>{1,4}",
     "border-image"                      : 1,
     "border-image-outset"               : "[ <length> | <number> ]{1,4}",
-    "border-image-repeat"               : "[ stretch | repeat | round ]{1,2}",
+    "border-image-repeat"               : "[ stretch | repeat | round | space ]{1,2}",
     "border-image-slice"                : "<border-image-slice>",
     "border-image-source"               : "<image> | none",
     "border-image-width"                : "[ <length> | <percentage> | <number> | auto ]{1,4}",
@@ -214,7 +214,7 @@ var Properties = module.exports = {
     "-ms-flex-align"                    : "start | end | center | stretch | baseline",
     "-ms-flex-direction"                : "row | row-reverse | column | column-reverse",
     "-ms-flex-order"                    : "<number>",
-    "-ms-flex-pack"                     : "start | end | center | justify",
+    "-ms-flex-pack"                     : "start | end | center | justify | distribute",
     "-ms-flex-wrap"                     : "nowrap | wrap | wrap-reverse",
     "float"                             : "left | right | none",
     "float-offset"                      : 1,
@@ -330,6 +330,7 @@ var Properties = module.exports = {
     "max-width"                         : "<length> | <percentage> | <content-sizing> | none",
     "min-height"                        : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
     "min-width"                         : "<length> | <percentage> | <content-sizing> | contain-floats | -moz-contain-floats | -webkit-contain-floats",
+    "mix-blend-mode"                    : "<blend-mode>",
     "move-to"                           : 1,
 
     // N
@@ -378,7 +379,7 @@ var Properties = module.exports = {
     "pitch-range"                       : 1,
     "play-during"                       : 1,
     "pointer-events"                    : "auto | none | visiblePainted | visibleFill | visibleStroke | visible | painted | fill | stroke | all",
-    "position"                          : "static | relative | absolute | fixed | sticky",
+    "position"                          : "static | relative | absolute | fixed | sticky | -webkit-sticky",
     "presentation-level"                : 1,
     "punctuation-trim"                  : 1,
 
@@ -435,6 +436,9 @@ var Properties = module.exports = {
     "text-decoration-color"             : "<text-decoration-color>",
     "text-decoration-line"              : "<text-decoration-line>",
     "text-decoration-style"             : "<text-decoration-style>",
+    "text-decoration-skip"              : "none | [ objects || spaces || ink || edges || box-decoration ]",
+    "-webkit-text-decoration-skip"      : "none | [ objects || spaces || ink || edges || box-decoration ]",
+    "text-underline-position"           : "auto | [ under || [ left | right ] ]",
     "text-emphasis"                     : 1,
     "text-height"                       : 1,
     "text-indent"                       : "<length> | <percentage>",
@@ -460,7 +464,7 @@ var Properties = module.exports = {
     // U
     "unicode-bidi"                      : "normal | embed | isolate | bidi-override | isolate-override | plaintext",
     "user-modify"                       : "read-only | read-write | write-only",
-    "user-select"                       : "none | text | toggle | element | elements | all",
+    "user-select"                       : "auto | text | none | contain | all",
 
     // V
     "vertical-align"                    : "auto | use-script | baseline | sub | super | top | text-top | central | middle | bottom | text-bottom | <percentage> | <length>",

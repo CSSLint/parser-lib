@@ -3,10 +3,9 @@ sudo: false
 language: node_js
 
 node_js:
-  - "0.10"
-  - "4"
-  - "6"
-  - "7"
+  - "lts/argon"
+  - "lts/boron"
+  - "node"
 
 matrix:
   fast_finish: true
@@ -14,3 +13,12 @@ matrix:
 cache:
   directories:
     - node_modules
+
+deploy:
+  provider: npm
+  email: nschonni@gmail.com
+  api_key:
+    secure: XsdG394/yYeojltVlxO02ByHLqASP5EPZ1oidig4QSVPSow6s8gLmvX0N3+D7wAQhv6hb+XZgWbPdk2AJ2uLZcvZZNUa/07rIQjB3MlvNQURXQZRJzcPxkUMsEUmJImJjyGmIA/JJes1UIzp1RTelWjSOaE7CCDBhBylmBsr8dM=
+  on:
+    tags: true
+    node: "node"

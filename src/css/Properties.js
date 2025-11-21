@@ -488,7 +488,7 @@ var Properties = module.exports = {
     "word-break"                        : "normal | keep-all | break-all",
     "word-spacing"                      : "<length> | normal",
     "word-wrap"                         : "normal | break-word",
-    "writing-mode"                      : "horizontal-tb | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb",
+    "writing-mode"                      : "horizontal-tb | sideways-lr | sideways-rl | vertical-rl | vertical-lr | lr-tb | rl-tb | tb-rl | bt-rl | tb-lr | bt-lr | lr-bt | rl-bt | lr | rl | tb",
 
     // Z
     "z-index"                           : "<integer> | auto",

@@ -1847,6 +1847,8 @@ var YUITest = require("yuitest"),
 
         valid: [
             "horizontal-tb",
+            "sideways-lr",
+            "sideways-rl",
             "vertical-rl",
             "vertical-lr",
             "lr-tb",
